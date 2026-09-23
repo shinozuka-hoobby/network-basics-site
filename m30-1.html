@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>往復の回数が、待ち時間を決める場面 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m30-1" data-chapter="m30" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 30-1</p>
+  <p class="chapter-label">第 30 章 性能の考え方 — レイテンシ・帯域・RTT　30-1</p>
+  <h1>往復の回数が、待ち時間を決める場面</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>名前解決や接続の手続きのように、小さなやり取りを繰り返す場面では、待ち時間はそれぞれの往復にかかる時間の積み重ねで決まる。<strong>回線を太くしても、この待ち時間は縮まらないことがある</strong>。このページでは、その理由を具体的な数字で確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">名前解決や接続の手続きのように、小さなやり取りを繰り返す場面だと、待ち時間ってどうやって決まるんですか。</p>
+    <p class="t" data-who="ふくろう先生"><strong>往復の回数そのもの</strong>が効いてきます。画面が表示されるまでの裏側では、小さなやり取りが何度も発生しています。</p>
+    <p class="s" data-who="ひよこちゃん">小さなやり取りって、具体的にはどんなものがあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">名前を調べる問い合わせ、通信の道筋を作る手続き、身分証の確認と鍵の取り決めの手続き、そして実際の要求と応答です。それぞれが、ひとつの往復に近い時間を必要とします。</p>
+    <p class="s" data-who="ひよこちゃん">それぞれ 1 往復ずつだとしても、全部足したらけっこうな回数になりますね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ある資料に、具体的な数字の例が載っています。</p>
+    <p class="t" data-who="ふくろう先生">宛先までの片道の時間を 250 ミリ秒とすると、通信の道筋を作る手続きだけで、この片道の時間の 3 回分、750 ミリ秒がかかります。そのあと、ページ本体の要求と応答に 250 ミリ秒ずつ、さらに追加の資材の要求に 250 ミリ秒、その配信に 1500 ミリ秒かかり、合計はおよそ 3000 ミリ秒になりました。</p>
+    <p class="s" data-who="ひよこちゃん">3000 ミリ秒って、けっこう大きいですね。回線を太くしても、この時間は変わらないんですか。</p>
+    <p class="t" data-who="ふくろう先生">変わりません。この片道の時間は、距離と信号の速さで決まる伝搬遅延が主なので、回線の帯域幅を大きくしても縮まらないんです。</p>
+    <p class="s" data-who="ひよこちゃん">ちょっとした遅さでも、利用者は離れてしまうものなんですか。</p>
+    <p class="t" data-who="ふくろう先生">そう言われています。待ち時間が延びるほど、利用者はページを離れやすくなるとされています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、往復の回数を減らすとか、1 回の往復を短くするとか、そっちの工夫が必要になるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。実は、第 20 章で似た計算を見ましたよね。接続を作り直す通信と、使い回す通信とで、合計の待ち時間の式が違いました。</p>
+    <p class="s" data-who="ひよこちゃん">はい、覚えてます。オブジェクトの数×(2×往復時間+転送時間)っていう式でしたよね。</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていますね。接続を使い回せば、この往復時間の分を最初の 1 回にまとめられて、待ち時間を減らせるんでした。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、先輩から聞いたんですけど、会社の回線を速いプランに変えたのに、海外拠点の管理画面を開く動作は相変わらず遅いままだったらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">それは、第 2 章で見た帯域幅と遅延時間の話に関係がありそうです。回線を太くして短くなるのは、送り出す時間の部分だけでしたよね。</p>
+    <p class="s" data-who="ひよこちゃん">今回の海外拠点の話も、同じような考え方で整理できそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。名前解決、接続、鍵の取り決め、要求と応答のそれぞれが、この往復の回数に当たります。回線を太くする前に、こうした往復の積み重ねを疑ってみる価値があります。</p>
+    <p class="s" data-who="ひよこちゃん">回線を太くしても解決しないことがあるって、初めて知りました。</p>
+    <p class="t" data-who="ふくろう先生">よくある誤解です。次のページでは逆に、運ぶ量が多いときに何が効くのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>名前解決、通信の道筋を作る手続き、身分証の確認と鍵の取り決めの手続き、要求と応答のように、小さなやり取りを繰り返す場面では、待ち時間はそれぞれの往復にかかる時間の積み重ねで決まる。</li>
+      <li>ある資料の例では、通信の道筋を作る手続きだけで片道の時間の 3 回分がかかり、要求と応答や追加のやり取りを合わせて合計はおよそ 3000 ミリ秒になった。</li>
+      <li>それぞれの往復にかかる時間の大部分は、距離と信号の速さで決まる伝搬遅延であり、回線の帯域幅を大きくしても縮まらない。</li>
+      <li>第 20 章で見た、接続を作り直すたびに待ち時間が積み重なる式も、この考え方の具体例である。</li>
+      <li>回線を太くしても体感が変わらない場面では、往復の回数そのものを疑う価値がある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>名前解決、通信の道筋を作る手続き、身分証の確認と鍵の取り決めの手続き、要求と応答は、それぞれおよそ 1 往復のやり取りである。ある資料の例では、宛先までの片道の時間を 250 ミリ秒とすると、通信の道筋を作る手続きだけで片道の時間の 3 回分、750 ミリ秒がかかり、ページ本体の要求と応答に 250 ミリ秒ずつ、追加の資材の要求に 250 ミリ秒、その配信に 1500 ミリ秒かかって、合計はおよそ 3000 ミリ秒になった(#58)。それぞれの往復にかかる時間の大部分は、距離と信号の速さで決まる伝搬遅延であり、回線の帯域幅を大きくしても縮まらない。第 20 章で見た、接続を作り直すたびに待ち時間がオブジェクトの数×(2×往復時間+転送時間)で積み重なる式も、この考え方の具体例である。待ち時間が延びるほど利用者はページを離れやすくなるとされ(#58)、回線を太くしても体感が変わらない場面では、往復の回数そのものを疑う価値がある。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="58">[#58] Cloudflare Learning Center「CDN performance」 — <a href="https://www.cloudflare.com/learning/cdn/performance/" rel="noopener">原典</a>(「What is the difference in load times with and without a CDN?」の節。27〜39 行目、通信の道筋を作る手続きに片道の時間の 3 回分が加わるという内訳と、要求・応答・追加の資材のやり取りを合わせて合計およそ 3000 ミリ秒という数値例。61 行目、待ち時間が延びるほど利用者が離れやすくなるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m30-1">
+    <div class="q" data-q="1">
+      <p class="q-text">回線を高速なプランに変えても、名前解決や通信の道筋を作る手続きにかかる時間が縮まらなかったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">それらの手続きは暗号化に時間がかかるから</button></li>
+        <li><button type="button" data-correct="true">それぞれの往復にかかる時間の大部分は伝搬遅延であり、伝搬遅延は距離と信号の速さで決まり、回線の帯域幅とは無関係だから</button></li>
+        <li><button type="button" data-correct="false">高速なプランでは、往復の回数がかえって増えるから</button></li>
+        <li><button type="button" data-correct="false">名前解決は、回線の速さに関係なく常に失敗するから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、それぞれの往復にかかる時間の大部分は伝搬遅延であり、伝搬遅延は距離と信号の速さで決まり、回線の帯域幅とは無関係だから、です。回線を太くして短くなるのは送り出す時間の部分だけで、伝搬遅延は変わりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ある資料の例で、通信の道筋を作る手続きだけで、宛先までの片道の時間の何回分がかかったか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">1 回分</button></li>
+        <li><button type="button" data-correct="false">2 回分</button></li>
+        <li><button type="button" data-correct="true">3 回分</button></li>
+        <li><button type="button" data-correct="false">5 回分</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は 3 回分です。片道の時間を 250 ミリ秒とすると、通信の道筋を作る手続きだけで 750 ミリ秒(250 ミリ秒の 3 回分)がかかりました。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">小さなやり取りを繰り返す場面での待ち時間は、何で決まるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">送り出すデータの量だけ</button></li>
+        <li><button type="button" data-correct="true">往復の回数と、1 往復にかかる時間の積み重ね</button></li>
+        <li><button type="button" data-correct="false">回線の帯域幅だけ</button></li>
+        <li><button type="button" data-correct="false">サーバの処理性能だけ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、往復の回数と、1 往復にかかる時間の積み重ね、です。データの量や帯域幅、サーバの性能が主な原因になるのは、次のページで見る別の場面です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m30.html">← 第 30 章の入口</a>
+    <a class="up" href="m30.html">第 30 章の入口</a>
+    <a class="next" href="m30-2.html">30-2 太い回線でも、頭打ちになることがある →</a>
+  </nav>
+</main>
+</body>
+</html>

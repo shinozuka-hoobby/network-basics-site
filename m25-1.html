@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 対 1 で直接つなぐ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m25-1" data-chapter="m25" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 25-1</p>
+  <p class="chapter-label">第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド　25-1</p>
+  <h1>1 対 1 で直接つなぐ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>VPC 同士をつなぐ方法の 1 つに、2 つの VPC を直接つなぐやり方がある。<strong>直接つないだ相手の、そのまた相手までは自動では届かない</strong>。このページでは、この仕組みと、その制約を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">VPC が増えてきたので、2 つの VPC 同士をつなぎたいんですけど、どうすればいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">一番シンプルな方法は、2 つの VPC を 1 対 1 で直接つなぐことです。この仕組みを<strong>VPC ピアリング</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">ピアリングって、第 9 章で BGP の話をしたときにも聞いた気がします。</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていますね。第 9 章 9-2 で見た、AS 同士が経路の情報を交換し合うピアリングとは別の意味です。ここでは、VPC 同士をつなぐ接続のことを指します。</p>
+    <p class="s" data-who="ひよこちゃん">同じ言葉なのにややこしいですね。つないだら、それだけで通信できるようになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">もう 1 つ手順が要ります。第 24 章 24-2 で見たルートテーブルに、相手の VPC 宛ての経路を追加します。VPC ピアリング接続は、つながる土台を作るだけです。</p>
+    <p class="s" data-who="ひよこちゃん">土台を作って経路も足せば、どんな VPC 同士でもつなげるんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つ条件があります。つなぐ 2 つの VPC で、IP アドレスの範囲が重なっていてはいけません。</p>
+    <p class="s" data-who="ひよこちゃん">範囲が重なってると、何がまずいんですか?</p>
+    <p class="t" data-who="ふくろう先生">宛先が重なって、どちらの VPC への通信か区別できなくなるからです。重ならない範囲どうしでしか、VPC ピアリングでつなげません。</p>
+    <p class="s" data-who="ひよこちゃん">つなぐ相手の VPC は、同じ AWS アカウントの中にある必要があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。別々のアカウントにある VPC 同士や、別々のリージョンにある VPC 同士でも、VPC ピアリングでつなげます。</p>
+    <p class="s" data-who="ひよこちゃん">分かりました。あと、VPC A と B をつないで、VPC A と C もつないだら、B から C にも通信できますか?</p>
+    <p class="t" data-who="ふくろう先生">できません。VPC ピアリングは 1 対 1 のつながりで、つないだ相手を経由して、さらに別の VPC へ届けること(推移)はできません。</p>
+    <p class="s" data-who="ひよこちゃん">B と C の間で通信したいなら、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">B と C の間にも、直接 VPC ピアリング接続を作る必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、先輩が似た状況で困っていたって聞いたことがあります。VPC A-B、VPC A-C をそれぞれ VPC ピアリングでつないだのに、B から C へは通信できなかったそうです。</p>
+    <p class="t" data-who="ふくろう先生">まさに今の話です。推移しないという性質を知らなかったので、直接の接続が無いことに気づかなかったんでしょう。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、VPC の数がどんどん増えていったら、大変なことになりませんか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。VPC の数が増えるほど、必要な接続の組み合わせも増えていきます。次のページで、その問題と、別の解決策を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>VPC ピアリングは、2 つの VPC を 1 対 1 で直接つなぐ仕組みである。</li>
+      <li>第 9 章 9-2 で見た、AS 同士が経路情報を交換するピアリングとは別の意味である。</li>
+      <li>別々のアカウントや、別々のリージョンにある VPC 同士でも、VPC ピアリングでつなげる。</li>
+      <li>VPC ピアリング接続を作るだけでは不十分で、第 24 章 24-2 で見たルートテーブルに、相手の VPC 宛ての経路を追加する必要がある。</li>
+      <li>つなぐ 2 つの VPC は、IP アドレスの範囲が重なっていてはいけない。</li>
+      <li>VPC ピアリングは推移しない。VPC A-B、VPC A-C をつないでも、B-C 間は自動では通信できない。</li>
+      <li>B-C 間で通信したいなら、B と C の間にも直接 VPC ピアリング接続を作る必要がある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>VPC ピアリングは、2 つの VPC を 1 対 1 で直接つなぎ、互いのネットワークの範囲まで通信できるようにする仕組みである(#22)。ピアリング接続を作るだけでは、実際にどの通信をそこへ送るかは決まらず、第 24 章 24-2 で見たルートテーブルに、相手の VPC 宛ての経路を追加する必要がある。つなぐ 2 つの VPC は、IP アドレスの範囲が重なっていてはいけない(#26)。ピアリングは同じ AWS アカウントの中に限らず、別々のアカウント・別々のリージョンにある VPC 同士でも作れる(#26)。VPC ピアリングは点対点の接続で、推移しない。VPC A と B、VPC A と C をそれぞれピアリングでつないでも、B から C への通信を、A を経由して届けることはできない(#26)。B と C の間で通信したいなら、B と C の間にも直接ピアリング接続を作る必要がある。GCP の VPC Network Peering も、同じく推移しないことと、IP アドレスの範囲が重ならないことが必要な点は共通している(#30)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>(「Connect VPCs and networks」の節。VPC peering connection が 2 つの VPC 間で privately に経路を通すという定義)</li>
+    <li class="cite" data-src="26">[#26] AWS ホワイトペーパー「Building a Scalable and Secure Multi-VPC AWS Network Infrastructure」 — <a href="https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/building-scalable-secure-multi-vpc-network-infrastructure.pdf" rel="noopener">原典</a>(p.10「VPC peering is point-to-point connectivity, and it does not support transitive routing」。p.19 の記述から読み取れる、重なる CIDR 同士はつなげないという制約)</li>
+    <li class="cite" data-src="30">[#30] Google Cloud Architecture Center「Best practices for VPC design」 — <a href="https://docs.cloud.google.com/architecture/best-practices-vpc-design" rel="noopener">原典</a>(VPC 接続方法の比較表、VPC Network Peering の行。「Non-transitive」「Requires non-overlapping address space」という記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m25-1">
+    <div class="q" data-q="1">
+      <p class="q-text">VPC A-B、VPC A-C と VPC ピアリングしたのに、B から C へ通信できなかったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">VPC A の電源が落ちていたから</button></li>
+        <li><button type="button" data-correct="true">VPC ピアリングは 1 対 1 のつながりで、間の VPC を経由して届く「推移」ができないから</button></li>
+        <li><button type="button" data-correct="false">B と C の IP アドレスの範囲がまったく同じだったから</button></li>
+        <li><button type="button" data-correct="false">VPC ピアリング接続は 1 つの VPC につき 1 本しか作れないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、VPC ピアリングは 1 対 1 のつながりで、間の VPC を経由して届く「推移」ができないから、です。電源の問題でも、範囲が同じという話でもなく、1 本しか作れないという制限でもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">VPC ピアリングの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">たくさんの VPC を 1 か所に集めてつなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="true">2 つの VPC を 1 対 1 で直接つなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">1 つの VPC を複数のチームで分担して使う仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">VPC の中のサーバに、通信を許可する設定のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、2 つの VPC を 1 対 1 で直接つなぐ仕組みのこと、です。1 か所に集めてつなぐ仕組みや、分担して使う仕組み、通信を許可する設定とは別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">VPC ピアリングでつなげない組み合わせはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">IP アドレスの範囲が重ならない、2 つの VPC</button></li>
+        <li><button type="button" data-correct="false">別々の AWS アカウントにある、2 つの VPC</button></li>
+        <li><button type="button" data-correct="true">IP アドレスの範囲が重なっている、2 つの VPC</button></li>
+        <li><button type="button" data-correct="false">同じ AWS アカウントにある、2 つの VPC</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、IP アドレスの範囲が重なっている、2 つの VPC、です。範囲が重ならなければ、アカウントが別でも同じでもつなげます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m25.html">← 第 25 章の入口</a>
+    <a class="up" href="m25.html">第 25 章の入口</a>
+    <a class="next" href="m25-2.html">25-2 たくさんの VPC を、まとめてつなぐ →</a>
+  </nav>
+</main>
+</body>
+</html>

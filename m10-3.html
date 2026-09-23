@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>外から声をかけても、届かないことがある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m10-3" data-chapter="m10" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 10-3</p>
+  <p class="chapter-label">第 10 章 NAT とプライベートネットワーク　10-3</p>
+  <h1>外から声をかけても、届かないことがある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>変換表に対応が無い、外から来た通信はそのままでは届かない。<strong>外から中の機器へつなぐには、家庭用ルータにあらかじめ対応を決めておく必要がある</strong>。このページでは、その決めておく仕組みと、決めておいても直接つながりにくい場合があることを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、変換表に無い宛先には届かないって話でしたけど、じゃあ外から自分のサーバにアクセスしてもらうことってできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのままでは届きません。ただ、<strong>あらかじめ対応を決めておけば</strong>可能になります。</p>
+    <p class="s" data-who="ひよこちゃん">対応を決めておくって、どうやるんですか?</p>
+    <p class="t" data-who="ふくろう先生">特定のポート番号あての通信を、家の中のどの機器に転送するか、家庭用ルータにあらかじめ決めておきます。これをポートフォワードと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">決めておいた対応は、変換表に追加されるようなイメージですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。外から来る通信を待ち受ける対応を、先に変換表へ書き込んでおくと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">その対応を決める作業って、どこでやるんですか?</p>
+    <p class="t" data-who="ふくろう先生">家庭用ルータの設定画面から行うのが一般的です。転送したいポート番号と、転送先の機器を指定しておきます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いたんですけど、個人開発で自宅サーバを公開しようとして、この設定をしておらず、いつまでも外からアクセスできなかったことがあるらしいです。</p>
+    <p class="t" data-who="ふくろう先生">よくある話です。変換表に、外から来たその通信をどの機器に渡すかという対応が最初から無いので、ポートフォワードで先に対応を決めておく必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、設定を忘れると、そもそも表に載ってないから弾かれちゃうんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。家庭用ルータは、外からの意図しない通信を防ぐようにできています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、通話アプリで相手と直接つながらないことがあるのも、似たような理由ですか?</p>
+    <p class="t" data-who="ふくろう先生">近いです。<strong>双方が NAT の内側だと、どちらも外からの声かけを通さない</strong>ので、直接つながりにくいことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">双方が同じことをしてるから、お互い通しにくいってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。片方だけがポートフォワードを設定していれば通りますが、双方が何もしていないと難しくなります。</p>
+    <p class="s" data-who="ひよこちゃん">変換表に無い通信は防ぐ、っていう動きが、逆に困ることもあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。守りにも使われている仕組みだと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発だと、ローカルで動かしてるサーバを外に見せたいときとかによく聞く話ですね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。手元のパソコンであるプログラムが番号を待ち受けている状態と、家庭用ルータでその番号を転送する設定の、両方が揃って初めて外から届くようになります。</p>
+    <p class="s" data-who="ひよこちゃん">自分のパソコンでも、何かの番号を待ち受けている状態って確認できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。あとで試してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">外から中へつなぐには、事前の準備が要るってことがよく分かりました。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次は、この仕組みをクラウドの世界ではどう使っているか見てみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>変換表に対応が無い、外から来た通信はそのままでは届かない。</li>
+      <li>ポートフォワードは、特定のポート番号あての通信を、家の中のどの機器に転送するか、家庭用ルータにあらかじめ決めておく仕組みである。</li>
+      <li>個人開発で自宅サーバを公開する際、ポートフォワードを設定していないと外からアクセスできないことがある。</li>
+      <li>双方が NAT の内側にいると、どちらも外からの意図しない通信を防いでいるため、直接つながりにくいことがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ポートフォワードは、外から来た特定のポート番号あての通信を、家の中のどの機器に転送するか、家庭用ルータにあらかじめ決めておく仕組みである。前のページで見た変換表には、家の中の機器が外へ向けて通信したときの対応しか記録されないため、外から突然届いた通信に対応する行は最初から存在しない。家庭用ルータは、こうした意図しない通信を防ぐようにできているため、自宅サーバを外部に公開したい場合は、あらかじめポートフォワードでその対応を変換表に追加しておく必要がある。この設定を忘れると、外からアクセスしようとしても届け先が判断できず、いつまでもつながらない。通話アプリなどで、双方の利用者がそれぞれ別の家庭用ルータの内側にいる場合も同じ理由が働く。どちらの家庭用ルータも外からの意図しない通信を防いでおり、どちらの変換表にも相手を受け入れる対応が最初から無いため、直接つながりにくいことがある。家の中の機器が外へ向けて通信したときに変換表へ加わる行は一時的なもので、やり取りが終われば消えていく。これに対してポートフォワードで追加した行は、設定を消さない限り残り続け、外から来る通信をいつでも受け付けられる状態になる。この設定は家庭用ルータの管理画面から行うのが一般的で、転送したいポート番号と転送先の機器の組をあらかじめ指定しておく。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>lsof -i :3000</code></pre>
+    <p>見方: 実行結果に行が表示されれば、3000 番の入り口を今この Mac 上のどれかのプログラムが待ち受けている状態にあるということ。ポートフォワードは、外から来たこの番号あての通信を、家庭用ルータがこの状態にある機器へ届けるように、あらかじめ決めておく仕組みである。</p>
+    <p class="try-note">何も表示されなければ、その番号を使うプログラムが今動いていないという意味なので、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（"Access the internet" の節、"to allow an instance ... to initiate outbound connections to the internet but prevent unsolicited inbound connections from the internet" という記述）</li>
+    <li class="cite" data-src="76">[#76] IETF「RFC 3022: Traditional IP Network Address Translator (Traditional NAT)」 — <a href="https://www.rfc-editor.org/rfc/rfc3022.html" rel="noopener">原典</a>（あらかじめ対応を決めておく仕組み）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m10-3">
+    <div class="q" data-q="1">
+      <p class="q-text">自宅サーバを外部に公開しようとしてポートフォワードを設定していないと、外からアクセスできないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">変換表に、外から来たその通信をどの内部機器に渡すかという対応が最初から無く、ルータが転送先を判断できないから</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータの処理性能が足りず、外からの通信を処理しきれないから</button></li>
+        <li><button type="button" data-correct="false">プライベートアドレスの機器は、そもそもサーバとして動作できない決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">外部のインターネット回線の速度が遅いから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、変換表に、外から来たその通信をどの内部機器に渡すかという対応が最初から無く、ルータが転送先を判断できないから、です。処理性能や回線速度の問題ではなく、プライベートアドレスの機器がサーバとして動作できないわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ポートフォワードの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">外から来た特定のポート番号あての通信を、家庭用ルータがあらかじめ決めておいた家の中の機器へ転送する仕組み</button></li>
+        <li><button type="button" data-correct="false">家の中の機器どうしの通信を中継する仕組み</button></li>
+        <li><button type="button" data-correct="false">外向けのポート番号を毎回ランダムに変える仕組み</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータの管理画面のパスワードを変更する仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、外から来た特定のポート番号あての通信を、家庭用ルータがあらかじめ決めておいた家の中の機器へ転送する仕組み、です。家の中どうしの中継や、ポート番号をランダムに変えること、パスワードの変更とは異なります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">通話アプリなどで、双方の利用者がそれぞれ別の家庭用ルータの内側にいると直接つながりにくいことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">双方の NAT が外からの意図しない通信を防いでおり、どちらの変換表にも相手を受け入れる対応が最初から無いから</button></li>
+        <li><button type="button" data-correct="false">通話アプリの通信だけ、家庭用ルータが特別に禁止しているから</button></li>
+        <li><button type="button" data-correct="false">双方のグローバルアドレスが同じ番号になってしまうから</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータどうしが直接通信する仕組みが存在しないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、双方の NAT が外からの意図しない通信を防いでおり、どちらの変換表にも相手を受け入れる対応が最初から無いから、です。通話アプリだけを禁止しているわけではなく、グローバルアドレスが重複するわけでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m10-2.html">← 10-2 1 つの番号を、みんなで使うための工夫</a>
+    <a class="up" href="m10.html">第 10 章の入口</a>
+    <a class="next" href="m10-4.html">10-4 クラウドのネットワークにも、同じ役目がある →</a>
+  </nav>
+</main>
+</body>
+</html>

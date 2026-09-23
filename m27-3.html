@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>これまで見てきた答えを、まとめて読み解く — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m27-3" data-chapter="m27" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 27-3</p>
+  <p class="chapter-label">第 27 章 観測ツール入門 — ping・traceroute・dig・curl　27-3</p>
+  <h1>これまで見てきた答えを、まとめて読み解く</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>dig の実行結果は、これまでの章で断片的に見てきたが、実は尋ねた内容の区画、答えの区画などに、あらかじめ決まった形で分かれている。<strong>答えの区画には、これまでに見た DNS レコードと DNS の TTL が並ぶ</strong>。このページでは、この区画の全体像と、結果に添えられる短い言葉の読み方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">これまでの章で dig を何回も実行してきましたけど、結果に区画がいくつもあって、正直まだ全体像が分かってないんです。</p>
+    <p class="t" data-who="ふくろう先生">第 16 章 16-5 で少し触れましたが、今日は結果の区画を整理しましょう。dig の結果は、尋ねた内容の区画と、答えの区画のほかに、権威サーバの情報を載せる区画、追加の情報を載せる区画の、決まった区画に分かれています。</p>
+    <p class="s" data-who="ひよこちゃん">区画の分け方って、dig が勝手に決めてるんですか。</p>
+    <p class="t" data-who="ふくろう先生">いいえ。名前解決の問い合わせと答えのやり取り自体の決まりごとで、その決まりを dig がそのまま表示しています。</p>
+    <p class="s" data-who="ひよこちゃん">権威サーバの情報を載せる区画って、いつ使われるんですか。</p>
+    <p class="t" data-who="ふくろう先生">答えの区画だけでは足りないときに、参考として権威サーバの名前などが載ります。答えがすでに十分な問い合わせでは、空になることもあります。</p>
+    <p class="s" data-who="ひよこちゃん">追加の情報を載せる区画には、何が入るんですか。</p>
+    <p class="t" data-who="ふくろう先生">答えに直接は当たらないけれど、参考になる情報です。例えば、権威サーバの名前だけでなく、その権威サーバ自身の住所が載ることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">第 17 章で見た NOERROR とか NXDOMAIN は、どこに出るんでしたっけ。</p>
+    <p class="t" data-who="ふくろう先生">status: に続けて表示されます。</p>
+    <p class="s" data-who="ひよこちゃん">dig コマンド自体が失敗したときと、NXDOMAIN が返ってきたときって、見分けられるんですか。</p>
+    <p class="t" data-who="ふくろう先生">別物です。NXDOMAIN は、問い合わせ自体はきちんと処理された上で、その名前が無いという答えが返ってきた状態です。dig コマンド自体が動かなかった場合とは違います。</p>
+    <p class="s" data-who="ひよこちゃん">flags: っていう行もありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そこには qr や rd といった短い文字が並びます。問い合わせなのか答えなのか、答えを探しに行くよう頼んだかどうかなどを、この短い文字で示しています。</p>
+    <p class="s" data-who="ひよこちゃん">答えの区画には、何が並ぶんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 16 章で見た DNS レコードと、DNS の TTL が並びます。これまでの章で見てきた内容が、実はこの区画にまとまっていたんです。</p>
+    <p class="s" data-who="ひよこちゃん">Query time っていう行も見た覚えがあります。</p>
+    <p class="t" data-who="ふくろう先生">結果の末尾近くにある行で、問い合わせにかかった時間を示します。SERVER という行には、どこに問い合わせに行ったかも表示されます。</p>
+    <p class="s" data-who="ひよこちゃん">毎回この長い結果を全部見るのは大変そうですね。</p>
+    <p class="t" data-who="ふくろう先生">答えの区画だけを短く表示する、簡潔な聞き方も用意されています。</p>
+    <p class="s" data-who="ひよこちゃん">dig にそういう聞き方もあったんですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。知りたい内容によって使い分けてください。次のページでは、curl の出力を記号で見分ける方法を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>dig の結果は、尋ねた内容・答え・権威サーバの情報・追加情報という、決まった区画に分かれて表示される。</li>
+      <li>flags: には qr・rd などの短い文字が、status: には NOERROR・NXDOMAIN・SERVFAIL などの言葉が表示される。</li>
+      <li>答えの区画には、これまでに見た DNS レコードと DNS の TTL が並ぶ。</li>
+      <li>Query time は問い合わせにかかった時間、SERVER はどこに問い合わせたかを示す。</li>
+      <li>答えの区画だけを短く表示する聞き方もある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>dig の結果は、尋ねた内容(QUESTION)、答え(ANSWER)、権威サーバの情報(AUTHORITY)、追加の情報(ADDITIONAL)という決まった区画に分かれて表示される(#83 §4.1)。この区画分けは、名前解決の問い合わせと答えのやり取り自体の形式として定められている(#83)。追加の情報の区画には、答えに直接は当たらないが参考になる情報(権威サーバ自身の住所など)が載ることがある(#83)。dig コマンド自体の成否と、答えが NOERROR か NXDOMAIN かは別物である。NXDOMAIN は、問い合わせが処理された上で「その名前は無い」という答えが返ってきた状態であり、dig コマンド自体が動かなかった場合とは区別される(#105)。flags: に続く qr・rd などの文字と、status: に続く言葉(NOERROR・NXDOMAIN・SERVFAIL など)も、この形式の一部である(#83 §4.1.1)。答えの区画には、第 16 章で見た DNS レコードと DNS の TTL が並ぶ。結果の末尾近くには、問い合わせにかかった時間(Query time)と、問い合わせ先(SERVER)が表示される。答えの区画だけを短く表示する、<code>dig +short</code> という聞き方も用意されている(#105)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig example.com</code></pre>
+    <p>見方: 結果が複数の区画に分かれていること、flags: に続く文字と status: に続く言葉、Query time と SERVER の行を確認する。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="83">[#83] IETF「RFC 1035: Domain Names - Implementation and Specification」 — <a href="https://www.rfc-editor.org/rfc/rfc1035.html" rel="noopener">原典</a>(§4.1 Format: メッセージが Header・Question・Answer・Authority・Additional の 5 区画に分かれるという定義。§4.1.1 Header section format: QR・AA・TC・RD・RA・RCODE の各フィールドの定義。RCODE 0=No error condition、2=Server failure、3=Name Error が、それぞれ第 17 章の NOERROR・SERVFAIL・NXDOMAIN に対応する)</li>
+    <li class="cite" data-src="105">[#105] ISC（Internet Systems Consortium）「dig - DNS lookup utility (BIND 9 Manual pages)」 — <a href="https://bind9.readthedocs.io/en/latest/manpages.html" rel="noopener">原典</a>(Examples の節「Only display the IP address(es) for example.com: dig +short example.com」)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m27-3">
+    <div class="q" data-q="1">
+      <p class="q-text">dig の結果が、尋ねた内容の区画と答えの区画になぜ分かれているのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">dig が実行のたびにランダムに区画を分けているから</button></li>
+        <li><button type="button" data-correct="false">答えが複数あるときだけ、特別に区画が分かれるから</button></li>
+        <li><button type="button" data-correct="false">権威サーバごとに区画の数が変わる決まりだから</button></li>
+        <li><button type="button" data-correct="true">問い合わせと答えを混同しないよう、あらかじめ決まった区画に分けて表示する形式になっているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、問い合わせと答えを混同しないよう、あらかじめ決まった区画に分けて表示する形式になっているから、です。ランダムに分かれる、答えが複数あるときだけ分かれる、権威サーバごとに区画の数が変わるというのはいずれも誤りです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">dig の結果の status: に続けて表示されるものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">問い合わせにかかった時間</button></li>
+        <li><button type="button" data-correct="false">問い合わせ先の住所</button></li>
+        <li><button type="button" data-correct="true">NOERROR・NXDOMAIN・SERVFAIL のような、問い合わせが処理できたかどうかを示す言葉</button></li>
+        <li><button type="button" data-correct="false">答えの DNS レコードの TTL の数字</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、NOERROR・NXDOMAIN・SERVFAIL のような、問い合わせが処理できたかどうかを示す言葉、です。かかった時間は Query time、問い合わせ先は SERVER、TTL の数字は答えの区画にそれぞれ別に表示されます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">dig +short を使うと何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">権威サーバの情報だけが表示される</button></li>
+        <li><button type="button" data-correct="false">問い合わせにかかった時間が短くなる</button></li>
+        <li><button type="button" data-correct="false">TTL の数字が省略されずに詳しく表示される</button></li>
+        <li><button type="button" data-correct="true">答えの区画だけを短く表示できる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、答えの区画だけを短く表示できる、です。権威サーバの情報だけを表示するものでも、問い合わせの時間を変えるものでも、TTL を詳しく表示するものでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m27-2.html">← 27-2 途中にいる機械を、1 台ずつあぶり出す</a>
+    <a class="up" href="m27.html">第 27 章の入口</a>
+    <a class="next" href="m27-4.html">27-4 送った内容と、受け取った内容を、記号で見分ける →</a>
+  </nav>
+</main>
+</body>
+</html>

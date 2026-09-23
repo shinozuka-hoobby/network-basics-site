@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>たくさんの VPC を、まとめてつなぐ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m25-2" data-chapter="m25" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 25-2</p>
+  <p class="chapter-label">第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド　25-2</p>
+  <h1>たくさんの VPC を、まとめてつなぐ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>VPC の数が増えると、前のページで見た 1 対 1 でつなぐやり方だけでは大変になる。<strong>まとめてつなぐ方法と、1 つの VPC を複数のチームで使う方法</strong>という、2 つの別々の答えがある。このページでは、その両方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、VPC の数が増えたら大変になるって言ってましたけど、具体的にどれくらい大変になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">数字で見てみましょう。VPC が 100 個あって、全部を直接 VPC ピアリングでつなごうとすると、必要な接続は 4,950 個にもなります。</p>
+    <p class="s" data-who="ひよこちゃん">そんなに! 1 つの VPC が持てる接続の数にも、限りがありそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。1 つの VPC が持てる VPC ピアリング接続には上限があります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、VPC がたくさんある場合は、どうすればいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">たくさんの VPC を 1 か所に集めてつなぐ仕組みを使います。AWS ではこれを<strong>Transit Gateway</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">1 か所に集めるって、具体的にはどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">Transit Gateway が持つ経路の設定にしたがって、つながっている VPC 同士の通信を中継します。VPC はそれぞれ、Transit Gateway とだけつながればよくなります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、1 対 1 でつながなくてよくなるんですね。ところで、AWS の資料でたまに見かける「シェアード VPC」って、これとは別の仕組みですか?</p>
+    <p class="t" data-who="ふくろう先生">別の仕組みで、<strong>共有 VPC</strong>と呼びます。1 つの VPC を、複数のチームやアカウントで分担して使えるようにする仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">つなぐ仕組みじゃなくて、使う仕組みってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。Transit Gateway は VPC を「つなぐ数」を減らし、共有 VPC は VPC を「作る数」を減らします。</p>
+    <p class="s" data-who="ひよこちゃん">作る数を減らすって、具体的にどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">たとえば 10 個のアプリをそれぞれ別のアカウントで動かしていても、似た用途ごとに 1 つの VPC を共有すれば、VPC の数自体を 2 個に減らせます。</p>
+    <p class="s" data-who="ひよこちゃん">10 個から 2 個に! それぞれのアプリを、どうやって分けて管理するんですか?</p>
+    <p class="t" data-who="ふくろう先生">共有 VPC の中でも、サブネットを分けて割り当てます。第 24 章 24-3 で見た NACL を使えば、サブネットごとに通信を区切れます。</p>
+    <p class="s" data-who="ひよこちゃん">Transit Gateway と共有 VPC、両方一緒に使うこともあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。共有 VPC 同士を Transit Gateway でつなぐ、という組み合わせ方もよくあります。次のページでは、社内のネットワークとつなぐ方法を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>VPC が 100 個あって全部を直接 VPC ピアリングでつなごうとすると、必要な接続は 4,950 個にもなり、1 つの VPC が持てる接続数にも上限がある。</li>
+      <li>Transit Gateway は、たくさんの VPC や社内ネットワークを 1 か所に集めてつなぎ、経路の設定にしたがって通信を中継する仕組みである。</li>
+      <li>Transit Gateway を使うと、VPC はそれぞれ Transit Gateway とだけつながればよくなる。</li>
+      <li>共有 VPC は、1 つの VPC を複数のチームやアカウントで分担して使えるようにする仕組みである。</li>
+      <li>Transit Gateway は VPC を「つなぐ数」を減らし、共有 VPC は VPC を「作る数」を減らす、別々の課題への答えである。</li>
+      <li>10 個のアプリをそれぞれ別のアカウントで動かしていても、用途ごとに 1 つの VPC を共有すれば、VPC の数を 2 個に減らせる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>VPC の数が増えるほど、直接 VPC ピアリングでつなぐ組み合わせは急激に増える。100 個の VPC を全部 VPC ピアリングでつなごうとすると、必要な接続は 4,950 個にもなり、1 つの VPC が持てる VPC ピアリング接続にも上限がある(#26)。Transit Gateway は、たくさんの VPC や社内ネットワークを 1 か所に集めてつなぎ、そこが持つ経路の設定にしたがって、VPC 同士の通信を中継する仕組みである(#23、#26)。VPC はそれぞれ Transit Gateway とだけつながればよく、接続の組み合わせを管理する手間が減る。共有 VPC は、これとは別の課題への答えで、1 つの VPC を複数のチームやアカウントで分担して使えるようにする仕組みである(#26)。たとえば 10 個のアプリケーションをそれぞれ別のアカウントで動かしていても、用途ごとに 1 つの VPC を共有すれば、VPC の数自体を 2 個に減らせる(#26)。Transit Gateway は VPC を「つなぐ数」を減らし、共有 VPC は VPC を「作る数」を減らす、という違いがある。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="23">[#23] AWS「Amazon VPC Documentation」 — <a href="https://docs.aws.amazon.com/vpc/" rel="noopener">原典</a>(「AWS Transit Gateway connects your VPCs and on-premises networks through a central hub」という紹介文)</li>
+    <li class="cite" data-src="26">[#26] AWS ホワイトペーパー「Building a Scalable and Secure Multi-VPC AWS Network Infrastructure」 — <a href="https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/building-scalable-secure-multi-vpc-network-infrastructure.pdf" rel="noopener">原典</a>(p.10 の式〈n(n-1)/2〉で 100 VPC が 4,950 接続になるという記述、125 個の上限。p.11〜12「AWS Transit Gateway」の節。p.18〜19「VPC sharing」の節、10 アプリ→2 VPC の例)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m25-2">
+    <div class="q" data-q="1">
+      <p class="q-text">VPC の数が増えると、なぜ VPC ピアリングだけでは接続の管理が大変になるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">VPC が増えるほど、1 つ 1 つの接続の速度が遅くなるから</button></li>
+        <li><button type="button" data-correct="true">VPC の数に対して必要な接続の組み合わせが急激に増え、1 つの VPC が持てる接続数にも上限があるから</button></li>
+        <li><button type="button" data-correct="false">VPC が増えるほど、IP アドレスの範囲が自動的に重なってしまうから</button></li>
+        <li><button type="button" data-correct="false">VPC ピアリング接続は 1 つの VPC につき 1 本しか作れないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、VPC の数に対して必要な接続の組み合わせが急激に増え、1 つの VPC が持てる接続数にも上限があるから、です。速度の問題でも、範囲が自動的に重なるという話でもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">Transit Gateway の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">1 つの VPC を複数のチームで分担して使う仕組みのこと</button></li>
+        <li><button type="button" data-correct="true">たくさんの VPC や社内ネットワークを 1 か所に集めてつなぎ、経路の設定にしたがって通信を中継する仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">2 つの VPC だけを 1 対 1 で直接つなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">VPC の中のサーバに、通信を許可する設定のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、たくさんの VPC や社内ネットワークを 1 か所に集めてつなぎ、経路の設定にしたがって通信を中継する仕組みのこと、です。分担して使う仕組みや、1 対 1 でつなぐ仕組み、通信を許可する設定とは別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Transit Gateway と共有 VPC の違いは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どちらも同じ課題への、別々の呼び方に過ぎない</button></li>
+        <li><button type="button" data-correct="true">Transit Gateway は VPC を「つなぐ数」を減らし、共有 VPC は VPC を「作る数」を減らす</button></li>
+        <li><button type="button" data-correct="false">Transit Gateway は無料で、共有 VPC は有料である</button></li>
+        <li><button type="button" data-correct="false">共有 VPC は 1 つの VPC しか作れないときの代わりの手段である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、Transit Gateway は VPC を「つなぐ数」を減らし、共有 VPC は VPC を「作る数」を減らす、です。同じ課題への別の呼び方でも、料金の話でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m25-1.html">← 25-1 1 対 1 で直接つなぐ</a>
+    <a class="up" href="m25.html">第 25 章の入口</a>
+    <a class="next" href="m25-3.html">25-3 会社のネットワークとつなぐ →</a>
+  </nav>
+</main>
+</body>
+</html>

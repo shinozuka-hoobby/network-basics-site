@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>止まった 1 台をどう外すか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m23-3" data-chapter="m23" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 23-3</p>
+  <p class="chapter-label">第 23 章 ロードバランシング　23-3</p>
+  <h1>止まった 1 台をどう外すか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>振り分け先の機械が正常に動いているかどうかを、ロードバランサがどうやって確かめているかを確認する。<strong>異常を検知した機械への通信を止め、まだ動いている別の機械に切り替える</strong>仕組みも合わせて確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、振り分け先を選ぶ方式を見ましたけど、その振り分け先の 1 台が壊れたらどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ロードバランサは、振り分け先の機械が正常に応答しているかどうかを定期的に確かめています。これを<strong>ヘルスチェック</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">ヘルスチェックって、具体的に何をチェックしてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">指定した間隔で、それぞれの機械へ確認の通信を送り、決められた時間内に正常な応答が返ってくるかどうかを見ます。Azure ではこれを health probes と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">確かめて、応答が無かったらどうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">その機械への通信を止めて、まだ動いている別の機械に切り替えます。この切り替えを<strong>フェイルオーバー</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">止めた機械には、もう二度と送らないんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうではありません。ヘルスチェックは続けていて、また正常に応答するようになれば、通信を再開します。</p>
+    <p class="s" data-who="ひよこちゃん">全部の機械が同時に落ちたら、どうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">その場合は、振り分けられる先が無くなってしまいます。ヘルスチェックとフェイルオーバーは、あくまで一部の機械が落ちたときに、残りで受け続けるための仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、サーバが 1 台落ちたのに、利用者はほとんど気づかなかったって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさにそれです。ヘルスチェックで異常を検知し、フェイルオーバーで残りの正常な機械に振り分け続けたから、利用者から見れば変化が無かったんです。</p>
+    <p class="s" data-who="ひよこちゃん">落ちた 1 台のことは、利用者はまったく知らずに済んだんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。残りの機械が受け続けている限り、利用者側は普段どおりに使えます。</p>
+    <p class="s" data-who="ひよこちゃん">23-1 で見た、ロードバランサの目的の 1 つ「止まった 1 台には送らない」って、まさにこのことだったんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。23-1 で見た目的を、ヘルスチェックとフェイルオーバーという具体的な仕組みで実現しています。</p>
+    <p class="s" data-who="ひよこちゃん">第 22 章で見た、エッジサーバが使えなくなったら経路広告を止めて別の場所へ向かうって話も、似た考え方ですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。異常を検知して、まだ動いている別のところへ自動的に切り替えるという考え方は、ロードバランサでも Anycast でも共通しています。</p>
+    <p class="s" data-who="ひよこちゃん">ヘルスチェックとフェイルオーバー、名前は違うけど、セットで動いてるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、同じ利用者を同じ機械に送り続ける、また別の仕組みを見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">ヘルスチェックの仕組みって、AWS だけのものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。AWS にも Azure にも備わっている、共通した考え方です。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ロードバランサは、振り分け先の機械が正常に応答しているかどうかを定期的に確かめている。これをヘルスチェックと呼ぶ。</li>
+      <li>応答が無い機械を検知すると、その機械への通信を止め、まだ動いている別の機械に切り替える。この切り替えをフェイルオーバーと呼ぶ。</li>
+      <li>ヘルスチェックは止めた後も続けられ、対象の機械が再び正常に応答するようになれば、通信を再開する。</li>
+      <li>サーバが 1 台落ちても、ヘルスチェックとフェイルオーバーによって、残りの正常な機械が受け続けるため、利用者が気づかないことがある。</li>
+      <li>第 22 章で見た、経路広告を止めて別の場所へ切り替える Anycast の挙動も、異常を検知して自動的に切り替えるという同じ考え方の応用である。</li>
+      <li>ヘルスチェックの仕組みは、AWS・Azure など、複数のクラウド事業者のロードバランサに共通して備わっている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ロードバランサは、振り分け先の機械が正常に応答しているかどうかを定期的に確かめている。指定した間隔で確認の通信を送り、決められた時間内に正常な応答が返ってくるかどうかを見るこの仕組みを、ヘルスチェックと呼ぶ(#25、#40)。応答が無い機械を検知すると、その機械への通信を止め、まだ動いている別の機械へ切り替える。この切り替えをフェイルオーバーと呼ぶ(#59)。AWS のロードバランサは、複数の可用性ゾーンを有効にしておけば、1 つが使えなくなっても別のゾーンの健康な機械に送れる(#25)。Azure のロードバランサも、設定した振り分けの規則とヘルスチェック(ヘルスプローブ)の結果に従って、健康な機械にだけ通信を送る(#40)。動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替えるという考え方は、サーバが 1 台使えなくなったときの一般的な対処でもある(#59)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="25">[#25] AWS「How Elastic Load Balancing works」 — <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" rel="noopener">原典</a>(3 行目。健康な登録先だけに要求を送り、異常を検知したら止めて回復したら再開するという記述。15 行目。複数の可用性ゾーンを有効にしておけば、1 つが使えなくなっても別のゾーンの健康な登録先に送れるという記述)</li>
+    <li class="cite" data-src="40">[#40] Microsoft「Azure Load Balancer overview」 — <a href="https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview" rel="noopener">原典</a>(30 行目。設定した振り分けの規則と health probes に従ってトラフィックを分散するという記述。53 行目「Health monitoring: Use health probes to ensure traffic is only sent to healthy instances.」)</li>
+    <li class="cite" data-src="59">[#59] Cloudflare Learning Center「CDN reliability and load balancing」 — <a href="https://www.cloudflare.com/learning/cdn/cdn-load-balance-reliability/" rel="noopener">原典</a>(7 行目。ロードバランサの目的は、複数のサーバへ通信を均等に分散させることだという記述。9 行目。サーバが失敗し failover が起きたときに、まだ動いている機械へ再配分するという記述。13 行目「What is failover?」の節。サーバが使えなくなったとき、まだ機能している別の機械へ自動的にオフロードするという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m23-3">
+    <div class="q" data-q="1">
+      <p class="q-text">サーバが 1 台落ちても利用者の多くが気づかないことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">落ちたサーバが、利用者に気づかれないよう自動的に再起動しているから</button></li>
+        <li><button type="button" data-correct="true">ロードバランサが定期的な確認(ヘルスチェック)で異常を検知し、その機械への通信を止めて、残りの正常な機械に振り分け続ける(フェイルオーバー)から</button></li>
+        <li><button type="button" data-correct="false">サーバが 1 台落ちても、利用者の通信量そのものが自動的に減るから</button></li>
+        <li><button type="button" data-correct="false">利用者の端末が、落ちたサーバを自動的に検知して接続をやめているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ロードバランサが定期的な確認(ヘルスチェック)で異常を検知し、その機械への通信を止めて、残りの正常な機械に振り分け続ける(フェイルオーバー)から、です。自動再起動や通信量の変化、利用者端末側の検知が理由ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ヘルスチェックの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">振り分け先の機械に、要求を順番に割り当てていく仕組み</button></li>
+        <li><button type="button" data-correct="true">振り分け先の機械が正常に応答しているかどうかを、定期的に確かめる仕組み</button></li>
+        <li><button type="button" data-correct="false">同じ利用者からの要求を、同じ機械に送り続ける仕組み</button></li>
+        <li><button type="button" data-correct="false">送信元と宛先の組み合わせをもとに、振り分け先を決める仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、振り分け先の機械が正常に応答しているかどうかを、定期的に確かめる仕組み、です。要求の順番割り当てはラウンドロビン、同じ機械への固定や組み合わせによる決定とは別の仕組みです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">フェイルオーバーの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">振り分け先の機械の台数を、あらかじめ増やしておく作業のこと</button></li>
+        <li><button type="button" data-correct="false">利用者からの要求を、送信元ごとに記録しておくこと</button></li>
+        <li><button type="button" data-correct="true">動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替えること</button></li>
+        <li><button type="button" data-correct="false">振り分け先の機械を、あらかじめ決めた順番で固定すること</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替えること、です。台数を増やす作業や、送信元ごとの記録、順番の固定とは異なります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m23-2.html">← 23-2 どの 1 台に送るか</a>
+    <a class="up" href="m23.html">第 23 章の入口</a>
+    <a class="next" href="m23-4.html">23-4 同じ人を同じサーバに送る →</a>
+  </nav>
+</main>
+</body>
+</html>

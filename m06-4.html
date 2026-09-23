@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>途中で何が起きたかを教えてくれる仕組み — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m06-4" data-chapter="m06" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 6-4</p>
+  <p class="chapter-label">第 6 章 IP パケットと配送の仕組み　6-4</p>
+  <h1>途中で何が起きたかを教えてくれる仕組み</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>機械どうしは、データが届いたかどうかや、途中で何が起きたかを、短い専用の合図でやり取りしている。<strong>この合図の仕組みは、前のページで見た MTU を超えたときや、TTL が尽きたときにも使われる</strong>。このページでは、この仕組みの役割と、その合図自体が失われることもあるという注意点を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで見た、大きなデータが届かなかった話なんですけど、送った側はどうやって「届かなかった」って気づくんですか?</p>
+    <p class="t" data-who="ふくろう先生">機械どうしが、届いたかどうかや途中で何が起きたかを知らせ合うための、短い専用の合図の仕組みがあります。</p>
+    <p class="s" data-who="ひよこちゃん">その合図には名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生"><strong>ICMP</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">ICMP の合図って、内容によって何種類もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。合図ごとに種類を表す番号が付いていて、相手からの応答であることを示す番号や、時間切れで捨てられたことを示す番号、届け先が見つからなかったことを示す番号などがあります(#3、#46)。他にも、経路変更を提案する合図など、いくつかの種類があります(#3)。</p>
+    <p class="s" data-who="ひよこちゃん">6-2 で見た、TTL が尽きて捨てられた話も、これで知らされるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。TTL が尽きて捨てられたときも、この ICMP という仕組みで送信元に伝えられます(#3、#44)。</p>
+    <p class="s" data-who="ひよこちゃん">6-3 の、大きすぎて捨てられたときも、同じ仕組みなんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。分割してはいけない指定付きのデータが上限を超えたときも、ICMP でその旨が知らされます(#71)。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その合図さえ見ていれば、何が起きたか全部分かるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">実は、そうとも限りません。</p>
+    <p class="s" data-who="ひよこちゃん">え、どういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例を紹介します。ある現場で、大きなデータだけ届かない原因をなかなか調べられなかったことがありました。</p>
+    <p class="s" data-who="ひよこちゃん">合図が来ているはずなのに、なぜ分からなかったんですか?</p>
+    <p class="t" data-who="ふくろう先生">本来なら、届けられなかったことを知らせる ICMP の合図が送信元に返ってくるはずでした。ですが、その合図自体が経路の途中の設定で止められてしまっていたんです(#46)。</p>
+    <p class="s" data-who="ひよこちゃん">合図が来ないと、送信元からはどう見えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">「大きなデータだけなぜか届かない」としか見えません。原因がサイズの上限にあるのか、他の問題なのかを切り分けにくくなります。</p>
+    <p class="s" data-who="ひよこちゃん">せっかくの仕組みが、遮断されたら意味がなくなっちゃうんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。実は、相手まで届くかどうかを確かめる道具や、途中の機械を確かめる道具も、この ICMP を使っています。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、そういう道具があるって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">はい。それらの道具の細かい使い方は、第 27 章でまとめて扱います。</p>
+    <p class="s" data-who="ひよこちゃん">今日のところは、TTL 超過も大きさ超過も、同じ ICMP という仕組みで知らされる、ということを覚えておけばいいですか?</p>
+    <p class="t" data-who="ふくろう先生">それで十分です。次の章では、同じネットワークの中での通信の仕組みを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>機械どうしは、届いたかどうかや途中で何が起きたかを、ICMP という短い合図の仕組みで知らせ合っている。</li>
+      <li>TTL が尽きて捨てられたときも、大きさの上限を超えて捨てられたときも、この ICMP で送信元に知らされる。</li>
+      <li>ICMP の合図自体が、経路の途中で止められてしまうことがある。その場合、原因の切り分けが難しくなる。</li>
+      <li>相手まで届くかどうかを確かめる道具なども、この ICMP を利用している。詳しい使い方は第 27 章で扱う。</li>
+      <li>ICMP の合図には内容ごとに複数の種類があり、相手からの応答、時間切れによる破棄、届け先が見つからないことなどを、それぞれ別の合図として区別できるようになっている。この区別のおかげで、原因がどちらの上限によるものかを送信元側でも見分けやすくなる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ICMP は、機械どうしが通信の状況を知らせ合うための短い合図の仕組みである。TTL が尽きてパケットが捨てられたときや、分割禁止の指定付きデータが大きさの上限を超えて捨てられたときは、その旨を知らせる ICMP の合図が送信元へ送り返される(#3、#44、#71)。ところが、この合図自体が経路の途中の設定で止められることがある(#46)。合図が届かなければ、送信元からは「なぜか届かない」としか見えず、原因が大きさの上限にあるのか他の問題にあるのかを切り分けにくくなる。ICMP は、相手まで届くかどうかや途中の経路を確かめる道具の土台としても使われている。ICMP の合図には、内容ごとに種類を表す番号が付いており、相手からの応答を示す番号、時間切れで捨てられたことを示す番号、届け先が見つからなかったことを示す番号などがある(#3、#46)。TTL が尽きたときに送り返される合図の種類番号は 11(#3)、届け先が見つからないときの合図の種類番号は 3(#46)というように、起きたことごとに番号が使い分けられている。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>traceroute -m 15 example.com</code></pre>
+    <p>見方: 出力される行の数を数える。1 行が経由した機械 1 台に対応し、行の数だけ機械を経由したと見る。応答が返らない行では「*」の記号が並ぶことがあるが、その意味や機械の名前の読み方は第 27 章で扱う。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論「IP」」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>(p.60-62 ICMP/IGMP の用途、p.66 traceroute と TTL 超過の関係)</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>(ICMP がルーティングの失敗を送信元に報告する役割の説明)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.31-32 ICMP の診断メッセージ一覧)</li>
+    <li class="cite" data-src="46">[#46] Cisco「Understand Ping and Traceroute」 — <a href="https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/12778-ping-traceroute.html" rel="noopener">原典</a>(ACL によって ICMP メッセージが遮断される例)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m06-4">
+    <div class="q" data-q="1">
+      <p class="q-text">ICMP の役割として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">データを暗号化して読み取れなくする</button></li>
+        <li><button type="button" data-correct="true">機械どうしが、届いたかどうかや途中で何が起きたかを知らせ合う</button></li>
+        <li><button type="button" data-correct="false">IP アドレスをドメイン名に変換する</button></li>
+        <li><button type="button" data-correct="false">一度に送れるデータの大きさの上限を決める</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、機械どうしが、届いたかどうかや途中で何が起きたかを知らせ合う、です。暗号化や名前解決、大きさの上限を決めることは、いずれも ICMP とは別の仕組みの役目である。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TTL が尽きたときと、大きさの上限を超えたときの共通点として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">どちらも同じ ICMP という仕組みで、その旨が送信元に知らされる</button></li>
+        <li><button type="button" data-correct="false">どちらも自動的に別の経路へ送り直される</button></li>
+        <li><button type="button" data-correct="false">どちらも起きた瞬間にネットワーク全体が止まる</button></li>
+        <li><button type="button" data-correct="false">どちらも起きないよう、あらかじめ完全に防ぐことができる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、どちらも同じ ICMP という仕組みで、その旨が送信元に知らされる、です。TTL が尽きたときも、大きさの上限を超えて捨てられたときも、送信元への知らせ方は同じ ICMP を使う。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ICMP の合図が経路の途中で止められてしまうと、何が起きやすくなるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の速度がかえって速くなる</button></li>
+        <li><button type="button" data-correct="true">大きなデータだけ届かない原因が、送信元からは分かりにくくなる</button></li>
+        <li><button type="button" data-correct="false">送信元の IP アドレスが自動的に変わる</button></li>
+        <li><button type="button" data-correct="false">届かなかったデータが自動的に暗号化される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、大きなデータだけ届かない原因が、送信元からは分かりにくくなる、です。届けられなかったことを知らせる ICMP の合図が経路の途中で止められると、送信元からは原因の切り分けが難しくなる。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m06-3.html">← 6-3 一度に運べる大きさには上限がある</a>
+    <a class="up" href="m06.html">第 6 章の入口</a>
+    <a class="next" href="m07.html">第 7 章 ARP と同一ネットワーク内の通信 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>途中にいる機器たち — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m01-3" data-chapter="m01" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 1-3</p>
+  <p class="chapter-label">第 1 章 パケットの旅　1-3</p>
+  <h1>途中にいる機器たち</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>URL を開く旅の途中には、家庭のネットワーク機器や ISP、名前を調べる先のサーバ、複数の中継機器が並んでいる。<strong>手元の端末から Web サーバまでの間には、複数の機器が経由される</strong>。このページでは、それぞれが旅のどこにいるかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">さっきの 4 段階、全部ネット回線の中を通ってるわけですよね。具体的にどんな機器を通ってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず手元の端末から、<a class="term" href="glossary.html#home-router" data-term="home-router">家庭用ルータ</a>につながります。ネットワークの出入り口としての役割に加えて、家庭内のアドレス配布やアドレス変換なども 1 台でこなす機器です。</p>
+    <p class="s" data-who="ひよこちゃん">1 台でそんなに何役もこなしてるんですか。</p>
+    <p class="t" data-who="ふくろう先生">はい。電波で機器をつなぐ入り口の役割も 1 台に詰め込まれているのが普通です。詳しくは第 4 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">家庭用ルータの先はどこに繋がってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず ISP(プロバイダ、回線を契約している会社)につながります。そこから先は、行き先に応じて次の転送先を選ぶ<a class="term" href="glossary.html#router" data-term="router">ルータ</a>を何台も経由します。</p>
+    <p class="s" data-who="ひよこちゃん">ルータって何台も要るんですか? 1 台じゃダメなんですか?</p>
+    <p class="t" data-who="ふくろう先生">近くの相手だけを相手にするなら 1 台でも足りますが、インターネット全体を 1 台ではカバーしきれません。近くと遠くで役割が分かれていて、遠くの相手ほど経由する台数が増えます。詳しくは第 8 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">さっき出てきた<a class="term" href="glossary.html#dns" data-term="dns">DNS</a> サーバはどこにいるんですか? 家庭用ルータの中?</p>
+    <p class="t" data-who="ふくろう先生">多くの場合は違います。ISP が用意した別のサーバか、公開されている DNS サーバに、家庭用ルータや ISP の回線を経由して問い合わせに行きます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあサーバの手前にも何かいたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">規模の大きいサービスだと、複数台のサーバにリクエストを振り分ける<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>や、利用者の近くにコンテンツの控えを用意しておく<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>が手前にいることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">ロードバランサと CDN、何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">ロードバランサは自社の複数サーバへの振り分け、CDN は利用者の近くへのコンテンツ配置と、目的が違います。どちらも詳しくは後の章(第 22・23 章)で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">機器の名前だけでもこんなに出てくるんですね…</p>
+    <p class="t" data-who="ふくろう先生">今日は中心図に出てくる機器の位置だけ押さえれば十分です。</p>
+    <p class="s" data-who="ひよこちゃん">これだけ機器が並んでると、会社によって経路が全然違ったりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。どの ISP を使うか、どこにサーバを置くかによって、経由する機器も変わります。同じサイトでも、利用者の場所によって経路が変わることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">機器が壊れてなくても、混雑してて遅くなることもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。経由する台数が多い分、途中のどこかが混み合うと、その影響を受けることがあります。速度の話は次の Part で詳しく扱います。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、途中の機器の数だけ、故障するポイントも増えるってことですよね。</p>
+    <p class="t" data-who="ふくろう先生">その通りです。だからこそ、どこまで届いているかを機器単位で確認する道具が、後の章で出てきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>経路上には、家庭用ルータ、ISP、複数のルータ、DNS サーバ、場合によってはロードバランサや CDN が並ぶ。</li>
+      <li>家庭用ルータは、無線でつなぐ入り口やアドレス配布など複数の役割を 1 台でこなす。</li>
+      <li>経路の先のルータは近くと遠くで役割が分かれ、遠くの相手ほど経由する台数が増える。</li>
+      <li>ロードバランサ(自社の複数サーバへの振り分け)と CDN(利用者の近くへのコンテンツ配置)は、目的の異なる仕組みである。</li>
+      <li>どの ISP を使うか、サーバがどこに置かれるかによって、実際に経由する機器の組み合わせは変わり、混雑があれば速度にも影響する。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>家庭用ルータは、無線で機器をつなぐ入り口の役目や、機器への IP アドレス配布・変換といった複数の役割を 1 台に集約した機器である。ISP より先には、行き先に応じて次の転送先を選ぶルータが複数並び、近くの相手より遠くの相手の方が経由する台数は増える(#50)。DNS サーバは、名前解決の問い合わせ先で、ISP の用意する場所か公開されている場所にある。規模の大きいサービスでは、Web サーバの手前にロードバランサや CDN が置かれることがある。ロードバランサは自社が持つ複数のサーバへの振り分け、CDN は利用者の近くへのコンテンツ配置という異なる目的を持ち、どちらも Web サーバへ届く前の経路上で働く(#4)。経路上の機器が増えるほど、途中で止まる可能性のある場所も増える。どの ISP を経由するか、サーバやロードバランサ・CDN がどこに置かれているかによって、実際に経由する機器の組み合わせは利用者ごとに変わりうる。経由する機器が多いほど、混雑による遅れが起きる可能性のある場所も増えることになる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ping -c 3 example.com</code></pre>
+    <p>見方: 応答が返ってくるまでの時間(ミリ秒)が 0 ではないこと。手元の端末から相手のサーバまで、今日見た機器を実際に経由して信号が往復した証拠として見る(経由した機器を 1 台ずつ見る方法は後の章で扱う)。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="50">[#50] Cloudflare Learning Center「What is the Internet Protocol?」 — <a href="https://www.cloudflare.com/learning/network-layer/internet-protocol/" rel="noopener">原典</a></li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a></li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a></li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m01-3">
+    <div class="q" data-q="1">
+      <p class="q-text">家庭用ルータが 1 台で何役もこなす一方、経路の先のルータが転送に専念する専用機であることが多いのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">経路の先のルータは家庭用ルータより古い技術で作られているから</button></li>
+        <li><button type="button" data-correct="true">家庭内という限られた範囲と、インターネット全体という広い範囲とでは、求められる役割の数と規模が違うから</button></li>
+        <li><button type="button" data-correct="false">経路の先のルータは DNS サーバとしての役割を兼ねる必要があるから</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータの方が転送できるデータの量が多いから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、家庭内という限られた範囲と、インターネット全体という広い範囲とでは、求められる役割の数と規模が違うから、です。家庭用ルータは限られた台数の機器に無線の接続やアドレス配布まで面倒を見ますが、経路の先のルータは大量の転送をさばく必要があるため、転送に専念する専用機になっています。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">家庭用ルータの役割の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">転送だけに専念し、無線の接続やアドレス配布の機能は持たない</button></li>
+        <li><button type="button" data-correct="true">転送の役割に加え、無線でつなぐ入り口やアドレス配布・変換など複数の役割を 1 台でこなす</button></li>
+        <li><button type="button" data-correct="false">DNS サーバの代わりとして、ホスト名と IP アドレスの対応を独自に管理する</button></li>
+        <li><button type="button" data-correct="false">CDN の代わりとして、利用者の近くに Web コンテンツの控えを保持する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、転送の役割に加え、無線でつなぐ入り口やアドレス配布・変換など複数の役割を 1 台でこなす、です。家庭用ルータは複数の機能を 1 台に集約した機器で、DNS サーバや CDN の役割までは持ちません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ロードバランサと CDN の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どちらも利用者の端末側に置かれ、ブラウザの動作を助ける</button></li>
+        <li><button type="button" data-correct="true">ロードバランサは自社の複数サーバへの振り分け、CDN は利用者の近くへのコンテンツ配置と、Web サーバより手前で異なる役割を持つ</button></li>
+        <li><button type="button" data-correct="false">ロードバランサと CDN はまったく同じ役割を持ち、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">ロードバランサと CDN は、DNS サーバの内部機能の一部である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ロードバランサは自社の複数サーバへの振り分け、CDN は利用者の近くへのコンテンツ配置と、Web サーバより手前で異なる役割を持つ、です。どちらも Web サーバに届く前の経路上に置かれる点は共通しますが、目的は異なり、DNS サーバとも別の仕組みです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m01-2.html">← 1-2 名前解決の答えは、しばらく覚えられている</a>
+    <a class="up" href="m01.html">第 1 章の入口</a>
+    <a class="next" href="m01-4.html">1-4 層に分ける理由と封筒の重なり →</a>
+  </nav>
+</main>
+</body>
+</html>

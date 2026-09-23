@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>届くか、届かないかを、まず確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m27-1" data-chapter="m27" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 27-1</p>
+  <p class="chapter-label">第 27 章 観測ツール入門 — ping・traceroute・dig・curl　27-1</p>
+  <h1>届くか、届かないかを、まず確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>相手まで通信が届くかどうかを確かめる方法の 1 つに、短い確認の合図を送って応答を待つやり方がある。<strong>合図が返ってこなくても、相手の機械が止まっているとは限らない</strong>。このページでは、この確認の道具の出力の読み方と、分かること・分からないことを整理する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ここまでの章で ping というコマンドを何度か実行してきましたけど、そもそも何をしているコマンドなんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 6 章 6-4 で見た ICMP を使って、相手まで通信が届くかどうかと、届くまでの時間を確かめる道具で、<strong>ping</strong> と呼びます。宛先に短い確認の合図を送り、同じ種類の返事が戻ってくるかを見ています。</p>
+    <p class="s" data-who="ひよこちゃん">実行結果に icmp_seq= とか ttl= とか time= とか、色々並んでますよね。全部見た方がいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">行ごとに役目が違います。icmp_seq= は何回目の確認かを示す番号、ttl= は第 6 章 6-2 で見た IP の TTL の残りです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、今日はどこを見ればいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">time= に続く数字と、最後にまとめて出る統計の行に注目しましょう。time= は、確認の合図を送ってから返事が戻るまでの時間で、第 2 章 2-2 で見た往復時間そのものです。</p>
+    <p class="s" data-who="ひよこちゃん">統計の行って、何が書かれているんですか。</p>
+    <p class="t" data-who="ふくろう先生">送った回数、受け取った回数、届かなかった割合、それに往復時間の最小・平均・最大が並びます。</p>
+    <p class="s" data-who="ひよこちゃん">届かなかった割合があるってことは、届かないこともあるんですね。届かなかったら、相手の機械が止まってるってことですか。</p>
+    <p class="t" data-who="ふくろう先生">そうとも限りません。第 6 章 6-4 で見た事例を覚えていますか。経路の途中の設定で ICMP の合図そのものが遮断されて、原因の切り分けが難しかった話です。</p>
+    <p class="s" data-who="ひよこちゃん">はい、覚えてます。あれって ping にも関係あるんですか。</p>
+    <p class="t" data-who="ふくろう先生">あります。その現場は、経路の途中の設定が ICMP の合図をまるごと拒否していたので、もし ping で確かめていたとしても、宛先の機械自体は正常なのに応答は返ってこなかったはずです。</p>
+    <p class="s" data-who="ひよこちゃん">機械は動いてるのに、ping だけ失敗するんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ping が確かめているのは ICMP のやり取りだけなので、途中で ICMP が遮断されていると、宛先が正常でも失敗します。届かない、イコール相手が止まっている、とは言えないんです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、Web サーバが動いてるかどうかも ping で分かるんですか。</p>
+    <p class="t" data-who="ふくろう先生">それも分かりません。ping が確かめるのは ICMP の往復だけで、第 12 章で見たポート番号ごとのサービスが動いているかどうかは別の話です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、Web サーバの入り口が開いているかを確かめたいときは、どうするんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 12 章 12-1 で使った、ポート単位で確かめる別の道具が向いています。しくみの話で、実際のコマンドの形を確認しましょう。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、道具によって確かめられることが違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、途中の機械を 1 台ずつ確かめる道具を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ping は、ICMP を使って相手まで通信が届くかどうかと、届くまでの時間を確かめる道具である。</li>
+      <li>実行結果の icmp_seq= は確認の回数、ttl= は IP の TTL の残り、time= は往復時間を示す。</li>
+      <li>末尾の統計行には、送った回数・受け取った回数・届かなかった割合・往復時間の最小/平均/最大が並ぶ。</li>
+      <li>応答が返らなくても、相手の機械が止まっているとは限らない。経路の途中で ICMP の合図だけが遮断されている場合がある。</li>
+      <li>ping が確かめるのは ICMP の往復だけで、特定のサービス(例えば Web サーバ)が動いているかどうかは別の話である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ping は、宛先に ICMP のエコー要求という合図を送り、エコー応答が戻ってくるかどうかで通信が届くかを確かめる(#46)。この Mac で確認したところ、実行結果には icmp_seq=(要求ごとの番号)、ttl=(届いた時点で残っていた IP の TTL の値)、time=(要求を送ってから応答が戻るまでの往復時間)が並び、末尾の統計行に送った要求の数・受け取った応答の数・届かなかった割合と、往復時間の最小・平均・最大がまとめて示される。応答が返らないのは、宛先が止まっている場合だけでなく、経路の途中の設定で ICMP の合図そのものが拒否されている場合もある(#46「administratively prohibited unreachable」の実例)。ping が確かめるのは ICMP のやり取りだけであり、宛先の特定のサービス(例えば 443 番で待つ Web サーバ)が動いているかどうかまでは分からない。ポート単位で確かめたいときは、<code>nc -zv example.com 443</code> のような、宛先とポート番号を指定する別の道具を使う。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ping -c 3 example.com</code></pre>
+    <p>見方: icmp_seq= と ttl= はひとまず置いて、time= に続く数字(往復時間)と、末尾の統計行の 3 つの数字(送った数・受け取った数・失われた割合)を見る。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="46">[#46] Cisco「Understand Ping and Traceroute」 — <a href="https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/12778-ping-traceroute.html" rel="noopener">原典</a>(line 19-24: ping はエコー要求を送り、時間内にエコー応答が戻れば成功するという定義。line 338-354: アクセスリストが ICMP を拒否する設定になっていたため、ルーティングは正しいのに ping の成功率が 0 パーセントになった実例「administratively prohibited unreachable」)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m27-1">
+    <div class="q" data-q="1">
+      <p class="q-text">ping が失敗しても、相手の機械が止まっているとは限らないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ping は 3 回に 1 回しか成功しない決まりになっているから</button></li>
+        <li><button type="button" data-correct="true">経路の途中の設定で ICMP の合図そのものが拒否されている場合があり、その場合は宛先の機械が正常でも失敗するから</button></li>
+        <li><button type="button" data-correct="false">ping は IP アドレスが変わるたびに失敗するように作られているから</button></li>
+        <li><button type="button" data-correct="false">ping は宛先の機械の電源が入っているかどうかしか調べないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、経路の途中の設定で ICMP の合図そのものが拒否されている場合があり、その場合は宛先の機械が正常でも失敗するから、です。3 回に 1 回という決まりや、IP アドレスの変化、電源の有無だけを調べるという話ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ping の実行結果の time= に続く数字が表すものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">あと何回機械を経由できるかを示す残りの回数</button></li>
+        <li><button type="button" data-correct="false">確認の合図を送った回数</button></li>
+        <li><button type="button" data-correct="true">確認の合図を送ってから応答が戻るまでの往復時間</button></li>
+        <li><button type="button" data-correct="false">応答が届かなかった割合</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、確認の合図を送ってから応答が戻るまでの往復時間、です。残りの回数は ttl=、送った回数は icmp_seq=、届かなかった割合は末尾の統計行に別に表示されます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ping で応答が返ってきても、それだけでは確認できないことはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">応答が返ってきたかどうか自体</button></li>
+        <li><button type="button" data-correct="false">届くまでのおおよその往復時間</button></li>
+        <li><button type="button" data-correct="true">宛先の特定のサービス(例えば Web サーバ)が実際に動いているかどうか</button></li>
+        <li><button type="button" data-correct="false">応答が経由してきた機械の残りの TTL</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先の特定のサービスが実際に動いているかどうか、です。ping が確かめるのは ICMP のやり取りだけで、特定のサービスの状態はポート単位で確かめる別の道具の役目です。応答の有無、往復時間、TTL はいずれも ping の結果から直接分かります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m27.html">← 第 27 章の入口</a>
+    <a class="up" href="m27.html">第 27 章の入口</a>
+    <a class="next" href="m27-2.html">27-2 途中にいる機械を、1 台ずつあぶり出す →</a>
+  </nav>
+</main>
+</body>
+</html>

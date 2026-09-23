@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同じ電波を、みんなで使っている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m04-1" data-chapter="m04" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 4-1</p>
+  <p class="chapter-label">第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP　4-1</p>
+  <h1>同じ電波を、みんなで使っている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>スマホやパソコンをケーブルなしでインターネットにつなぐとき、複数の機器が同じ電波を分け合って使っている。<strong>つながる機器の台数が増えるほど、1 台に回ってくる分は少なくなる</strong>。このページでは、この仕組みと、混み合うと起きることを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">そういえば、前の章で、<a class="term" href="glossary.html#home-router" data-term="home-router">家庭用ルータ</a>が無線でつながる機能も持ってるっていう話がありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">はい、覚えていましたね。家庭用ルータの役目は次のページでまとめて整理するので、まずは今回、その「無線でつながる」仕組み自体がどうなっているかを見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">有線でつなぐのと、何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">有線でスイッチにつないだ機器は、それぞれ専用の配線を持っています。ケーブルの代わりに電波を使って機器どうしをつなぐ仕組みを無線 LAN(Wi-Fi と呼ばれることも多いです)と呼びます。同じ周波数の電波を、その場にいる機器で交代しながら使う点が、有線とは違います。</p>
+    <p class="s" data-who="ひよこちゃん">無線 LAN の電波って、勝手に使っていいものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。免許が要らない周波数帯を使っているので、誰でも使えます。ただし、その分、周りの機器と共有することになります。</p>
+    <p class="s" data-who="ひよこちゃん">電波を受け付ける機械も要るんですよね?</p>
+    <p class="t" data-who="ふくろう先生">はい。電波を出して、機器からの接続を受け付ける機械の役目をアクセスポイントと呼びます。家庭では、この後のページで見る家庭用ルータが、この役目を兼ねています。</p>
+    <p class="s" data-who="ひよこちゃん">同時にたくさんの機器がつながっても大丈夫なんですか?</p>
+    <p class="t" data-who="ふくろう先生">台数が増えるほど、電波を分け合う量も増えるので、1 台に回ってくる分は少なくなります。</p>
+    <p class="s" data-who="ひよこちゃん">「分け合う」以外にも、何か制約があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。他の機器が電波を使っている間は、無理に割り込まず、空くのを待ってから送ります。有線のように専用の線があるわけではないので、譲り合いながら使うイメージです。</p>
+    <p class="s" data-who="ひよこちゃん">「空いてるかどうか」って、機器はどうやって判断してるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送る前に、電波が今使われていないかを確認します。使われていなければ送り、使われていれば少し待ってから、また確認するという振る舞いを繰り返します。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた話なんですけど、前の会社で全社会議のときに、会議室の無線 LAN がすごく遅くなったことがあるらしいんです。動画が固まるくらいだったって。</p>
+    <p class="t" data-who="ふくろう先生">それは、今の話がそのまま起きた例ですね。会議室に大勢が集まって一斉にスマホやノートパソコンをつなぐと、分け合う量も、電波が空くのを待つ時間も増えるので、1 台あたりの実効的な速度が大きく落ちてしまうんです。</p>
+    <p class="s" data-who="ひよこちゃん">有線ならそんなに遅くならないんですか?</p>
+    <p class="t" data-who="ふくろう先生">配線が機器ごとに専用になっている有線とは、そこが違います。同じ人数がつないでも、無線ほど極端には遅くなりにくいんです。</p>
+    <p class="s" data-who="ひよこちゃん">オフィスとかでも、同じようなことが起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">起きえます。人数が多い場所ほど、この譲り合いの影響が出やすいです。オフィスの話は、この章の最後でまとめて見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、電波はみんなで使うものだから、人数が増えると影響が出るんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この無線の入り口も含めて、家庭用ルータがどんな役目を持っているかをまとめて見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>無線 LAN(Wi-Fi と呼ばれることも多い)は、ケーブルの代わりに電波を使って機器どうしをつなぐ仕組みで、同じ電波をその場にいる機器で交代しながら使う。</li>
+      <li>電波を出し、機器からの接続を受け付ける機械の役目をアクセスポイントと呼び、家庭では家庭用ルータがこの役目を兼ねる。</li>
+      <li>有線でスイッチにつないだ機器は専用の配線を持つが、無線 LAN では複数の機器が同じ電波を共有するため、台数が増えると 1 台に回ってくる分が減る。</li>
+      <li>機器は送る前に電波が使われていないかを確認し、使われていれば少し待ってから改めて確認するという振る舞いを繰り返すため、機器が多いほど待ち時間も増える。</li>
+      <li>会議室のように大勢が一斉に無線 LAN へつなぐと、分け合う量と待ち時間の両方が増え、実効的な速度が大きく落ちることがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>無線 LAN は、ケーブルの代わりに電波を使って機器をつなぐ仕組みで、有線のイーサネットのように機器ごとに専用の配線を持つのではなく、同じ周波数の電波をその場にいる機器全員で共有する。電波を出して機器からの接続を受け付ける機械をアクセスポイントと呼び、家庭では家庭用ルータがこの役目を兼ねる。無線 LAN では、全体で送れる量を、同時に使っている機器の台数で分け合う形になるため、台数が増えるほど 1 台あたりに回ってくる量は少なくなる。さらに、機器は送信の前に電波が使われていないかを確認し、使われていれば送信を控えて少し待ってから改めて確認するという振る舞いを繰り返すため、機器が多い場所ほど待ち時間も増える。この 2 つの理由が重なって、大勢が一斉に無線 LAN を使う場面では、1 台あたりの実効的な速度が大きく落ちることがある。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.33 有線・無線とも「共有された媒体」を使う方式であること、p.34 共有した通信路を利用者数で分け合うこと、p.40 無線は電波が空くのを待ってから送ること）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 4.4.4「ワイヤレスルータとクライアントを設定する」、家庭用の無線ネットワークを設定する場面）</li>
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論(IP)」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（p.10、無線 LAN は非免許対象周波数を使うという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m04-1">
+    <div class="q" data-q="1">
+      <p class="q-text">無線 LAN を使う機器の台数が増えると、なぜ 1 台あたりの実効的な速度が落ちることがあるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じ電波を分け合う量が増え、電波が空くのを待つ時間も増えるから</button></li>
+        <li><button type="button" data-correct="false">各機器が使う電波の周波数がばらばらになってしまうから</button></li>
+        <li><button type="button" data-correct="false">有線に切り替えない限り、速度は下がり続けるから</button></li>
+        <li><button type="button" data-correct="false">接続する機器が増えると、アクセスポイントの数が自動的に減るから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ電波を分け合う量が増え、電波が空くのを待つ時間も増えるから、です。無線 LAN は同じ電波をその場にいる機器全員で共有しており、台数が増えるほど 1 台に回ってくる分は減り、待ち時間も増えます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">アクセスポイントの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">家の外との中継だけを専門に行う機械</button></li>
+        <li><button type="button" data-correct="true">無線 LAN で、電波を出して機器からの接続を受け付ける機械の役目</button></li>
+        <li><button type="button" data-correct="false">家の中の機器どうしを配線でつなぐ、スイッチの役目</button></li>
+        <li><button type="button" data-correct="false">機器に使ってよい番号を自動で配る役目</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、無線 LAN で、電波を出して機器からの接続を受け付ける機械の役目、です。配線でつなぐのはスイッチの役目、番号を自動で配るのはこの章の後のページで見る別の役目です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">有線でスイッチにつないだ機器と比べて、無線 LAN の機器に見られる特徴として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じ電波を、その場にいる機器どうしで交代しながら使う</button></li>
+        <li><button type="button" data-correct="false">機器ごとに専用の電波の周波数が割り当てられる</button></li>
+        <li><button type="button" data-correct="false">台数が増えても、1 台あたりに使える通信量は変わらない</button></li>
+        <li><button type="button" data-correct="false">有線と違い、電波を使うときに順番を待つことはない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ電波を、その場にいる機器どうしで交代しながら使う、です。有線では機器ごとに専用の配線がありますが、無線 LAN では電波を共有するため、台数が増えると 1 台あたりの通信量が減ったり、待ち時間が増えたりします。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m04.html">← 第 4 章の入口</a>
+    <a class="up" href="m04.html">第 4 章の入口</a>
+    <a class="next" href="m04-2.html">4-2 1 台に、いくつもの役目が詰め込まれている →</a>
+  </nav>
+</main>
+</body>
+</html>

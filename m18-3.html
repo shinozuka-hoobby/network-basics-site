@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>その身分証を、誰が本物だと保証しているのか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m18-3" data-chapter="m18" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 18-3</p>
+  <p class="chapter-label">第 18 章 TLS と PKI　18-3</p>
+  <h1>その身分証を、誰が本物だと保証しているのか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>Web サーバは、通信の相手に、自分が名乗っている相手であることを示す身分証を見せる。この身分証は、<strong>信頼できる機関が審査したうえで保証の印を付けたもの</strong>であり、その機関自体が信頼できるかどうかも、さらに上の機関の保証をたどって確かめられる。このページでは、この身分証の仕組み全体を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、公開鍵をどうやって信頼して受け取るのか、次で答えるって言ってましたよね?</p>
+    <p class="t" data-who="ふくろう先生">はい。サーバは、自分が名乗っている相手であることを示す身分証を見せます。この身分証には、通信で使う公開鍵も入っています。</p>
+    <p class="s" data-who="ひよこちゃん">その身分証、サーバが自分で勝手に作って名乗ればいいんじゃないですか?</p>
+    <p class="t" data-who="ふくろう先生">それでは信頼できません。身分証は、信頼できる機関に申請して発行してもらいます。この機関を認証局と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">認証局は、何を審査するんですか?</p>
+    <p class="t" data-who="ふくろう先生">申請してきた相手が、本当にその名前(サーバ)の正当な持ち主かどうかを審査します。</p>
+    <p class="t" data-who="ふくろう先生">審査を通れば、認証局はその相手のために身分証を発行し、そこに保証の印を付けます。</p>
+    <p class="s" data-who="ひよこちゃん">その印があれば、ブラウザは無条件に信じるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。ブラウザは、印を付けた認証局自体が信頼できるかどうかも確かめます。</p>
+    <p class="s" data-who="ひよこちゃん">その認証局が信頼できるかどうかは、どう確認するんですか?</p>
+    <p class="t" data-who="ふくろう先生">認証局自身の身分証も、さらに上位の認証局から保証を受けています。この保証のつながりを証明書チェーンと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、それをどこまでもさかのぼっていくんですか?</p>
+    <p class="t" data-who="ふくろう先生">たどっていくと、最後は誰の保証も受けずにそれ自体が信頼されている身分証、つまり一番上の身分証に行き着きます。</p>
+    <p class="t" data-who="ふくろう先生">ブラウザや OS は、あらかじめこの一番上の身分証を少数だけ信頼する形で持っています。</p>
+    <p class="s" data-who="ひよこちゃん">公開鍵と、この身分証と、それを保証する機関を全部まとめて呼ぶ名前ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。この仕組み全体を PKI と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">実際にこの仕組みが崩れた事件とかあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ある認証局がハッキングを受け、正規の審査を経ずに、別の相手向けの身分証を発行してしまった事件がありました(DigiNotar 事件)。</p>
+    <p class="s" data-who="ひよこちゃん">なんでそんなことが起きると、危ないんですか? 身分証は認証局が保証してるはずですよね?</p>
+    <p class="t" data-who="ふくろう先生">認証局自身が乗っ取られると、本来なら審査で弾かれるはずの申請を通してしまい、不正な相手にも身分証と保証の印を発行してしまいます。</p>
+    <p class="t" data-who="ふくろう先生">その身分証は正規の手順を通ったものと見分けがつかず、本物のサイトになりすまして通信を盗聴される可能性がありました。</p>
+    <p class="s" data-who="ひよこちゃん">身分証を実際にいつ確認するのかは、次のページで見るんですよね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この身分証の確認と鍵の取り決めの手続きの流れを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>Web サーバは、自分が名乗っている相手であることを示す身分証(TLS 証明書)を提示する。身分証には公開鍵が含まれる。</li>
+      <li>身分証は、信頼できる機関(認証局)に申請して発行してもらう。認証局は、申請してきた相手が本当にその名前の正当な持ち主かどうかを審査し、通れば身分証を発行して保証の印を付ける。</li>
+      <li>認証局自身の身分証も、さらに上位の認証局から保証を受けている。この保証のつながりを証明書チェーンと呼び、たどると、最後はブラウザや OS があらかじめ信頼している身分証に行き着く。</li>
+      <li>公開鍵・身分証・それを保証する機関を組み合わせて、相手が本物かどうかを確かめられるようにする仕組み全体を PKI と呼ぶ。</li>
+      <li>ある認証局がハッキングを受け、正規の審査を経ずに身分証を発行してしまった事件があった(DigiNotar 事件)。認証局自体が乗っ取られると、不正な身分証も正規の手順を通ったものと見分けがつかなくなる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>Web サーバは、自分が名乗っている相手であることを示す身分証(TLS 証明書)を提示し、この身分証には公開鍵が含まれる。身分証は、信頼できる機関(認証局)に申請して発行してもらうもので、認証局は、申請してきた相手が本当にその名前の正当な持ち主かどうかを審査し、通れば身分証を発行して保証の印を付ける。認証局自身の身分証も、さらに上位の認証局から保証を受けており、この保証のつながりを証明書チェーンと呼ぶ。たどっていくと、最後は誰の保証も受けずにそれ自体が信頼されている身分証(一番上の身分証)に行き着き、ブラウザや OS はあらかじめこの一番上の身分証を少数だけ信頼する形で持っている。公開鍵・身分証・それを保証する機関を組み合わせて、通信の相手が本当に名乗っている相手かどうかを確かめられるようにする、この仕組み全体を PKI と呼ぶ。ある認証局がハッキングを受け、正規の審査を経ずに別の相手向けの身分証を発行してしまった事件があった(DigiNotar 事件)。認証局自体が乗っ取られると、本来なら審査で弾かれるはずの申請を通してしまい、不正な身分証も正規の手順を通ったものと見分けがつかなくなる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>openssl s_client -connect example.com:443 -servername example.com &lt;/dev/null</code></pre>
+    <p>見方: 実行結果の Certificate chain の並びを見てください。各段の s: がその段の身分証が誰のものか、i: がそれを誰が保証したかを表しています。ある段の i: が、その 1 つ上の段の s: と一致していることを確認してください。これが、このページで見た証明書チェーンの実物です。</p>
+    <p class="try-note">出力は長めですが、Certificate chain の見出しの下の s: と i: の行だけを追えば十分です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(サーバの公開鍵と SSL certificate authority の digital signature によって相手を認証するという記述、クライアントが証明書を発行した認証局に照らして検証するという記述)</li>
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(認証局の運用上の問題、DigiNotar 社が不正に証明書を発行し中間者攻撃により通信を盗聴された可能性が高いという記述)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（`02-Security.txt` p.35「鍵の証明と配布・証明を発行する機関・組織を利用」という記述）</li>
+    <li class="cite" data-src="84">[#84] IETF「RFC 5280: Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile」 — <a href="https://www.rfc-editor.org/rfc/rfc5280.html" rel="noopener">原典</a>（証明書チェーンの検証）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m18-3">
+    <div class="q" data-q="1">
+      <p class="q-text">認証局が身分証を発行する前に審査するのは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">身分証の見た目が本物らしいかどうか</button></li>
+        <li><button type="button" data-correct="true">申請してきた相手が、本当にその名前の正当な持ち主かどうか</button></li>
+        <li><button type="button" data-correct="false">ブラウザの種類とバージョン</button></li>
+        <li><button type="button" data-correct="false">通信の速度が十分に出るかどうか</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、申請してきた相手が、本当にその名前の正当な持ち主かどうか、です。認証局は、身分証そのものではなく、申請してきた相手を審査してから、身分証を発行して保証の印を付けます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">証明書チェーンをたどっていくと、最後はどこに行き着くか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">接続先の Web サーバ自身の身分証</button></li>
+        <li><button type="button" data-correct="true">誰の保証も受けずにそれ自体が信頼されている、一番上の身分証</button></li>
+        <li><button type="button" data-correct="false">ブラウザを開発している会社のサーバ</button></li>
+        <li><button type="button" data-correct="false">利用者が使っているルータ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、誰の保証も受けずにそれ自体が信頼されている、一番上の身分証、です。ブラウザや OS は、あらかじめこの一番上の身分証を少数だけ信頼する形で持っています。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">認証局自体がハッキングを受けて乗っ取られると、なぜ危ないのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ブラウザが認証局への接続を続けられなくなるから</button></li>
+        <li><button type="button" data-correct="true">本来なら審査で弾かれるはずの申請を通してしまい、不正な身分証も正規の手順を通ったものと見分けがつかなくなるから</button></li>
+        <li><button type="button" data-correct="false">身分証に含まれる公開鍵が自動的に書き換えられてしまうから</button></li>
+        <li><button type="button" data-correct="false">証明書チェーンの長さが変わってしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、本来なら審査で弾かれるはずの申請を通してしまい、不正な身分証も正規の手順を通ったものと見分けがつかなくなるから、です。認証局の保証の印は、認証局自体が信頼できることを前提にしています。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m18-2.html">← 18-2 鍵を、ひとつではなく 2 つに分ける理由</a>
+    <a class="up" href="m18.html">第 18 章の入口</a>
+    <a class="next" href="m18-4.html">18-4 鍵を決めるまでに、何回のやり取りが必要か →</a>
+  </nav>
+</main>
+</body>
+</html>

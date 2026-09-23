@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>層に分ける理由と封筒の重なり — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m01-4" data-chapter="m01" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 1-4</p>
+  <p class="chapter-label">第 1 章 パケットの旅　1-4</p>
+  <h1>層に分ける理由と封筒の重なり</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>通信の仕組みは、役割ごとの層(レイヤ)に分けて設計されている。<strong>1 つのデータは、送信される途中で何重にも包まれて送られていく</strong>。このページでは、層に分ける理由と、データが包まれていく様子を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">そういえば、IP アドレスだけじゃなくて、ポート番号とか URL とか、宛先っぽいものがいくつも出てきますよね。何でそんなに種類があるんですか? 1 つに統一すればいいのに。</p>
+    <p class="t" data-who="ふくろう先生">それぞれ担当する範囲が違うからです。通信の仕組みは、役割ごとの層(レイヤ)に分けて設計されています。</p>
+    <p class="s" data-who="ひよこちゃん">層って、上下に積み重なってるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。実務でよく使われる整理が、TCP/IP モデルと呼ばれる 4 層の整理です。教科書だと、OSI 参照モデルという 7 層の整理も出てきますが、今日は名前と大まかな対応だけ知っておけば十分です。</p>
+    <p class="s" data-who="ひよこちゃん">2 つも覚えるんですか…</p>
+    <p class="t" data-who="ふくろう先生">対応関係だけで大丈夫です。TCP/IP モデルの一番下の層が OSI 参照モデルの下 2 つの層に、真ん中がネットワーク層とトランスポート層に、一番上がそれより上の層をまとめたものに、おおよそ対応します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、さっき出てきた IP アドレスやポート番号は、どの層の話なんですか?</p>
+    <p class="t" data-who="ふくろう先生">IP アドレスは真ん中の層の宛先で、ネットワークをまたいで届けるために使います。ポート番号も同じ層の少し上で、端末の中のどのアプリケーションに渡すかを決めます。</p>
+    <p class="s" data-who="ひよこちゃん">IP とか<a class="term" href="glossary.html#tcp" data-term="tcp">TCP</a>って、プロトコルって呼ばれたりしますよね? プロトコルって何なんですか?</p>
+    <p class="t" data-who="ふくろう先生">通信のやり方を決めた共通の取り決めのことです。HTTP や TCP、IP は、それぞれの層で使われるプロトコルです。</p>
+    <p class="s" data-who="ひよこちゃん">もう 1 つ、宛先みたいなものってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。一番下の層では、同じネットワーク内で次に渡す隣の機器を指す<a class="term" href="glossary.html#mac-address" data-term="mac-address">MAC アドレス</a>を使います。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ実際に HTTP リクエストを送るとき、この層は具体的に何をしてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">層ごとに、データの前にヘッダ(header)という情報を付け足していきます。まず TCP の層で TCP ヘッダが付き、次に IP の層で IP ヘッダが付き、最後に一番下の、有線 LAN の配線とデータの形式を決めた約束事である<a class="term" href="glossary.html#ethernet" data-term="ethernet">イーサネット</a>の層でヘッダが付きます。それぞれの中身は、専用の章(第 13 章、第 3 章)で説明します。</p>
+    <p class="s" data-who="ひよこちゃん">ヘッダが「前に付く」って、データを包むみたいなことですか?</p>
+    <p class="t" data-who="ふくろう先生">近いです。手紙を封筒に入れて、さらに別の封筒に入れるようなイメージで<span class="tag-simp">簡略化</span>できます。正式にはこの処理をカプセル化(encapsulation)と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その封筒に入ったかたまりにも名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">データは大きな 1 つの塊としてではなく、小分けにしたかたまりとして送られます。この、小分けにされたひとかたまりをパケット(packet)と呼びます。</p>
+    <p class="t" data-who="ふくろう先生">そのうち、一番外側までヘッダが揃った、MAC アドレス宛てのかたまりを<a class="term" href="glossary.html#frame" data-term="frame">フレーム</a>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">途中の<a class="term" href="glossary.html#router" data-term="router">ルータ</a>は、この封筒を全部開けて中を見たりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">見ません。ルータは自分の層のヘッダ、つまり IP ヘッダの宛先だけを見て次に転送します。中の TCP ヘッダや HTTP の中身までは基本的に見ません。</p>
+    <p class="s" data-who="ひよこちゃん">層ごとに見る場所を決めてるから、そんなことができるんですね。無線を有線に変えても、上の方は変えなくていいってことですか?</p>
+    <p class="t" data-who="ふくろう先生">その通りです。層を分けているおかげで、下の層(回線の種類)を変えても、上の層(TCP や HTTP)を作り直す必要がありません。これが層に分ける一番の理由です。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>通信の仕組みは役割ごとの層(レイヤ)に分けて設計されており、実務では TCP/IP モデル(4 層)、教科書では OSI 参照モデル(7 層)がよく使われる。</li>
+      <li>IP アドレス・ポート番号・MAC アドレスは、それぞれ別の層の宛先である。</li>
+      <li>データは層を下りるごとにヘッダが付け加えられ(カプセル化)、途中のルータは自分の層のヘッダだけを見て転送する。</li>
+      <li>層を分けているおかげで、ある層(回線の種類など)を変えても、他の層(TCP や HTTP など)を作り直す必要がない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>京都大学の資料が示す対応表では、OSI 参照モデルの物理層・データリンク層が TCP/IP モデルの一番下の層に、ネットワーク層が真ん中の層に、トランスポート層はそのまま、セッション層以上が一番上の層にまとめられている(#73)。ヘッダは宛先などの情報を持ち、送信側は上位層のデータに下位層のヘッダを順に付け加える(カプセル化)。受信側はその逆に、外側のヘッダから順に取り除いていく(#12)。この対応関係を丸暗記する必要はなく、「今どの層の話をしているか」を都度確認する習慣が、後のページの理解を助ける。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="73">[#73] 京都大学 OCW「基礎情報処理 第 9 回「コンピュータネットワーク」」（2004 年度スライド） — <a href="https://ocw.kyoto-u.ac.jp/course/120/" rel="noopener">原典</a></li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a></li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m01-4">
+    <div class="q" data-q="1">
+      <p class="q-text">層を分けているからこそできることとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">すべての層のヘッダを 1 つにまとめて、通信を速くできる</button></li>
+        <li><button type="button" data-correct="true">下の層(回線の種類など)を変えても、上の層(TCP や HTTP など)を作り直さなくてよい</button></li>
+        <li><button type="button" data-correct="false">途中のルータが、HTTP の中身まで含めてすべて確認できる</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスと IP アドレスを 1 つの番号にまとめられる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、下の層(回線の種類など)を変えても、上の層(TCP や HTTP など)を作り直さなくてよい、です。層ごとに役割が独立しているため、ある層の技術を変えても、他の層に影響が及びません。これが層に分ける一番の理由です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">送信時、データにヘッダが付加されていく順序として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">イーサネットヘッダ → IP ヘッダ → TCP ヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="true">TCP ヘッダ → IP ヘッダ → イーサネットヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="false">IP ヘッダ → TCP ヘッダ → イーサネットヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="false">すべてのヘッダが同時に 1 つにまとめて付加される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP ヘッダ → IP ヘッダ → イーサネットヘッダの順に付加される、です。層ごとにヘッダを付け足していく処理(カプセル化)は、トランスポート層、インターネット層、ネットワークインターフェース層の順に進みます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">経路上のルータが転送先を決めるために見る情報として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">IP ヘッダの宛先 IP アドレスだけを見て、TCP ヘッダや HTTP の中身は基本的に見ない</button></li>
+        <li><button type="button" data-correct="false">TCP ヘッダの宛先ポート番号を見て転送先を決める</button></li>
+        <li><button type="button" data-correct="false">HTTP リクエストの URL を見て転送先を決める</button></li>
+        <li><button type="button" data-correct="false">イーサネットヘッダの送信元 MAC アドレスだけを見て転送先を決める</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、IP ヘッダの宛先 IP アドレスだけを見て、TCP ヘッダや HTTP の中身は基本的に見ない、です。ルータは自分の層である IP ヘッダの宛先だけを見て次の転送先を選び、ポート番号や URL、HTTP の中身までは見ません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m01-3.html">← 1-3 途中にいる機器たち</a>
+    <a class="up" href="m01.html">第 1 章の入口</a>
+    <a class="next" href="m01-5.html">1-5 この講座の歩き方 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>保存して後で見る — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m28-3" data-chapter="m28" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 28-3</p>
+  <p class="chapter-label">第 28 章 パケットキャプチャ — tcpdump と Wireshark　28-3</p>
+  <h1>保存して後で見る</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>記録した内容は、その場で見るだけでなく、ファイルに保存しておける。<strong>保存したファイルを読み込み直す操作には、特別な権限が要らない</strong>。このページでは、保存と読み込み直しの方法を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">保存する場所やファイル名は、好きに決めていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。-w の後ろに書いた場所に、その名前で保存されます。拡張子を .pcap にしておかなくても、tcpdump 自身が中身を見て形式を判別できます。</p>
+    <p class="s" data-who="ひよこちゃん">保存してる間、ちゃんと記録できてるか不安になりそうです。</p>
+    <p class="t" data-who="ふくろう先生">-v を付けておくと、1 秒ごとに記録した件数を知らせてくれます。進み具合を確認しながら保存できます。</p>
+    <p class="s" data-who="ひよこちゃん">保存したファイルは、あとからどうやって見るんですか?</p>
+    <p class="t" data-who="ふくろう先生">-r オプションで読み込み直せます。この保存形式を pcap ファイルと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">読み込み直すときも sudo が要るんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。保存済みのファイルを読み込むだけなら、ネットワークインターフェースから直接読み取る操作ではないので、特別な権限は要りません。</p>
+    <p class="s" data-who="ひよこちゃん">読み込んだファイルに対して、28-2 で見た port のような条件を付けることもできますか?</p>
+    <p class="t" data-who="ふくろう先生">できます。-r で読み込むときも、同じキャプチャフィルタの条件を続けて書けます。広く保存しておいて、見るときに絞り込む、という使い方もできます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、記録だけ手元でしておいて、あとでゆっくり見返せるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。試しに、20 個記録してファイルに保存し、そのファイルを読み込み直してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">1 行目は sudo が要って、2 行目は要らない、ということですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。1 行目はライブでインターフェースから読み取るので sudo が要りますが、2 行目は保存済みのファイルを読むだけなので要りません。</p>
+    <p class="s" data-who="ひよこちゃん">保存したファイルは、他のツールでも開けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">開けます。pcap ファイルは Wireshark でも読み込めます。記録する側と読み解く側で同じ形式を使っているので、別のツールに移して見返すこともできます。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、個人開発で、tcpdump を試しに動かしてファイルに保存したまま忘れてて、気づいたら数ギガバイトになってたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">-c で個数を指定していないと、Ctrl+C で止めるまで記録し続けます。ファイルに保存する -w と組み合わせていると、その分だけファイルが大きくなり続けます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、次からは -c を付けて記録すれば、同じ失敗はしませんね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。個数を決めておけば、記録が際限なく続くことはありません。</p>
+    <p class="s" data-who="ひよこちゃん">保存しておけば、あとで何度でも見返せるのは便利ですね。障害調査のときとかに使えそうです。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。その場で見きれなかった通信も、あとでじっくり確認できます。</p>
+    <p class="s" data-who="ひよこちゃん">Wireshark ならではの見方があるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。記録済みの内容から、あとで条件を変えて絞り込み直せます。次のページで、その絞り込み方を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>個数(-c)を指定せずに tcpdump を実行すると、Ctrl+C で止めるまで記録し続ける。-w と組み合わせたまま止め忘れると、ファイルが大きくなり続ける。</li>
+      <li>-w で記録した内容をファイルに保存できる。この保存形式を pcap ファイルと呼ぶ。</li>
+      <li>保存済みの pcap ファイルは、-r オプションで読み込み直せる。読み込むだけなら特別な権限は要らない。</li>
+      <li>pcap ファイルは tcpdump でも Wireshark でも開ける。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>pcap ファイルは、記録した通信の内容を、あとで見返せるように保存しておくファイルの形式である。tcpdump では -w &lt;ファイル名&gt; で保存できる(#107)。個数(-c)を指定せずに記録を続けると、Ctrl+C で止めるまで記録され続けるため、-w と組み合わせたまま止め忘れると、ファイルは大きくなり続ける(#107)。保存した pcap ファイルは、-r &lt;ファイル名&gt; で読み込み直せる。保存済みのファイルを読み込む操作は、ネットワークインターフェースから直接読み取る操作ではないため、特別な権限は要らない(#107)。-r で読み込むときにも、28-2 で見たキャプチャフィルタの条件式をそのまま続けて書け、実際に処理される対象は条件に一致するパケットだけになる(#107)。-v を付けて -w と組み合わせると、標準エラー出力に 1 秒ごとの記録件数が表示される(#107)。pcap ファイルは、他の記録・解析ツールとの間でも読み書きできる共通の形式であり、tcpdump が保存したファイルを Wireshark で開くこともできる(#107、#113)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true" data-needs-sudo="true">
+    <pre><code>sudo tcpdump -i en0 -n -c 20 -w ~/capture.pcap
+tcpdump -n -r ~/capture.pcap</code></pre>
+    <p>見方: 1 行目で 20 個のパケットを ~/capture.pcap というファイルに保存し、2 行目でそのファイルを読み込み直します。2 行目は sudo を付けていませんが、保存済みのファイルを読むだけなので、それで実行できます。</p>
+    <p class="try-note">2 行目は、1 行目の保存が終わってから実行する。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="107">[#107] The Tcpdump Group（tcpdump.org）「TCPDUMP(1) man page」 — <a href="https://www.tcpdump.org/manpages/tcpdump.1.html" rel="noopener">原典</a>(652 行目 -w によるファイル保存の説明、559 行目 -r による読み込みの説明、244〜248 行目「保存済みのファイルを読み込む操作には特別な権限が要らない」という記述)</li>
+    <li class="cite" data-src="113">[#113] Wireshark Foundation「Saving Captured Packets」 — <a href="https://www.wireshark.org/docs/wsug_html_chunked/ChIOSaveSection.html" rel="noopener">原典</a>(pcap 形式が tcpdump など他のツールでも使われる標準的な保存形式であるという記述、.pcap 拡張子の説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m28-3">
+    <div class="q" data-q="1">
+      <p class="q-text">-c を指定せずに tcpdump を -w と組み合わせて実行し、そのまま止め忘れていた場合、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">Ctrl+C で止めるまで記録が続き、保存先のファイルが大きくなり続ける</button></li>
+        <li><button type="button" data-correct="false">5 秒後に自動的に止まる</button></li>
+        <li><button type="button" data-correct="false">ファイルの保存が拒否されてエラーになる</button></li>
+        <li><button type="button" data-correct="false">記録される内容が自動的に間引かれる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、Ctrl+C で止めるまで記録が続き、保存先のファイルが大きくなり続ける、です。自動停止やエラー、間引きは起きません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">-w で保存した pcap ファイルを -r で読み込むとき、なぜ sudo が要らないのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">保存済みのファイルを読み込む操作は、ネットワークインターフェースから直接パケットを読み取る操作ではないから</button></li>
+        <li><button type="button" data-correct="false">pcap ファイルには権限の情報が含まれていないから</button></li>
+        <li><button type="button" data-correct="false">-r オプション自体が権限のチェックを行わない特別な設定だから</button></li>
+        <li><button type="button" data-correct="false">一度 sudo で記録したファイルは、その後ずっと無権限で扱えるという特別な仕組みがあるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、保存済みのファイルを読み込む操作は、ネットワークインターフェースから直接パケットを読み取る操作ではないから、です。権限の情報や特別な仕組みについての説明はいずれも誤りです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">pcap ファイルの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">記録した通信の内容を保存しておくファイルの形式で、tcpdump でも Wireshark でも開ける</button></li>
+        <li><button type="button" data-correct="false">tcpdump 専用で、他のツールでは開けない形式</button></li>
+        <li><button type="button" data-correct="false">記録した内容を暗号化して保存する形式</button></li>
+        <li><button type="button" data-correct="false">記録できる件数を必ず 100 件以下に制限する形式</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、記録した通信の内容を保存しておくファイルの形式で、tcpdump でも Wireshark でも開ける、です。他のツール専用という説明や、暗号化・件数制限についての説明はいずれも誤りです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m28-2.html">← 28-2 見たいものだけを残す</a>
+    <a class="up" href="m28.html">第 28 章の入口</a>
+    <a class="next" href="m28-4.html">28-4 残したものから、さらに絞り込む →</a>
+  </nav>
+</main>
+</body>
+</html>

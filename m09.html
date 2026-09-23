@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>インターネットの経路制御 — BGP と AS — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m09" data-chapter="m09" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 9 章</p>
+  <p class="chapter-label">第 9 章</p>
+  <h1>インターネットの経路制御 — BGP と AS</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>インターネットが、組織ごとに運用される独立したネットワーク(自律システム、AS)の集まりであり、各 AS に世界で重複しない AS 番号が割り当てられていることを説明できる。</li>
+      <li>AS 同士のつながり方には、対等な立場で直接つながるピアリングと、上流の組織と契約して経路を分けてもらうトランジットの 2 種類があり、両者の違いを説明できる。</li>
+      <li>BGP では、経路の情報がその経路を通ってきた AS の並びと一緒に伝わり、並びの短さと各 AS の方針によって選ばれることを説明できる。</li>
+      <li>BGP には経路情報を検証する仕組みが元々無く、そのために経路ハイジャックが起き得ることを、その理由とあわせて説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 300" role="img" aria-label="4 つの AS(自律システム)の箱が並んでいる。左端の AS1 は自分の組織で、右隣の AS2(上流の ISP)とトランジット(多くの場合、対価を払う関係)でつながっている。AS2 と AS3(別の上流の ISP)は対等なピアリング(多くの場合、対価を払わない関係)で直接つながっている。AS3 は右端の AS4(宛先の組織)とトランジットでつながっている。下部には、AS4 宛ての経路が、通ってきた AS の並び(AS4、AS3、AS2、AS1 の順)として AS1 まで伝わっていく矢印が示されている。">
+      <defs>
+        <marker id="m09-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m09-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <!-- AS1 -->
+      <rect x="20" y="90" width="160" height="70" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="100" y="118" text-anchor="middle" font-size="14" fill="var(--fig-ink)">AS1</text>
+      <text x="100" y="136" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(自分の組織)</text>
+
+      <!-- AS2 -->
+      <rect x="250" y="90" width="160" height="70" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="330" y="118" text-anchor="middle" font-size="14" fill="var(--fig-ink)">AS2</text>
+      <text x="330" y="136" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(上流の ISP)</text>
+
+      <!-- AS3 -->
+      <rect x="480" y="90" width="160" height="70" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="560" y="118" text-anchor="middle" font-size="14" fill="var(--fig-ink)">AS3</text>
+      <text x="560" y="136" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(別の上流の ISP)</text>
+
+      <!-- AS4 -->
+      <rect x="710" y="90" width="170" height="70" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="795" y="118" text-anchor="middle" font-size="14" fill="var(--fig-ink)">AS4</text>
+      <text x="795" y="136" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(宛先の組織)</text>
+
+      <!-- AS1-AS2 トランジット -->
+      <line x1="180" y1="125" x2="250" y2="125" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="215" y="105" text-anchor="middle" font-size="11" fill="var(--fig-ink)">トランジット</text>
+      <text x="215" y="150" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(多くの場合、対価あり)</text>
+
+      <!-- AS2-AS3 ピアリング -->
+      <line x1="410" y1="125" x2="480" y2="125" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="445" y="105" text-anchor="middle" font-size="11" fill="var(--fig-accent)">ピアリング</text>
+      <text x="445" y="150" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(対等、多くの場合、対価なし)</text>
+
+      <!-- AS3-AS4 トランジット -->
+      <line x1="640" y1="125" x2="710" y2="125" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="675" y="105" text-anchor="middle" font-size="11" fill="var(--fig-ink)">トランジット</text>
+      <text x="675" y="150" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(多くの場合、対価あり)</text>
+
+      <!-- 経路(AS の並び)の矢印: AS4 -> AS1 -->
+      <line x1="710" y1="220" x2="180" y2="220" stroke="var(--fig-accent)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m09-arrow-accent)"/>
+      <text x="450" y="205" text-anchor="middle" font-size="12" fill="var(--fig-accent)">経路は AS の並びとして伝わる</text>
+      <text x="450" y="245" text-anchor="middle" font-size="12" fill="var(--fig-ink)">AS4 の宛先への経路: AS4 → AS3 → AS2 → AS1 という並びで AS1 まで届く</text>
+    </svg>
+    <p class="fig-cap">AS1(自分の組織)は、上流の AS2 とトランジット(多くの場合、対価を払う関係)でつながる。AS2 と AS3(別の上流の組織)は、対等なピアリング(多くの場合、対価を払わない関係)で直接つながる。AS3 は、下流の AS4(宛先の組織)とトランジットでつながる。AS4 宛ての経路は、通ってきた AS の並び(AS4、AS3、AS2、AS1 の順)として AS1 まで伝わっていく。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m09"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m08.html">← 第 8 章 ルーティングの基本</a>
+    <a class="next" href="m10.html">第 10 章 NAT とプライベートネットワーク →</a>
+  </nav>
+</main>
+</body>
+</html>

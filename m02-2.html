@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>遠い相手ほど、届くまでに時間がかかる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m02-2" data-chapter="m02" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 2-2</p>
+  <p class="chapter-label">第 2 章 信号と回線　2-2</p>
+  <h1>遠い相手ほど、届くまでに時間がかかる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>届くまでの時間のうち、相手までの距離によって決まる部分がある。<strong>信号が伝わる速さは有限なので、遠い相手ほど時間がかかる</strong>。このページでは、その時間の正体と、送ってから返事が戻るまでの時間を実際に測る方法を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">さっきの海外サイトの話、なんでそんなに遅いんですか。</p>
+    <p class="t" data-who="ふくろう先生">信号は回線の中を、ものすごく速いですが、無限の速さでは伝わりません。</p>
+    <p class="s" data-who="ひよこちゃん">どれくらいの速さなんですか。</p>
+    <p class="t" data-who="ふくろう先生">たとえば光ファイバの中を光の信号が伝わる速さは、秒速 2 億メートルほどです。距離をこの速さで割ると、伝わるのにかかる時間が出ます。これを<strong>伝搬遅延</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、1,000km 離れた相手だと、どれくらいかかるんですか。</p>
+    <p class="t" data-who="ふくろう先生">計算してみましょう。1,000km は 100 万メートルなので、100 万 ÷ 2 億 = 0.005 秒、つまり片道 5 ミリ秒ほどです。</p>
+    <p class="s" data-who="ひよこちゃん">送って、その返事が戻ってくるまでだと、その倍くらいですか。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。送ってから、相手からの返事が戻ってくるまでの往復の時間を<strong>RTT</strong>と呼びます。実は、あるコマンドを使うと、この時間を実際に測ることができます。</p>
+    <p class="s" data-who="ひよこちゃん">実際の回線だと、RTT はどれくらいになるものなんですか。</p>
+    <p class="t" data-who="ふくろう先生">大陸をまたぐ経路では約 60 ミリ秒、衛星回線を使うと約 500 ミリ秒になることが知られています。同じ地球上でも、経路によって差が大きいんです。</p>
+    <p class="s" data-who="ひよこちゃん">衛星回線は、なんでそんなに時間がかかるんですか。</p>
+    <p class="t" data-who="ふくろう先生">衛星は地上からとても高い位置にあるので、地上を這うように延びる回線に比べて、信号が往復する距離そのものが長くなるからです。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で使ってた API が、海外リージョンだけ応答が遅かったことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさにこれが理由です。物理的な距離が長い分、伝搬遅延が大きくなります。回線をどれだけ太くしても、この時間は縮まりません。</p>
+    <p class="s" data-who="ひよこちゃん">太い回線を使っても解決しないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。伝搬遅延は距離と信号の速さだけで決まり、回線の帯域幅とは無関係です。</p>
+    <p class="s" data-who="ひよこちゃん">海外のユーザー向けには、何か対策できることはあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">サーバそのものを利用者の近くに置く、という工夫があります。距離を短くできれば、伝搬遅延そのものを減らせるからです。具体的な仕組みは、また別の章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">伝搬遅延と RTT、覚えることが増えてきました。</p>
+    <p class="t" data-who="ふくろう先生">整理すると、伝搬遅延は片道、RTT は往復です。RTT はおおよそ、行きと帰りの伝搬遅延を足した値に近くなります。</p>
+    <p class="s" data-who="ひよこちゃん">自分の Mac からでも、この時間差を実際に確かめることはできますか。</p>
+    <p class="t" data-who="ふくろう先生">できます。実行結果に出てくる時間を、近い相手と遠い相手で比べてみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">やってみます。</p>
+    <p class="t" data-who="ふくろう先生">では、回線の太さは何に効くのか、次のページで見ましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>信号は回線の中を、光の速さに近いが有限の速さで伝わる。</li>
+      <li>距離を信号が伝わる速さで割った時間を伝搬遅延と呼び、距離が長いほど長くなる。回線の帯域幅を変えても短くならない。</li>
+      <li>送ってから、相手からの返事が戻ってくるまでの往復の時間を RTT と呼び、実際にコマンドで測れる。</li>
+      <li>実際の回線では、大陸をまたぐ経路で RTT が約 60 ミリ秒、衛星回線では約 500 ミリ秒になることが知られている。</li>
+      <li>海外サイトだけ応答が遅いのは、物理的な距離が長く伝搬遅延が大きいためで、回線を太くしても解決しない。</li>
+      <li>サーバそのものを利用者の近くに置くなど、物理的な距離を短くする工夫ができれば、伝搬遅延そのものを減らせる。</li>
+      <li>衛星回線の RTT が特に長いのは、地上の回線に比べて信号が往復する物理的な距離そのものが長いためである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>伝搬遅延は、信号が送り出されてから相手に届くまでにかかる時間で、距離を信号が伝わる速さで割った値になる。光ファイバの中を光の信号が伝わる速さは秒速 2×10^8 メートルほどで、真空中を進む光の速さ(秒速 3×10^8 メートル)よりやや遅い(#4)。たとえば 1,000km(100 万メートル)離れた相手なら、伝搬遅延は片道約 5 ミリ秒になる計算である。送ってから、相手からの返事が戻ってくるまでの往復の時間を RTT と呼び、おおよそ往路と復路の伝搬遅延を足した値に近い。実際の回線では、大陸をまたぐ経路で RTT が約 60 ミリ秒、衛星回線では約 500 ミリ秒になることが知られている(#4)。衛星回線が特に長いのは、地上の回線に比べて信号が往復する物理的な距離そのものが長いためである。衛星回線を使う地域では、通話や画面共有のような双方向のやり取りで、この遅れが体感されやすい。伝搬遅延は距離と信号の速さだけで決まり、回線の帯域幅(太さ)を変えても短くならないが、サーバの置き場所を変えて距離そのものを短くすれば、伝搬遅延を減らすことはできる。次の試してみようでは、近い相手と遠い相手に対する実行結果を比べることで、この関係を確かめる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ping -c 3 localhost
+ping -c 3 example.com</code></pre>
+    <p>見方: 2 つの実行結果で、返ってくるまでの時間(ミリ秒)を比べてください。localhost はほぼ 0 に近い値、example.com はそれより大きい値になります。相手までの距離が長いほど、この時間が長くなることの材料として見てください。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="61">[#61] Cloudflare Learning Center「How to make the Internet faster for everyone」 — <a href="https://www.cloudflare.com/learning/performance/more/speed-up-the-web/" rel="noopener">原典</a>(「Network latency」の節: 距離が遅延の主因であり、光速が物理的な上限であるという記述)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`08_Link.txt` p.55 付近: 光の伝わる速さの比較。`07_TCP.txt` p.38「Window Scaling for Long Fat Pipe」: RTT の実例。p.41・43: RTT は ping(ICMP echo request/reply)で測定可能という記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m02-2">
+    <div class="q" data-q="1">
+      <p class="q-text">海外サイトへのアクセスが遅い理由として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">海外のサーバは処理能力が低いから</button></li>
+        <li><button type="button" data-correct="true">相手までの物理的な距離が長く、信号が伝わる時間(伝搬遅延)が長くなるから</button></li>
+        <li><button type="button" data-correct="false">海外との通信は暗号化に時間がかかるから</button></li>
+        <li><button type="button" data-correct="false">海外の回線は、必ず帯域幅が小さいと決まっているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、相手までの物理的な距離が長く、信号が伝わる時間(伝搬遅延)が長くなるから、です。伝搬遅延は距離と信号の速さだけで決まり、回線の帯域幅をいくら太くしても短くなりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">伝搬遅延の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">送ってから、相手からの返事が戻ってくるまでの往復の時間</button></li>
+        <li><button type="button" data-correct="false">一定の時間に送れるデータの量の上限</button></li>
+        <li><button type="button" data-correct="true">信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間</button></li>
+        <li><button type="button" data-correct="false">回線を契約してから使えるようになるまでの手続きにかかる時間</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間、です。送ってから返事が戻ってくるまでの往復の時間は RTT のことで、一定の時間に送れるデータの量の上限は帯域幅のことです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">RTT の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間</button></li>
+        <li><button type="button" data-correct="true">送ってから、相手からの返事が手元に戻ってくるまでの往復の時間</button></li>
+        <li><button type="button" data-correct="false">一定の時間に送れるデータの量の上限</button></li>
+        <li><button type="button" data-correct="false">回線の設置にかかる工事の日数</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送ってから、相手からの返事が手元に戻ってくるまでの往復の時間、です。片道だけの時間は伝搬遅延のことで、RTT はおおよそその往復分にあたります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m02-1.html">← 2-1 動画が乱れるのと、海外サイトが遅いのは、理由が違う</a>
+    <a class="up" href="m02.html">第 2 章の入口</a>
+    <a class="next" href="m02-3.html">2-3 データの量と回線の太さで、送り出す時間が決まる →</a>
+  </nav>
+</main>
+</body>
+</html>

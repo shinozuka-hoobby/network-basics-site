@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTP/2 と HTTP/3 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m21" data-chapter="m21" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 21 章</p>
+  <p class="chapter-label">第 21 章</p>
+  <h1>HTTP/2 と HTTP/3</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>1 本の接続の中に複数のやり取りを同時に持たせることで、前の章で見た詰まりをどう解いたかを説明できる。</li>
+      <li>一度送ったヘッダの内容を送り手と受け手の双方が覚えておくことで、毎回送り直す無駄を減らす仕組みを説明できる。</li>
+      <li>接続の土台を TCP から、第 15 章で見た QUIC に変えることで、どんな詰まりがさらに解けたかを説明できる。</li>
+      <li>通信の両側の対応状況が、実際に使われるかどうかをどう左右するかを、採用判断の材料として説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 480" role="img" aria-label="上から順に、HTTP/1.1・HTTP/2・HTTP/3 の 3 段を対比する図。各段は外側(左、Ethernet)から内側(右、HTTP)へ向かって、データを重ねていく順序を表す。上段の HTTP/1.1 は、Ethernet・IP・TCP・HTTP の順に重ね、1 本の接続の中で要求と応答を 1 つずつやり取りする。中段の HTTP/2 も同じく Ethernet・IP・TCP・HTTP の順だが、HTTP の層で 1 本の接続の中に複数のやり取りを同時に持てる。下段の HTTP/3 は、Ethernet・IP・UDP・QUIC・HTTP の順に重ね、TCP の代わりに QUIC という層の上で、複数のやり取りを同時に持つ。">
+      <defs>
+        <marker id="m21-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m21-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-muted)"/>
+        </marker>
+      </defs>
+
+      <!-- 外側→内側の順序を示す帯 -->
+      <text x="40" y="18" font-size="12" fill="var(--fig-muted)">外側</text>
+      <text x="860" y="18" text-anchor="end" font-size="12" fill="var(--fig-muted)">内側</text>
+      <line x1="40" y1="28" x2="860" y2="28" stroke="var(--fig-muted)" stroke-width="1" marker-end="url(#m21-arrow-muted)"/>
+
+      <!-- 上段: HTTP/1.1 -->
+      <text x="450" y="55" text-anchor="middle" font-size="13" fill="var(--fig-ink)">HTTP/1.1(1 本の接続に、要求と応答を 1 つずつ)</text>
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="40" y="68" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="110" y="100" text-anchor="middle">Ethernet</text>
+        <rect x="210" y="68" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="280" y="100" text-anchor="middle">IP</text>
+        <rect x="380" y="68" width="310" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="535" y="100" text-anchor="middle">TCP</text>
+        <rect x="720" y="68" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="790" y="100" text-anchor="middle">HTTP</text>
+      </g>
+      <g stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m21-arrow-ink)">
+        <line x1="180" y1="95" x2="210" y2="95"/>
+        <line x1="350" y1="95" x2="380" y2="95"/>
+        <line x1="690" y1="95" x2="720" y2="95"/>
+      </g>
+      <line x1="720" y1="132" x2="720" y2="140" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="860" y1="132" x2="860" y2="140" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="720" y1="140" x2="860" y2="140" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="790" y="156" text-anchor="middle" font-size="12" fill="var(--fig-accent)">要求と応答を 1 つずつ</text>
+
+      <!-- 中段: HTTP/2 -->
+      <text x="450" y="200" text-anchor="middle" font-size="13" fill="var(--fig-ink)">HTTP/2(同じ TCP の上で、複数のやり取りを同時に)</text>
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="40" y="213" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="110" y="245" text-anchor="middle">Ethernet</text>
+        <rect x="210" y="213" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="280" y="245" text-anchor="middle">IP</text>
+        <rect x="380" y="213" width="310" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="535" y="245" text-anchor="middle">TCP</text>
+        <rect x="720" y="213" width="140" height="55" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="2"/>
+        <text x="790" y="240" text-anchor="middle" fill="var(--fig-accent)">HTTP/2</text>
+        <line x1="745" y1="220" x2="745" y2="261" stroke="var(--fig-accent)" stroke-width="1"/>
+        <line x1="770" y1="220" x2="770" y2="261" stroke="var(--fig-accent)" stroke-width="1"/>
+        <line x1="795" y1="220" x2="795" y2="261" stroke="var(--fig-accent)" stroke-width="1"/>
+        <line x1="820" y1="220" x2="820" y2="261" stroke="var(--fig-accent)" stroke-width="1"/>
+      </g>
+      <g stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m21-arrow-ink)">
+        <line x1="180" y1="240" x2="210" y2="240"/>
+        <line x1="350" y1="240" x2="380" y2="240"/>
+        <line x1="690" y1="240" x2="720" y2="240"/>
+      </g>
+      <line x1="720" y1="277" x2="720" y2="285" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="860" y1="277" x2="860" y2="285" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="720" y1="285" x2="860" y2="285" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="790" y="301" text-anchor="middle" font-size="12" fill="var(--fig-accent)">1 本の接続に、複数のやり取り</text>
+
+      <!-- 下段: HTTP/3 -->
+      <text x="450" y="345" text-anchor="middle" font-size="13" fill="var(--fig-ink)">HTTP/3(UDP の上の QUIC で、複数のやり取りを同時に)</text>
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="40" y="358" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="110" y="390" text-anchor="middle">Ethernet</text>
+        <rect x="210" y="358" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="280" y="390" text-anchor="middle">IP</text>
+        <rect x="380" y="358" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="450" y="390" text-anchor="middle">UDP</text>
+        <rect x="550" y="358" width="140" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="620" y="390" text-anchor="middle">QUIC</text>
+        <rect x="720" y="358" width="140" height="55" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="2"/>
+        <text x="790" y="385" text-anchor="middle" fill="var(--fig-accent)">HTTP/3</text>
+        <line x1="745" y1="365" x2="745" y2="406" stroke="var(--fig-accent)" stroke-width="1"/>
+        <line x1="770" y1="365" x2="770" y2="406" stroke="var(--fig-accent)" stroke-width="1"/>
+        <line x1="795" y1="365" x2="795" y2="406" stroke="var(--fig-accent)" stroke-width="1"/>
+        <line x1="820" y1="365" x2="820" y2="406" stroke="var(--fig-accent)" stroke-width="1"/>
+      </g>
+      <g stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m21-arrow-ink)">
+        <line x1="180" y1="385" x2="210" y2="385"/>
+        <line x1="350" y1="385" x2="380" y2="385"/>
+        <line x1="520" y1="385" x2="550" y2="385"/>
+        <line x1="690" y1="385" x2="720" y2="385"/>
+      </g>
+      <line x1="380" y1="422" x2="380" y2="430" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="860" y1="422" x2="860" y2="430" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="380" y1="430" x2="860" y2="430" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="620" y="446" text-anchor="middle" font-size="12" fill="var(--fig-accent)">TCP の代わりに QUIC の上で運ぶ</text>
+
+      <text x="450" y="470" text-anchor="middle" font-size="11" fill="var(--fig-muted)">箱は外側(左)から内側(右)へ、データを重ねていく順序を表す</text>
+    </svg>
+    <p class="fig-cap">上から、HTTP/1.1・HTTP/2・HTTP/3 の重ね方を比べた図。HTTP/1.1 と HTTP/2 は同じ TCP の上で運ばれるが、HTTP/1.1 は 1 本の接続の中で要求と応答を 1 つずつしかやり取りできないのに対し、HTTP/2 は 1 本の接続の中に複数のやり取りを同時に持てる。HTTP/3 は、TCP の代わりに QUIC という層の上で HTTP を運ぶ。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m21"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m20.html">← 第 20 章 HTTP/1.1</a>
+    <a class="next" href="m22.html">第 22 章 CDN とキャッシュ →</a>
+  </nav>
+</main>
+</body>
+</html>

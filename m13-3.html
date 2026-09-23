@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>届かなかったら、送り直す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m13-3" data-chapter="m13" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 13-3</p>
+  <p class="chapter-label">第 13 章 TCP の接続と信頼性　13-3</p>
+  <h1>届かなかったら、送り直す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>送ったデータへの返事(ACK)が一定の時間待っても返ってこないとき、送り手は<strong>そのデータをもう一度送り直す</strong>。待つ時間は最初は短く、送り直すたびに少しずつ長くなっていく。このページでは、この送り直しの仕組みと、何度試しても届かないときにどうなるかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、ACK が返ってこないと抜けに気づけるって話でしたけど、それに気づくのは送り手と受け手のどっちなんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手側です。送ったデータへの ACK が戻ってこないことに、送り手自身が気づきます。</p>
+    <p class="s" data-who="ひよこちゃん">気づいたあとは、送り手は何をするんですか?</p>
+    <p class="t" data-who="ふくろう先生">もう一度、同じデータを送り直します。これを再送と呼びます。ACK が来ないという事実だけが、送り直すきっかけになります。</p>
+    <p class="s" data-who="ひよこちゃん">え、ACK が返ってくるまでずっと待ち続けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、ある程度の時間待っても返ってこなければ送り直します。最初は短い時間から始めて、送り直すたびに待つ時間が少しずつ長くなっていきます。</p>
+    <p class="s" data-who="ひよこちゃん">なんで毎回同じ時間じゃなくて、だんだん長くするんですか?</p>
+    <p class="t" data-who="ふくろう先生">一時的な遅れなのか、完全に届いていないのかは、送り手にはすぐには区別できません。同じ短い間隔で何度も送り直すと、混雑している場合にさらに状況を悪化させかねません。間隔を伸ばしながら様子を見ることで、それを避けられます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いたんですけど、途中の機器がセキュリティの設定でパケットを黙って捨てるせいで、接続がなかなかできずに時間がかかったことがあるらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">よくある事例です。あいさつの最初の合図が黙って捨てられると、送り手には失敗の知らせが届きません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、送り手はどうやってそれに気づくんですか?</p>
+    <p class="t" data-who="ふくろう先生">返事が来ないことだけを手がかりに、間隔を伸ばしながら何度か送り直し、それでも駄目なら諦めます。</p>
+    <p class="s" data-who="ひよこちゃん">諦めるって、いつまでも送り直すわけじゃないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。何度か試して、それでも届かなければ、通信そのものを諦めます。無限に待ち続けるわけではありません。</p>
+    <p class="s" data-who="ひよこちゃん">諦めたことは、誰にどうやって伝わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">通信を求めたアプリケーションに、送り届けられなかったという情報が伝えられます。</p>
+    <p class="s" data-who="ひよこちゃん">これって、データを送ってるときだけじゃなくて、あいさつの合図でも起きるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。SYN のような、あいさつの合図が届かなかった場合も、同じように送り直しが行われます。会話できる状態そのものが作れないまま、時間だけが過ぎていくことになります。</p>
+    <p class="s" data-who="ひよこちゃん">往復にかかる時間(RTT)と、この待つ時間って関係あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">関係はありますが、細かい計算までは立ち入りません。待つ時間の目安には、相手までの往復にかかる時間が使われる、とだけ覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">送り直したデータと、元のデータが両方届いてしまうことはないんですか?</p>
+    <p class="t" data-who="ふくろう先生">あり得ます。その場合も、シーケンス番号のおかげで、受け取る側は同じ内容が重複して届いたことに気づけます。</p>
+    <p class="s" data-who="ひよこちゃん">番号を付けて確かめて、届かなければ送り直す。これでずいぶん信頼できそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、接続そのものを終えるときにどんな手順を踏むかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ACK が一定の時間待っても返ってこなければ、送り手自身がそれに気づき、そのデータをもう一度送り直す(再送)。ACK が来ないという事実だけが、送り直すきっかけになる。</li>
+      <li>送り直しまでの待ち時間は、最初は短く、送り直すたびに少しずつ長くなっていく。目安には、相手までの往復にかかる時間(RTT)が関係し、同じ短い間隔で送り直すと混雑をさらに悪化させかねない。</li>
+      <li>何度か送り直しても届かなければ、送り手は通信そのものを諦める。無限に待ち続けるわけではない。</li>
+      <li>データだけでなく、あいさつの合図(SYN)が届かなかった場合も、同じ仕組みで送り直しが行われる。送り直しで内容が重複しても、シーケンス番号のおかげで受け取る側は気づける。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>送ったデータへの ACK が一定の時間待っても返ってこないとき、送り手自身がそのことに気づき、TCP は同じデータをもう一度送る(再送)(#44)。待つ時間は最初は短く、送り直すたびに少しずつ長くなっていき、一定回数を試しても届かなければ通信そのものを諦める(#4 p.48)。この仕組みは、あいさつの最初の合図(SYN)が届かなかった場合にも同じように働く。#4 p.48 の例は、まさに SYN への応答が返ってこない場面での送り直しを示している。待つ時間の目安には、相手までの往復にかかる時間(RTT)が関係するが、具体的な計算のしかたはここでは立ち入らない(#4 p.22)。送り直した結果、元のデータと送り直した分の両方が届いても、シーケンス番号を見れば同じ内容の重複だと分かるため、受け取る側は重複を正しく扱える。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.22 誤りのないデータ転送、p.48 送り直しの間隔が伸びていく図）</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>（時間切れになるか、届くまで送り直すという説明）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m13-3">
+    <div class="q" data-q="1">
+      <p class="q-text">送ったデータへの ACK が一定時間戻ってこないとき、送り手は何をするか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">接続をすぐに終え、あいさつからやり直す</button></li>
+        <li><button type="button" data-correct="true">同じデータをもう一度送り直す</button></li>
+        <li><button type="button" data-correct="false">受け取る側に処理を止めるよう伝える</button></li>
+        <li><button type="button" data-correct="false">シーケンス番号を付け直して、別のデータとして送る</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じデータをもう一度送り直す、です。ACK が戻ってこないことをきっかけに、送り手は同じデータを再送します。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">なぜ送り直しはすぐに諦めず、間隔を空けながら何度か試みるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">受け取る側に送り直しの予告をする必要があるから</button></li>
+        <li><button type="button" data-correct="true">一時的な遅れと完全に届いていない状態をすぐには区別できず、間隔を伸ばすことで混雑をさらに悪化させずに済むから</button></li>
+        <li><button type="button" data-correct="false">同じ間隔で送り直すと、シーケンス番号が重複してしまうから</button></li>
+        <li><button type="button" data-correct="false">受け取る側の ACK に有効期限があり、それまで待つ必要があるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、一時的な遅れと完全に届いていない状態をすぐには区別できず、間隔を伸ばすことで混雑をさらに悪化させずに済むから、です。すぐに何度も送り直すと、混み合っている場合にさらに状況を悪化させかねません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">途中の機器が黙ってデータを捨てる場合について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">捨てられたことがすぐに送り手へ知らされ、別の経路が自動で選ばれる</button></li>
+        <li><button type="button" data-correct="true">送り手には失敗の知らせが届かず、返事が来ないことだけを手がかりに送り直しが繰り返される</button></li>
+        <li><button type="button" data-correct="false">途中の機器が代わりに ACK を送り返すため、送り手は届いたと誤解する</button></li>
+        <li><button type="button" data-correct="false">あいさつの合図では送り直しは行われず、データのやり取りだけが対象になる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送り手には失敗の知らせが届かず、返事が来ないことだけを手がかりに送り直しが繰り返される、です。黙って捨てられると送り手にはエラーが通知されないため、返事が来ないことだけを手がかりに間隔を伸ばしながら送り直し、それでも届かなければ諦めます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m13-2.html">← 13-2 番号を付けて、届いたことを確かめる</a>
+    <a class="up" href="m13.html">第 13 章の入口</a>
+    <a class="next" href="m13-4.html">13-4 きちんと終わる接続と、いきなり切れる接続 →</a>
+  </nav>
+</main>
+</body>
+</html>

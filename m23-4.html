@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同じ人を同じサーバに送る — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m23-4" data-chapter="m23" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 23-4</p>
+  <p class="chapter-label">第 23 章 ロードバランシング　23-4</p>
+  <h1>同じ人を同じサーバに送る</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じ利用者からの複数回の要求を、できるだけ同じ機械に送り続ける仕組みがあることを確認する。<strong>この仕組みは、必ず同じ機械に届くことを保証するものではない</strong>という点も確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、同じ人の 2 回目の要求が別の機械に届くことがあるって聞きましたけど、それだと困る場合もありますよね?</p>
+    <p class="t" data-who="ふくろう先生">あります。振り分け先の機械が、それまでのやり取りの内容を自分の中に覚えている場合です。</p>
+    <p class="s" data-who="ひよこちゃん">自分の中に覚えている、というのはどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、大きなファイルを何回かに分けて送るとき、それまでに受け取った断片をどこまで持っているかを、機械が自分の中に一時的に覚えていることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">同じ人からのリクエストを、同じ機械に送り続けることってできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。同じ利用者からの複数回の要求を、できるだけ同じ機械に送り続ける仕組みがあり、<strong>セッションアフィニティ</strong>(スティッキーセッションとも呼ばれます)と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、大きなファイルを分割して送るアップロードを作ったとき、2 回目以降の断片を送ったら「続きが見つからない」と返されたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">それは、途中経過を自分の中だけに覚えていた機械と、次の断片を受け取った機械が別だったからだと考えられます。</p>
+    <p class="s" data-who="ひよこちゃん">セッションアフィニティを使っていれば、防げたんですね。</p>
+    <p class="t" data-who="ふくろう先生">使っていなかったか、使っていても対応関係が崩れていたかのどちらかです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、これを使えば絶対に同じ機械に届くんですね?</p>
+    <p class="t" data-who="ふくろう先生">そうとも限りません。振り分け先の機械の数が変わったり、健康状態が変わったりすると、この対応関係が崩れることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">絶対に保証されるわけじゃないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。<strong>ベストエフォート</strong>、つまり最善は尽くすけれど保証はしない、という位置づけです。</p>
+    <p class="s" data-who="ひよこちゃん">どういうときに、対応関係が崩れやすいんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、ヘルスチェックで機械が外れたり戻ったりするときや、振り分け先の台数そのものが変わるときです。</p>
+    <p class="s" data-who="ひよこちゃん">前のページで見たヘルスチェックとも、関係あるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この章で見てきた仕組みは、それぞれ単独ではなく、組み合わさって動いています。</p>
+    <p class="s" data-who="ひよこちゃん">さっき「既定では組み合わせで振り分け先が決まる」って言ってましたけど、これって前のページのフローハッシュのことですか?</p>
+    <p class="t" data-who="ふくろう先生">近い考え方です。既定では、送信元・宛先の IP アドレスやポート番号、通信の種類などの組み合わせをもとに振り分け先が決まります。この組み合わせが変われば、別の機械が選ばれることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">セッションアフィニティを使うと、その組み合わせの見方が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">変わります。送信元の IP アドレスだけ、あるいは送信元の IP アドレスと通信の種類の組み合わせだけを見るようにして、より多くの要求が同じ機械に固定されるようにします。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>振り分け先の機械が、それまでのやり取りの内容を自分の中に覚えている場合、同じ利用者の要求は同じ機械に送り続ける必要がある。</li>
+      <li>同じ利用者からの複数回の要求を、できるだけ同じ機械に送り続ける仕組みを、セッションアフィニティ(スティッキーセッション)と呼ぶ。</li>
+      <li>大きなファイルを分割して送るアップロードで、2 回目以降の断片が別の機械に届くと、途中経過を知らないその機械が「続きが見つからない」と返すことがある。</li>
+      <li>セッションアフィニティはベストエフォートであり、振り分け先の機械の数や健康状態が変わると、対応関係が崩れることがある。</li>
+      <li>前のページで見たラウンドロビンやフローハッシュだけでは、同じ利用者の要求が別の機械に届くことがあり、セッションアフィニティはこれを補う仕組みである。</li>
+      <li>既定の組み合わせ(フローハッシュに近い考え方)ではなく、送信元の IP アドレスなど少ない要素だけを見るようにすることで、セッションアフィニティは同じ機械への固定を実現する。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組みを、セッションアフィニティ(別名スティッキーセッション)と呼ぶ(#93)。振り分け先の機械が、それまでのやり取りの内容(進行中の作業の状態など)を自分の中に一時的に覚えている場合に使われる(#93)。既定では、送信元・宛先の IP アドレスやポート番号、通信の種類などの組み合わせ(23-2 で見たフローハッシュに近い考え方)で振り分け先が決まるため、これだけでは同じ利用者の要求でも別の機械に届くことがある(#93、#94)。セッションアフィニティを使うと、送信元の IP アドレスなど、より少ない要素の組み合わせで振り分け先を固定できる(#94)。ただし、この対応関係はベストエフォートであり、振り分け先の機械の数や健康状態が変わると崩れることがある(#93)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="93">[#93] Google Cloud「Backend services overview」(Session affinity の節) — <a href="https://cloud.google.com/load-balancing/docs/backend-service" rel="noopener">原典</a>(1219〜1230 行目「Session affinity」の節。同じ利用者からの複数の接続を同じ振り分け先に送る仕組みで、ステートフルなサーバや内部キャッシュを多用するサービスで有用という記述。1228 行目「Google Cloud load balancers provide session affinity on a best-effort basis.」というベストエフォートの明示。1237 行目。既定は送信元・宛先の IP アドレスとポート番号、プロトコルの組み合わせ〈五要素〉によるハッシュという記述)</li>
+    <li class="cite" data-src="94">[#94] Microsoft「Azure Load Balancer distribution modes」 — <a href="https://learn.microsoft.com/en-us/azure/load-balancer/distribution-mode-concepts" rel="noopener">原典</a>(20〜32 行目「Hash based」の節。既定は五要素のハッシュで、同じ送信元から新しいセッションが始まると送信元ポートが変わり、別の機械に届きうるという記述。41〜48 行目「Session persistence」の節。別名がセッションアフィニティ・送信元 IP アフィニティであるという記述、送信元と宛先の IP アドレスの組み合わせ〈2 要素〉、またはこれにプロトコルを加えた組み合わせ〈3 要素〉で振り分け先を固定するという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m23-4">
+    <div class="q" data-q="1">
+      <p class="q-text">セッションアフィニティが「ベストエフォート」と説明されるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信を暗号化する分、処理に時間がかかるから</button></li>
+        <li><button type="button" data-correct="true">振り分け先の機械の数が変わったり、健康状態が変わったりすると、それまで同じ機械に送り続けていた対応関係が崩れることがあるから</button></li>
+        <li><button type="button" data-correct="false">利用者の端末の性能によって、届く機械が変わるから</button></li>
+        <li><button type="button" data-correct="false">セッションアフィニティは、あらかじめ決めた 1 台にしか使えない仕組みだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、振り分け先の機械の数が変わったり、健康状態が変わったりすると、それまで同じ機械に送り続けていた対応関係が崩れることがあるから、です。暗号化や端末の性能、1 台限定の仕組みとは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">大きなファイルを分割して送るアップロードで、2 回目以降の断片を送ったら「続きが見つからない」と返されたのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ネットワークの回線が混雑していたから</button></li>
+        <li><button type="button" data-correct="false">ファイルの容量が大きすぎて、ロードバランサが要求を拒否したから</button></li>
+        <li><button type="button" data-correct="true">途中経過を自分の中だけに覚えていた機械と、次の断片を受け取った機械が別だったから</button></li>
+        <li><button type="button" data-correct="false">ヘルスチェックが、アップロード中の機械を故障と誤って検知したから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、途中経過を自分の中だけに覚えていた機械と、次の断片を受け取った機械が別だったから、です。回線混雑や容量超過、ヘルスチェックの誤検知とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">セッションアフィニティの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">振り分け先の機械が正常に応答しているかを、定期的に確かめる仕組み</button></li>
+        <li><button type="button" data-correct="false">複数の振り分け先に、要求が来るたびに順番で割り当てていく仕組み</button></li>
+        <li><button type="button" data-correct="false">動かなくなった機械への通信を止め、別の機械に切り替える仕組み</button></li>
+        <li><button type="button" data-correct="true">同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組み、です。正常確認の定期的な確かめはヘルスチェック、順番の割り当てはラウンドロビン、切り替えはフェイルオーバーの役割です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m23-3.html">← 23-3 止まった 1 台をどう外すか</a>
+    <a class="up" href="m23.html">第 23 章の入口</a>
+    <a class="next" href="m23-5.html">23-5 利用者は、ロードバランサにどうたどり着くか →</a>
+  </nav>
+</main>
+</body>
+</html>

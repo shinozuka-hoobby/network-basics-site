@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>「名前が無い」と「答えられなかった」は別の失敗 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m17-1" data-chapter="m17" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 17-1</p>
+  <p class="chapter-label">第 17 章 DNS の運用と障害　17-1</p>
+  <h1>「名前が無い」と「答えられなかった」は別の失敗</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>DNS への問い合わせがうまくいかないとき、原因は一つではない。指定した名前がそもそも存在しないという答えと、答えそのものを返せなかったという失敗は、性質の異なる別のことである。このページでは、<strong>この 2 つの違いと、結果からの見分け方</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">DNS の問い合わせがうまくいかないときって、いつも同じような失敗なんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、大きく分けて 2 種類あります。まず、指定した名前がそもそも存在しないと分かったときに返ってくる答えがあります。</p>
+    <p class="s" data-who="ひよこちゃん">存在しないっていうのは、エラーなんですか、それとも普通の答えなんですか?</p>
+    <p class="t" data-who="ふくろう先生">失敗ではなく、確定した答えの一つです。これを <strong>NXDOMAIN</strong> と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、答えそのものが返ってこない場合もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。答えそのものを返せなかったという失敗で、例えば権威サーバに届かなかったり、時間内に答えが得られなかったりすると起こります。これを <strong>SERVFAIL</strong> と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">SERVFAIL って、具体的にはどんなときに起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、外部のサーバに問い合わせを転送する設定をしているとき、転送先に届かなかったり、時間内に答えが返らなかったりすると起きることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">NXDOMAIN と SERVFAIL って、何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">NXDOMAIN は「その名前は無い」という確定した返事です。SERVFAIL は、その返事すら出せなかったという失敗です。原因の性質が違います。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、DNS レコードを書き間違えて、ブラウザで「このサイトにアクセスできません」のような表示が出たことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさに NXDOMAIN ですね。意図した名前に対応する情報が権威サーバに無い状態になっていたため、「存在しない」という確定した答えが返ってきたんです。</p>
+    <p class="s" data-who="ひよこちゃん">SERVFAIL は、一時的なことも多いんですか?</p>
+    <p class="t" data-who="ふくろう先生">そういうこともあります。転送先が一時的に応答しなかっただけなら、少し時間をおいて問い合わせ直すと解消することもあります。</p>
+    <p class="s" data-who="ひよこちゃん">レコードを直せば、また名前が見つかるようになりますか?</p>
+    <p class="t" data-who="ふくろう先生">なります。ただし、直した内容が反映されるまでには少し時間がかかることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">なんで、直したのにすぐには反映されないんですか?</p>
+    <p class="t" data-who="ふくろう先生">権威サーバへの反映だけでなく、各地に残った控えの期限切れを待つ必要があるからです。詳しくは次のページで見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">この 2 つの違いは、問い合わせの結果を見れば分かるんですか?</p>
+    <p class="t" data-who="ふくろう先生">分かります。結果の status の行に、それぞれ別の言葉で表示されます。実際に確かめてみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>DNS への問い合わせがうまくいかない原因には、性質の異なる 2 種類がある。</li>
+      <li>NXDOMAIN は、指定した名前がそもそも存在しないと分かったときに返ってくる、確定した答えである。</li>
+      <li>SERVFAIL は、権威サーバに届かなかったり時間内に答えが得られなかったりして、答えそのものを返せなかったことを示す失敗である。</li>
+      <li>DNS レコードを書き間違えると、対応する情報が権威サーバに無い状態になり、NXDOMAIN が返ってくることがある。</li>
+      <li>SERVFAIL は、転送先が一時的に応答しなかっただけの場合、時間をおいて問い合わせ直すと解消することもある。</li>
+      <li>この 2 つの違いは、問い合わせ結果の status の行に表示される言葉で見分けられ、原因の性質を取り違えないことが対処の第一歩になる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DNS への問い合わせの結果は、大きく分けて「答えを返せた」場合と「答えを返せなかった」場合がある。指定した名前がそもそも存在しないと分かった場合は、失敗ではなく確定した答えとして扱われ、これを NXDOMAIN と呼ぶ。一方、権威サーバに問い合わせても届かず、あるいは時間内に答えが得られないなど、サーバ側の処理がうまくいかず、答えそのものが返らない失敗になることもあり、これを SERVFAIL と呼ぶ。たとえば、外部のサーバに問い合わせを転送する設定をしている場合、転送先に届かなかったり応答が遅かったりすると SERVFAIL になることがある(#32)。DNS レコードの登録時に名前を書き間違えたり、必要なレコードが無かったりすると、意図した名前に対応する情報が権威サーバに無い状態になり、問い合わせに対して NXDOMAIN が返ってくることがある(#53)。この 2 つは、同じ「うまくいかなかった」という結果に見えても、原因の性質が異なる。NXDOMAIN は名前についての確定した答えであり、SERVFAIL は処理そのものの失敗である。SERVFAIL は、転送先が一時的に応答しなかっただけであれば、時間をおいて問い合わせ直すことで解消することもある(#32)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>dig example.com
+dig nosuchname.example.com</code></pre>
+    <p>見方: 2 つの結果の status の行を比べる。存在する名前(example.com)では NOERROR、存在しない名前(nosuchname.example.com)では NXDOMAIN になる。</p>
+    <p class="try-note">2 行目は存在しないことが分かっている名前への問い合わせのため、通常の試してみようで使う候補（example.com など）とは違う名前を使っている。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="53">[#53] Cloudflare Learning Center「Common DNS issues and how to fix them」 — <a href="https://www.cloudflare.com/learning/dns/common-dns-issues/" rel="noopener">原典</a>（「Incorrect DNS records」の節。DNS レコードの書き間違いが問い合わせの失敗につながるという記述。「What does it mean when page visitors receive a 'DNS_PROBE_FINISHED_NXDOMAIN' error?」の節。NXDOMAIN が「存在しないドメイン」を意味するという定義）</li>
+    <li class="cite" data-src="32">[#32] Google Cloud「Cloud DNS overview」 — <a href="https://cloud.google.com/dns/docs/overview" rel="noopener">原典</a>（「DNS forwarding methods」の節。転送先に届かない、または応答が遅い場合に SERVFAIL が返ることがあるという記述）</li>
+    <li class="cite" data-src="83">[#83] IETF「RFC 1035: Domain Names - Implementation and Specification」 — <a href="https://www.rfc-editor.org/rfc/rfc1035.html" rel="noopener">原典</a>（NXDOMAIN と SERVFAIL の区別）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m17-1">
+    <div class="q" data-q="1">
+      <p class="q-text">NXDOMAIN と SERVFAIL の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">NXDOMAIN は指定した名前が存在しないという確定した答えで、SERVFAIL は答えそのものを返せなかった失敗である</button></li>
+        <li><button type="button" data-correct="false">NXDOMAIN は失敗で、SERVFAIL は正常な答えである</button></li>
+        <li><button type="button" data-correct="false">どちらも同じ意味で、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">NXDOMAIN は権威サーバの不調を示し、SERVFAIL は名前が存在しないことを示す</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、NXDOMAIN は指定した名前が存在しないという確定した答えで、SERVFAIL は答えそのものを返せなかった失敗である、です。2 つは逆の意味ではなく、それぞれ別の性質を持つ結果です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">DNS レコードを書き間違えると、なぜ NXDOMAIN が返ってくることがあるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">意図した名前に対応する情報が権威サーバに無い状態になり、権威サーバが「存在しない」と答えるから</button></li>
+        <li><button type="button" data-correct="false">権威サーバが忙しくて処理できなくなるから</button></li>
+        <li><button type="button" data-correct="false">DNS キャッシュの中身が壊れてしまうから</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL の値が 0 になってしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、意図した名前に対応する情報が権威サーバに無い状態になり、権威サーバが「存在しない」と答えるから、です。処理能力の不足やキャッシュの破損、TTL の値が原因ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">問い合わせの結果から、NXDOMAIN と SERVFAIL を見分ける方法として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">結果の status の行に表示される言葉を見る</button></li>
+        <li><button type="button" data-correct="false">答えの IP アドレスの数字の大小を見る</button></li>
+        <li><button type="button" data-correct="false">問い合わせにかかった時間の長さだけで判断する</button></li>
+        <li><button type="button" data-correct="false">ブラウザの表示速度だけで判断する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、結果の status の行に表示される言葉を見る、です。IP アドレスの大小や表示速度、時間の長さだけでは、この 2 つを見分けられません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m17.html">← 第 17 章の入口</a>
+    <a class="up" href="m17.html">第 17 章の入口</a>
+    <a class="next" href="m17-2.html">17-2 変更が「伝わる」の正体 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IP アドレスの前半と後半で、役割が違う — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m05-2" data-chapter="m05" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 5-2</p>
+  <p class="chapter-label">第 5 章 IP アドレスとサブネット　5-2</p>
+  <h1>IP アドレスの前半と後半で、役割が違う</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>IP アドレスは、前半分と後半分で役割が違う。前半分は、そのアドレスが属している仲間の範囲を表し、後半分がその中の 1 台を区別する。<strong>この境目がどこにあるかは、IP アドレスとは別の数字が教えてくれる</strong>。このページでは、その境目の決まり方と、短く書く方法を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、IP アドレスの前半と後半で役目が違うって言ってましたけど、具体的にどこで区切るんですか?</p>
+    <p class="t" data-who="ふくろう先生">前半分は、その IP アドレスが属している仲間の集まり全体を表します。この集まりをサブネットと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットに分ける意味って、何かあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">大きな集まりを小さな単位に分けておくと、通信を届けるときに、無駄に遠回りせずに済みます。手紙を都道府県ごとではなく部署ごとに仕分けるようなものだと考えてください<span class="tag-simp">簡略化</span>。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットの範囲は、どうやって決まるんですか?</p>
+    <p class="t" data-who="ふくろう先生">境目を教えてくれる、もう 1 つの数字があります。これをサブネットマスクと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットマスクって、IP アドレスとは別の数字なんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。IP アドレスと同じように 4 つの組の形をしていて、前から 1 が並んでいる個数の分だけ、先頭がネットワークを表す部分になります。</p>
+    <p class="s" data-who="ひよこちゃん">1 が並んでる部分がネットワーク、残りが機械の部分ってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。たとえばサブネットマスクが 255.255.255.0 なら、先頭 24 ビットがネットワークを表す部分です。</p>
+    <p class="s" data-who="ひよこちゃん">255.255.255.0 を 2 進数にすると、そういう並びになるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。255 は 8 個のビットが全部 1、0 は 8 個全部 0 なので、先頭 3 つの組が全部 1、最後の組が全部 0 になります。</p>
+    <p class="s" data-who="ひよこちゃん">毎回この 4 つの組を書くのは、ちょっと面倒じゃないですか?</p>
+    <p class="t" data-who="ふくろう先生">そのために、1 の個数だけを数字にして、IP アドレスの後ろに「/24」のように書く方法があります。これを CIDR 表記と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">さっきの 255.255.255.0 は、CIDR 表記だと /24 になるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。数字が大きいほど、ネットワークを表す部分が長くなります。</p>
+    <p class="s" data-who="ひよこちゃん">部分が長くなると、何が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つ 1 つのサブネットの範囲が狭くなります。逆に数字が小さいほど、範囲は広くなります。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットマスクの値を間違えると、何か困ることがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。自分がどの仲間に属しているかの判断を間違えることがあります。次のページで、実際の計算とあわせて見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">サブネット、サブネットマスク、CIDR 表記、この 3 つの関係が少し見えてきました。</p>
+    <p class="t" data-who="ふくろう先生">良い感じです。整理すると、サブネットは仲間の集まり、サブネットマスクは境目を示す数字、CIDR 表記はその境目を短く書く方法です。</p>
+    <p class="s" data-who="ひよこちゃん">次のページでは、この境目を使って何をするんですか?</p>
+    <p class="t" data-who="ふくろう先生">実際に、このマスクを使ってどんな番号が求まるかを計算していきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP アドレスは前半分(ネットワークを表す部分)と後半分(機械を表す部分)に分かれ、同じ前半分を持つ集まりをサブネットと呼ぶ。サブネットに分けておくと通信を無駄なく届けやすくなる。</li>
+      <li>サブネットマスクは、IP アドレスのどこまでがネットワークを表す部分かを示す数字で、前から 1 が並んだ個数がその境目になる。</li>
+      <li>CIDR 表記は、その 1 の個数を「/24」のように IP アドレスの後ろに書き添える書き方である。</li>
+      <li>CIDR 表記の数字が大きいほどネットワークを表す部分は長くなり、1 つのサブネットの範囲は狭くなる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>サブネットマスクは、IP アドレスと同じ 32 ビットの数字で、前から 1 が並んだ部分がネットワークを表す部分、残りの 0 の部分が機械を表す部分であることを示す。たとえば 255.255.255.0 は 2 進数で先頭 24 ビットが 1、残り 8 ビットが 0 であり、先頭 24 ビットまでがネットワークを表す部分になる。CIDR 表記は、この 1 の個数を「/24」のように IP アドレスの後ろに書き添える方法で、サブネットマスク全体を書くより短く済む。同じ範囲の IP アドレスでも、CIDR 表記の数字が大きいほど 1 の個数が増えてネットワークを表す部分が長くなり、1 つのサブネットに含まれる範囲は狭くなる。逆に数字が小さいほど範囲は広くなる。かけあいで手紙の仕分けにたとえたとおり、サブネットに分けておくことで、通信を届ける際に宛先の判断を素早く行えるようになる。この境目の考え方は、サブネットマスクという 32 ビットの数字を丸ごと書かなくても、CIDR 表記の数字 1 つだけで同じ境目を過不足なく表せる、という点でも便利である。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 「en0」の行にある「inet」の後ろの数字が、この Mac の IP アドレスである。同じ「en0」の中の「netmask」は 16 進数(例: 0xffffff00)で表示されるが、これは 255.255.255.0 と同じ意味の値を、別の書き方で表したものだと考えてほしい。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論「IP」」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>(p.33「ネットマスクとプレフィックス」の図)</li>
+    <li class="cite" data-src="45">[#45] Cisco「Configure IP Addresses and Unique Subnets」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html" rel="noopener">原典</a>(「Network Masks」「CIDR」の節)</li>
+    <li class="cite" data-src="51">[#51] Cloudflare Learning Center「What is a subnet?」 — <a href="https://www.cloudflare.com/learning/network-layer/what-is-a-subnet/" rel="noopener">原典</a>(サブネットマスクを部署宛ての郵便にたとえた説明)</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>(p.36-37 サブネットマスクの説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m05-2">
+    <div class="q" data-q="1">
+      <p class="q-text">サブネットマスクの役目として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">IP アドレスのどこまでがネットワークを表す部分かを示す</button></li>
+        <li><button type="button" data-correct="false">機械の処理速度を制限する</button></li>
+        <li><button type="button" data-correct="false">通信を暗号化するための鍵になる</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスを IP アドレスに変換する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、IP アドレスのどこまでがネットワークを表す部分かを示す、です。前から 1 が並んだ部分がネットワークを表す部分、残りが機械を表す部分になります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">CIDR 表記の /24 が表すものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">先頭から 24 ビットがネットワークを表す部分であること</button></li>
+        <li><button type="button" data-correct="false">そのネットワークの中に 24 台の機械があること</button></li>
+        <li><button type="button" data-correct="false">このネットワークが 24 番目に作られたこと</button></li>
+        <li><button type="button" data-correct="false">ポート番号が 24 番であること</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、先頭から 24 ビットがネットワークを表す部分であること、です。「/」の後ろの数字は、サブネットマスクの 1 が並ぶ個数を短く書いたものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">同じ範囲の IP アドレスで、CIDR 表記の数字が /24 から /26 に変わると何が変わるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ネットワークを表す部分が長くなり、1 つのサブネットの範囲が狭くなる</button></li>
+        <li><button type="button" data-correct="false">ネットワークを表す部分が短くなり、範囲が広くなる</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの前半と後半の位置が入れ替わる</button></li>
+        <li><button type="button" data-correct="false">そのサブネットが使えなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ネットワークを表す部分が長くなり、1 つのサブネットの範囲が狭くなる、です。数字が大きいほど 1 が並ぶ個数が増え、機械を表す部分が短くなります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m05-1.html">← 5-1 IP アドレスは、4 つの数字の組でできている</a>
+    <a class="up" href="m05.html">第 5 章の入口</a>
+    <a class="next" href="m05-3.html">5-3 グループ全体を指す番号と、全員に呼びかける番号 →</a>
+  </nav>
+</main>
+</body>
+</html>

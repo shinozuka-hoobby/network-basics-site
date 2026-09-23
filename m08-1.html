@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>次の送り先は、何を見て決まるのか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m08-1" data-chapter="m08" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 8-1</p>
+  <p class="chapter-label">第 8 章 ルーティングの基本　8-1</p>
+  <h1>次の送り先は、何を見て決まるのか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>手元のデータが遠くの宛先に届くまでには、いくつもの機械が間に入って、次の相手に渡す作業を繰り返している。この中継役の機械は、宛先を見て次にどこへ渡すかを、<strong>自分の中にある情報をもとに</strong>判断している。このページでは、その判断のもとになっている仕組みを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 1 章で、ルータって「遠くの宛先を見て次の転送先を選ぶ機械」だって聞いたんですけど、具体的には何を見て決めてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ルータは、自分の中に持っている表を見て決めています。これをルーティングテーブルと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">表の中身って、どんな感じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">宛先のネットワークごとに、次にどこへ送ればよいかが一行ずつ書かれています。</p>
+    <p class="s" data-who="ひよこちゃん">それって、第 3 章で見たスイッチの MAC アドレステーブルと似てますね。</p>
+    <p class="t" data-who="ふくろう先生">似ていますが、見ている宛先が違います。スイッチは同じ場所にある機械の MAC アドレスを見て転送先を決め、ルータは IP アドレスの宛先を見て、遠くの経路を決めます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、同じネットワークの中でやり取りするときはスイッチが、遠くの宛先に送るときはルータが働いてるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">家で使ってるインターネット接続の機械も、ルータの仲間なんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。自分のネットワークの外へデータを送る場面がある以上、家庭の機器も同じ役目を果たしています。家庭でも、規模の小さい会社でも、外のネットワークとやり取りするなら同じようにルータが必要です。</p>
+    <p class="s" data-who="ひよこちゃん">表に書いてある「次にどこへ送ればよいか」っていうのは、具体的にはどんな情報なんですか?</p>
+    <p class="t" data-who="ふくろう先生">次にデータを渡す相手の機械の情報です。呼び方や細かい読み方は、次のページで見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、この表さえ見れば、宛先までの道のりが全部わかるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうではありません。ルータは自分の表にある次の 1 台が分かるだけです。その次のルータも、また自分の表を見て次の 1 台を決めます。</p>
+    <p class="s" data-who="ひよこちゃん">1 台ずつバトンタッチしていくような感じですね。</p>
+    <p class="t" data-who="ふくろう先生">近い言い方です。</p>
+    <p class="s" data-who="ひよこちゃん">この表の行数って、機械によって全然違ったりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。家庭の機器なら数行で足りますが、インターネットの奥にあるルータでは、宛先の種類が増える分、行数もけた違いに多くなります。</p>
+    <p class="s" data-who="ひよこちゃん">表の中身って、誰が書いてるんですか? 管理者が全部手で書くんですか?</p>
+    <p class="t" data-who="ふくろう先生">書き方にはいくつかやり方があります。詳しくは、表の読み方を見たあとのページで扱いましょう。</p>
+    <p class="s" data-who="ひよこちゃん">気になることが多いです。自分のパソコンからも、今日通っている機械の数を確認できたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。今日はその一端を試してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">分かりました。宛先を見て次の送り先を決める中継の機械がいて、それが自分の中の表を見ている、ということですね。</p>
+    <p class="t" data-who="ふくろう先生">その理解で十分です。次のページでは、その表の中身を実際に読んでいきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ルータは、自分の中にあるルーティングテーブルという表を見て、宛先ごとに次にどの機械へ送るかを判断している。</li>
+      <li>ルーティングテーブルの各行には、宛先のネットワークと、次に渡す機械についての情報が書かれている。</li>
+      <li>スイッチは同じ場所にある機械の MAC アドレスを見て転送先を決めるのに対し、ルータは IP アドレスの宛先を見て、遠くまでの経路を決める。</li>
+      <li>1 台のルータには宛先までの道のり全体は分からず、次のルータもまた自分の表を見て次の 1 台を決める、という中継が繰り返される。</li>
+      <li>ネットワークの外とやり取りする機械であれば、家庭用の接続機器のように小さなものでも、規模の大きい専用のルータでも、同じ役目を果たしている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ルータは、宛先のネットワークごとに次にどの機械へ送ればよいかを一覧にした、ルーティングテーブルという表を持つ(#65)。家庭で使われている、インターネットへの接続機器も、離れたネットワーク宛てのデータをどこかへ送る必要がある時点で、実質的にルータの役割を果たしている(#65)。規模の小さいネットワークでは表の行数はわずかで済むが、規模が大きくなるほど宛先の種類が増え、表に書かれる行数も増えていく(#65)。スイッチが同じ配線につながる機械の MAC アドレスを学習して転送先を決めるのに対し(第 3 章)、ルータは IP アドレスが示す宛先のネットワークを見て、次に渡す機械を決める(#44)。宛先までの道のり全体は 1 台のルータには分かっておらず、各ルータは自分の表にある次の 1 台が分かるだけで、その先はまた次のルータが自分の表を見て決めていく、というリレーのような仕組みになっている(#3、#12)。通信の相手と実際にやり取りするには、相手がどこにいるかという宛先の特定と、そこまでの経路の決定という 2 つの課題を解く必要があり、ルーティングテーブルはこの後者を担っている(#12)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>traceroute -m 15 example.com</code></pre>
+    <p>見方: 出力に並ぶ行の数が、この通信で経由したおおよその機械の台数にあたる。各行が、経路の途中にいる 1 台の機械に対応している。</p>
+    <p>行の一部が * になることもあるが、これは応答を返さない機械があるためで、詳しい読み方は第 27 章で扱う。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.7〜8、家庭の ADSL モデムが実質的にルータであり、ルーティングテーブルという特別な表を持つという導入）</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>（"IP routing tables consist of destination address/next hop pairs"）</li>
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論(IP)」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（p.38〜40、経路制御の位置づけと、パケット受信時に宛先を検索する手続き）</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>（p.32〜33、送信先の特定と通信経路の決定という 2 つの課題の整理）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 14.3.3 Observe Traffic Flow in a Routed Network。ルーティングされていない LAN とルーティングされた LAN とで、通信の流れがどう変わるかを観察する演習）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m08-1">
+    <div class="q" data-q="1">
+      <p class="q-text">スイッチとルータでは、転送先を決めるために見ている表の中身が違う。その理由として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">スイッチの方が新しい技術で作られているから</button></li>
+        <li><button type="button" data-correct="true">見ている宛先の情報(MAC アドレスと IP アドレス)が違うから</button></li>
+        <li><button type="button" data-correct="false">ルータの方が、つなげられる機械の台数が少ないから</button></li>
+        <li><button type="button" data-correct="false">スイッチは表を持たず、ルータだけが表を持つから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、見ている宛先の情報(MAC アドレスと IP アドレス)が違うから、です。スイッチは同じ場所にある機械の MAC アドレスを見て転送先を決め、ルータは IP アドレスの宛先を見て遠くまでの経路を決めます。どちらも表を持つ点は共通していますが、見ている宛先の種類が違います。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ルーティングテーブルとは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ルータが、宛先ごとに次にどの機械へ送ればよいかを一覧にした表</button></li>
+        <li><button type="button" data-correct="false">スイッチが、機械の場所を覚えておく表</button></li>
+        <li><button type="button" data-correct="false">Web サーバが、公開しているページの一覧を記録した表</button></li>
+        <li><button type="button" data-correct="false">ブラウザが、表示したページの履歴を記録した表</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ルータが、宛先ごとに次にどの機械へ送ればよいかを一覧にした表、です。機械の場所を覚える表は第 3 章の MAC アドレステーブルで、ルータのルーティングテーブルとは見ている宛先も役目も異なります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">1 台のルータは宛先までの道のり全体を知らないのに、なぜ最終的にデータが宛先まで届くのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">各ルータが自分の表を見て次の 1 台を決め、それを繰り返すことで少しずつ宛先に近づいていくから</button></li>
+        <li><button type="button" data-correct="false">送信元の機械が、あらかじめ道のり全体をルータに指示しているから</button></li>
+        <li><button type="button" data-correct="false">宛先のネットワークにあるルータが、直接データを取りに来るから</button></li>
+        <li><button type="button" data-correct="false">データが途中のすべての機械に同時に送られ、宛先だけが受け取るから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、各ルータが自分の表を見て次の 1 台を決め、それを繰り返すことで少しずつ宛先に近づいていくから、です。ルータは自分の表にある次の 1 台が分かるだけで、その先の道のりは次のルータがまた自分の表を見て決めていきます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m08.html">← 第 8 章の入口</a>
+    <a class="up" href="m08.html">第 8 章の入口</a>
+    <a class="next" href="m08-2.html">8-2 その表の中から、どの行を選ぶか →</a>
+  </nav>
+</main>
+</body>
+</html>

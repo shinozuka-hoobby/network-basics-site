@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>身分証を取り消す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m19-2" data-chapter="m19" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 19-2</p>
+  <p class="chapter-label">第 19 章 HTTPS を運用する　19-2</p>
+  <h1>身分証を取り消す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>身分証には有効期間があるが、<strong>その期間の途中でも、無効にしなければならない場面がある</strong>。このページでは、そうした場面と、無効になった身分証を見分ける仕組みを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">有効期間が来る前に、身分証を無効にすることってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。例えば秘密鍵が漏れた場合です。</p>
+    <p class="s" data-who="ひよこちゃん">前のページで見た、期限切れとは違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">違います。期限切れは、時間が来て自然に無効になることです。ここで話すのは、期限より前に、意図して無効にする場合です。</p>
+    <p class="s" data-who="ひよこちゃん">秘密鍵が漏れると、何が困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">漏れた鍵を持つ別の誰かが、本物のふりをできてしまいます。だから<strong>有効期間が残っていても</strong>、その身分証を無効にする必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">実際に、そういうことがあったんですか?</p>
+    <p class="t" data-who="ふくろう先生">実際にあった例を紹介します。ある OS 向けの暗号ソフトで、鍵の作り方に問題が見つかったことがあります。乱数の元になる値が固定になっていて、生成される秘密鍵の種類がとても限られていました。</p>
+    <p class="s" data-who="ひよこちゃん">それの何が問題だったんですか?</p>
+    <p class="t" data-who="ふくろう先生">生成されうる秘密鍵をすべて試せば、他人の秘密鍵を持っている可能性があったということです。影響を受けたサイトは、身分証を作り直す必要がありました。</p>
+    <p class="s" data-who="ひよこちゃん">作り直すって、具体的にはどうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">疑わしい身分証を無効にしたうえで、新しい鍵を作り直し、あらためて認証局に発行してもらいます。</p>
+    <p class="s" data-who="ひよこちゃん">無効になった身分証は、どうやって見分けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">認証局は、無効になった身分証の一覧を持っています。ブラウザは、この一覧と照らし合わせて確かめることができます。これを証明書の失効と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">一覧を、毎回全部確認するんですか?</p>
+    <p class="t" data-who="ふくろう先生">それも一つの方法ですが、その都度、認証局に問い合わせて確かめる方法もあります。</p>
+    <p class="s" data-who="ひよこちゃん">毎回問い合わせるのは、少し大変そうですね。</p>
+    <p class="t" data-who="ふくろう先生">そこで、サーバがあらかじめ認証局に確認しておいた結果を、身分証と一緒に添えて渡す方法もあります。これなら、接続のたびに認証局へ問い合わせずに済みます。</p>
+    <p class="s" data-who="ひよこちゃん">サーバが代わりに確認しておいてくれる、ということですね。ちなみに、一覧や問い合わせの中身自体が、悪用されたりしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">一覧や問い合わせの中身は、身分証が有効かどうかを示すだけで、秘密鍵の中身までは含まれません。</p>
+    <p class="s" data-who="ひよこちゃん">一覧を確認するのと、その都度問い合わせるのと、両方使うこともあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。実際には、状況に応じて使い分けたり、組み合わせたりすることもあります。</p>
+    <p class="t" data-who="ふくろう先生">これで、失効という仕組みの全体が見えましたね。次のページでは、また別の弱点を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>有効期間切れ(前のページ)は時間が来て自然に無効になることだが、秘密鍵が漏れるなど、期限より前に意図して身分証を無効にする場面もある。これを証明書の失効と呼ぶ。</li>
+      <li>実際にあった例では、鍵の作り方に問題があり、生成されうる秘密鍵の種類が限られていたため、影響を受けたサイトは身分証を無効にし、新しい鍵で作り直す必要があった。</li>
+      <li>認証局は無効になった身分証の一覧を持っており、ブラウザはこれと照らし合わせて確かめられる。</li>
+      <li>その都度、認証局に問い合わせて確かめる方法もあり、状況に応じて一覧の確認と組み合わせて使うこともある。</li>
+      <li>サーバがあらかじめ確認しておいた結果を身分証に添えて渡す方法もあり、接続のたびに認証局へ問い合わせずに済む。一覧や問い合わせの中身に、秘密鍵そのものは含まれない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>秘密鍵が漏れると、その鍵を持つ別の誰かが本物のふりをできてしまうため、有効期間が残っていても身分証を無効にする必要が生じる。これを証明書の失効と呼ぶ。実際にあった例では、ある OS 向けの暗号ソフトで鍵の作り方に問題が見つかり、生成されうる秘密鍵の種類が限られていたため、身分証を作り直す必要が生じたサイトがあった(#21)。失効した身分証を見分けるには、認証局が持つ失効した身分証の一覧(CRL)を確かめる方法や、その都度認証局に問い合わせて確かめる方法(OCSP)がある。ただし後者には、応答が得られないと確認できたことにしてしまう場合があることや、認証局側に接続の記録が残ってしまうという課題がある(#21)。これを解決するのが、サーバがあらかじめ確認しておいた結果を身分証に添えて渡す方式(OCSP Stapling)である。有効期間切れ(前のページ)が時間の経過による自然な無効化であるのに対し、ここで扱う失効は、期限より前に意図して行われる点が異なる。失効させたあとは、新しい鍵を作り直し、あらためて認証局に発行してもらうことになる。一覧の確認とその都度の問い合わせは、状況に応じて組み合わせて使われることもある。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(認証局の運用上の問題、Debian の OpenSSL の鍵生成問題で秘密鍵の種類が限定的になり証明書の再発行が必要になったサイトがあったという記述、OCSP と OCSP Stapling による失効確認の記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m19-2">
+    <div class="q" data-q="1">
+      <p class="q-text">秘密鍵が漏れた場合、有効期間が残っていても身分証を無効にする必要があるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">漏れた鍵を持つ別の誰かが、本物のふりをできてしまうから</button></li>
+        <li><button type="button" data-correct="false">有効期間が残っていると、ブラウザが自動的に警告を出すから</button></li>
+        <li><button type="button" data-correct="false">認証局が発行できる身分証の数に上限があるから</button></li>
+        <li><button type="button" data-correct="false">秘密鍵が漏れると、ドメイン名が使えなくなるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、漏れた鍵を持つ別の誰かが、本物のふりをできてしまうから、です。有効期間の途中でブラウザが自動的に警告を出すことはなく、発行数の上限やドメイン名の話とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">認証局への問い合わせで身分証の失効を確かめる方法には、どのような課題があるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">応答が得られないと、多くの場合そのまま有効だと確認できたことにしてしまう</button></li>
+        <li><button type="button" data-correct="false">問い合わせのたびに、身分証そのものが自動的に更新されてしまう</button></li>
+        <li><button type="button" data-correct="false">認証局が問い合わせを一切受け付けなくなる</button></li>
+        <li><button type="button" data-correct="false">失効した身分証の一覧が、二度と更新されなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、応答が得られないと、多くの場合そのまま有効だと確認できたことにしてしまう、です。この課題を解決するのが、サーバがあらかじめ確認結果を添えて渡す方式です。身分証の自動更新や、認証局が受け付けなくなることとは別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">サーバがあらかじめ確認しておいた結果を身分証に添えて渡す方式によって、何が解決されるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ブラウザが接続のたびに認証局へ問い合わせる必要が無くなる</button></li>
+        <li><button type="button" data-correct="false">身分証の有効期間が自動的に延長される</button></li>
+        <li><button type="button" data-correct="false">秘密鍵が漏れなくなる</button></li>
+        <li><button type="button" data-correct="false">認証局を経由せずに身分証を発行できるようになる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ブラウザが接続のたびに認証局へ問い合わせる必要が無くなる、です。有効期間の延長や秘密鍵の保護、認証局を経由しない発行とは別の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m19-1.html">← 19-1 身分証を手に入れて、更新し続ける</a>
+    <a class="up" href="m19.html">第 19 章の入口</a>
+    <a class="next" href="m19-3.html">19-3 常に HTTPS でつなぐようブラウザに覚えさせる →</a>
+  </nav>
+</main>
+</body>
+</html>

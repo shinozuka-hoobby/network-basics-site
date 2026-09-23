@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>答えには、覚えておいてよい期限がある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m16-4" data-chapter="m16" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 16-4</p>
+  <p class="chapter-label">第 16 章 DNS の仕組み　16-4</p>
+  <h1>答えには、覚えておいてよい期限がある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>名前解決の答えは、毎回権威サーバまで聞きに行って得ているわけではない。<strong>答えには覚えておいてよい秒数の期限があり、複数の場所にその控えが残る</strong>。このページでは、この仕組みと、第 1 章で見た事例を正式に説明する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">名前解決の答えって、毎回リゾルバが権威サーバまで聞きに行くんですか?</p>
+    <p class="t" data-who="ふくろう先生">毎回ではありません。答えには、この秒数の間は使ってよいという期限が付いていて、これを<strong>DNS の TTL</strong> と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">期限が切れるまでは、聞きに行かなくていいってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。期限が切れるまでは、前に調べた答えの控えがそのまま使われます。この控えを<strong>DNS キャッシュ</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">控えって、どこに残るんですか?</p>
+    <p class="t" data-who="ふくろう先生">ブラウザ、OS、途中の DNS リゾルバなど、複数の場所に残ります。</p>
+    <p class="s" data-who="ひよこちゃん">あ、それって第 1 章で読んだ、サーバを引っ越したのに古いサーバに繋がり続けたって、あの話と同じ仕組みですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。DNS レコードを新しい IP アドレスに変えても、複数の場所に残っていた DNS キャッシュは、DNS の TTL が切れるまでそのまま使われ続けます。</p>
+    <p class="s" data-who="ひよこちゃん">控えのある場所によって、切り替わるタイミングがバラバラだから、時間差が出るんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。すべての控えが新しい答えに入れ替わるまで、見ている場所によって新旧どちらに繋がるか変わることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">第 1 章では、事前に TTL を短くしておくと対策になるって聞きました。</p>
+    <p class="t" data-who="ふくろう先生">そうです。DNS の TTL を短くしておけば、古い答えの控えが残り続ける時間を短くできます。</p>
+    <p class="s" data-who="ひよこちゃん">第 6 章で見た IP の TTL と、名前は同じだけど別物でしたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。IP の TTL は機械を経由できる残り回数、DNS の TTL は答えを覚えておいてよい秒数で、数えている対象が違います。</p>
+    <p class="s" data-who="ひよこちゃん">DNS の TTL の値って、誰が決めてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのドメイン名の DNS レコードを設定する人が、レコードごとに値を決めます。</p>
+    <p class="s" data-who="ひよこちゃん">短くしすぎると、何か困ることはあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。問い合わせなくて済む時間が短くなる分、権威サーバや DNS リゾルバへの問い合わせの回数は増えます。</p>
+    <p class="s" data-who="ひよこちゃん">毎回問い合わせなくて済む分、DNS サーバ全体の負担も減るってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。控えから即座に答えられれば、権威サーバやリゾルバへの問い合わせの回数そのものが減ります。</p>
+    <p class="s" data-who="ひよこちゃん">DNS キャッシュって、いつまでも残り続けるわけじゃないんですよね。</p>
+    <p class="t" data-who="ふくろう先生">残りません。DNS の TTL が切れれば、控えは捨てられ、次に聞かれたときにもう一度調べ直しに行きます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、期限があるからこそ、古い答えを使い続けずに済むんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、実際の問い合わせの結果を自分の目で確かめる方法を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>名前解決の答えには、覚えておいてよい秒数の期限が付いており、これを DNS の TTL と呼ぶ。</li>
+      <li>DNS の TTL が切れるまでは、ブラウザ・OS・途中の DNS リゾルバなどに残った DNS キャッシュの答えがそのまま使われ続ける。</li>
+      <li>控えは複数の場所にあり、切れるタイミングもバラバラなため、DNS レコードを変更しても、全部が新しい答えに入れ替わるまで時間差が生じることがある（第 1 章 1-2 の事例）。</li>
+      <li>切り替え前に DNS の TTL を短くしておくと、古い答えが残り続ける時間を短くできる。</li>
+      <li>第 6 章で見た IP の TTL とは名前が同じだけで、数えている対象（経由できる残り回数か、覚えておいてよい秒数か）が異なる別物である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>名前解決の答えには、覚えておいてよい秒数の期限である DNS の TTL が付いており、この秒数の間、答えはブラウザ・OS・途中の DNS リゾルバといった複数の場所に DNS キャッシュとして残る(#52「What is DNS caching?」の節、#24 の TTL の定義)。DNS の TTL が切れるまでは、控えのある場所はいずれも新しく問い合わせ直さず、手元の答えをそのまま使う(#32「TTL がリゾルバのキャッシュを制御する」)。DNS レコードを新しい IP アドレスに変更しても、複数の場所に残った控えは、それぞれの DNS の TTL が切れるまで使われ続け、控えごとに切れるタイミングが違うため、すべてが入れ替わるまでに時間差が生じる。これが、第 1 章 1-2 で見た「サーバを引っ越したのに、しばらく古いサーバに繋がり続けた」という事例の正体である。控えから答えられる分、権威サーバや DNS リゾルバへの問い合わせの回数は抑えられる(#19「DNS キャッシュサーバ」の節)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig example.com
+dig example.com</code></pre>
+    <p>見方: 答えの区画に出てくる数字（DNS の TTL）を、1 回目と 2 回目の実行結果で比べる。数字が減っていれば、キャッシュに残っている答えをそのまま使っている証拠である。逆に増えていれば、期限が切れて調べ直され、新しい期限から数え直されたということである。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="52">[#52] Cloudflare Learning Center「What is DNS?」 — <a href="https://www.cloudflare.com/learning/dns/what-is-dns/" rel="noopener">原典</a>（「What is DNS caching? Where does DNS caching occur?」の節。Browser／OS レベルのキャッシュの説明）</li>
+    <li class="cite" data-src="19">[#19] JPNIC「インターネット 10 分講座：DNS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No22/080.html" rel="noopener">原典</a>（「DNS における問い合わせの流れ」の節末尾。結果をキャッシュする仕組みと「DNS キャッシュサーバ」という呼び名）</li>
+    <li class="cite" data-src="24">[#24] AWS「Amazon Route 53 concepts」 — <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html" rel="noopener">原典</a>（「time to live (TTL)」の定義。DNS リゾルバが値をキャッシュする秒数という説明）</li>
+    <li class="cite" data-src="32">[#32] GCP「Cloud DNS overview」 — <a href="https://cloud.google.com/dns/docs/overview" rel="noopener">原典</a>（168〜172 行目。TTL がリゾルバのキャッシュを制御するという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m16-4">
+    <div class="q" data-q="1">
+      <p class="q-text">DNS レコードを新しい IP アドレスに変更しても、すぐには新しい方に切り替わらないことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">権威サーバが変更を受け付けるのに、決まった手続きの承認が必要だから</button></li>
+        <li><button type="button" data-correct="true">複数の場所に残った DNS キャッシュの答えが、DNS の TTL が切れるまで使われ続けるから</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの変更は、1 日に 1 回しか行えない決まりだから</button></li>
+        <li><button type="button" data-correct="false">新しい IP アドレスが、古い IP アドレスより必ず数字が大きくなければならないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、複数の場所に残った DNS キャッシュの答えが、DNS の TTL が切れるまで使われ続けるから、です。承認手続きや変更回数の制限、アドレスの大小関係は、この時間差の理由ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">DNS の TTL の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">権威サーバの応答が遅れたときに、送り直すまでの待ち時間</button></li>
+        <li><button type="button" data-correct="true">名前解決の答えを、この秒数の間は使ってよいとする有効期限</button></li>
+        <li><button type="button" data-correct="false">DNS キャッシュが保存できる答えの最大件数</button></li>
+        <li><button type="button" data-correct="false">リゾルバが権威サーバへの接続を維持できる最大時間</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決の答えを、この秒数の間は使ってよいとする有効期限、です。DNS の TTL は答えの有効期限であり、待ち時間や保存件数、接続の維持時間とは別の考え方です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 6 章で見た IP の TTL と、この章で見た DNS の TTL の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">まったく同じ数字を指しており、名前も意味も同じである</button></li>
+        <li><button type="button" data-correct="true">名前は同じ「TTL」だが、IP の TTL は経由できる機械の残り回数、DNS の TTL は答えを覚えておいてよい秒数を表し、指しているものが違う</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL は、IP の TTL が 0 になったときに発行される通知である</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL のほうが古い仕組みで、IP の TTL はその後継である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前は同じ「TTL」だが、IP の TTL は経由できる機械の残り回数、DNS の TTL は答えを覚えておいてよい秒数を表し、指しているものが違う、です。同じ略語が文脈によって別の意味で使われる例です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m16-3.html">← 16-3 答えには、いくつかの種類がある</a>
+    <a class="up" href="m16.html">第 16 章の入口</a>
+    <a class="next" href="m16-5.html">16-5 問い合わせの結果を、区画ごとに読み解く →</a>
+  </nav>
+</main>
+</body>
+</html>

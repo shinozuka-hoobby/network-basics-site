@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クラウドにも、あの表と出入り口がある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m24-2" data-chapter="m24" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 24-2</p>
+  <p class="chapter-label">第 24 章 クラウドの仮想ネットワーク（VPC）　24-2</p>
+  <h1>クラウドにも、あの表と出入り口がある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>クラウドの区画を外のインターネットとやり取りさせるには、どこへ送るかを決める設定と、外へ出るための出入り口の、両方が必要になる。<strong>この 2 つが揃っていないと、サーバ自体は動いていても外とはやり取りできない</strong>。このページでは、この 2 つが、これまでの章で見た表と同じ考え方であることを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、区画を分けるところまでは分かったんですけど、それだけでもう外と通信できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。第 8 章で見た、ルータが持つ表を覚えていますか? クラウドにも同じ役目の設定があります。これをルートテーブルと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 8 章 8-1 で見た、ルーティングテーブルと同じ役目ってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。宛先ごとに、次にどこへ送るかが書かれた表という点は同じです。VPC のサブネットにも、それぞれこの表が関連づけられています。</p>
+    <p class="s" data-who="ひよこちゃん">外のインターネットへは、どこから出て行くんですか?</p>
+    <p class="t" data-who="ふくろう先生">外のインターネットへの出入り口となる設定を用意します。これをインターネットゲートウェイと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">ルートテーブルに、そのインターネットゲートウェイへの経路を書いておく、ってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。外から届く区画の例では、ルートテーブルに、宛先が 0.0.0.0/0 ならインターネットゲートウェイへ送る、という行が入っています。</p>
+    <p class="s" data-who="ひよこちゃん">第 8 章 8-3 で見た、0.0.0.0/0 のデフォルトルートと同じ書き方ですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。宛先が他のどの行にも当てはまらないとき、インターネットゲートウェイへ送る、という行です。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの VPC の中に、ルートテーブルは 1 つしか無いんですか?</p>
+    <p class="t" data-who="ふくろう先生">いくつも作れます。サブネットに明示的に関連づけなければ、既定のメインルートテーブルが使われます。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットごとに、別のルートテーブルを関連づけることもあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">あります。区画ごとに経路を変えたいときに使います。</p>
+    <p class="s" data-who="ひよこちゃん">この表、GCP や Azure にもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">考え方が近いものはありますが、呼び方や細かい仕組みは事業者によって違います。まとめは、章の最後のページで見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、手順書どおりに作ったはずなのに、公開用の区画に置いたサーバへ外からアクセスできなかったことがあります。</p>
+    <p class="t" data-who="ふくろう先生">その区画に関連づけたルートテーブルに、インターネットゲートウェイへの経路が書かれていなかったのだと思います。サーバ自体は動いていても、経路が無ければ外とはやり取りできません。</p>
+    <p class="s" data-who="ひよこちゃん">区画をパブリック用に作っただけでは、自動でその経路が入るわけじゃないんですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。関連づけを忘れると、こういうことが起きます。手元の Mac にも、似た役目の設定があるので確かめてみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">Mac にも、同じような経路を決める設定があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。試してみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ルートテーブルは、クラウドの中で、どの通信をどこへ送るかをまとめて決めている設定の一覧である。第 8 章で見たルーティングテーブルと同じ役目にあたる。</li>
+      <li>インターネットゲートウェイは、仕切られたネットワークを外のインターネットへつなぐ出入り口となる設定である。</li>
+      <li>ルートテーブルに、宛先 0.0.0.0/0 の通信をインターネットゲートウェイへ送るという行(第 8 章 8-3 で見たデフォルトルートと同じ考え方)が無いと、その区画は外と通信できない。</li>
+      <li>この関連づけを忘れると、サーバ自体は動いていても、外からアクセスできないことがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ルートテーブルは、クラウドの仕切られたネットワークの中で、どの通信をどこへ送るかをまとめて決めている設定の一覧である(#22)。サブネットには、それぞれルートテーブルが関連づけられている(#22)。インターネットゲートウェイは、仕切られたネットワークを外のインターネットへつなぐ出入り口となる設定である(#22)。外と通信させたい区画では、ルートテーブルに、宛先 0.0.0.0/0 の通信をインターネットゲートウェイへ送るという行を入れておく(#22)。この行は、第 8 章 8-3 で見たデフォルトルート(宛先が他のどの行にも当てはまらないときに使う行)と同じ考え方である。この関連づけが抜けていると、区画の中のサーバ自体は動いていても、外のインターネットとはやり取りできない。ルートテーブルの各行には、宛先とする IP アドレスの範囲と、そこへの送り先(インターネットゲートウェイなど)が書かれている(#22)。1 つの VPC の中にルートテーブルはいくつも作れ、サブネットに明示的に関連づけなければ、既定のメインルートテーブルが使われる(#22)。行き先は、インターネットゲートウェイだけでなく、VPC の中の別の機器やネットワークインタフェースになることもある(#22)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>netstat -rn</code></pre>
+    <p>見方: 一覧の中の "default" という行の "Gateway" 列を見てください。この Mac が「どこにも当てはまらない宛先は、とりあえずここへ送る」と決めている出口です。クラウドのルートテーブルにある、宛先 0.0.0.0/0 の行がインターネットゲートウェイを指すのと、同じ役目です。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（「Route tables」の節: ルートテーブルの定義とサブネットとの関連づけ、「Access the internet」の節: インターネットゲートウェイの説明と、既定のルートテーブルに入る 0.0.0.0/0 の経路）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m24-2">
+    <div class="q" data-q="1">
+      <p class="q-text">手順書どおりに作ったはずなのに、公開用の区画に置いたサーバへ外からアクセスできなかった。最も考えられる原因はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">その区画に関連づけたルートテーブルに、インターネットゲートウェイへの経路が書かれていなかった</button></li>
+        <li><button type="button" data-correct="false">サーバの CPU の性能が足りなかった</button></li>
+        <li><button type="button" data-correct="false">サブネットの CIDR 表記の桁数を書き間違えた</button></li>
+        <li><button type="button" data-correct="false">ドメイン名の設定がまだ反映されていなかった</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その区画に関連づけたルートテーブルに、インターネットゲートウェイへの経路が書かれていなかった、です。CPU の性能や CIDR 表記の書き間違い、ドメイン名の反映とは別の問題です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">クラウドのルートテーブルにある、宛先 0.0.0.0/0 の行の役目として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">サブネットの中のサーバ同士の通信をすべて禁止する</button></li>
+        <li><button type="button" data-correct="true">他のどの行にも当てはまらない宛先を、インターネットゲートウェイのような出入り口へ送る</button></li>
+        <li><button type="button" data-correct="false">サブネットの IP アドレスの範囲を計算し直す</button></li>
+        <li><button type="button" data-correct="false">サーバに割り当てる IP アドレスの個数を決める</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、他のどの行にも当てはまらない宛先を、インターネットゲートウェイのような出入り口へ送る、です。第 8 章 8-3 で見たデフォルトルートと同じ役目で、サーバ同士の通信の禁止や IP アドレスの計算とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">インターネットゲートウェイの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">サブネットの中のサーバの台数を管理する設定</button></li>
+        <li><button type="button" data-correct="false">クラウドの利用料金を計算する設定</button></li>
+        <li><button type="button" data-correct="true">仕切られたネットワークを、外のインターネットへつなぐ出入り口となる設定</button></li>
+        <li><button type="button" data-correct="false">サブネットどうしの通信を中継する設定</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、仕切られたネットワークを、外のインターネットへつなぐ出入り口となる設定、です。サーバの台数管理や料金計算、サブネットどうしの中継とは別の役目です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m24-1.html">← 24-1 手順書どおりに作った、あの仕切られた範囲</a>
+    <a class="up" href="m24.html">第 24 章の入口</a>
+    <a class="next" href="m24-3.html">24-3 許可を覚えているか、そのつど確かめるか →</a>
+  </nav>
+</main>
+</body>
+</html>

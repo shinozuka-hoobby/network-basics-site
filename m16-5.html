@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>問い合わせの結果を、区画ごとに読み解く — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m16-5" data-chapter="m16" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 16-5</p>
+  <p class="chapter-label">第 16 章 DNS の仕組み　16-5</p>
+  <h1>問い合わせの結果を、区画ごとに読み解く</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ここまで、名前解決に関わる役割や、答えの種類、答えの期限を見てきた。<strong>名前解決の問い合わせの結果は、いくつかの区画に整理されて表示される</strong>。このページでは、その結果を自分の目で確かめる方法を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ここまでリゾルバとか権威サーバとか、いろんな話をしてきましたけど、実際に問い合わせた結果を自分の目で見る方法ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ターミナルから<strong>dig</strong> という道具を使うと、問い合わせの結果をそのまま見られます。</p>
+    <p class="s" data-who="ひよこちゃん">結果には何が書かれてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いくつかの区画に分かれています。まず、何を尋ねたかを示す区画があります。</p>
+    <p class="s" data-who="ひよこちゃん">尋ねた内容に対する答えは、どこに出るんですか?</p>
+    <p class="t" data-who="ふくろう先生">答えの区画に出ます。前のページまでに見た DNS レコードが、ここに並びます。</p>
+    <p class="s" data-who="ひよこちゃん">答えの横に、数字が並んでたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">並びます。その数字が、前のページで見た DNS の TTL です。</p>
+    <p class="s" data-who="ひよこちゃん">どこに問い合わせたのかも、結果から分かったりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">分かります。末尾のほうに、問い合わせ先の機械の住所が出ます。この問い合わせは、第 12 章で見た UDP の 53 番という決まった窓口を使って行われます。</p>
+    <p class="s" data-who="ひよこちゃん">自分の家庭用ルータが問い合わせ先になってたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">この Mac で実際に確かめたところ、家庭用ルータのアドレスが問い合わせ先になっていました。契約している回線事業者のサーバや、公開されているサーバが問い合わせ先になる構成もあります。</p>
+    <p class="s" data-who="ひよこちゃん">答えが返ってくるまでの時間もわかるんですか?</p>
+    <p class="t" data-who="ふくろう先生">わかります。応答にかかった時間（ミリ秒）も、結果の末尾に表示されます。</p>
+    <p class="s" data-who="ひよこちゃん">もっと手短に、答えの数字だけ見る方法もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。答えの IP アドレスだけを表示する、簡単な聞き方も用意されています。</p>
+    <p class="s" data-who="ひよこちゃん">区画がいくつもあって迷いそうですけど、まず何を見ればいいですか?</p>
+    <p class="t" data-who="ふくろう先生">まずは答えの区画を見てください。知りたい情報は、たいていそこにそのまま並んでいるので、他の区画は必要になってから見れば十分です。</p>
+    <p class="s" data-who="ひよこちゃん">こういう区画分けって、なんとなく決まった書式があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。尋ねた内容の区画と答えの区画が分かれているのは、DNS の問い合わせと応答という決まった形式に沿っているからです。</p>
+    <p class="s" data-who="ひよこちゃん">同じ名前に続けて問い合わせると、DNS の TTL の数字が変わってることもあるんですよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。前のページで見たとおり、キャッシュに残っている答えをそのまま使っていれば数字は減り、期限切れで調べ直していれば新しい数字になります。</p>
+    <p class="s" data-who="ひよこちゃん">これで、この章で見てきた仕組みを、自分の目で確かめられましたね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。次の章では、この仕組みがうまくいかないときに何が起きるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ターミナルから dig という道具を使うと、名前解決の問い合わせの結果をそのまま確認でき、この章で見てきた内容を自分の目で裏付けられる。</li>
+      <li>結果は区画に分かれており、尋ねた内容の区画と、DNS レコードが並ぶ答えの区画がある。</li>
+      <li>答えの区画には DNS の TTL の数字も表示され、続けて問い合わせると、キャッシュから答えていれば数字が減り、期限切れで調べ直していれば新しい数字になる。</li>
+      <li>結果の末尾には、問い合わせ先の機械の住所や、応答にかかった時間も表示される。この問い合わせは第 12 章で見た UDP の 53 番という決まった窓口を使う。</li>
+      <li>結果の先頭には、問い合わせが正常に処理されたかどうかも示され、答えの数字だけを手短に確認する簡単な聞き方も用意されている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>dig は、ドメイン名に対応する情報を直接問い合わせて調べる、ターミナルのコマンドである。結果の先頭には、問い合わせが正常に処理されたかどうかも示される。結果は、尋ねた内容を示す区画、答えの DNS レコードが並ぶ区画などに分かれて表示される(#71 p.27「DNS Protocol」の Questions／Answers という区画分け)。答えの区画には、前のページで見た DNS の TTL の数字が添えられており、続けて問い合わせたときにこの数字が減っていればキャッシュに残った答えをそのまま使っている証拠であり、増えていれば期限切れで調べ直されたということになる。答えの数字だけを手短に確認する、簡単な聞き方も用意されている。結果の末尾には、問い合わせ先の機械の住所や、応答にかかった時間も表示される。この問い合わせは UDP の 53 番という決まった窓口で行われ、応答が届かない場合は送り直される(#71 p.25「Runs on UDP port 53, retransmits lost messages」)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig example.com</code></pre>
+    <p>見方: 結果はいくつかの区画に分かれている。尋ねた内容の区画には、聞いた名前と型が書かれている。答えの区画には、前のページまでに見た DNS レコードと DNS の TTL の数字が並ぶ。末尾のほうには、この問い合わせをどこに聞きに行ったかと、答えが返ってくるまでにかかった時間が出る。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.25 DNS protocol が UDP の 53 番で動作し、失われた応答を送り直すという記述、p.27 DNS Protocol の区画分け）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m16-5">
+    <div class="q" data-q="1">
+      <p class="q-text">同じ名前に続けて問い合わせると、答えの区画の DNS の TTL の数字が変わっていることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">問い合わせるたびに、答える権威サーバがランダムに切り替わるから</button></li>
+        <li><button type="button" data-correct="true">数字が減っていればキャッシュに残った答えをそのまま使っており、期限切れで調べ直していれば新しい数字になるから</button></li>
+        <li><button type="button" data-correct="false">問い合わせの結果は、毎回まったくでたらめな数字が表示される仕様だから</button></li>
+        <li><button type="button" data-correct="false">TLD のサーバが、問い合わせのたびに数字を書き換えているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、数字が減っていればキャッシュに残った答えをそのまま使っており、期限切れで調べ直していれば新しい数字になるから、です。数字はでたらめでも、TLD のサーバが書き換えているのでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">尋ねた内容を示す区画に書かれている内容として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">聞いた名前と、聞いた型</button></li>
+        <li><button type="button" data-correct="false">問い合わせにかかった時間だけ</button></li>
+        <li><button type="button" data-correct="false">権威サーバの管理者の連絡先</button></li>
+        <li><button type="button" data-correct="false">過去に問い合わせた履歴の一覧</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、聞いた名前と、聞いた型、です。かかった時間や管理者の連絡先、過去の履歴は、尋ねた内容の区画には書かれません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">結果の末尾に出てくる、問い合わせ先の機械の住所が示すものとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">そのドメイン名を最初に登録した会社の住所</button></li>
+        <li><button type="button" data-correct="true">この問い合わせを送った先として使われた機械の住所</button></li>
+        <li><button type="button" data-correct="false">答えの IP アドレスが指す Web サーバの住所</button></li>
+        <li><button type="button" data-correct="false">ルートサーバの住所を必ず表示したもの</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、この問い合わせを送った先として使われた機械の住所、です。登録会社の住所や Web サーバの住所、常にルートサーバの住所というわけではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m16-4.html">← 16-4 答えには、覚えておいてよい期限がある</a>
+    <a class="up" href="m16.html">第 16 章の入口</a>
+    <a class="next" href="m17.html">第 17 章 DNS の運用と障害 →</a>
+  </nav>
+</main>
+</body>
+</html>

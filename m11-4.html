@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新しい IP アドレスに、時間をかけて置き換えていく — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m11-4" data-chapter="m11" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 11-4</p>
+  <p class="chapter-label">第 11 章 IPv6　11-4</p>
+  <h1>新しい IP アドレスに、時間をかけて置き換えていく</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>今までの形式の IP アドレスから新しい形式への切り替えは、一斉には起こらない。<strong>1 台の機械が両方の形式を持ち続けたり、形式の違う相手同士を変換の仕組みでつないだりしながら</strong>、時間をかけて移行が進む。このページでは、その仕組みを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">今までの形式から新しい形式へは、ある日一斉に切り替わるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、しばらくの間、両方を使い続けるやり方があります。1 台の機械に、今までの形式と新しい形式の両方のアドレスを持たせる方法で、デュアルスタックと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">両方持たせて、それぞれ通信できるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。AWS の仮想ネットワークでも、今までの形式と新しい形式の両方のアドレスの範囲を設定でき、機械に両方のアドレスを割り当てられます(#22)。ただし、それぞれの通信は別々の経路として扱われます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、新しい形式しか持ってない機械が、今までの形式しか無い古い相手と話したいときはどうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのために、第 10 章 10-1 で見た、家の中の番号を家庭用ルータがグローバルアドレスに付け替える NAT と同じ「アドレスを変換する」という考え方を、今までの形式と新しい形式の間の変換に広げた仕組みがあります。これを NAT64 と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 10 章の変換(NAT)は、同じ形式のアドレス同士を付け替えるんでしたよね。NAT64 は、形式そのものを変換するってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。第 10 章の NAT は今までの形式のアドレス同士の付け替えでしたが、NAT64 は今までの形式と新しい形式という、2 つの異なる形式の間の変換です。</p>
+    <p class="s" data-who="ひよこちゃん">NAT64 って、DNS64 っていう名前も聞いたことがあるんですけど、同じものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">深く関わっています。相手を名前で指定したとき、名前を IP アドレスに変換する仕組みが、今までの形式のアドレスしか無い相手に対しても新しい形式のアドレスを答えるようにする部分を、特に DNS64 と呼びます。実際にアドレス同士を変換する部分と合わせて、NAT64/DNS64 と呼ばれることもあります。</p>
+    <p class="s" data-who="ひよこちゃん">合宿の実験でも使われてたんですか?</p>
+    <p class="t" data-who="ふくろう先生">使われていました。ただ、うまくいかない場面もありました。</p>
+    <p class="s" data-who="ひよこちゃん">どんな場面だったんですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例なんですが、新しい形式しか使えない環境を試した参加者が、今までの形式のアドレスを数字で直接指定して接続しようとしたところ、つながらなかったそうです。</p>
+    <p class="s" data-who="ひよこちゃん">え、NAT64 が変換してくれるんじゃないんですか? なんでつながらないんですか?</p>
+    <p class="t" data-who="ふくろう先生">変換は、名前を IP アドレスに変換する仕組みへの問い合わせをきっかけに行われます。相手を数字のアドレスで直接指定すると、この問い合わせの機会自体が無いため、変換が働きません。</p>
+    <p class="s" data-who="ひよこちゃん">名前で指定しないと、変換のきっかけが無いってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。まだ今までの形式の機械やサービスもたくさん残っていて、完全には普及していません(#50)。</p>
+    <p class="s" data-who="ひよこちゃん">移行の間は、いろんな仕組みが組み合わさって使われるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。これでこの章はおしまいです。お疲れさまでした。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>今までの形式から新しい形式への切り替えは一斉には起こらず、しばらくの間は両方が使われ続ける。</li>
+      <li>1 台の機械が今までの形式と新しい形式の両方のアドレスを持つ方式をデュアルスタックと呼ぶ。それぞれの通信は別々の経路として扱われる。</li>
+      <li>新しい形式しか持たない機械が今までの形式しか無い相手と通信できるようにする変換の仕組みを NAT64 と呼び、名前解決を担当する部分は特に DNS64 と呼ばれる。</li>
+      <li>NAT64/DNS64 による変換は名前解決の問い合わせをきっかけに行われるため、相手を数字のアドレスで直接指定すると変換が働かないことがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>今までの形式から新しい形式への切り替えは一斉には起こらず、しばらくの間は両方の形式が使われ続ける(#50)。1 つの方法は、1 台の機械に今までの形式と新しい形式の両方のアドレスを持たせるデュアルスタックである(#67)。それぞれの通信は別々の経路として扱われる(#22)。もう 1 つは、新しい形式しか持たない機械が今までの形式しか無い相手と通信できるようにする、NAT64 と呼ばれる変換の仕組みである(#67)。相手を名前で指定したときに、名前を IP アドレスに変換する仕組みが新しい形式のアドレスを答えるようにする部分は、特に DNS64 と呼ばれる(#16)。この変換は名前解決の問い合わせをきっかけに行われるため、相手を数字のアドレスで直接指定すると、変換の機会自体が無く、今までの形式しか持たない相手にはつながらないことがある(#16)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="67">[#67] Juniper Networks「IPv6 Technology Overview」 — <a href="https://www.juniper.net/documentation/us/en/software/junos/routing-overview/topics/concept/ipv6-technology-overview.html" rel="noopener">原典</a>(「IPv4/IPv6 dual stack」の定義、Table 2 の「NAT64—provides IPv6 to IPv4 translation allowing IPv6-only hosts to access IPv4-only hosts」という記述)</li>
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>(AWS の仮想ネットワークに IPv4 の CIDR と IPv6 の CIDR の両方を設定できるという記述、「IPv6 traffic is separate from IPv4 traffic; your route tables must include separate routes for IPv6 traffic」という記述)</li>
+    <li class="cite" data-src="16">[#16] WIDE Project「IPv6 Only Network 設計・実験報告」 — <a href="https://www.wide.ad.jp/About/report/pdf2011/part02.pdf" rel="noopener">原典</a>(「3.3 NAT64/DNS64」の節、「IPv4 アドレス表記に関連するトラブル」の節)</li>
+    <li class="cite" data-src="50">[#50] Cloudflare Learning Center「What is the Internet Protocol?」 — <a href="https://www.cloudflare.com/learning/network-layer/internet-protocol/" rel="noopener">原典</a>(「IPv4 vs. IPv6」の節、新しい形式はまだ完全には普及しておらず、多くのドメインや機械が今までの形式を使い続けているという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m11-4">
+    <div class="q" data-q="1">
+      <p class="q-text">新しい形式の IP アドレスしか持たない機械から、今までの形式のアドレスを直接指定して接続しようとすると、NAT64/DNS64 を使っていてもつながらないことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">変換は名前解決の問い合わせをきっかけに行われるため、名前解決を経由しない直接指定では変換が働かないから</button></li>
+        <li><button type="button" data-correct="false">NAT64/DNS64 は、そもそも今までの形式のアドレスへの接続に対応していないから</button></li>
+        <li><button type="button" data-correct="false">直接指定すると、通信の速度が遅くなりすぎて接続が切れてしまうから</button></li>
+        <li><button type="button" data-correct="false">今までの形式のアドレスは、数字で書くこと自体ができないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、変換は名前解決の問い合わせをきっかけに行われるため、名前解決を経由しない直接指定では変換が働かないから、です。NAT64/DNS64 は今までの形式のアドレスへの接続のための仕組みであり、速度や書き方が理由ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">デュアルスタックの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">1 台の機械に、今までの形式と新しい形式の両方の IP アドレスを持たせ、どちらの形式でも通信できるようにする方式</button></li>
+        <li><button type="button" data-correct="false">今までの形式のアドレスを、新しい形式のアドレスに完全に置き換える方式</button></li>
+        <li><button type="button" data-correct="false">複数の機械で 1 つの IP アドレスを共有する方式</button></li>
+        <li><button type="button" data-correct="false">新しい形式のアドレスだけを 2 つ持たせる方式</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 台の機械に、今までの形式と新しい形式の両方の IP アドレスを持たせ、どちらの形式でも通信できるようにする方式、です。完全な置き換えや、アドレスの共有とは別の考え方です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">NAT64 の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">新しい形式の IP アドレスしか持たない機械が、今までの形式のアドレスしか無い相手とも通信できるようにする変換の仕組み</button></li>
+        <li><button type="button" data-correct="false">今までの形式のアドレス同士を、家の中と外で付け替える仕組み</button></li>
+        <li><button type="button" data-correct="false">新しい形式のアドレスの表記を、今までの形式と同じ 4 つの数字の組に書き換える仕組み</button></li>
+        <li><button type="button" data-correct="false">同じ形式のアドレスをたくさんの機械で共有するための仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、新しい形式の IP アドレスしか持たない機械が、今までの形式のアドレスしか無い相手とも通信できるようにする変換の仕組み、です。家の中と外の付け替えは第 10 章で見た NAT の役目です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m11-3.html">← 11-3 新しい IP アドレスは、機械が自分で組み立てることもできる</a>
+    <a class="up" href="m11.html">第 11 章の入口</a>
+    <a class="next" href="m12.html">第 12 章 ポートと UDP →</a>
+  </nav>
+</main>
+</body>
+</html>

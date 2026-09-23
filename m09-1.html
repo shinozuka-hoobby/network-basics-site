@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>インターネットは、独立したネットワークの集まりでできている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m09-1" data-chapter="m09" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 9-1</p>
+  <p class="chapter-label">第 9 章 インターネットの経路制御 — BGP と AS　9-1</p>
+  <h1>インターネットは、独立したネットワークの集まりでできている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>インターネットは、1 つの組織が丸ごと管理しているわけではなく、無数の組織がそれぞれ独立して運用するネットワークの集まりでできている。このページでは、<strong>その独立したネットワークの単位</strong>と、そこに割り振られる世界共通の番号を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前の章の最後に「次の章では、インターネット全体でどう経路を決めるか見ていく」って言われたんですけど、組織の中の話は分かったんですけど、組織同士の間ってどうなってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は、インターネットは 1 つの組織がまとめて管理しているわけではなく、無数の組織がそれぞれ独立して運用しているネットワークの集まりなんです。</p>
+    <p class="s" data-who="ひよこちゃん">独立したネットワークって、具体的にはどんな単位のことですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つ、または複数の管理者が運用する、ひとまとまりのネットワークで、経路の方針が 1 つに決まっているものを、自律システム、略して AS と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">会社ごとに AS があるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">近いイメージです。ISP や大学、大きなクラウド事業者なども、それぞれ自分の AS を運用しています。</p>
+    <p class="s" data-who="ひよこちゃん">AS にも、IP アドレスみたいに世界共通の番号が振られてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。世界で重複しない AS 番号が、IANA という組織を頂点にした階層で、地域ごとの組織を経て割り振られています。</p>
+    <p class="s" data-who="ひよこちゃん">番号がかぶったら、何か困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">困ります。この先のページで見ていきますが、経路の情報はこの番号を使って伝わっていくので、番号が重複すると、どの組織の経路なのか区別が付かなくなってしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、第 8 章で見た OSPF って、AS 同士の間でも動いてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、OSPF は 1 つの AS の中で、ルータどうしが経路の情報を交換し合って自動的に表を作る仕組みでした。AS 同士が経路の情報を教え合うのは、また別の、<a class="term" href="glossary.html#bgp" data-term="bgp">BGP</a> という仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">組織の中は OSPF、組織同士は BGP って、役割がきれいに分かれているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。1 つの AS の中は 1 人の管理者の判断で経路を自動的に作れますが、AS 同士の間はそれぞれ独立した判断を持つ組織どうしなので、教え合うための別の仕組みが必要になるんです。詳しくは 9-3 で説明します。</p>
+    <p class="s" data-who="ひよこちゃん">AS 番号って、誰でも取れるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">取得の手続きは必要ですが、経路制御を始めたい組織であれば、地域のレジストリなどから割り当てを受けられます。</p>
+    <p class="s" data-who="ひよこちゃん">日本国内の組織は、どこから AS 番号をもらうんですか?</p>
+    <p class="t" data-who="ふくろう先生">JPNIC のような、国ごとの窓口になっているレジストリから割り当てを受けます。IANA を頂点に、地域ごと、国ごとと段階を経て、身近な窓口まで降りてくる仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">ちなみに、外部と直接つながらない組織の中だけで使う AS 番号もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。組織内だけで使うプライベート AS 番号と呼ばれる区分もありますが、詳しい使い道はこの章の範囲を超えるので、ここでは深入りしません。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、番号を持っているだけで、もう経路制御が始まるわけじゃないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。番号はあくまで身分証のようなもので、実際に AS 同士がどうつながるかは、次のページで見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>インターネットは、無数の組織がそれぞれ運用する独立したネットワークの集まりでできている。</li>
+      <li>この独立したネットワークの単位を自律システム(AS)と呼び、世界で重複しない AS 番号が組織ごとに割り当てられる。</li>
+      <li>AS 番号は、IANA を頂点にした階層を通じて、地域ごとの組織から割り当てを受ける。</li>
+      <li>第 8 章で見た OSPF は 1 つの AS の中で動く仕組みで、AS 同士の間で経路を教え合うのは BGP という別の仕組みである。</li>
+      <li>1 つの AS の中は 1 人の管理者の判断で経路を作れるが、AS 同士の間はそれぞれ独立した判断を持つ組織どうしのため、別の仕組みが必要になる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>自律システム(AS)は、1 つ、または複数の管理者が運用する、ひとまとまりのネットワークで、経路の方針が 1 つに決まっているものを指す(#65)。インターネットは、ISP や大学、クラウド事業者など、無数の組織が運用する AS の集まりとして成り立っている。各 AS には、世界で重複しない AS 番号が割り当てられ、IANA を頂点に、地域ごとのレジストリ、さらに JPNIC のような国ごとのレジストリを経て組織に割り振られる、という階層で管理されている(#18)。組織内だけで使うプライベート AS 番号という区分もある(#18)。経路を制御する仕組みには、1 つの組織の中だけで完結するものと、組織どうしの間で使われるものという区別があり(#71)、第 8 章で見た OSPF は前者、次のページから見ていく BGP は後者にあたる。1 つの AS の中は 1 人の管理者の判断で経路を自動的に作れるが、AS 同士の間はそれぞれ独立した判断を持つ組織どうしであるため、経路の情報を教え合うための別の仕組みが必要になる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="18">[#18] JPNIC「インターネット 10 分講座：BGP」 — <a href="https://www.nic.ad.jp/ja/newsletter/No35/0800.html" rel="noopener">原典</a>（「▼AS 番号」節。AS 番号の定義と、IANA→RIR→NIR/LIR の階層）</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.91〜92。AS の定義「a group of IP networks operated by one or more network operators that has a single, clearly defined routing policy」、EGP と IGP の区別）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-04-routing.txt p.41。IGP と EGP の区別の図）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m09-1">
+    <div class="q" data-q="1">
+      <p class="q-text">自律システム(AS)の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">1 台のルータが持つ、ルーティングテーブルの別の呼び方</button></li>
+        <li><button type="button" data-correct="true">1 つ、または複数の管理者が運用する、経路の方針が 1 つに決まっているひとまとまりのネットワーク</button></li>
+        <li><button type="button" data-correct="false">すべてのルータに個別に割り振られる、機器ごとの識別番号</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータが外部との接続に使う、専用のポート番号</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 つ、または複数の管理者が運用する、経路の方針が 1 つに決まっているひとまとまりのネットワーク、です。AS はルータ 1 台や機器の番号ではなく、組織単位のネットワークを指します。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">組織の中の経路(第 8 章で見た OSPF)と、組織同士の間の経路とで、別の仕組みが必要になるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">組織同士の間では、IP アドレスの代わりに MAC アドレスを使って通信するから</button></li>
+        <li><button type="button" data-correct="true">1 つの AS の中は 1 人の管理者の判断で経路を作れるが、AS 同士の間はそれぞれ独立した判断を持つ組織どうしだから</button></li>
+        <li><button type="button" data-correct="false">組織同士の間でやり取りする経路の情報は、必ず暗号化しなければならないから</button></li>
+        <li><button type="button" data-correct="false">OSPF は台数の多いネットワークでは正しく動かない決まりだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 つの AS の中は 1 人の管理者の判断で経路を作れるが、AS 同士の間はそれぞれ独立した判断を持つ組織どうしだから、です。管理者が 1 人でまとまる範囲か、複数の独立した組織にまたがる範囲かという違いが、別の仕組みが必要になる理由です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">AS 番号について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">組織が自由に好きな番号を決めてよい</button></li>
+        <li><button type="button" data-correct="false">その組織が持つ IP アドレスと、同じ番号がそのまま使われる</button></li>
+        <li><button type="button" data-correct="true">世界で重複しないよう、IANA を頂点にした階層を通じて組織ごとに割り当てられる</button></li>
+        <li><button type="button" data-correct="false">ISP だけが取得でき、大学やクラウド事業者は取得できない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、世界で重複しないよう、IANA を頂点にした階層を通じて組織ごとに割り当てられる、です。IP アドレスとは別に割り振られる番号で、ISP に限らず経路制御を始めたい組織が取得できます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m09.html">← 第 9 章の入口</a>
+    <a class="up" href="m09.html">第 9 章の入口</a>
+    <a class="next" href="m09-2.html">9-2 対等につながるか、対価を払ってつなげてもらうか →</a>
+  </nav>
+</main>
+</body>
+</html>

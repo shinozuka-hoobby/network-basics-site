@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>「会話できる状態」を作ってから話し始める — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m13-1" data-chapter="m13" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 13-1</p>
+  <p class="chapter-label">第 13 章 TCP の接続と信頼性　13-1</p>
+  <h1>「会話できる状態」を作ってから話し始める</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>IP は届く保証をしないという前提のうえで、送ったデータを<strong>送った順番のとおり抜け落ちなく届ける役目を引き受ける仕組み</strong>がある。データのやり取りを始める前に、送り手と受け手はまず 3 回の合図をやり取りして「会話できる状態」を作る。このページでは、その仕組みと、3 回の合図の中身を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 6 章で、IP は届く保証をしないっていう話を聞いたんですけど、じゃあ届いたかどうかは誰が確認してるんですか?</p>
+    <p class="t" data-who="ふくろう先生">それを引き受けるのが TCP です。送ったデータを、送った順番のとおり抜け落ちなく届くように管理する通信の方法で、届いたことの確認も TCP 自身が行います。第 1 章で見た層の話でいうと、IP の一つ上の層で動く仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">送り手と受け手は、何をもとに区別されるんですか?</p>
+    <p class="t" data-who="ふくろう先生">IP アドレスとポート番号の組(ソケットと呼びます)で区別されます。この組ごとに、別々の TCP 接続を作れます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、TCP を使えばもうデータを送っていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">まだです。データを送る前に、まず送り手と受け手の間で<strong>会話できる状態</strong>を作ります。これが、第 1 章で見た「会話できる状態」の正体で、TCP 接続と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">その「会話できる状態」って、具体的にどうやって作るんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手と受け手が 3 回、決まった合図をやり取りします。この手順を TCP ハンドシェイク、または 3 ウェイハンドシェイクと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">3 回のやり取りって、具体的には何を送り合うんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず送り手が「始めたい」という合図(SYN)を送ります。次に受け手が「始めたい、かつ了解した」という合図(SYN/ACK)を返します。最後に送り手が、届いたことを知らせる合図(<a class="term" href="glossary.html#ack" data-term="ack">ACK</a>)を返します。</p>
+    <p class="s" data-who="ひよこちゃん">その ACK、名前は聞いたことある気がします。もっと詳しく知りたいです。</p>
+    <p class="t" data-who="ふくろう先生">届いたことを知らせる仕組みとしての ACK は、次のページ(13-2)で詳しく扱います。今日はまず、なぜ 2 回ではなく 3 回のやり取りが必要なのかを見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">なんで 2 回のやり取りだけじゃ駄目なんですか?</p>
+    <p class="t" data-who="ふくろう先生">お互いが持つ情報が一致したことを確認するには、3 回のやり取りがちょうど過不足ない回数だからです。2 回だと、最後に送った側は相手にちゃんと伝わったかまでは確認できません。</p>
+    <p class="s" data-who="ひよこちゃん">3 回目の ACK で、送り手側も「ちゃんと伝わった」って確認できるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。これで両側とも、お互いの情報が一致したことを確認できます。</p>
+    <p class="s" data-who="ひよこちゃん">UDP だと、こんな手順は要らないんですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。UDP は事前の手順を踏まずにいきなりデータを送りますが、TCP は会話できる状態を作ってから送ります。この違いが、それぞれの向き不向きにつながります。</p>
+    <p class="s" data-who="ひよこちゃん">この 3 回のやり取りがうまくいかないと、接続自体が失敗するってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。相手が応答しない、または応答できない場合、会話できる状態は作れません。実際に自分の Mac から試して確かめてみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">会話できる状態ができたら、もうデータのやり取りが始まるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、送ったデータがどうやって届いたと確認されるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>TCP は、送ったデータを送った順番のとおり抜け落ちなく届くように管理し、届いたことの確認も行う通信の方法である。送り手と受け手は IP アドレスとポート番号の組(ソケット)で区別される。</li>
+      <li>データのやり取りを始める前に、送り手と受け手の間で TCP 接続(会話できる状態)を作る。</li>
+      <li>TCP 接続は、送り手の SYN・受け手の SYN/ACK・送り手の ACK という 3 回のやり取り(TCP ハンドシェイク、3 ウェイハンドシェイク)で作られる。</li>
+      <li>2 回ではなく 3 回のやり取りが必要なのは、送り手と受け手それぞれが持つ情報が一致したことを、過不足なく確認できる回数が 3 回だからである。相手が応答しなければ、この会話できる状態は作れない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>IP は届く保証をしない(ベストエフォート)通信の上で、TCP は送った順番のとおり抜け落ちなく届くように管理し、届いたことの確認まで行う、信頼性のある通信の方法である(#44)。送り手と受け手は IP アドレスとポート番号の組(ソケット)で区別され、この組ごとに別々の TCP 接続を保てる(#71 p.5)。データのやり取りを始める前に、まず TCP 接続(会話できる状態)を作る(#4 p.5〜6)。この接続は、送り手の合図(SYN)、受け手の合図(SYN/ACK)、送り手の合図(ACK)という 3 回のやり取り、TCP ハンドシェイクで作られる(#71 p.7〜8)。2 回ではなく 3 回である理由は、送り手と受け手それぞれが持つ情報が一致したことを、過不足なく確認できる回数が 3 回だからである(#4 p.13〜14)。この 3 回のやり取りが終わって初めて、実際のデータのやり取りが始まる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>nc -zv example.com 443</code></pre>
+    <p>見方: 「succeeded」を含む行が出れば、相手との間で 3 回のやり取りが完了し、会話できる状態が作れたことを意味する。失敗すると「refused」や「timed out」のような語が出る。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.5〜6 TCP の特徴、p.13〜14 3 回のやり取りで情報の同期が確保される根拠）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.7〜8 接続の確立、SYN・SYN/ACK・ACK の 3 回のやり取り）</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>（TCP が接続指向で信頼性のある通信方式であるという説明）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m13-1">
+    <div class="q" data-q="1">
+      <p class="q-text">TCP 接続とは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">IP アドレスとポート番号を別の番号に変換する仕組み</button></li>
+        <li><button type="button" data-correct="true">データのやり取りを始める前に、送り手と受け手の間で作る、会話できる状態のこと</button></li>
+        <li><button type="button" data-correct="false">届かなかったデータを、もう一度送り直す仕組み</button></li>
+        <li><button type="button" data-correct="false">複数の受け手に同じデータを一度に送る仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、データのやり取りを始める前に、送り手と受け手の間で作る、会話できる状態のこと、です。TCP 接続は、実際のデータのやり取りを始める前に、送り手と受け手が 3 回の合図をやり取りして作る土台です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TCP が接続を作るときに、2 回ではなく 3 回のやり取りをするのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">3 回でないと、途中の機器がデータを不正なものとみなして捨ててしまうから</button></li>
+        <li><button type="button" data-correct="true">送り手と受け手、両方が持つ情報が一致したことを確認するには、3 回のやり取りが過不足ない回数だから</button></li>
+        <li><button type="button" data-correct="false">2 回のやり取りだと、送るデータの中身が壊れてしまうから</button></li>
+        <li><button type="button" data-correct="false">3 回目のやり取りで、実際のデータそのものを送っているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送り手と受け手、両方が持つ情報が一致したことを確認するには、3 回のやり取りが過不足ない回数だから、です。2 回だけだと、最後に送った側は相手にちゃんと伝わったかまでは確認できません。3 回目のやり取りは確認のための合図であり、データそのものではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">TCP 接続を作る 3 回のやり取りの順番として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">送り手の SYN → 受け手の SYN/ACK → 送り手の ACK</button></li>
+        <li><button type="button" data-correct="false">受け手の SYN → 送り手の SYN/ACK → 受け手の ACK</button></li>
+        <li><button type="button" data-correct="false">送り手の SYN/ACK → 受け手の SYN → 送り手の ACK</button></li>
+        <li><button type="button" data-correct="false">送り手の SYN → 送り手の ACK → 受け手の SYN/ACK</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送り手の SYN → 受け手の SYN/ACK → 送り手の ACK、です。始めたい側(送り手)がまず SYN を送り、受け手が了解の意味を込めた SYN/ACK を返し、最後に送り手が ACK を返して両側の情報の一致を確認します。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m13.html">← 第 13 章の入口</a>
+    <a class="up" href="m13.html">第 13 章の入口</a>
+    <a class="next" href="m13-2.html">13-2 番号を付けて、届いたことを確かめる →</a>
+  </nav>
+</main>
+</body>
+</html>

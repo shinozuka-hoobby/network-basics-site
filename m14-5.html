@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>遠い相手だと速度が頭打ちになる理由と、増やし方の 2 つの考え方 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m14-5" data-chapter="m14" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 14-5</p>
+  <p class="chapter-label">第 14 章 TCP のフロー制御と輻輳制御　14-5</p>
+  <h1>遠い相手だと速度が頭打ちになる理由と、増やし方の 2 つの考え方</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>回線を空けずに使い続けるために必要な量は、回線の太さと往復にかかる時間を掛け合わせた値で決まる。<strong>この値より送り出せる量が少ないと、回線が太くても実際の速度は頭打ちになる</strong>。このページでは、この関係と、送る量の増やし方に関する 2 つの考え方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">往復時間が長い相手だと頭打ちになりやすいって、どういうことですか? 回線の太さとは関係ないんですか?</p>
+    <p class="t" data-who="ふくろう先生">回線を空けずに使い続けるには、返事を待たずに送り出しておくべきデータの量があります。これは回線の太さと、送ってから返事が戻るまでの往復時間(RTT)を掛け合わせた値に近く、帯域遅延積と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その分だけウィンドウを大きくしておけばいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうしたいところですが、送り手が一度に送り出せる量、つまりウィンドウの大きさ(受信ウィンドウと輻輳ウィンドウの小さい方)には上限があります。この上限が帯域遅延積より小さいと、実際に出る速度はウィンドウの大きさを往復時間で割った値で頭打ちになります。</p>
+    <p class="s" data-who="ひよこちゃん">往復時間が長い相手ほど、頭打ちになりやすいってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。回線そのものの太さは変わらなくても、往復時間が長い相手ほど、必要な帯域遅延積が大きくなるからです。</p>
+    <p class="s" data-who="ひよこちゃん">実際に、そういうことが起きた例ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例を紹介します。回線は太いはずなのに、海外リージョンへの転送だけがいつまでも遅かった、という話をよく聞きます。</p>
+    <p class="s" data-who="ひよこちゃん">回線が太いのに、なんで遅いんですか?</p>
+    <p class="t" data-who="ふくろう先生">今の話のとおりです。海外リージョンは往復時間が長く、必要な帯域遅延積も大きくなりますが、ウィンドウの上限は同じままなので、そこで頭打ちになり、回線の太さを生かし切れなかったんです。</p>
+    <p class="s" data-who="ひよこちゃん">海外リージョンだと、往復時間はどれくらい違うものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">距離によって大きく変わります。同じ Mac からでも、近い相手と遠い相手で往復時間を比べると、差がよく分かります。あとで試してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど。ウィンドウの上限を増やせば、この問題は解決するんですか?</p>
+    <p class="t" data-who="ふくろう先生">ウィンドウを大きくする調整はできますが、それとは別に、輻輳ウィンドウの増やし方そのものの設計にも、いくつかの考え方があります。</p>
+    <p class="s" data-who="ひよこちゃん">増やし方にも、方式によって違いがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。Linux をはじめ多くの OS で標準の CUBIC は、これまで見てきたのと同じく、損失をきっかけに量を減らし、式に沿って戻す考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">損失を待たない方式もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。BBR は、損失を待たず、実際に運べている量と往復時間を測定し、その値をもとに送る量を決めていく考え方です。電波の一時的な乱れのような、混雑とは関係のない損失に振り回されにくいという利点もあります。</p>
+    <p class="s" data-who="ひよこちゃん">CUBIC と BBR、判断の材料からして違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。CUBIC は損失が起きたかどうかを見て判断し、BBR は実際に測った帯域と RTT を見て判断します。</p>
+    <p class="s" data-who="ひよこちゃん">どちらが優れているとか、あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">状況によります。ここでは、判断材料が違う 2 つの考え方があるということを押さえておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた、フロー制御、輻輳制御、スロースタート、輻輳回避、帯域遅延積が、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。次の章では、これらの考え方を踏まえた新しいトランスポート技術を見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>回線を空けずに使い続けるために送り出しておくべき量を帯域遅延積と呼び、回線の太さ(帯域幅)と往復時間(RTT)を掛け合わせた値に近い。</li>
+      <li>ウィンドウの大きさ(受信ウィンドウと輻輳ウィンドウの小さい方)がこの帯域遅延積より小さいと、実際に出る速度はウィンドウの大きさ÷往復時間で頭打ちになる。</li>
+      <li>往復時間が長い相手ほど帯域遅延積は大きくなるが、ウィンドウの大きさの上限は変わらないため、遠い相手ほど頭打ちが起きやすい。</li>
+      <li>CUBIC は損失をきっかけに量を減らし式で戻す考え方で、Linux をはじめ多くの OS で標準になっている。</li>
+      <li>BBR は損失を待たず、実測した帯域幅と RTT をもとに送る量を決める考え方である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>回線を空けずに使い続けるには、返事を待たずに送り出しておくべきデータの量があり、これは回線の太さ(帯域幅)と往復にかかる時間(RTT)を掛け合わせた値に近い。これを帯域遅延積と呼ぶ。送り手が一度に送り出せる量、つまりウィンドウの大きさ(受信ウィンドウと輻輳ウィンドウの小さい方)がこの帯域遅延積より小さいと、回線そのものは太くても、実際に出る速度はウィンドウの大きさを往復時間で割った値で頭打ちになる。往復時間が長い相手ほど帯域遅延積は大きくなるが、ウィンドウの大きさの上限は変わらないため、遠い相手との通信ほど頭打ちが起きやすい。増やし方の設計にも違いがあり、CUBIC は損失をきっかけに量を減らし式で戻す考え方、BBR は損失を待たず実測した帯域と RTT をもとに量を決める考え方である。どちらも損失そのものをなくす方式ではなく、送る量とペースを決めるための判断基準が異なる。</p>
+    <table>
+      <tr><th>判断材料</th><th>CUBIC</th><th>BBR</th></tr>
+      <tr><td>送る量を決める材料</td><td>損失が起きたか</td><td>測定した帯域と RTT</td></tr>
+      <tr><td>増やし方</td><td>式に沿って戻す</td><td>測定値に合わせる</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ping -c 3 localhost
+ping -c 3 example.com</code></pre>
+    <p>見方: 2 回の実行で返ってくる往復時間(ミリ秒)を比べてください。localhost はほぼ 0 ミリ秒、example.com はそれより大きい値になります。相手が遠いほど往復時間が大きくなり、このページで説明した帯域遅延積も大きくなることの材料になります。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.34「必要なウィンドー幅 ≧ BWxRTT」、p.38〜39 BW×RTT の表と 64KB での実効速度の計算例）</li>
+    <li class="cite" data-src="35">[#35] Google Cloud「TCP optimization for network performance」 — <a href="https://docs.cloud.google.com/compute/docs/networking/tcp-optimization-for-network-performance-in-gcp-and-hybrid" rel="noopener">原典</a>（「Understanding the Throughput Limit」、「Disable TCP Cubic HyStart ACK train」）</li>
+    <li class="cite" data-src="74">[#74] IETF「RFC 9438: CUBIC for Fast and Long-Distance Networks」 — <a href="https://www.rfc-editor.org/rfc/rfc9438.html" rel="noopener">原典</a>（CUBIC の損失ベースの考え方）</li>
+    <li class="cite" data-src="75">[#75] IETF「BBR Congestion Control（draft-ietf-ccwg-bbr）」 — <a href="https://datatracker.ietf.org/doc/html/draft-ietf-ccwg-bbr" rel="noopener">原典</a>（BBR の帯域と RTT の考え方）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m14-5">
+    <div class="q" data-q="1">
+      <p class="q-text">回線が太いはずなのに、海外リージョンへの転送だけがいつまでも遅かったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">サーバの処理能力が海外では低いから</button></li>
+        <li><button type="button" data-correct="true">往復時間が長いほど帯域遅延積が大きくなるのに、ウィンドウの大きさの上限は変わらないため、実効速度がウィンドウの大きさ÷往復時間で頭打ちになるから</button></li>
+        <li><button type="button" data-correct="false">海外では輻輳制御そのものが働かないから</button></li>
+        <li><button type="button" data-correct="false">受信ウィンドウがゼロになっていたから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、往復時間が長いほど帯域遅延積が大きくなるのに、ウィンドウの大きさの上限は変わらないため、実効速度がウィンドウの大きさ÷往復時間で頭打ちになるから、です。回線自体の太さではなく、往復時間とウィンドウの大きさの関係が原因です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">帯域遅延積の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">実際に出る速度を、ウィンドウの大きさで割った値</button></li>
+        <li><button type="button" data-correct="true">回線の太さ(帯域幅)と往復時間(RTT)を掛け合わせた、回線を空けずに使い続けるために必要な量</button></li>
+        <li><button type="button" data-correct="false">受信ウィンドウと輻輳ウィンドウを足し合わせた値</button></li>
+        <li><button type="button" data-correct="false">スロースタートで最初に送る量の初期値</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、回線の太さ(帯域幅)と往復時間(RTT)を掛け合わせた、回線を空けずに使い続けるために必要な量、です。実効速度がウィンドウの大きさ÷往復時間で頭打ちになる、という関係とは別の値です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">CUBIC と BBR の判断材料の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">CUBIC は実測した帯域と RTT を見て判断し、BBR は損失の有無を見て判断する</button></li>
+        <li><button type="button" data-correct="true">CUBIC は損失が起きたかどうかを見て判断し、BBR は実測した帯域と RTT を見て判断する</button></li>
+        <li><button type="button" data-correct="false">どちらも損失の有無だけを見て判断する</button></li>
+        <li><button type="button" data-correct="false">どちらも実測した帯域と RTT だけを見て判断する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、CUBIC は損失が起きたかどうかを見て判断し、BBR は実測した帯域と RTT を見て判断する、です。判断材料が異なるため、増やし方の設計思想も異なります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m14-4.html">← 14-4 増やし方をゆるめ、届かなかったときは大きく減らす</a>
+    <a class="up" href="m14.html">第 14 章の入口</a>
+    <a class="next" href="m15.html">第 15 章 QUIC — UDP 上に作り直したトランスポート →</a>
+  </nav>
+</main>
+</body>
+</html>

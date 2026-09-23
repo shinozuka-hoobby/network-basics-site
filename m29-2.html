@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 社の診断ツールを比べる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m29-2" data-chapter="m29" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 29-2</p>
+  <p class="chapter-label">第 29 章 クラウド上の経路診断　29-2</p>
+  <h1>3 社の診断ツールを比べる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>AWS・GCP・Azure にはそれぞれ、設定から届くかどうかを言い当てる機能がある。<strong>ただし、実際にパケットを送る機能まで持つかどうかは、3 社で違う</strong>。このページでは、3 社の機能を並べて、その違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">AWS 以外のクラウドにも、同じような診断機能ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。GCP には Connectivity Tests、Azure には Network Watcher という名前の機能があります。</p>
+    <p class="s" data-who="ひよこちゃん">どれも同じ仕組みなんですか?</p>
+    <p class="t" data-who="ふくろう先生">近いですが、少し違います。GCP の Connectivity Tests は、AWS と同じように設定を読み取って経路をシミュレートします。ただ、一部の場合には確認用のパケットを実際に送って、届いた割合まで測ります。</p>
+    <p class="s" data-who="ひよこちゃん">え、じゃあ AWS の Reachability Analyzer より、確かめられることが多いんですね。</p>
+    <p class="t" data-who="ふくろう先生">一長一短です。到達した割合が <strong>95% 以上</strong>なら「到達可能」、0 なら「到達不能」、その間なら「部分的に到達可能」と 3 段階で判定します。</p>
+    <p class="s" data-who="ひよこちゃん">Azure はどうなんですか?</p>
+    <p class="t" data-who="ふくろう先生">Azure は、Network Watcher という機能の中に、役割の違う複数の道具が用意されています。IP flow verify は、AWS の Reachability Analyzer に近く、仮想マシンに適用された設定を読み取って、通信が許可されるか拒否されるかと、その根拠になった規則の名前を返します。</p>
+    <p class="s" data-who="ひよこちゃん">実際に送る方の道具もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。Connection troubleshoot です。実際に確認用のパケットを送り、届いたかどうかと、経由した機器ごとの情報を返します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ Azure は、設定を読む道具と、実際に送る道具の、両方を持ってるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。GCP の Connectivity Tests は 1 つの機能の中に両方の性質を持ち、Azure は役割ごとに別の道具に分かれている、という違いがあります。</p>
+    <p class="s" data-who="ひよこちゃん">Connection troubleshoot は、具体的にどんな問題を見つけてくれるんですか?</p>
+    <p class="t" data-who="ふくろう先生">サーバの CPU 使用率が高いこと、名前解決に失敗していること、ルートの設定に誤りがあることなど、複数の種類の問題を見分けてくれます。</p>
+    <p class="s" data-who="ひよこちゃん">実際に送る道具があれば、それだけで確実に分かりそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうとも言い切れません。設定の分析では「届くはず」と出ても、実際には<strong>機械の不調</strong>などで繋がらないことがある、という報告もあります。</p>
+    <p class="s" data-who="ひよこちゃん">推論だけでも、実際に送る道具だけでも、足りないことがあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、推論とは別に、実際に何が起きたかを記録しておく仕組みを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>AWS の Reachability Analyzer は設定を読み取るだけで、実際にパケットを送る機能を持たない。</li>
+      <li>GCP の Connectivity Tests は、設定を読み取る解析と、確認用のパケットを実際に送って届いた割合を測る分析の両方を行う。到達した割合が 95% 以上なら到達可能、0 なら到達不能、その間なら部分的に到達可能と判定する。</li>
+      <li>Azure の Network Watcher は役割ごとに道具が分かれており、IP flow verify は設定を読み取って許可・拒否と根拠の規則を示し、Connection troubleshoot は実際にパケットを送って到達したかどうかと経由した機器ごとの情報を示す。</li>
+      <li>設定の分析で「届くはず」と判定されても、機械自体の不調など設定の外側の理由で、実際には繋がらないことがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>AWS の Reachability Analyzer、GCP の Connectivity Tests、Azure の IP flow verify・Connection troubleshoot を比べると、次のようになる(#27、#115、#121、#122)。</p>
+    <table>
+      <tr><th>項目</th><th>AWS</th><th>GCP</th><th>Azure</th></tr>
+      <tr><td>設定を読み取って判定する機能</td><td>Reachability Analyzer</td><td>Connectivity Tests</td><td>IP flow verify</td></tr>
+      <tr><td>実際にパケットを送って確かめる機能</td><td>—</td><td>Connectivity Tests(一部の場合)</td><td>Connection troubleshoot</td></tr>
+      <tr><td>届かない場合に分かること</td><td>止めている設定</td><td>到達した割合</td><td>経由した機器ごとの問題</td></tr>
+    </table>
+    <p>GCP の資料には、設定の分析結果が「届くはず」でも、実際には繋がらない場合があるという報告がある(#34)。Azure の Connection troubleshoot は、サーバの CPU 使用率が高いこと、DNS の名前解決に失敗していること、ルートの設定に誤りがあることなど、複数の種類の問題を見分けて知らせる(#122)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="27">[#27] AWS「How Reachability Analyzer works」 — <a href="https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html" rel="noopener">原典</a>(3 行目 実際にパケットを送らないという記述)</li>
+    <li class="cite" data-src="115">[#115] Google Cloud「Connectivity Tests overview」 — <a href="https://docs.cloud.google.com/network-intelligence-center/docs/connectivity-tests/concepts/overview" rel="noopener">原典</a>(1・3 行目 設定の解析と転送経路のシミュレート、5 行目・213〜220 行目 確認用パケットを実際に送るライブデータプレーン分析、220〜226 行目 到達可能(95% 以上)・到達不能(0%)・部分的に到達可能(0〜95%)の判定表)</li>
+    <li class="cite" data-src="34">[#34] Google Cloud「Connectivity Tests troubleshooting」 — <a href="https://docs.cloud.google.com/network-intelligence-center/docs/connectivity-tests/support/troubleshooting" rel="noopener">原典</a>(60〜74 行目「My test shows a final configuration analysis state of Deliver, but connectivity is broken」)</li>
+    <li class="cite" data-src="121">[#121] Microsoft Azure「IP flow verify overview」 — <a href="https://learn.microsoft.com/en-us/azure/network-watcher/ip-flow-verify-overview" rel="noopener">原典</a>(9 行目 設定された security and admin rules をもとに判定するという定義、15 行目 Access denied／Access allowed と根拠になった規則名を返すという記述)</li>
+    <li class="cite" data-src="122">[#122] Microsoft Azure「Connection troubleshoot overview」 — <a href="https://learn.microsoft.com/en-us/azure/network-watcher/connection-troubleshoot-overview" rel="noopener">原典</a>(70 行目 ConnectionStatus が Reachable／Unreachable、74〜76 行目 ProbesSent・ProbesFailed・Hops という記録項目)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m29-2">
+    <div class="q" data-q="1">
+      <p class="q-text">AWS の Reachability Analyzer には無く、GCP の Connectivity Tests と Azure の Connection troubleshoot に共通する機能はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">実際に確認用のパケットを送る機能</button></li>
+        <li><button type="button" data-correct="false">設定を読み取る機能</button></li>
+        <li><button type="button" data-correct="false">利用料金を計算する機能</button></li>
+        <li><button type="button" data-correct="false">記録をすべて削除する機能</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、実際に確認用のパケットを送る機能、です。設定を読み取る機能は AWS にもあり、料金の計算や記録の削除は診断機能の役目ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">GCP の Connectivity Tests が「到達可能」と判定する条件はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">確認用のパケットが 95% 以上届いたとき</button></li>
+        <li><button type="button" data-correct="false">確認用のパケットが 1 つでも届いたとき</button></li>
+        <li><button type="button" data-correct="false">設定に誤りが 1 つも無いと分かったとき</button></li>
+        <li><button type="button" data-correct="false">管理者が結果を承認したとき</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、確認用のパケットが 95% 以上届いたとき、です。1 つでも届けば到達可能になるわけではなく、設定の確認や管理者の承認で決まるものでもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Azure の IP flow verify が返す情報として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">通信が許可されたか拒否されたかと、根拠になった規則の名前</button></li>
+        <li><button type="button" data-correct="false">通信の遅延時間の実測値</button></li>
+        <li><button type="button" data-correct="false">サーバのディスク使用量</button></li>
+        <li><button type="button" data-correct="false">課金額の見積もり</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、通信が許可されたか拒否されたかと、根拠になった規則の名前、です。遅延の実測値やディスク使用量、課金額の見積もりは IP flow verify の役目ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m29-1.html">← 29-1 送らずに、届くかを確かめる</a>
+    <a class="up" href="m29.html">第 29 章の入口</a>
+    <a class="next" href="m29-3.html">29-3 通った跡が、記録に残っている →</a>
+  </nav>
+</main>
+</body>
+</html>

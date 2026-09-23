@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>常に HTTPS でつなぐようブラウザに覚えさせる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m19-3" data-chapter="m19" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 19-3</p>
+  <p class="chapter-label">第 19 章 HTTPS を運用する　19-3</p>
+  <h1>常に HTTPS でつなぐようブラウザに覚えさせる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>http でアクセスされたとき、https へ誘導するだけでは、実は<strong>最初の 1 回のアクセスまでは守り切れない</strong>。このページでは、この弱点と、ブラウザに毎回 https でつながせる仕組みを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">http でアクセスしても、https に誘導してくれるサイトがありますよね。あれで十分守られてるんじゃないんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は、最初の 1 回だけは守られません。</p>
+    <p class="s" data-who="ひよこちゃん">え、なんでですか? ちゃんと https に誘導されてるのに。</p>
+    <p class="t" data-who="ふくろう先生">その誘導自体が、最初は<strong>暗号化されていない http のやり取り</strong>として送られています。だから最初の 1 回だけは、途中で書き換えられたり中身を見られたりする隙が残ります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、公共の Wi-Fi で、最初につないだ瞬間に変なサイトに誘導されたことがあるって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさに、その隙を突かれた例だと思います。最初の http のやり取りは暗号化されていないので、途中で誘導先を書き換えられることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、これを守る方法はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。一度 https で正しく接続できたときに、応答の中に「次からは必ず https で接続してほしい」という指示を含めておく方法です。これを HSTS と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">その指示を覚えていれば、次からは http にすら行かなくなるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ブラウザが覚えていれば、次回以降はブラウザ自身が最初から https で接続します。</p>
+    <p class="s" data-who="ひよこちゃん">覚えた指示は、ずっと有効なんですか?</p>
+    <p class="t" data-who="ふくろう先生">指示には有効な期間が指定されていて、その間はブラウザが覚え続けます。期間が過ぎれば、また最初から確認し直します。</p>
+    <p class="s" data-who="ひよこちゃん">さっきの応答の中の指示って、どこに書かれてるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">応答に添えられる情報の一部に書かれています。細かい形式は、後の章でまとめて扱います。</p>
+    <p class="s" data-who="ひよこちゃん">一度も訪れたことが無いサイトだと、この指示はまだ効いてないですよね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。初めて訪れるときは、まだ指示を受け取っていないので、最初の 1 回の弱点がそのまま残ります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、有名なサイトなら平気なんですか?</p>
+    <p class="t" data-who="ふくろう先生">有名かどうかは関係ありません。大事なのは、そのブラウザがそのサイトの指示を過去に受け取って覚えているかどうかです。</p>
+    <p class="s" data-who="ひよこちゃん">https ということは、TLS の手続きも毎回行われるんですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。HSTS が指示するのは「https を使うかどうか」で、https の中身である TLS の手続き自体は、これまで見てきたとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">最初の 1 回だけはどうしようもないけど、2 回目以降は守れるってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、また別の弱点を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>http でのアクセスを https へ誘導するだけでは、その誘導自体が暗号化されていない http のやり取りとして送られるため、最初の 1 回は守られない。</li>
+      <li>公共の Wi-Fi などでは、この最初の隙を突かれて、別のサイトに誘導される例がある。</li>
+      <li>一度 https で正しく接続できたとき、応答の中に「次からは必ず https で」という指示を含めておく仕組みを HSTS と呼ぶ。</li>
+      <li>ブラウザがこの指示を覚えていれば、次回以降は最初から https で接続する。指示には有効な期間があり、期間が過ぎればまた最初から確認し直す。</li>
+      <li>一度も訪れたことが無いサイトには、まだ指示が届いていないため、最初の 1 回の弱点がそのまま残る。サイトの知名度とは関係が無い。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>http でのアクセスを https へ誘導するだけでは、その誘導自体が暗号化されていない http のやり取りとして送られるため、最初の 1 回のアクセスは、途中で書き換えられたり中身を見られたりする隙が残ったままになる。HSTS は、一度 https で正しく接続できたときに、応答の中に「次からは必ず https で接続してほしい」という指示を含めておくことで、この隙を補う仕組みである。ブラウザがこの指示を覚えていれば、次回以降はブラウザ自身が最初から https で接続するようになり、2 回目以降のアクセスはこの隙を避けられる。指示には有効な期間が指定されており、その間はブラウザが覚え続ける。この指示はサイトごとに記憶されるため、一度も接続したことが無いサイトには届いておらず、最初の 1 回の弱点はそのまま残る。これはサイトの知名度とは関係が無く、そのブラウザが過去に指示を受け取っているかどうかで決まる。HSTS が指示するのは https を使うかどうかであり、https の中身である TLS の手続き自体を変えるものではない。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://&lt;あなたのサイト&gt;</code></pre>
+    <p>見方: 応答の中に strict-transport-security という行があるかどうかを見てください。この行があれば、そのサイトはブラウザに「次からは必ず https で」と指示しています。行が無ければ、その指示はしていません。</p>
+    <p class="try-note">サイトによっては行が無いこともあり、それも観察の結果です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="86">[#86] IETF「RFC 6797: HTTP Strict Transport Security (HSTS)」 — <a href="https://www.rfc-editor.org/rfc/rfc6797.html" rel="noopener">原典</a>(最初のアクセスは守れないという記述)</li>
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(TLS が通信を守るという前提の確認)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m19-3">
+    <div class="q" data-q="1">
+      <p class="q-text">http でのアクセスを https へ誘導するだけでは、最初の 1 回のアクセスが守られないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">その誘導自体が、暗号化されていない http のやり取りとして送られるから</button></li>
+        <li><button type="button" data-correct="false">https 用の身分証がまだ発行されていないから</button></li>
+        <li><button type="button" data-correct="false">ブラウザが https に対応していないことがあるから</button></li>
+        <li><button type="button" data-correct="false">認証局が最初の接続を許可しないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その誘導自体が、暗号化されていない http のやり取りとして送られるから、です。身分証の発行状況やブラウザの対応状況、認証局の許可とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HSTS の仕組みとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">サーバが、次からは必ず https で接続してほしいという指示を応答に含めておく</button></li>
+        <li><button type="button" data-correct="false">ブラウザが、最初からすべてのサイトを https として扱う</button></li>
+        <li><button type="button" data-correct="false">認証局が、http でのアクセスを直接ブロックする</button></li>
+        <li><button type="button" data-correct="false">サーバが、http でのアクセスにはいつも応答しない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、サーバが、次からは必ず https で接続してほしいという指示を応答に含めておく、です。ブラウザがすべてのサイトを最初から https として扱うわけではなく、認証局やサーバが http のアクセスを一律に拒否する仕組みでもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">HSTS の指示をブラウザが覚えている間について、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">次回以降、ブラウザ自身が最初から https で接続する</button></li>
+        <li><button type="button" data-correct="false">次回以降、そのサイトには一切接続できなくなる</button></li>
+        <li><button type="button" data-correct="false">指示は一度覚えると、二度と消えることはない</button></li>
+        <li><button type="button" data-correct="false">指示を覚えている間は、身分証の確認が不要になる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、次回以降、ブラウザ自身が最初から https で接続する、です。接続が一切できなくなるわけではなく、指示には有効な期間があり、身分証の確認が不要になるわけでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m19-2.html">← 19-2 身分証を取り消す</a>
+    <a class="up" href="m19.html">第 19 章の入口</a>
+    <a class="next" href="m19-4.html">19-4 HTTPS のページに http の部品が混ざる →</a>
+  </nav>
+</main>
+</body>
+</html>

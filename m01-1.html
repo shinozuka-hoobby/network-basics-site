@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>「URL を開く」の裏で起きる 4 段階 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m01-1" data-chapter="m01" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 1-1</p>
+  <p class="chapter-label">第 1 章 パケットの旅　1-1</p>
+  <h1>「URL を開く」の裏で起きる 4 段階</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>URL を入力してから画面が表示されるまでには、名前解決・接続・暗号化・要求と応答という 4 つの出来事がこの順で起きる。ここでは<strong>HTTPS で新しく接続する場合</strong>を扱う(http の場合は暗号化の段階がない)。このページでは、この 4 つの出来事を順番に確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">先輩に「URL が読めるんだから、そのまま繋げばいいのに、なんで IP アドレスも要るの?」って聞かれて、うまく答えられなかったんです。</p>
+    <p class="t" data-who="ふくろう先生">良い質問ですね。ブラウザや途中の機械が実際に宛先として使うのは IP アドレスの方なんです。URL はあくまで人間向けの名前です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、URL を IP アドレスに変える作業が、どこかで挟まってるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">その通りです。今日は<strong>HTTPS で新しく接続する場合</strong>に絞って、URL を開くまでに起きる 4 つの出来事を順番に見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">4 つもあるんですか。全部教えてください。</p>
+    <p class="t" data-who="ふくろう先生">名前解決、接続、暗号化、要求と応答の順に進みます。</p>
+    <p class="s" data-who="ひよこちゃん">名前解決って、URL のホスト名を IP アドレスに変える、さっきの話のことですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。ブラウザは<a class="term" href="glossary.html#dns" data-term="dns">DNS</a>という仕組みに問い合わせて、ホスト名に対応する IP アドレスを教えてもらいます。詳しくは第 16 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">IP アドレスが分かったら、もうデータのやり取りが始まるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まだです。次はその IP アドレス宛てに<a class="term" href="glossary.html#tcp-connection" data-term="tcp-connection">TCP 接続</a>を作ります。手順の細かい中身は第 13 章に譲りますが、これで初めて相手と「会話できる状態」になります。</p>
+    <p class="s" data-who="ひよこちゃん">会話できる状態になったら、すぐ HTML をもらえるんですか?</p>
+    <p class="t" data-who="ふくろう先生">https の場合はまだです。接続の直後に暗号化の手続きが入ります。ここでは、相手が本物のサーバかどうかを確かめる<a class="term" href="glossary.html#tls-certificate" data-term="tls-certificate">TLS 証明書</a>を見せてもらいながら、この先のやり取りを守る鍵を決めます。</p>
+    <p class="s" data-who="ひよこちゃん">証明書って、鍵そのものじゃないんですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある誤解ですが違います。証明書は「相手が本物かどうかを確認する身分証」のようなもので、鍵はそれとは別に取り決めます。詳しくは第 18 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ http だと、その証明書の確認は無いってことですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。http には暗号化の段階そのものが無く、名前解決・接続・要求と応答の 3 段階で終わります。</p>
+    <p class="s" data-who="ひよこちゃん">暗号化まで終わったら、やっと本題ですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。最後にブラウザが HTTP のルールに従ってページの中身を求め、サーバが応答を返します。</p>
+    <p class="s" data-who="ひよこちゃん">この 4 段階、順番を覚えておくと何がいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">どの段階で止まっているかが分かれば、疑うべき原因をかなり絞り込めます。名前解決なら DNS、接続や暗号化ならネットワークや証明書、要求と応答ならサーバ側、という具合です。</p>
+    <p class="s" data-who="ひよこちゃん">実際の障害対応でも、この 4 段階を 1 つずつ確認していくんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。名前解決の結果が正しいかをまず確認し、次に接続だけを確認する、というように 1 段階ずつ切り分けます。具体的なやり方は、道具を扱う章でまとめて練習します。</p>
+    <p class="s" data-who="ひよこちゃん">1 つずつ確認すれば、闇雲に疑うより早く原因にたどり着けそうですね。</p>
+    <p class="t" data-who="ふくろう先生">その通りです。今日はまず、この 4 段階という地図を持ち帰ってください。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>URL を開く処理は「名前解決 → 接続 → 暗号化 → 要求と応答」の 4 段階に分けられる。</li>
+      <li>ここでは HTTPS で新しく接続する場合を扱う(http の場合は暗号化の段階がなく 3 段階で終わる)。</li>
+      <li>名前解決で IP アドレスが決まって初めて、その IP アドレス宛ての TCP 接続を始められる。</li>
+      <li>暗号化では TLS 証明書で相手を確認しながら、この先の通信を守る鍵を取り決める。</li>
+      <li>どの段階で止まっているかが分かれば、疑うべき原因(DNS、ネットワークや証明書、サーバ側のアプリケーションなど)をかなり絞り込める。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>名前解決は、ホスト名を手がかりに DNS へ問い合わせ、対応する IP アドレスを受け取る処理である。接続は、その IP アドレス宛てに TCP 接続を確立する処理で、ここで初めてサーバとデータをやり取りできる状態になる。手順の細部(何回のやり取りで成立するかなど)は、接続を専門に扱う章で説明する。暗号化は TLS 証明書を使った手続きで、サーバがそれを提示し、ブラウザがそれを確認したうえで、この先の通信を守るための鍵を取り決める。要求と応答は、確立した通信路の上で HTTP のリクエストとレスポンスを 1 往復させる処理である。4 つの出来事は互いに独立しているため、名前解決の失敗はサーバへ 1 つもデータが届く前に起こり、接続の失敗は TCP 接続そのものが成立しない状態として現れ、暗号化の失敗は証明書の確認エラーとして現れる。http の場合はこの暗号化の段階自体が存在せず、名前解決 → 接続 → 要求と応答の 3 段階で完了する。この 4 つの出来事の切り分けは、後の章で障害を調査するときの基本的な考え方になる。例えば接続はできるのに応答が返らない場合、疑うべきはサーバ側のアプリケーションであって、名前解決やネットワークではない。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 1 行目に HTTP のバージョンと 200 のようなステータスコードが出れば、名前解決・接続・暗号化・要求と応答の 4 段階が全部成功して、応答が返ってきた証拠になる。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a></li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a></li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m01-1">
+    <div class="q" data-q="1">
+      <p class="q-text">ひよこちゃんは「まず接続をして、その後でブラウザがサーバの IP アドレスを調べる」と考えていた。実際の順序として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ひよこちゃんの考えのとおり、接続の後に名前解決が行われる</button></li>
+        <li><button type="button" data-correct="true">先に名前解決で IP アドレスを確定させてから、その IP アドレス宛てに接続を行う</button></li>
+        <li><button type="button" data-correct="false">名前解決と接続は同時に行われ、順序は関係ない</button></li>
+        <li><button type="button" data-correct="false">接続の後に暗号化を行い、その後で名前解決を行う</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、先に名前解決で IP アドレスを確定させてから、その IP アドレス宛てに接続を行う、です。ブラウザは URL のホスト名から IP アドレスを名前解決で確定させないと、接続先を指定できません。名前解決が完了して初めて、その IP アドレス宛ての接続を開始できます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">4 段階のうち、TLS 証明書を確認するのはどの段階か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前解決</button></li>
+        <li><button type="button" data-correct="false">接続</button></li>
+        <li><button type="button" data-correct="true">暗号化</button></li>
+        <li><button type="button" data-correct="false">要求と応答</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は暗号化です。暗号化の段階では、サーバが TLS 証明書を提示し、ブラウザがそれを確認したうえで、この先の通信を守る鍵を取り決めます。名前解決は IP アドレスを調べる段階、接続は TCP 接続で会話できる状態を作る段階、要求と応答はページの中身をやり取りする段階で、証明書の確認はいずれの段階でも行いません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">http と https の違いの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">http にも https にも、暗号化の段階が同じように存在する</button></li>
+        <li><button type="button" data-correct="true">http には暗号化の段階が無く、名前解決 → 接続 → 要求と応答の 3 段階で完了する</button></li>
+        <li><button type="button" data-correct="false">http は名前解決の段階が無く、接続から始まる</button></li>
+        <li><button type="button" data-correct="false">https は接続の段階が無く、名前解決の直後に暗号化する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、http には暗号化の段階が無く、名前解決 → 接続 → 要求と応答の 3 段階で完了する、です。暗号化の段階が挟まるのは https のときだけで、http はそれ以外の 3 段階だけで完了します。名前解決や接続の段階自体が無くなるわけではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m01.html">← 第 1 章の入口</a>
+    <a class="up" href="m01.html">第 1 章の入口</a>
+    <a class="next" href="m01-2.html">1-2 名前解決の答えは、しばらく覚えられている →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>あの事例を、道具で確かめ直す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m29-4" data-chapter="m29" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 29-4</p>
+  <p class="chapter-label">第 29 章 クラウド上の経路診断　29-4</p>
+  <h1>あの事例を、道具で確かめ直す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前のページまでで見た、設定からの推論と、実際の記録という 2 つの道具を組み合わせると、第 24・25 章で見た事例のどこを直すべきかが分かる。<strong>推論だけでも記録だけでも、分からないことがある</strong>。このページでは、その組み合わせ方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">経路診断ツールとフローログ、2 つとも分かったんですけど、実際どう使い分けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">経路診断ツールは「これから試したらどうなるか」を<strong>設定</strong>から言い当てるもの、フローログは「実際に何が起きたか」を記録したものです。両方を組み合わせると、どこを直すべきかが分かります。</p>
+    <p class="s" data-who="ひよこちゃん">第 24 章 24-2 で見た、手順書どおりに作ったはずなのに公開用の区画に置いたサーバへ外からアクセスできなかった事例、あれも診断ツールで確かめられますか?</p>
+    <p class="t" data-who="ふくろう先生">まさに得意な場面です。AWS の Reachability Analyzer は、インターネットゲートウェイを送信元、サーバを宛先にして分析できます。分析の結果、届かないと判定されれば、ルートテーブルに経路が無いことが、止めている設定として示されたはずです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、実際に外からアクセスを試さなくても、設定を読むだけで、あの原因が分かったってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた、NACL で外から来る 443 番宛ての通信を許可したのに、外から要求は届くのに応答が返らなかった話も、確かめ直せますか?</p>
+    <p class="t" data-who="ふくろう先生">フローログを見れば分かります。AWS の資料には、同じ仕組みの実例として、ピンの要求は許可され、応答が NACL で拒否される場合、要求側の ACCEPT の記録と応答側の REJECT の記録が別々に残る、という例が載っています。</p>
+    <p class="s" data-who="ひよこちゃん">ポート番号やプロトコルは違いますけど、行きと帰りで記録が分かれるっていう仕組みは同じなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。443 番宛ての通信そのものを AWS が文書化しているわけではありませんが、NACL がステートレスで戻りを別に許可しないと通らない、という仕組みは同じです。</p>
+    <p class="s" data-who="ひよこちゃん">行きと帰りで記録が分かれて残っていれば、NACL が戻りを止めたって、はっきり分かりますね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">第 25 章 25-1 で見た、VPC ピアリングが推移しないっていう話も、診断ツールで確かめられますか?</p>
+    <p class="t" data-who="ふくろう先生">関係あります。Reachability Analyzer は、送信元と宛先が同じ VPC か、VPC ピアリングか Transit Gateway でつながっている必要があります。ピアリングでつながっていない相手同士は、<strong>そもそも分析の対象にできません</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">対象にできないこと自体が、推移しないっていう性質を表してるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">診断ツールが「届くはず」って言っても、実際には繋がらないことってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由で繋がらないことがあります。だからこそ、推論と記録の両方を見る必要があるんです。</p>
+    <p class="s" data-who="ひよこちゃん">推論だけでも、記録だけでも足りなくて、組み合わせて初めて分かることがあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。一般的な切り分けの手順は、最後の章でまとめて見ましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>経路診断ツールは「これから試したらどうなるか」を設定から言い当てるもの、フローログは「実際に何が起きたか」を記録したものである。</li>
+      <li>第 24 章 24-2 の事例(公開用の区画に外からアクセスできなかった)は、インターネットゲートウェイを送信元、サーバを宛先にして分析すれば、ルートテーブルの経路の欠落として示されたはずである。</li>
+      <li>第 24 章 24-3 の事例(NACL で応答が返らなかった)は、フローログの行きの ACCEPT と戻りの REJECT という別々の記録で裏づけられる。</li>
+      <li>診断ツールの判定が「届くはず」でも実際には繋がらないことがあり、推論と記録の両方を組み合わせて、どこを直すか判断する。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>経路診断ツールは、設定をもとに「これから届くはずか」を推論するのに対し、フローログは「実際に何が起きたか」を記録している(#27、#117)。第 24 章 24-2 の、区画に置いたサーバへ外からアクセスできなかった事例は、インターネットゲートウェイを送信元、サーバを宛先にして分析すれば、ルートテーブルに経路が無いことが、経路を止めている設定として示される(#27)。第 24 章 24-3 の、NACL で応答が返らなかった事例は、AWS の記録例(要求の ACCEPT と応答の REJECT が別々に残るピンの例)と同じ仕組みで説明できる(#117)。第 25 章 25-1 の VPC ピアリングが推移しないという制約は、Reachability Analyzer が送信元・宛先の間にピアリングか Transit Gateway の接続を必要とするという前提にも表れている(#27)。設定の分析が「届くはず」と示しても、機械自体の不調のような設定の外側の理由で、実際には繋がらないことがある(#34)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="27">[#27] AWS「How Reachability Analyzer works」 — <a href="https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html" rel="noopener">原典</a>(5 行目 送信元・宛先を指定して分析する例、9 行目 どの設定が止めているかを示すという記述、13 行目 送信元・宛先は同じ VPC か VPC ピアリング・Transit Gateway でつながっている必要があるという前提)</li>
+    <li class="cite" data-src="117">[#117] AWS「Flow log record examples」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-records-examples.html" rel="noopener">原典</a>(32〜51 行目 ピンの要求が ACCEPT、応答が NACL で REJECT される実例)</li>
+    <li class="cite" data-src="34">[#34] Google Cloud「Connectivity Tests troubleshooting」 — <a href="https://docs.cloud.google.com/network-intelligence-center/docs/connectivity-tests/support/troubleshooting" rel="noopener">原典</a>(60〜74 行目 設定分析が Deliver でも実際には繋がらない場合があるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m29-4">
+    <div class="q" data-q="1">
+      <p class="q-text">経路診断ツールが「届くはず」と判定しても、実際には繋がらないことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由で実際には繋がらないことがあるから</button></li>
+        <li><button type="button" data-correct="false">診断ツールは常に間違った結果を返すから</button></li>
+        <li><button type="button" data-correct="false">診断ツールには設定を読み取る機能が無いから</button></li>
+        <li><button type="button" data-correct="false">フローログが自動的に設定を書き換えるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由で実際には繋がらないことがあるから、です。常に間違うわけでも、設定を読み取れないわけでも、フローログが設定を書き換えるわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">第 24 章 24-2 の事例を経路診断ツールで確かめ直すとすれば、何を送信元・宛先に指定するか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">インターネットゲートウェイを送信元、サーバを宛先</button></li>
+        <li><button type="button" data-correct="false">サーバを送信元、DNS サーバを宛先</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループを送信元、NACL を宛先</button></li>
+        <li><button type="button" data-correct="false">送信元・宛先のどちらも指定しない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、インターネットゲートウェイを送信元、サーバを宛先、です。DNS サーバとの通信の話ではなく、セキュリティグループや NACL は分析の対象であって送信元・宛先ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 24 章 24-3 の事例で、フローログにはどのような記録が残ると考えられるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">要求側に ACCEPT の記録、応答側に REJECT の記録が別々に残る</button></li>
+        <li><button type="button" data-correct="false">すべての記録が ACCEPT になる</button></li>
+        <li><button type="button" data-correct="false">記録は一切残らない</button></li>
+        <li><button type="button" data-correct="false">要求と応答が 1 つの記録にまとめられる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、要求側に ACCEPT の記録、応答側に REJECT の記録が別々に残る、です。すべてが ACCEPT になるわけでも、記録が残らないわけでも、1 つにまとめられるわけでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m29-3.html">← 29-3 通った跡が、記録に残っている</a>
+    <a class="up" href="m29.html">第 29 章の入口</a>
+    <a class="next" href="m30.html">第 30 章 性能の考え方 — レイテンシ・帯域・RTT →</a>
+  </nav>
+</main>
+</body>
+</html>

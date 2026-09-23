@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>途中にいる機械を、1 台ずつあぶり出す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m27-2" data-chapter="m27" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 27-2</p>
+  <p class="chapter-label">第 27 章 観測ツール入門 — ping・traceroute・dig・curl　27-2</p>
+  <h1>途中にいる機械を、1 台ずつあぶり出す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>途中の機械を、1 台ずつ確かめる道具がある。<strong>応答が返らない行が混じっていても、それだけで経路が壊れているとは言えない</strong>。このページでは、この道具の仕組みと、よくある誤解を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">traceroute というコマンドも何度か実行してきましたけど、なんで行がいくつも並ぶんですか。</p>
+    <p class="t" data-who="ふくろう先生">送り出すパケットの IP の TTL を、1 から順に増やして送っているからです。この道具を <strong>traceroute</strong> と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">TTL って、第 6 章 6-2 で見た、経由できる機械の残り回数の歯止めですよね。それを増やしていくと、何が起きるんですか。</p>
+    <p class="t" data-who="ふくろう先生">TTL が 1 のパケットは、最初の機械で残りが 0 になって捨てられ、その機械が ICMP でこちらに知らせてきます。次は TTL を 2 にして送り、2 台目の機械からの知らせを受け取る、という具合に、1 台ずつ機械をあぶり出していきます。</p>
+    <p class="s" data-who="ひよこちゃん">TTL が尽きた機械からの知らせって、具体的にはどうやって送信元に伝わるんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 6 章 6-4 で見た ICMP の合図の一種で、時間切れを示す専用の合図として送り返されます。</p>
+    <p class="s" data-who="ひよこちゃん">それを宛先に届くまで繰り返すんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ただし宛先からの知らせは少し違います。宛先は無効な宛先へ届いたことを示す、別の種類の合図を返し、traceroute はその合図を受け取った時点で実行を終えます。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの行に時間が 3 つ並んでるのは何ですか。</p>
+    <p class="t" data-who="ふくろう先生">同じ機械に 3 回ずつ確認を送り、それぞれの往復時間を並べています。</p>
+    <p class="s" data-who="ひよこちゃん">実行結果に * だけの行が出ることもあるんですけど、あれは何なんですか。</p>
+    <p class="t" data-who="ふくろう先生">その機械から応答が返らなかったことを示しています。</p>
+    <p class="s" data-who="ひよこちゃん">応答が返らないって、その機械が壊れてるってことですか。</p>
+    <p class="t" data-who="ふくろう先生">そうとは限りません。第 6 章 6-2 で見た事例を覚えていますか。経路の設定を誤って、2 台の機械が互いにパケットを転送し合い続けた話です。</p>
+    <p class="s" data-who="ひよこちゃん">はい、TTL が尽きて捨てられた話ですよね。あれを traceroute で見るとどうなるんですか。</p>
+    <p class="t" data-who="ふくろう先生">同じ 2 つの住所が、交互に何行も並び続けます。TTL という歯止めが無ければ、そのパケットは消えずに残り続けてしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、traceroute の結果を見れば、そういう異常にも気づけるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ただし * が 1 行混じっていたくらいでは、経路の異常とは言えません。その先の機械から応答が戻ることもあり、最終的に宛先まで届く場合もあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、途中に * があっても、慌てなくていいってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。最後まで応答が続いているかどうかを見てください。</p>
+    <p class="s" data-who="ひよこちゃん">名前解決の話も気になってきました。dig の結果って、実はいろんな章でバラバラに見てきましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。次のページで、dig の出力をまとめて整理しましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>traceroute は、送り出すパケットの IP の TTL を 1 から順に増やし、途中の機械 1 台ずつから応答を得る道具である。</li>
+      <li>1 つの行に並ぶ複数の時間は、同じ機械に対する複数回の確認の往復時間である。</li>
+      <li>* は、その機械から応答が返らなかったことを示すだけで、経路が壊れているとは限らない。</li>
+      <li>経路の設定を誤って 2 台の機械が転送し合い続ける(ルーティングループ)と、traceroute の結果には同じ 2 つの住所が交互に並び続ける。</li>
+      <li>* が一部の行に混じっていても、その先の機械から応答が戻り、最終的に宛先へ届く場合がある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>traceroute は、送り出すパケットの IP の TTL を 1 から順に増やしながら送り出す(#46)。TTL が尽きた機械は ICMP の合図でその旨を送信元に知らせるため、TTL を 1 ずつ増やしていくと、経路上の機械から 1 台ずつ順番に応答を得られる(#46、#4)。同じ機械には 3 回ずつ確認を送るため、1 つの行に 3 つの往復時間が並ぶ(#46)。宛先まで届くと、宛先の機械は途中の機械とは別の種類の合図(届け先の窓口が無いことを示す合図)を返し、traceroute はこれを受け取った時点で実行を終える(#46)。応答が返らなかった機械は * と表示されるが、これは応答が無かったことを示すだけで、それより先の機械から応答が戻り、最終的に宛先へ届く場合もある(#46「probe timed out」)。経路の設定を誤り、2 台の機械が互いにパケットを転送し合い続ける状態(ルーティングループ)になると、traceroute の結果には同じ 2 つの住所が、TTL の上限に達するまで交互に並び続ける(#65)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>traceroute -m 15 example.com</code></pre>
+    <p>見方: 各行の左端の番号が経由した機械の台数、丸括弧の前後にある名前と IP アドレスがその機械の情報である(名前が分からない機械では、名前が省かれて IP アドレスだけになることもある)。1 行に並ぶ複数の時間は同じ機械への複数回の確認の結果で、* の行が混じっていても、その先の行で応答が戻り、宛先まで届いていれば心配はいらない。</p>
+    <p class="try-note">実行に十数秒かかることがある。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="46">[#46] Cisco「Understand Ping and Traceroute」 — <a href="https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/12778-ping-traceroute.html" rel="noopener">原典</a>(line 538-544: TTL を 1 から順に増やして送り、途中の機械から ICMP Time Exceeded Message を得る仕組み。line 616-621「IP Traceroute Text Characters」の表: `*` は「The probe timed out」)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`06_IP.txt` p.96-97: traceroute の動作原理。TTL=1 から送り、ICMP time exceed message(type=11, code=0)を利用して 1 台ずつ経由する機械を特定する図解)</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>(line 838-920: 経路設定を誤った結果、`10.2.0.1` と `10.2.0.3` の 2 つの住所が交互に 30 行並び続けたルーティングループの実行例と、その要約「there are only two routers in this subnet, there are thirty hops…this is known as a routing loop」)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m27-2">
+    <div class="q" data-q="1">
+      <p class="q-text">traceroute の結果の 1 つの行に、なぜ 3 つの時間が並ぶのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">3 台の機械が同時に応答したから</button></li>
+        <li><button type="button" data-correct="false">1 回の確認に往復で 3 回のやり取りが必要だから</button></li>
+        <li><button type="button" data-correct="true">同じ機械に 3 回確認を送り、それぞれの往復時間を並べているから</button></li>
+        <li><button type="button" data-correct="false">TTL の値を 3 ずつ増やして送っているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ機械に 3 回確認を送り、それぞれの往復時間を並べているから、です。3 台同時の応答や、3 回のやり取り、TTL を 3 ずつ増やすという話ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">traceroute の結果に * の行が 1 つ混じっていても、それだけでは経路が壊れているとは言えないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">* は必ず一時的な遅延で、数秒後には消えるから</button></li>
+        <li><button type="button" data-correct="true">* はその機械から応答が返らなかったことを示すだけで、その先の機械から応答が戻り、最終的に宛先まで届く場合があるから</button></li>
+        <li><button type="button" data-correct="false">* は宛先に無事到達した証拠だから</button></li>
+        <li><button type="button" data-correct="false">* は経由した機械の合計台数を示す記号だから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、* はその機械から応答が返らなかったことを示すだけで、その先の機械から応答が戻り、最終的に宛先まで届く場合があるから、です。一時的な遅延だと決めつけることも、到達の証拠だとすることも、台数を示す記号だという説明も誤りです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">経路の設定を誤り、2 台の機械が互いに転送し合い続けると、traceroute の結果はどう見えるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">結果が 1 行も表示されずエラーになる</button></li>
+        <li><button type="button" data-correct="false">宛先の住所だけが繰り返し表示される</button></li>
+        <li><button type="button" data-correct="false">すべての行が * だけになる</button></li>
+        <li><button type="button" data-correct="true">同じ 2 つの住所が、TTL の上限に達するまで交互に並び続ける</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ 2 つの住所が、TTL の上限に達するまで交互に並び続ける、です。エラーになる、宛先の住所だけが表示される、すべて * になるというのはいずれも誤りです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m27-1.html">← 27-1 届くか、届かないかを、まず確かめる</a>
+    <a class="up" href="m27.html">第 27 章の入口</a>
+    <a class="next" href="m27-3.html">27-3 これまで見てきた答えを、まとめて読み解く →</a>
+  </nav>
+</main>
+</body>
+</html>

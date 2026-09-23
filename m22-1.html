@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>近くに控えを置いておく — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m22-1" data-chapter="m22" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 22-1</p>
+  <p class="chapter-label">第 22 章 CDN とキャッシュ　22-1</p>
+  <h1>近くに控えを置いておく</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>利用者の近くに、ページや画像の控えを用意しておく仕組みがある。<strong>控えを届ける機械と、もとのデータを持つ機械は役割が分かれている</strong>。このページでは、その役割分担と、控えが見つかったときの基本の流れを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 1 章で、利用者の近くにコンテンツの控えを用意しておく仕組みがあるって聞きましたけど、実際にはどんな機械が動いているんですか?</p>
+    <p class="t" data-who="ふくろう先生">その仕組みを CDN(コンテンツデリバリネットワーク)と呼びます。CDN の中には、大きく分けて 2 つの役割があります。</p>
+    <p class="s" data-who="ひよこちゃん">2 つ、ですか? 1 台の機械が全部やればいいんじゃないんですか?</p>
+    <p class="t" data-who="ふくろう先生">元になるデータを持つ機械 1 台だけだと、世界中からの要求がそこに集中してしまいます。近くに控えを置く機械を増やせば、要求を分散できます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、そのために役割を分けているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。1 つは、利用者の近くに置かれて、控えを代わりに届ける機械です。これをエッジサーバと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 19 章で、TLS を解く場所の話をしたとき、「配信事業者のサーバ」って呼んでいたのが、これのことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。もう 1 つの役割は、元になるデータを持つ本来の Web サーバで、オリジンサーバと呼びます。19-5 の「自分のサーバ」が、これにあたります。</p>
+    <p class="s" data-who="ひよこちゃん">利用者からの要求は、まずエッジサーバに届くんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。エッジサーバに、その要求に対する答えの控えがあれば、そのまま返します。</p>
+    <p class="s" data-who="ひよこちゃん">控えが無かったら、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">オリジンサーバまで取りに行きます。取ってきた答えは、次の要求のために、エッジサーバ側にも控えとして残しておきます。</p>
+    <p class="s" data-who="ひよこちゃん">控えが見つかって、そのまま返せたときって、何か呼び方があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。控えが見つかって、それをそのまま返せた状態を、<strong>キャッシュヒット</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">見つからなかったときは、何て呼ぶんですか?</p>
+    <p class="t" data-who="ふくろう先生">呼び方はいったん置いておいて、今日は「見つからなければオリジンサーバまで取りに行く」とだけ覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">1 回オリジンサーバまで取りに行ったら、その後はずっと同じ答えを返し続けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ずっとではありません。控えにも、使ってよい期限があります。次のページで、その期限の決め方を見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">利用者からすると、エッジサーバとオリジンサーバ、見分けが付かないですよね?</p>
+    <p class="t" data-who="ふくろう先生">普段は意識しません。ただ、実際に確かめる方法もあります。</p>
+    <p class="s" data-who="ひよこちゃん">え、確かめられるんですか? やってみたいです。</p>
+    <p class="t" data-who="ふくろう先生">あとで試してみましょう。エッジサーバは世界中の利用者の近くに配置されていて、一番近いところが応答することが多いんです。この「近くに届く仕組み」は、また別のページで扱います。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>CDN は、利用者の近くにコンテンツの控えを用意しておく仕組みである。</li>
+      <li>CDN の中では、利用者の近くで控えを届けるエッジサーバと、元になるデータを持つオリジンサーバに役割が分かれている。</li>
+      <li>要求に対する答えの控えが見つかり、そのまま返せた状態をキャッシュヒットと呼ぶ。</li>
+      <li>控えが見つからなければ、エッジサーバがオリジンサーバまで取りに行き、受け取った答えを控えとして残しておく。</li>
+      <li>利用者は、応答しているのがエッジサーバかオリジンサーバかを、普段は意識しない。</li>
+      <li>元になるデータを持つ機械が 1 台だけだと世界中からの要求がそこに集中してしまうため、近くに控えを置くエッジサーバを増やして要求を分散する。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>CDN(コンテンツデリバリネットワーク)は、利用者の近くにコンテンツの控えを用意しておく仕組みである。この仕組みには、利用者に一番近い場所で控えを届けるエッジサーバと、元になるデータを持つ本来の Web サーバであるオリジンサーバという、2 つの役割がある(#62)。利用者からの要求は、まずエッジサーバに届く。要求に対する答えの控えがそこにあれば、エッジサーバはオリジンサーバまで行かずに、その場でそのまま答えを返す。この、控えが見つかってそのまま返せた状態を、キャッシュヒットと呼ぶ(#63)。控えが無ければ、エッジサーバがオリジンサーバまで取りに行き、受け取った答えをエッジサーバ側にも控えとして残しておく。次に同じ要求が来たときは、その控えがそのまま使われる(#58)。多くの利用者が同じコンテンツを求める場合、いったんエッジサーバに控えができれば、以後の利用者への応答もそこで完結できるようになる。エッジサーバは、世界中の主要な拠点に数多く配置されており(#58)、オリジンサーバ 1 台に要求が集中することを避けている。応答しているのがエッジサーバかオリジンサーバかは、応答の中身を見れば確かめられることがあり、この章の試してみようで実際に確認する。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 応答の中の "cf-cache-status" という行を見てください。HIT と書かれていれば、エッジサーバの控えからそのまま返された印です(この行の名前は配信事業者によって異なります)。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="58">[#58] Cloudflare Learning Center「CDN performance」 — <a href="https://www.cloudflare.com/learning/cdn/performance/" rel="noopener">原典</a>(「How does a CDN load content? What is caching?」の節。利用者の要求がまずエッジサーバに届き、控えが無ければオリジンサーバに取りに行くという 4 段階の説明)</li>
+    <li class="cite" data-src="62">[#62] Akamai「How Akamai works」 — <a href="https://techdocs.akamai.com/start/docs/how-akamai-works" rel="noopener">原典</a>(エッジサーバがオリジンサーバの代わりに立つという記述、オリジンサーバの定義)</li>
+    <li class="cite" data-src="63">[#63] Fastly「Content delivery learning center」 — <a href="https://www.fastly.com/learning/what-is-caching" rel="noopener">原典</a>(「What is caching?」の要約。控えを一時的に保存しておき、必要なときにすぐ取り出せるようにする、という一般的なキャッシュの説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m22-1">
+    <div class="q" data-q="1">
+      <p class="q-text">CDN を使うと、利用者からの応答がオリジンサーバまで行かずに済むことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">オリジンサーバが、利用者の近くに引っ越しているから</button></li>
+        <li><button type="button" data-correct="true">エッジサーバに答えの控えがあれば、そのまま返せる(キャッシュヒットになる)から</button></li>
+        <li><button type="button" data-correct="false">利用者の要求が、自動的にオリジンサーバへの問い合わせを省略するから</button></li>
+        <li><button type="button" data-correct="false">エッジサーバがオリジンサーバの代わりに新しいデータを作り出すから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、エッジサーバに答えの控えがあれば、そのまま返せる(キャッシュヒットになる)から、です。オリジンサーバが移動するわけでも、要求そのものが省略されるわけでもなく、控えがそのまま使われるだけです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">エッジサーバの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">元になるデータを持っている、本来の Web サーバのこと</button></li>
+        <li><button type="button" data-correct="true">利用者の近くに置かれ、控えを代わりに届ける機械のこと</button></li>
+        <li><button type="button" data-correct="false">利用者の端末そのもののこと</button></li>
+        <li><button type="button" data-correct="false">控えを一切持たず、常にもとのデータへ転送するだけの機械のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、利用者の近くに置かれ、控えを代わりに届ける機械のこと、です。元になるデータを持つのはオリジンサーバで、エッジサーバは利用者の端末でも、控えを持たない転送専用の機械でもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">オリジンサーバの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">利用者の近くに置かれ、控えを代わりに届ける機械のこと</button></li>
+        <li><button type="button" data-correct="false">複数の利用者の要求を振り分ける機械のこと</button></li>
+        <li><button type="button" data-correct="true">元になるデータを持っている、本来の Web サーバのこと</button></li>
+        <li><button type="button" data-correct="false">名前解決の答えを保存しておく機械のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、元になるデータを持っている、本来の Web サーバのこと、です。控えを届ける役目はエッジサーバが担い、要求の振り分けや名前解決の答えの保存とも別のものです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m22.html">← 第 22 章の入口</a>
+    <a class="up" href="m22.html">第 22 章の入口</a>
+    <a class="next" href="m22-2.html">22-2 何を、いつまで控えるか →</a>
+  </nav>
+</main>
+</body>
+</html>

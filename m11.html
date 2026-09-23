@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPv6 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m11" data-chapter="m11" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 11 章</p>
+  <p class="chapter-label">第 11 章</p>
+  <h1>IPv6</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>0 と 1 が 128 個並ぶ、新しい形式の IP アドレス(IPv6)の構造と、16 進数を使った書き方を説明できる。</li>
+      <li>同じネットワーク内の機械の MAC アドレスを調べる役目を、ARP に代わって近隣探索(ND)が担っていることを説明できる。</li>
+      <li>機械が自分でアドレスを組み立てる SLAAC と、サーバがアドレスを配る DHCPv6 の違いを説明できる。</li>
+      <li>今までの形式と新しい形式のアドレスを両方使うデュアルスタックや、NAT64/DNS64 のような変換を使って移行が進むことを説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 420" role="img" aria-label="上段: 新しい形式の IP アドレスが 16 進数の 8 つの組で書かれている図。中段: 同じネットワークにある機械 A と機械 B が、近隣探索という呼びかけで MAC アドレスを調べ合っている図。下段: 今までの形式と新しい形式の両方のアドレスを持つ機械(デュアルスタック)から、変換の箱(NAT64/DNS64)を経由して、今までの形式しか持たない相手に届く図。">
+      <defs>
+        <marker id="m11-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m11-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <!-- 上段: アドレスの組 -->
+      <text x="20" y="26" font-size="12" fill="var(--fig-muted)">新しい形式の IP アドレス(16 進数の 8 つの組)</text>
+      <g font-size="12" fill="var(--fig-ink)">
+        <rect x="20" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="65" y="58" text-anchor="middle">2001</text>
+        <rect x="118" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="163" y="58" text-anchor="middle">0db8</text>
+        <rect x="216" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="261" y="58" text-anchor="middle">beef</text>
+        <rect x="314" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="359" y="58" text-anchor="middle">cafe</text>
+        <rect x="412" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <text x="457" y="58" text-anchor="middle" fill="var(--fig-muted)">0000</text>
+        <rect x="510" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <text x="555" y="58" text-anchor="middle" fill="var(--fig-muted)">0000</text>
+        <rect x="608" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <text x="653" y="58" text-anchor="middle" fill="var(--fig-muted)">0000</text>
+        <rect x="706" y="36" width="90" height="34" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="751" y="58" text-anchor="middle">1234</text>
+      </g>
+      <text x="20" y="88" font-size="11" fill="var(--fig-muted)">点線の 3 組(すべて 0)は「::」で 1 回だけ省略して短く書ける</text>
+
+      <line x1="0" y1="108" x2="900" y2="108" stroke="var(--fig-muted)" stroke-width="1" stroke-dasharray="2 3"/>
+
+      <!-- 中段: 近隣探索 -->
+      <text x="20" y="132" font-size="12" fill="var(--fig-muted)">同じネットワーク内(第 7 章の ARP に代わる仕組み)</text>
+      <rect x="60" y="145" width="150" height="60" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="135" y="180" text-anchor="middle" font-size="13" fill="var(--fig-ink)">機械 A</text>
+      <rect x="690" y="145" width="150" height="60" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="765" y="180" text-anchor="middle" font-size="13" fill="var(--fig-ink)">機械 B</text>
+      <line x1="210" y1="160" x2="690" y2="160" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m11-arrow-accent)"/>
+      <text x="450" y="150" text-anchor="middle" font-size="12" fill="var(--fig-accent)">近隣探索(ND)で MAC アドレスを尋ねる</text>
+      <line x1="690" y1="190" x2="210" y2="190" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m11-arrow-ink)"/>
+      <text x="450" y="212" text-anchor="middle" font-size="12" fill="var(--fig-ink)">絞った相手にだけ届く呼びかけ方で答える</text>
+
+      <line x1="0" y1="235" x2="900" y2="235" stroke="var(--fig-muted)" stroke-width="1" stroke-dasharray="2 3"/>
+
+      <!-- 下段: デュアルスタックとNAT64/DNS64 -->
+      <text x="20" y="258" font-size="12" fill="var(--fig-muted)">移行の期間中(第 10 章の NAT の考え方を広げる)</text>
+      <rect x="20" y="270" width="180" height="80" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="110" y="296" text-anchor="middle" font-size="13" fill="var(--fig-ink)">1 台の機械</text>
+      <text x="110" y="315" text-anchor="middle" font-size="11" fill="var(--fig-muted)">今までの形式のアドレス</text>
+      <text x="110" y="332" text-anchor="middle" font-size="11" fill="var(--fig-muted)">新しい形式のアドレス</text>
+      <text x="110" y="347" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(デュアルスタック)</text>
+
+      <rect x="360" y="270" width="180" height="80" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="450" y="305" text-anchor="middle" font-size="13" fill="var(--fig-accent)">変換の箱</text>
+      <text x="450" y="325" text-anchor="middle" font-size="11" fill="var(--fig-accent)">(NAT64/DNS64)</text>
+      <line x1="200" y1="310" x2="360" y2="310" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m11-arrow-ink)"/>
+
+      <rect x="700" y="270" width="180" height="80" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="790" y="305" text-anchor="middle" font-size="13" fill="var(--fig-ink)">相手の機械</text>
+      <text x="790" y="325" text-anchor="middle" font-size="11" fill="var(--fig-muted)">今までの形式だけ</text>
+      <line x1="540" y1="310" x2="700" y2="310" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m11-arrow-ink)"/>
+
+      <text x="450" y="390" text-anchor="middle" font-size="12" fill="var(--fig-ink)">機械自身が組み立てる(SLAAC)か、サーバが配る(DHCPv6)かでアドレスが決まり、</text>
+      <text x="450" y="408" text-anchor="middle" font-size="12" fill="var(--fig-ink)">今までの形式との通信が必要な間は、こうした仕組みで橋渡しをする</text>
+    </svg>
+    <p class="fig-cap">新しい形式の IP アドレス(IPv6)は 16 進数 8 つの組で書かれ、同じネットワーク内では ARP に代わる近隣探索(ND)が MAC アドレスを調べる。アドレスは機械自身が組み立てる(SLAAC)かサーバが配る(DHCPv6)かで決まり、今までの形式との通信が必要な間は、1 台が両方のアドレスを持つデュアルスタックや、変換の箱(NAT64/DNS64)を使って橋渡しをする。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m11"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m10.html">← 第 10 章 NAT とプライベートネットワーク</a>
+    <a class="next" href="m12.html">第 12 章 ポートと UDP →</a>
+  </nav>
+</main>
+</body>
+</html>

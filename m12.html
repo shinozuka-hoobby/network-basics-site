@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ポートと UDP — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m12" data-chapter="m12" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 12 章</p>
+  <p class="chapter-label">第 12 章</p>
+  <h1>ポートと UDP</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>同じ IP アドレス宛てに届いたデータも、機械の中では複数のプログラムが同時に動いていて、ポート番号を見てどのプログラムに渡すかが決まることを説明できる。</li>
+      <li>宛先側のあらかじめ決まった番号と、通信を始める側が使う一時的な番号の違いを説明できる。</li>
+      <li>接続を作らず、確認も送り直しもしない、もう一つの届け方があることと、その届け方が向く場面を説明できる。</li>
+      <li>自分の機械で今どのプログラムがどの番号で待ち受け・通信しているかを確認する方法を説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 380" role="img" aria-label="1 台の機械(IP アドレス 203.0.113.5)の中に、Web サーバ(443 番で待ち受け)とメールソフト(25 番で待ち受け)という 2 つのプログラムが動いている図。外から届いたデータのうち、宛先が 443 番のものは Web サーバへ、25 番のものはメールソフトへ、ポート番号を目印にそれぞれ振り分けられる。8080 番のように、待ち受けているプログラムが無い番号にデータが届いても、応答するプログラムが無い。">
+      <defs>
+        <marker id="m12-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m12-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-muted)"/>
+        </marker>
+      </defs>
+
+      <text x="650" y="26" text-anchor="middle" font-size="13" fill="var(--fig-ink)">1 台の機械(IP アドレス 203.0.113.5)</text>
+      <rect x="460" y="38" width="380" height="300" rx="8" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+
+      <rect x="490" y="58" width="320" height="72" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="650" y="88" text-anchor="middle" font-size="13" fill="var(--fig-accent)">Web サーバ</text>
+      <text x="650" y="108" text-anchor="middle" font-size="12" fill="var(--fig-muted)">443 番で待ち受け</text>
+
+      <rect x="490" y="148" width="320" height="72" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="650" y="178" text-anchor="middle" font-size="13" fill="var(--fig-accent)">メールソフト</text>
+      <text x="650" y="198" text-anchor="middle" font-size="12" fill="var(--fig-muted)">25 番で待ち受け</text>
+
+      <rect x="490" y="238" width="320" height="72" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="650" y="268" text-anchor="middle" font-size="13" fill="var(--fig-muted)">8080 番</text>
+      <text x="650" y="288" text-anchor="middle" font-size="12" fill="var(--fig-muted)">今はどのプログラムも使っていない</text>
+
+      <text x="40" y="30" font-size="12" fill="var(--fig-muted)">外から届いたデータ(宛先のポート番号で行き先が決まる)</text>
+
+      <line x1="40" y1="94" x2="460" y2="94" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m12-arrow-ink)"/>
+      <text x="250" y="82" text-anchor="middle" font-size="12" fill="var(--fig-ink)">宛先 443 番</text>
+
+      <line x1="40" y1="184" x2="460" y2="184" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m12-arrow-ink)"/>
+      <text x="250" y="172" text-anchor="middle" font-size="12" fill="var(--fig-ink)">宛先 25 番</text>
+
+      <line x1="40" y1="274" x2="460" y2="274" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m12-arrow-muted)"/>
+      <text x="250" y="262" text-anchor="middle" font-size="12" fill="var(--fig-muted)">宛先 8080 番</text>
+      <text x="250" y="322" text-anchor="middle" font-size="12" fill="var(--fig-muted)">待ち受けているプログラムが無く、応答が返らない</text>
+
+      <text x="450" y="358" text-anchor="middle" font-size="12" fill="var(--fig-ink)">通信を始める側にも、行き先に応じて一時的な番号が割り振られる</text>
+    </svg>
+    <p class="fig-cap">1 台の機械の中には複数のプログラムが同時に動いていて、届いたデータは宛先のポート番号を見て、待ち受けているプログラムに振り分けられる。待ち受けているプログラムが無い番号にデータが届いても、応答するプログラムが無い。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m12"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m11.html">← 第 11 章 IPv6</a>
+    <a class="next" href="m13.html">第 13 章 TCP の接続と信頼性 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>機械の場所を覚えて、そこだけに届ける仕組み — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m03-2" data-chapter="m03" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 3-2</p>
+  <p class="chapter-label">第 3 章 イーサネットと MAC アドレス　3-2</p>
+  <h1>機械の場所を覚えて、そこだけに届ける仕組み</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じ配線に複数の機械がつながっているとき、間に立つ機械は、どの機械がどこにいるかを見分けて、宛先の機械にだけデータを届けている。このページでは、<strong>その機械がどうやって場所を覚え、届け先を決めているか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">フレームを送ったら、間の機械はどうやって届け先を決めるんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ配線の中でフレームを転送する機械があり、これをスイッチと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">届け先が分からないなら、とりあえず全部の機械に送っちゃえばいいのでは?</p>
+    <p class="t" data-who="ふくろう先生">それだと関係ない機械にも届いてしまい、無駄も増えます。スイッチは宛先の機械にだけ届けます。</p>
+    <p class="s" data-who="ひよこちゃん">でも、どの機械がどこにいるかなんて、最初から分かるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">分かりません。だから、送られてくるフレームから少しずつ覚えていきます。</p>
+    <p class="s" data-who="ひよこちゃん">どうやって覚えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">フレームの送信元 MAC アドレスを見て、「この MAC アドレスの機械は、この差し込み口から来た」と覚えていきます。</p>
+    <p class="s" data-who="ひよこちゃん">差し込み口っていうのは、ケーブルを挿すところのことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。第 1 章に出てきたポート番号とは別物なので、ここでは差し込み口と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">覚えたことは、どこかに書き留めておくんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、この表を MAC アドレステーブルと呼びます。次に同じ相手宛てのフレームが来たら、この表を見て、転送先の差し込み口だけにフレームを送ります。</p>
+    <p class="s" data-who="ひよこちゃん">まだ表に載っていない相手だったらどうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">念のため、他の全部の差し込み口に送ります。相手から返事が来れば、そこで新しく覚えられます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた話なんですけど、昔のオフィスでは通信が遅くて困っていたらしいです。</p>
+    <p class="t" data-who="ふくろう先生">もしかすると当時は、配線を共有して、届いた信号を全員に流す古い機械(ハブ)を使っていたのかもしれません。</p>
+    <p class="s" data-who="ひよこちゃん">それをスイッチに変えたら速くなったそうです。なんでですか?</p>
+    <p class="t" data-who="ふくろう先生">配線を共有する機械は、複数の機械が同時に送信すると信号がぶつかってしまい、送り直しが必要になって遅くなります。スイッチは宛先の分かっているフレームをその差し込み口だけに送るので、他のやり取りとぶつからずに済みます。</p>
+    <p class="s" data-who="ひよこちゃん">表を覚えて、そこだけに届けるから速いってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">その理解で合っています。</p>
+    <p class="s" data-who="ひよこちゃん">スイッチだと、送るのと受け取るのを同時にできるとも聞いたことがあるんですけど、それも速さに関係あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">関係あります。配線を共有しないので、差し込み口ごとに送信と受信を同時に行えます。これも、ハブより速くなる理由の一つです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、まだ覚えていないときに送る「念のための全部」にも、範囲があるって前に言ってましたよね。</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていますね。その範囲については、次のページで見ましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>スイッチは、同じ配線の中でフレームを転送する機械で、宛先の機械にだけデータを届ける。</li>
+      <li>スイッチは送信元 MAC アドレスを見て、どの機械がどの差し込み口につながっているかを覚えていく。この表を MAC アドレステーブルと呼ぶ。</li>
+      <li>宛先 MAC アドレスが MAC アドレステーブルに載っていれば、その差し込み口だけにフレームを送る。載っていなければ、念のため他の全部の差し込み口に送る。</li>
+      <li>配線を共有する古い機械(ハブ)と違い、スイッチは宛先だけに送るため、複数のやり取りが同時に行われても信号がぶつかりにくい。</li>
+      <li>スイッチは配線を共有しないため、差し込み口ごとに送信と受信を同時に行える。これも、ハブより速くなる理由の一つである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>スイッチは、同じ配線につながる機械どうしをつなぐ機械で、フレームの送信元 MAC アドレスを見て「この機械はこの差し込み口にいる」と MAC アドレステーブルに記録していく(#71 p.45〜46)。宛先 MAC アドレスがこの表に載っていれば、該当の差し込み口だけにフレームを転送し、載っていなければ他の全部の差し込み口に転送する(#4 p.135)。配線を共有する古い機械(リピータやハブ)は、届いた信号をそのまま全員に流すだけで、複数の機械が同時に送信すると信号がぶつかり合っていた。スイッチは差し込み口ごとにやり取りが独立しているため、ぶつかりを気にせず同時に通信できる(#71 p.44、p.47)。また、配線を共有しないスイッチでは、差し込み口ごとに送信と受信を同時に行える。これにより、返事を待つ間も次のデータを送り続けられ、ハブより速くなるもう一つの理由になっている(#71 p.47)。差し込み口の数には上限があるため、つなげる機械が増えて足りなくなった場合は、差し込み口の多いスイッチに替えるか、スイッチをもう 1 台つなげて増やす必要がある。スイッチどうしをつなぐことで、1 つの配線の範囲をさらに広げていくこともできる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>arp -a</code></pre>
+    <p>見方: 実行結果には、近くの機器の IP アドレスと MAC アドレスの対応が並ぶ。スイッチが覚える MAC アドレステーブルと似た「覚えておく表」が、この Mac にもあることが分かる。</p>
+    <p class="try-note">command not found と出たら、この回は読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-02-datalink.txt p.44 共有された配線とリピータ、p.45〜46 Transparent bridge / Learning Bridge、p.47 switched media / full-duplex）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（08_Link.txt p.135「スイッチ；ポートからポートへの転送」）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（14.3.4 Packet Tracer: Create a LAN。スイッチに機器をつないで LAN を作る演習）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m03-2">
+    <div class="q" data-q="1">
+      <p class="q-text">スイッチが送信元 MAC アドレスを見る目的として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">どの機械がどの差し込み口につながっているかを、MAC アドレステーブルに覚えるため</button></li>
+        <li><button type="button" data-correct="false">そのフレームの転送先の差し込み口を直接決めるため</button></li>
+        <li><button type="button" data-correct="false">フレームの誤り検出を行うため</button></li>
+        <li><button type="button" data-correct="false">フレームの種別を確認するため</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、どの機械がどの差し込み口につながっているかを、MAC アドレステーブルに覚えるため、です。転送先を決めるのは宛先 MAC アドレスの役目で、送信元 MAC アドレスは学習のために使われます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">宛先 MAC アドレスがまだ MAC アドレステーブルに載っていないフレームを、スイッチはどうするか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">届いたフレームをその場で捨てる</button></li>
+        <li><button type="button" data-correct="true">他の全部の差し込み口に転送し、返事が来たら新しく覚える</button></li>
+        <li><button type="button" data-correct="false">送信元にフレームをそのまま送り返す</button></li>
+        <li><button type="button" data-correct="false">宛先が分かるまで、フレームを保存し続ける</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、他の全部の差し込み口に転送し、返事が来たら新しく覚える、です。表に載っていない宛先には念のため全部の差し込み口に送り、その後の通信で表を更新していきます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">配線を共有する古い機械(ハブ)と比べて、スイッチが複数のやり取りを同時に行ってもぶつかりにくいのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">スイッチは宛先の分かっているフレームを、その差し込み口だけに転送するから</button></li>
+        <li><button type="button" data-correct="false">スイッチは信号を増幅してから送り直すから</button></li>
+        <li><button type="button" data-correct="false">スイッチは誤り検出の機能を持たないから</button></li>
+        <li><button type="button" data-correct="false">スイッチは配線を共有せず、電波でやり取りするから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、スイッチは宛先の分かっているフレームを、その差し込み口だけに転送するから、です。配線を共有するハブと違い、差し込み口ごとにやり取りが独立しているため、複数の通信が同時に行われてもぶつかりません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m03-1.html">← 3-1 一番外側の封筒に書かれた宛先の番号</a>
+    <a class="up" href="m03.html">第 3 章の入口</a>
+    <a class="next" href="m03-3.html">3-3 一斉に送った合図が、どこまで届くか →</a>
+  </nav>
+</main>
+</body>
+</html>

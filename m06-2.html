@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>届く保証はないけれど、あきらめずに届けようとする — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m06-2" data-chapter="m06" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 6-2</p>
+  <p class="chapter-label">第 6 章 IP パケットと配送の仕組み　6-2</p>
+  <h1>届く保証はないけれど、あきらめずに届けようとする</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>IP は、送ったデータが必ず届くことを約束していない。<strong>できる範囲で精一杯届けようとするだけ</strong>という考え方のうえに成り立っている。このページでは、この考え方と、際限なく迷い続けるパケットを防ぐために書き込まれている、経由できる機械の数の上限について確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">IP って、送ったら必ず相手に届けてくれるものだと思ってました。</p>
+    <p class="t" data-who="ふくろう先生">実は、必ず届けるという保証はしていないんです。</p>
+    <p class="s" data-who="ひよこちゃん">え、そうなんですか? 届かないことがあるのに、それでいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。IP は、できる範囲で精一杯運ぼうとするだけで、届いたかどうかの確認までは行いません。この考え方を<strong>ベストエフォート</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、届いたかどうかの確認は誰がやってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">その確認は別の仕組み(第 13 章で扱います)の仕事です。ここではまず、IP 自身は保証をしない、という考え方を押さえてください。</p>
+    <p class="s" data-who="ひよこちゃん">保証がないなら、パケットが迷子になって、ネットワークの中をずっとさまよい続けることもあるんじゃないですか?</p>
+    <p class="t" data-who="ふくろう先生">良いところに気づきましたね。そうならないための歯止めが、パケットには書き込まれています。</p>
+    <p class="s" data-who="ひよこちゃん">歯止めって、どんなものですか?</p>
+    <p class="t" data-who="ふくろう先生">あと何回機械を経由できるかを表す数字で、<strong>IP の TTL</strong>と呼びます。経由するたびに 1 ずつ減り、0 になると、その時点の機械がパケットを捨てます。</p>
+    <p class="s" data-who="ひよこちゃん">TTL の初期値って、いくつに設定されるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">機械の種類によって違いますが、IP の TTL は 8 ビット(0 か 1 のひと桁が 8 個並んだもの)の数字なので、0〜255 の 256 通りの値しか表せません。そのため、初期値には 64 や 255 のような値がよく使われます(#65)。</p>
+    <p class="s" data-who="ひよこちゃん">その、経由する機械って何なんですか?</p>
+    <p class="t" data-who="ふくろう先生">送られてきたパケットの宛先を見て、次にどの機械へ渡すかを決める機械で、<a class="term" href="glossary.html#router" data-term="router">ルータ</a>と呼びます。詳しくは第 8 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">名前だけ聞くと、第 1 章の 1-2 で見た<a class="term" href="glossary.html#ttl-dns" data-term="ttl-dns">DNS の TTL</a>と同じですよね?</p>
+    <p class="t" data-who="ふくろう先生">似ていますが別物です。DNS の TTL は名前解決の答えの有効期限で、こちらは機械を経由できる回数です。同じ略語でも、指しているものが違います。</p>
+    <p class="s" data-who="ひよこちゃん">ややこしいですね…同じ名前を使うのはなぜなんですか?</p>
+    <p class="t" data-who="ふくろう先生">どちらも「これ以上は古い」「これ以上は先に進めない」という上限を表す考え方が共通しているためです。詳しくは第 16 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">実際に、TTL が尽きて届かなかったことなんてあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例を紹介します。ある現場で経路の設定を誤り、2 台の機械が互いに相手へパケットを転送し合う状態になったことがありました。</p>
+    <p class="s" data-who="ひよこちゃん">え、それってパケットがずっと行ったり来たりし続けるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。もし TTL という上限がなければ、そのパケットは消えずに残り続けてしまいます。しかし経由するたびに TTL が 1 ずつ減っていくため、上限に達した時点で機械がパケットを捨て、宛先に届かないまま消えました。</p>
+    <p class="s" data-who="ひよこちゃん">保証がないのも困りものですけど、歯止めがあるのは安心ですね。</p>
+    <p class="t" data-who="ふくろう先生">次のページでは、パケットの大きさに関する別の上限を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP は、データが必ず届くことを保証しない。できる範囲で精一杯届けようとするだけであり、これをベストエフォートと呼ぶ。</li>
+      <li>届いたかどうかの確認は、IP 自身ではなく別の仕組み(第 13 章)が行う。</li>
+      <li>パケットが際限なくさまよい続けないよう、あと何回機械(ルータ)を経由できるかを示す IP の TTL という数字が書き込まれている。</li>
+      <li>IP の TTL は経由するたびに 1 ずつ減り、0 になると機械がそのパケットを捨てる。第 1 章で見た DNS の TTL とは別物である。</li>
+      <li>IP の TTL は 8 ビットの数字であり、0〜255 の範囲しか表せない。初期値には 64 や 255 のような値がよく使われる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>IP の TTL は、パケットが送り出される時点であらかじめ数字が設定され、機械を 1 台経由するたびに 1 ずつ減っていく(#50)。0 になった時点で、その機械はパケットをそれ以上転送せず捨てる。ベストエフォートという考え方のもとでは、IP は届ける努力はするが、届いたかどうかを送信元に自動で知らせることはしない。第 1 章で見た DNS の TTL は名前解決の答えの有効期限を数える数字だったが、IP の TTL は経由できる機械の残り回数を数える数字であり、数える対象がまったく違う。IP の TTL は 8 ビットの数字として書かれており、表せる範囲は 0〜255 に限られる(#71)。経路の設定ミスでパケットが行き来し続けた事例(#65)でも、初期値である 255 を上限に、それ以上は機械を経由できずに捨てられる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ping -c 3 example.com</code></pre>
+    <p>見方: 出力に含まれる「ttl=」に続く数字を見る。これは、相手に届くまでの間に、まだこれだけ機械を経由できる余力が残っていたことを示す値である。経由した機械の実際の台数や経路そのものを見る方法は第 27 章で扱う。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論「IP」」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>(p.21 ベストエフォートの説明)</li>
+    <li class="cite" data-src="50">[#50] Cloudflare Learning Center「What is the Internet Protocol?」 — <a href="https://www.cloudflare.com/learning/network-layer/internet-protocol/" rel="noopener">原典</a>(TTL は経由できる機械の残り回数という説明)</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>(p.19-20 経路ループと TTL が尽きる traceroute の実例)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m06-2">
+    <div class="q" data-q="1">
+      <p class="q-text">IP のデータの届け方の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">必ず届くことを保証しており、届かない場合は自動でエラーが送信元に返る</button></li>
+        <li><button type="button" data-correct="true">届くかどうかの保証はしないが、できる範囲で精一杯届けようとする</button></li>
+        <li><button type="button" data-correct="false">届いたことを毎回確認し、届かなければ自動で送り直す</button></li>
+        <li><button type="button" data-correct="false">一度失敗すると、二度と同じ宛先には送れなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、届くかどうかの保証はしないが、できる範囲で精一杯届けようとする、です。これをベストエフォートと呼ぶ。保証や自動のエラー通知、確認と送り直しは行わず、一度失敗しても送り直しの制限はない。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">IP の TTL という数字が無かったとしたら、経路の設定ミスで発生したループしたパケットはどうなるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">すぐにエラーとして送信元に送り返される</button></li>
+        <li><button type="button" data-correct="true">消えずにネットワークの中を残り続けてしまう</button></li>
+        <li><button type="button" data-correct="false">自動的に正しい経路に修正される</button></li>
+        <li><button type="button" data-correct="false">中身が壊れて読めなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、消えずにネットワークの中を残り続けてしまう、です。IP の TTL は機械を経由するたびに 1 ずつ減り、0 になるとパケットが捨てられる仕組みで、これがあるおかげでループしたパケットもいずれ消える。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 1 章で見た DNS の TTL と、この章で見た IP の TTL の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">まったく同じ数字を指しており、名前も意味も同じである</button></li>
+        <li><button type="button" data-correct="true">名前は同じ「TTL」だが、DNS の TTL は名前解決の答えの有効期限、IP の TTL は経由できる機械の残り回数を表し、指しているものが違う</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL は、IP の TTL が 0 になったときに発行される通知である</button></li>
+        <li><button type="button" data-correct="false">IP の TTL のほうが後から作られた、DNS の TTL の別名である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前は同じ「TTL」だが、DNS の TTL は名前解決の答えの有効期限、IP の TTL は経由できる機械の残り回数を表し、指しているものが違う、です。同じ略語でも文脈によって意味が異なる例である。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m06-1.html">← 6-1 パケットの中に書かれていること</a>
+    <a class="up" href="m06.html">第 6 章の入口</a>
+    <a class="next" href="m06-3.html">6-3 一度に運べる大きさには上限がある →</a>
+  </nav>
+</main>
+</body>
+</html>

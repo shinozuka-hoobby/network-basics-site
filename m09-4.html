@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>間違った経路の情報が、そのまま広まってしまうことがある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m09-4" data-chapter="m09" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 9-4</p>
+  <p class="chapter-label">第 9 章 インターネットの経路制御 — BGP と AS　9-4</p>
+  <h1>間違った経路の情報が、そのまま広まってしまうことがある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前のページで見た、経路の情報を教え合う仕組みには、教えられた内容が本当に正しいかどうかを確かめる仕組みが元々備わっていなかった。このページでは、<strong>そのために何が起き得るか、そしてなぜ起きるか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、経路の情報を教え合うって話でしたけど、その情報が間違ってたらどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は BGP には、教えられた経路情報が本当に正しいかどうかを確かめる仕組みが、もともと備わっていませんでした。</p>
+    <p class="s" data-who="ひよこちゃん">確かめる仕組みが無いって、大丈夫なんですか?</p>
+    <p class="t" data-who="ふくろう先生">操作を誤った AS が、本来自分が担当していない宛先への経路を、うっかり広く知らせてしまうことがあります。これを経路ハイジャックと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、経路の情報を確かめる仕組みが無かったせいで、間違った経路が広まって混乱が起きたことがあるらしいと聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">よくある話です。他の AS は、その AS が本当にその宛先の担当かどうかを確かめる手段が無いまま、広告された経路をそのまま受け取ってしまうことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">経路ハイジャックって、悪意が無くても起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。オペレータの設定ミスのような単純な間違いが原因になることがあります。意図的に行われる場合もありえますが、原因の細かい区別はこの章では扱いません。</p>
+    <p class="s" data-who="ひよこちゃん">間違えた組織だけじゃなくて、周りにも影響するんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。その経路が広く伝わってしまうと、設定を誤った組織だけでなく、インターネット全体に影響することがあります。</p>
+    <p class="s" data-who="ひよこちゃん">前もって『自分はこの宛先を担当する』と登録しておくような仕組みは無いんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。あらかじめ自分が広告する予定の AS や経路を登録しておく仕組みもありますが、登録の内容自体が正しいという保証まではされていません。</p>
+    <p class="s" data-who="ひよこちゃん">なんでそんなに広がっちゃうんですか?</p>
+    <p class="t" data-who="ふくろう先生">前のページで見たとおり、BGP は基本的に、教えられた経路をそのまま信じて隣へまた伝えていく仕組みだからです。途中で正しさを確認する関門が無いので、間違った情報でもそのまま伝わっていきます。</p>
+    <p class="s" data-who="ひよこちゃん">今は何か対策があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">経路の広告が、その宛先を実際に持っている組織からのものかどうかを確かめる仕組み、RPKI の導入が、少しずつ進んでいます。</p>
+    <p class="s" data-who="ひよこちゃん">もうだいぶ広まってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ある調査では、経路の約 6 割で、この確認が済んでいると報告されています。ただし、まだ全部ではありません。</p>
+    <p class="s" data-who="ひよこちゃん">完全に無くなったわけじゃないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。まだ発展途上の仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">これで、インターネット全体の経路がどう決まっていくか、一通り見てきましたね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。組織単位のネットワーク、つながり方、経路の教え合い方、そしてその弱点まで、一通り確認できました。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>BGP には、教えられた経路情報が正しいかどうかを確かめる仕組みが元々備わっていない。</li>
+      <li>操作を誤った AS が、本来担当していない宛先への経路を誤って広く知らせてしまうことを経路ハイジャックと呼ぶ。</li>
+      <li>他の AS は、広告してきた AS が本当にその宛先の担当かどうかを確かめる手段が無いまま、経路をそのまま受け取ってしまうことがある。</li>
+      <li>経路が広く伝わると、設定を誤った組織だけでなく、インターネット全体に影響することがある。</li>
+      <li>広告された経路が正しい持ち主によるものかどうかを確かめる仕組み、RPKI の導入が少しずつ進んでいるが、まだ発展途上である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>BGP には、UPDATE メッセージで伝えられる経路情報が本当に正しいかどうかを確かめる仕組みが元々無い(#18)。そのため、操作を誤った AS が、本来自分の担当ではない宛先への経路をうっかり広く知らせてしまうことがあり、これを経路ハイジャックと呼ぶ。他の AS は、広告してきた AS が本当にその宛先の担当かどうかを確かめる手段が無いまま、広告された経路をそのまま信じて隣へまた伝えていく。BGP は基本的に、教えられた経路をそのまま次へ伝えていく仕組みであるため、途中で正しさを確かめる関門が無く、誤った経路も同じように広がってしまう。その結果、設定を誤った組織だけでなく、インターネット全体に影響が及ぶことがある(#18)。あらかじめ自分が広告する予定の AS や経路を登録しておく仕組みも存在するが、登録された内容自体が正しいという保証まではされていない(#18)。近年は、広告された経路が、その宛先を実際に持っている組織からのものかどうかを確かめる仕組み、RPKI の導入が進みつつあり、ある調査では経路の約 6 割で確認が済んでいると報告されているが、まだ発展途上である(#69)。すべての経路がこの確認に対応するまでは、経路ハイジャックの可能性が完全に無くなるわけではない。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="18">[#18] JPNIC「インターネット 10 分講座：BGP」 — <a href="https://www.nic.ad.jp/ja/newsletter/No35/0800.html" rel="noopener">原典</a>（「▼経路情報の信頼性」節。経路情報を認証する仕組みが無いこと、設定間違いによるインターネット全体への影響）</li>
+    <li class="cite" data-src="69">[#69] IIJ「IIR Vol.68「インターネットの動向」」 — <a href="https://www.iij.ad.jp/dev/report/iir/068/01.html" rel="noopener">原典</a>（「RPKI 関連の状況」節。ROA/ROV による経路検証の状況、2025 年 10 月時点）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m09-4">
+    <div class="q" data-q="1">
+      <p class="q-text">なぜ BGP では、間違った経路がそのまま広まってしまうことがあるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">BGP を使う AS の数が非常に多いから</button></li>
+        <li><button type="button" data-correct="true">経路情報を検証する仕組みが元々無く、広告された内容をそのまま信頼して次へ伝えていく設計だったから</button></li>
+        <li><button type="button" data-correct="false">インターネット全体の回線がもともと不安定だから</button></li>
+        <li><button type="button" data-correct="false">AS 番号が定期的に変更される決まりだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、経路情報を検証する仕組みが元々無く、広告された内容をそのまま信頼して次へ伝えていく設計だったから、です。AS の数や回線の安定性、AS 番号の変更とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">経路ハイジャックとは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の内容を途中で盗み見る攻撃</button></li>
+        <li><button type="button" data-correct="false">他の組織の AS 番号を不正に乗っ取る行為</button></li>
+        <li><button type="button" data-correct="true">本来その宛先を担当していない組織が、誤って、あるいは意図的にその宛先への経路を広く知らせてしまい、通信が誤った相手に届いてしまう出来事</button></li>
+        <li><button type="button" data-correct="false">経路の情報を暗号化して外部から見えなくする仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、本来その宛先を担当していない組織が、誤って、あるいは意図的にその宛先への経路を広く知らせてしまい、通信が誤った相手に届いてしまう出来事、です。盗聴や番号の乗っ取り、暗号化とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">RPKI とは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">経路の情報を暗号化して送るための仕組み</button></li>
+        <li><button type="button" data-correct="false">AS 番号を自動的に割り振るための仕組み</button></li>
+        <li><button type="button" data-correct="false">経路の混雑を検知して迂回させる仕組み</button></li>
+        <li><button type="button" data-correct="true">広告された経路の情報が、その宛先を実際に持っている組織からのものかどうかを確かめるための仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、広告された経路の情報が、その宛先を実際に持っている組織からのものかどうかを確かめるための仕組み、です。暗号化や AS 番号の割り振り、混雑対策とは別の目的を持つ仕組みです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m09-3.html">← 9-3 経路は、通ってきた組織の並びとして伝わる</a>
+    <a class="up" href="m09.html">第 9 章の入口</a>
+    <a class="next" href="m10.html">第 10 章 NAT とプライベートネットワーク →</a>
+  </nav>
+</main>
+</body>
+</html>

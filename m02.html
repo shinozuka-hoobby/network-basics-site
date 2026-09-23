@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>信号と回線 — ビットは線をどう伝わるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m02" data-chapter="m02" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 2 章</p>
+  <p class="chapter-label">第 2 章</p>
+  <h1>信号と回線 — ビットは線をどう伝わるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>回線が太い(帯域幅が大きい)ことと、応答が速い(遅延時間が短い)ことは、別の性質であると説明できる。</li>
+      <li>信号が伝わる時間のうち、距離で決まる部分(伝搬遅延)と、データの量と回線の太さで決まる部分(シリアライズ遅延)を、計算例とともに区別できる。</li>
+      <li>送ってから返事が戻るまでの往復の時間(RTT)が、実際にコマンドで測れることを言える。</li>
+      <li>銅線・光ファイバ・無線のそれぞれで、どんな制約が支配的かを言える。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 280" role="img" aria-label="送り手と受け手を 1 本の回線でつないだ図。回線の手前側には、データを回線に送り出すのにかかる時間(シリアライズ遅延、回線の太さで決まる)があり、回線全体には信号が伝わるのにかかる時間(伝搬遅延、距離で決まる)がある。実際に届くまでの遅延時間は、この 2 つを合わせたものになる。">
+      <defs>
+        <marker id="m02-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m02-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <rect x="20" y="105" width="150" height="70" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="95" y="145" text-anchor="middle" font-size="14" fill="var(--fig-ink)">送り手</text>
+
+      <rect x="730" y="105" width="150" height="70" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="805" y="145" text-anchor="middle" font-size="14" fill="var(--fig-ink)">受け手</text>
+
+      <line x1="170" y1="140" x2="730" y2="140" stroke="var(--fig-ink)" stroke-width="2" marker-end="url(#m02-arrow-ink)"/>
+      <text x="450" y="165" text-anchor="middle" font-size="12" fill="var(--fig-muted)">回線(銅線・光ファイバ・無線のいずれか)</text>
+
+      <line x1="175" y1="75" x2="290" y2="75" stroke="var(--fig-accent)" stroke-width="2"/>
+      <line x1="175" y1="67" x2="175" y2="83" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="290" y1="67" x2="290" y2="83" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="232" y="55" text-anchor="middle" font-size="12" fill="var(--fig-accent)">送り出す時間</text>
+      <text x="232" y="40" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(シリアライズ遅延、回線の太さで決まる)</text>
+
+      <line x1="175" y1="215" x2="725" y2="215" stroke="var(--fig-accent)" stroke-width="2"/>
+      <line x1="175" y1="207" x2="175" y2="223" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <line x1="725" y1="207" x2="725" y2="223" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="450" y="240" text-anchor="middle" font-size="12" fill="var(--fig-accent)">伝わる時間(伝搬遅延、距離で決まる)</text>
+
+      <text x="450" y="265" text-anchor="middle" font-size="11" fill="var(--fig-ink)">実際に届くまでの遅延時間は、この 2 つを合わせたもの</text>
+    </svg>
+    <p class="fig-cap">送り手と受け手を結ぶ 1 本の回線には、データを回線に送り出すのにかかる時間(シリアライズ遅延、回線の太さ=帯域幅で決まる)と、信号が伝わるのにかかる時間(伝搬遅延、距離で決まる)という、性質の異なる 2 つの時間がある。実際に届くまでの遅延時間は、この 2 つを合わせたものになる。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m02"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m01.html">← 第 1 章 パケットの旅</a>
+    <a class="next" href="m03.html">第 3 章 イーサネットと MAC アドレス →</a>
+  </nav>
+</main>
+</body>
+</html>

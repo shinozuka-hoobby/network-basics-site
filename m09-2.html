@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>対等につながるか、対価を払ってつなげてもらうか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m09-2" data-chapter="m09" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 9-2</p>
+  <p class="chapter-label">第 9 章 インターネットの経路制御 — BGP と AS　9-2</p>
+  <h1>対等につながるか、対価を払ってつなげてもらうか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前のページで見た独立したネットワークの単位どうしは、何もしなければつながらない。このページでは、<strong>組織どうしが実際につながる 2 通りの関係</strong>と、そこで教え合う経路の範囲の違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">AS 同士は、どうやってつながるんですか?</p>
+    <p class="t" data-who="ふくろう先生">大きく分けて 2 つのつながり方があります。</p>
+    <p class="s" data-who="ひよこちゃん">1 つ目は?</p>
+    <p class="t" data-who="ふくろう先生">対等な立場の AS 同士が直接つながって、お互い自分のネットワーク宛ての経路だけを教え合う関係です。これをピアリングと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">対等ということは、お金のやりとりは無いんですか?</p>
+    <p class="t" data-who="ふくろう先生">対等な関係なので、ほとんどの場合、お互いに対価を払いません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、もう 1 つのつながり方は?</p>
+    <p class="t" data-who="ふくろう先生">ある組織が、より大きな別の組織、つまり上流の ISP と契約して、インターネット全体につながる経路を分けてもらう関係があります。これをトランジットと呼びます。その契約に基づいて対価を払います。</p>
+    <p class="s" data-who="ひよこちゃん">なんで自分だけでは持てないんですか? 規模の小さい組織ほど、トランジットを使うことになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">インターネット全体の経路を自分ひとりで集めるのは大変なので、上流の大きな組織にまとめて任せる方が現実的なんです。そのため規模の小さい組織ほどトランジットを使うことが多く、逆に力関係が対等に近い大きな組織どうしは、ピアリングで直接つながることが多いです。</p>
+    <p class="s" data-who="ひよこちゃん">2 つのつながり方って、対価の有無だけじゃなくて、教え合う経路の範囲も違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、そこが一番の違いです。ピアリングでは自分のネットワーク宛ての経路だけを教え合いますが、トランジットでは、インターネット全体につながる経路をまとめて教えてもらいます。</p>
+    <p class="s" data-who="ひよこちゃん">トランジットを受けるとき、1 つの上流とだけ契約するものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つの上流とだけ契約する場合もあれば、複数の上流と契約して、どこか 1 つが止まっても他でカバーできるようにする場合もあります。</p>
+    <p class="s" data-who="ひよこちゃん">こういうつながりって、物理的にはどこでケーブルをつなぐんですか?</p>
+    <p class="t" data-who="ふくろう先生">多くの場合、事業者どうしが集まる接続拠点でケーブルをつなぎ合わせます。細かい仕組みはこの章では扱いません。</p>
+    <p class="s" data-who="ひよこちゃん">自分の AS から宛先の AS まで、間に何社も挟まることもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。自分のトランジット、途中のピアリング、宛先側のトランジットというように、複数のつながりを経由することも珍しくありません。</p>
+    <p class="s" data-who="ひよこちゃん">実際に、自分が今どの組織のネットワークにいるかって、外から分かったりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">手がかりの一つに、経路の途中にある機器の名前があります。名前に含まれるドメインが変わる瞬間があれば、それは別の組織のネットワークに入った印です。</p>
+    <p class="s" data-who="ひよこちゃん">へえ、名前を見るだけでも分かることがあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、<a class="term" href="glossary.html#bgp" data-term="bgp">BGP</a> が実際にどうやって経路を教え合い、選んでいるのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>AS 同士のつながり方には、大きく分けてピアリングとトランジットの 2 種類がある。</li>
+      <li>ピアリングは、対等な立場の AS 同士が直接つながり、互いに自分のネットワーク宛ての経路だけを教え合う関係で、ほとんどの場合、お互いに対価を払わない。</li>
+      <li>トランジットは、ある AS が上流の ISP と契約し、インターネット全体につながる経路をまとめて分けてもらう関係で、その契約に基づいて対価を払う。</li>
+      <li>ピアリングとトランジットでは、対価の有無だけでなく、教え合う経路の範囲(自分の経路だけか、インターネット全体の経路か)も異なる。</li>
+      <li>規模の小さい AS ほど、自分で経路を集めるより、上流の大きな組織からトランジットを受ける方が現実的である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ピアリングは、対等な立場の AS 同士が直接つながり、互いに自分のネットワーク宛ての経路だけを教え合う関係で、ほとんどの場合、対等な関係なのでお互いに対価を払わない(#91)。トランジットは、ある AS が、より大きな別の組織、つまり上流の ISP と契約し、インターネット全体につながる経路をまとめて分けてもらう関係で、その契約に基づいて対価を払う(#91)。自組織のアドレスだけを相手に知らせる AS を非トランジット AS と呼び、多くの場合、上流の ISP からインターネット全体への経路(フルルート)を教えてもらう、つまりトランジットを取得する必要がある(#18)。規模の小さい AS(スタブ AS)ほど、自分で経路をすべて集めるより、上流の大きな組織(トランジット AS)にまとめて任せる方が現実的である(#71)。トランジットは 1 つの上流とだけ契約する場合もあれば、複数の上流と契約する場合もあり(#18)、こうしたつながりの多くは、事業者どうしが集まる接続拠点でケーブルをつなぎ合わせることで実現している。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>traceroute -m 15 example.com</code></pre>
+    <p>見方: 出力に並ぶ行の中で、機器の名前に含まれるドメイン名が、途中から別のものに変わっている行を探す。ドメイン名が変わっている行は、通信が別の組織のネットワークに入った印であり、このページで見た AS 同士のつながり目に当たる。*(アスタリスク)だけが並ぶ行があっても心配はいらず、行ごとの詳しい読み方は第 27 章で扱う。</p>
+    <p class="try-note">機器によっては名前が表示されず、IP アドレスだけの行になることもある。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="18">[#18] JPNIC「インターネット 10 分講座：BGP」 — <a href="https://www.nic.ad.jp/ja/newsletter/No35/0800.html" rel="noopener">原典</a>（「▼BGP を用いた経路制御の実際」節。トランジット AS／非トランジット AS、フルルートの取得）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-04-routing.txt p.57〜58。Transit AS と Stub AS の図）</li>
+    <li class="cite" data-src="91">[#91] Cloudflare Learning Center「What is peering?」 — <a href="https://www.cloudflare.com/learning/network-layer/what-is-peering/" rel="noopener">原典</a>（ピアリングとトランジットの対価の違い）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m09-2">
+    <div class="q" data-q="1">
+      <p class="q-text">ピアリングの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">対等な立場の AS 同士が直接つながり、互いに自分のネットワーク宛ての経路だけを教え合う関係</button></li>
+        <li><button type="button" data-correct="false">上流の ISP と契約し、インターネット全体につながる経路をまとめて分けてもらう関係</button></li>
+        <li><button type="button" data-correct="false">1 つの AS の中で、ルータどうしが自動的に経路表を作る関係</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータと ISP との間で結ばれる、回線の契約そのもの</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、対等な立場の AS 同士が直接つながり、互いに自分のネットワーク宛ての経路だけを教え合う関係、です。インターネット全体の経路をまとめて分けてもらう関係はトランジットであり、ピアリングとは範囲が異なります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ピアリングとトランジットとで、教え合う経路の範囲が異なるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">トランジットは経路の情報を暗号化して伝えるが、ピアリングは暗号化しないから</button></li>
+        <li><button type="button" data-correct="true">ピアリングは対等な AS 同士が互いに自分のネットワーク宛ての経路だけを教え合う関係であるのに対し、トランジットは上流の組織がインターネット全体につながる経路をまとめて分けてくれる関係だから</button></li>
+        <li><button type="button" data-correct="false">ピアリングは同じ AS の中だけで結ばれる関係で、トランジットは AS 同士の関係だから</button></li>
+        <li><button type="button" data-correct="false">トランジットは無料で結ばれる関係で、ピアリングだけが対価を伴うから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ピアリングは対等な AS 同士が互いに自分のネットワーク宛ての経路だけを教え合う関係であるのに対し、トランジットは上流の組織がインターネット全体につながる経路をまとめて分けてくれる関係だから、です。対等な関係か、上流に頼る関係かという立場の違いが、教え合う経路の範囲の違いに表れています。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">非トランジット AS が、上流の ISP からトランジットを受ける(フルルートを取得する)のは、主にどのような理由からか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">自分の AS 番号を取得するために必須の手続きだから</button></li>
+        <li><button type="button" data-correct="false">OSPF を使うために必要な前提条件だから</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの重複を防ぐための仕組みだから</button></li>
+        <li><button type="button" data-correct="true">インターネット全体の経路をすべて自分で集めるのが大変なので、上流の大きな組織にまとめて任せる方が現実的だから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、インターネット全体の経路をすべて自分で集めるのが大変なので、上流の大きな組織にまとめて任せる方が現実的だから、です。AS 番号の取得、OSPF、IP アドレスの重複防止とは、いずれも別の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m09-1.html">← 9-1 インターネットは、独立したネットワークの集まりでできている</a>
+    <a class="up" href="m09.html">第 9 章の入口</a>
+    <a class="next" href="m09-3.html">9-3 経路は、通ってきた組織の並びとして伝わる →</a>
+  </nav>
+</main>
+</body>
+</html>

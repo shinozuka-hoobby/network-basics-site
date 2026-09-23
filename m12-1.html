@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同じ IP アドレス宛てでも、行き先は番号で分かれる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m12-1" data-chapter="m12" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 12-1</p>
+  <p class="chapter-label">第 12 章 ポートと UDP　12-1</p>
+  <h1>同じ IP アドレス宛てでも、行き先は番号で分かれる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じ IP アドレス宛てに届いたデータも、機械の中では複数のプログラムが同時に動いている。<strong>ポート番号を見て、どのプログラムに渡すかが決まる</strong>。このページでは、宛先側のあらかじめ決まった番号と、通信を始める側が使う一時的な番号の違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 10 章の変換表、IP アドレスだけじゃなくてポート番号も組み合わせて記録してましたよね。あれって結局、何のための番号なんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ機械の中には、Web サーバやメールソフトのような、複数のプログラムが同時に動いています。ポート番号は、届いたデータを<strong>どのプログラムに渡すか</strong>を決める番号です。</p>
+    <p class="s" data-who="ひよこちゃん">IP アドレスだけじゃ、宛先の機械までしか分からないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。機械に届いた後、どのプログラムに渡すかまでは IP アドレスだけでは決まりません。複数のやり取りを 1 つの窓口でさばくこの仕組みを、多重化と呼ぶこともあります。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、開発中に自分のパソコンで localhost:3000 を見るのも、まさにこの番号の話ですよね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。3000 番のところで待ち受けているプログラムに、ブラウザからのデータが渡されています。</p>
+    <p class="s" data-who="ひよこちゃん">前から、http は 80 番、https は 443 番って知ってるんですけど、この番号って誰が決めてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">0 番から 1023 番までは、<strong>あらかじめ特定のサービス用に決められた番号</strong>で、ウェルノウンポートと呼びます。80 番や 443 番も、この範囲に含まれます。</p>
+    <p class="s" data-who="ひよこちゃん">ほかにも、見たことある番号ってありますか?</p>
+    <p class="t" data-who="ふくろう先生">あります。22 番は遠隔操作、25 番はメール送信など、多くのサービスがこの範囲に自分の番号を持っています。</p>
+    <p class="s" data-who="ひよこちゃん">全部でいくつ番号があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">0 番から 65,535 番まで、合わせて 65,536 個あります。そのうち 0 番から 1023 番までがウェルノウンポートです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、自分のパソコンからサーバにアクセスするときの、送信元側のポート番号はどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">通信を始める側は、決まっていない番号の中から一時的な番号を選びます。これをエフェメラルポートと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">エフェメラルポートは、毎回同じ番号になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。通信のたびに、空いている番号の中から選ばれるので、毎回同じとは限りません。</p>
+    <p class="s" data-who="ひよこちゃん">番号を見たときの目安みたいなものはあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。0 番から 1023 番までは決まった番号、それより大きい番号は場面に応じて使われる番号、とおおまかに考えておくと分かりやすいです。</p>
+    <p class="s" data-who="ひよこちゃん">この送信元の番号って、もしかして第 10 章の変換表に出てきた番号のことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。変換表が記録していたのは、まさにこのエフェメラルポートと、外向けに割り当てられた番号の組でした。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、あのときは「番号が変わる」ってだけ聞いてましたけど、正体が分かりました。</p>
+    <p class="t" data-who="ふくろう先生">宛先側は決まった番号、送信元側は一時的な番号です。この組み合わせで、機械の中でも、機械の外との通信でも、正しい相手に振り分けられています。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの機械で、複数のプログラムが同時に通信していても、混ざらないのはこの番号のおかげなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、このポート番号を使って実際にデータを運ぶ方法の一つを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>同じ IP アドレス宛てのデータも、ポート番号を見て、機械の中のどのプログラムに渡すかが振り分けられる。この仕組みを多重化と呼ぶこともある。</li>
+      <li>宛先側でよく使われる番号は、0 番から 1023 番のウェルノウンポートとして、あらかじめサービスごとに決められている(80 番は HTTP、443 番は HTTPS など)。</li>
+      <li>通信を始める側は、決まっていない番号の中から一時的な番号(エフェメラルポート)を選んで使う。</li>
+      <li>第 10 章の変換表が記録していたのは、この送信元側の一時的な番号(エフェメラルポート)と、外向けに割り当てられた番号の組だった。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>機械の中では、動いているプログラムごとに、IP アドレスとポート番号を組にした情報で、どのやり取りかが区別されている(#71 p.3, p.5)。届いたデータは宛先のポート番号を見て、対応するプログラムへ振り分けられる。ポート番号の範囲は用途によって分かれており、0 番から 1023 番はウェルノウンポートとしてあらかじめ特定のサービス用に決められていて、80 番は HTTP、443 番は HTTPS のように対応する(#4 p.6, p.11)。通信を始める側が送信元として使う番号はあらかじめ決まっておらず、49,152 番から 65,535 番のような範囲から選ばれることが多い(#4 p.10)。第 10 章の変換表は、この送信元側の一時的な番号を、外向けに割り当てられた番号と対応づけて記録していた。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>nc -zv example.com 443</code></pre>
+    <p>見方: 「succeeded」を含む行が出れば、443 番という窓口(ポート番号)まで届いたということ。この 443 番は、このページで見たウェルノウンポートの一つである。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.3 プロセス間通信の識別、p.5 (IP, port) によるプロセスの識別、p.6 ウェルノウンポートの一覧)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`07_TCP.txt` p.6 ソケットの識別子の考え方、p.10 ポート番号の範囲の区分、p.11〜12 ウェルノウンポートの一覧)</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>(p.13 ポート = パケットの受け取り窓口、サービス・アプリ毎に固有の番号)</li>
+    <li class="cite" data-src="80">[#80] IETF「RFC 6335: IANA Procedures for the Management of the Service Name and Transport Protocol Port Number Registry」 — <a href="https://www.rfc-editor.org/rfc/rfc6335.html" rel="noopener">原典</a>（エフェメラルポートの呼称）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m12-1">
+    <div class="q" data-q="1">
+      <p class="q-text">1 台の機械で、複数のプログラムが同時に別々の相手と通信していても、データが混ざらずに正しいプログラムへ届くのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">プログラムごとに別々の IP アドレスが割り当てられているから</button></li>
+        <li><button type="button" data-correct="true">宛先側と送信元側、それぞれのポート番号の組み合わせでやり取りが区別されているから</button></li>
+        <li><button type="button" data-correct="false">プログラムが順番を決めて、1 つずつ交代で通信しているから</button></li>
+        <li><button type="button" data-correct="false">機械の中では、最初に届いたデータだけが処理されるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先側と送信元側、それぞれのポート番号の組み合わせでやり取りが区別されているから、です。同じ機械・同じ IP アドレスでも、ポート番号の組が違えば別のやり取りとして扱われるため、複数のプログラムが同時に通信しても混ざりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ウェルノウンポートの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信を始める側が、そのつど自由に選んで使う番号</button></li>
+        <li><button type="button" data-correct="true">0 番から 1023 番までの、特定のサービス用にあらかじめ決められている番号</button></li>
+        <li><button type="button" data-correct="false">IP アドレスと同じ役割を持つ、機械ごとに固有の番号</button></li>
+        <li><button type="button" data-correct="false">通信のたびに増えていく、順番を表す番号</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、0 番から 1023 番までの、特定のサービス用にあらかじめ決められている番号、です。80 番は HTTP、443 番は HTTPS のように、サービスごとに番号が決まっています。通信を始める側が自由に選ぶ番号は、エフェメラルポートと呼ばれる別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">通信を始める側が使う、送信元のポート番号について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">80 番や 443 番のような、あらかじめ決められた番号だけが使われる</button></li>
+        <li><button type="button" data-correct="true">あらかじめ決まっていない番号の中から、通信のたびに一時的に選ばれる</button></li>
+        <li><button type="button" data-correct="false">相手の機械が、代わりに割り当てて送り返してくる</button></li>
+        <li><button type="button" data-correct="false">一度使った番号は、二度と別の通信に使われない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、あらかじめ決まっていない番号の中から、通信のたびに一時的に選ばれる、です。これをエフェメラルポートと呼びます。第 10 章の変換表が記録していたのも、この送信元側の一時的な番号と、外向けに割り当てられた番号の組でした。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m12.html">← 第 12 章の入口</a>
+    <a class="up" href="m12.html">第 12 章の入口</a>
+    <a class="next" href="m12-2.html">12-2 確認も送り直しもしない、身軽な届け方 →</a>
+  </nav>
+</main>
+</body>
+</html>

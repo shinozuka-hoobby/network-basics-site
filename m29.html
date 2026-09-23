@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クラウド上の経路診断 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m29" data-chapter="m29" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 29 章</p>
+  <p class="chapter-label">第 29 章</p>
+  <h1>クラウド上の経路診断</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>クラウドの診断機能が、<strong>実際にはパケットを送らずに</strong>、設定を読み取って「届くはずか」を言い当てる仕組みを説明できる。</li>
+      <li>AWS・GCP・Azure、3 社の診断機能の名前と、それぞれが「設定を読むだけ」か「実際に送る機能も持つ」かを言える。</li>
+      <li>実際に通った通信や、止められた通信を記録しておく仕組み(送信元・宛先・許可か拒否かなど)を説明できる。</li>
+      <li>推論と記録を組み合わせて、第 24・25 章で見た事例のどこを直すべきかを確かめ直せる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <pre class="fig" aria-label="クラウドの区画の設定を読んで届くはずかを言い当てる道と、実際に通った・止められた跡を記録しておく道の、2つを突き合わせて、どこを直すか決めることを示す図。">
+ +---------------------------+
+ |      クラウドの区画          |
+ | (ルートテーブル・区画の境目の |
+ |  設定など)                  |
+ +---------------------------+
+        |               |
+        | 設定を読む      | 実際に通信が流れる
+        v               v
+ +--------------+   +----------------+
+ | 届くはずかを   |   | 通った・止めら  |
+ | 言い当てる     |   | れた跡を記録   |
+ +--------------+   +----------------+
+        |               |
+        +-------+-------+
+                v
+      +----------------------+
+      |   どこを直すか決める    |
+      +----------------------+
+    </pre>
+    <p class="fig-cap">クラウドの区画の設定を読んで「届くはずか」を言い当てる道と、実際に通った・止められた跡を記録しておく道の、2 つを突き合わせて、どこを直すか決める。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m29"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m28.html">← 第 28 章 パケットキャプチャ — tcpdump と Wireshark</a>
+    <a class="next" href="m29-1.html">29-1 送らずに、届くかを確かめる →</a>
+  </nav>
+</main>
+</body>
+</html>

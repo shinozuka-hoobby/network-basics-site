@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>経路は、通ってきた組織の並びとして伝わる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m09-3" data-chapter="m09" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 9-3</p>
+  <p class="chapter-label">第 9 章 インターネットの経路制御 — BGP と AS　9-3</p>
+  <h1>経路は、通ってきた組織の並びとして伝わる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前のページで見た、対等につながる関係と、対価を払ってつなげてもらう関係の両方で、実際に経路の情報をやり取りしているのが BGP である。このページでは、<strong>経路がどんな形で伝わり、複数あるときにどう選ばれるか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">BGP って、さっき名前だけ出てきましたけど、実際どうやって経路を教え合うんですか?</p>
+    <p class="t" data-who="ふくろう先生">AS 同士が、自分の知っている経路の情報を、BGP を使って交換し合います。</p>
+    <p class="s" data-who="ひよこちゃん">教える情報って、具体的には何ですか?</p>
+    <p class="t" data-who="ふくろう先生">その経路が、どの AS を通ってここまで来たかという、AS の並びも一緒に伝えます。</p>
+    <p class="s" data-who="ひよこちゃん">AS の並びを伝えるのって、何の役に立つんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ AS が並びの中に 2 回出てきたら、その経路はどこかでループしていると分かります。並びそのものが、経路の由来を示す記録になっているんです。</p>
+    <p class="s" data-who="ひよこちゃん">同じ宛先への経路が複数あったら、どうやって選ぶんですか?</p>
+    <p class="t" data-who="ふくろう先生">基本は、通ってきた AS の並びが短い経路が選ばれます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、いつも一番短い経路になるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうとも限りません。各 AS は、契約やコストなどの事情に基づく独自の方針を持っていて、その方針が優先され、必ずしも一番短い経路が選ばれるとは限らないこともあります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、単純な距離だけでは決まらないんですね。</p>
+    <p class="t" data-who="ふくろう先生">もう一つ注意点があります。BGP は経路の長さは見ますが、その経路が今混んでいるかどうかまでは考慮しません。</p>
+    <p class="s" data-who="ひよこちゃん">混んでいても、そのまま同じ経路が選ばれ続けるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。混雑を避けて経路を選び直す、といった判断は BGP の役割の外にあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、混雑への対策は別の仕組みで行うんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。混雑そのものへの対策はこの章の範囲を超えるので、ここでは扱いません。BGP はあくまで、どの AS を通っていくかという経路そのものを決める仕組みだと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">そんなにたくさんの経路を、AS はみんな覚えているんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。インターネット全体の経路の数は、すでに 100 万を超えています。それだけの数を、AS 同士が BGP でやり取りしながら、日々管理しているんです。</p>
+    <p class="s" data-who="ひよこちゃん">回線がつながらなくなったときも、この経路の情報は更新されるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。使えなくなった経路を取り除く、という情報も同じ仕組みでやり取りされ、AS 同士の間で伝え合われます。新しく使えるようになった経路の広告と、使えなくなった経路の取り消しの、両方が絶えず飛び交っているんです。</p>
+    <p class="s" data-who="ひよこちゃん">経路の情報がもし間違って伝わってしまったら、どうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。次のページで、その点を詳しく見ていきましょう。ここまでで、経路が AS の並びとして伝わり、並びの短さと各 AS の方針で選ばれる、という基本の形は押さえられましたね。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>BGP は、AS 同士が自分の知っている経路の情報を交換し合うための仕組みである。</li>
+      <li>経路を伝えるときは、その経路がどの AS を通ってここまで来たかという AS の並びも一緒に伝える。</li>
+      <li>同じ宛先への経路が複数あるとき、基本的には AS の並びが短い経路が選ばれる。</li>
+      <li>各 AS は契約やコストなどの事情に基づく独自の方針を持っており、その方針が優先されて、必ずしも一番短い経路が選ばれるとは限らないこともある。</li>
+      <li>BGP は経路の長さは見るが、その経路が今混んでいるかどうかまでは考慮しない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>BGP は、AS 同士が自分の知っている経路の情報を交換し合うための仕組みである(#18)。経路を伝えるときは、その経路がどの AS を通ってここまで来たかという AS の並びも一緒に伝えており、同じ AS が並びの中に重ねて現れる経路は、ループとみなして使われない(#18)。同じ宛先への経路が複数見つかった場合、基本的には通ってきた AS の並びが最も短い経路が選ばれる(#65)。ただし、各 AS は契約やコストなど、単純な数値では表せない独自の方針を持っており、その方針が優先されて、必ずしも並びの最も短い経路が選ばれるとは限らない(#71)。また、BGP は AS の並びの長さは見るが、その経路が今どれだけ混んでいるかまでは考慮しない(#61)。インターネット全体の経路の数はすでに 100 万を超えており(#69)、新しく使えるようになった経路だけでなく、使えなくなった経路を取り除くという情報も、同じ仕組みで AS 同士の間をやり取りされている(#18)。</p>
+    <pre class="fig" aria-label="宛先 203.0.113.0/24 への経路の例。経路Aは説明用のAS番号64496、64497、64500の3つを通り、経路Bは64496、64498、64499、64500の4つを通る。並びが短い経路Aの方が選ばれやすい。">宛先: 203.0.113.0/24 (AS 番号は説明用)
+
+経路 A: AS64496 -> AS64497 -> AS64500
+経路 B: AS64496 -> AS64498 -> AS64499 -> AS64500
+
+並びが短い経路 A の方が選ばれやすい</pre>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="18">[#18] JPNIC「インターネット 10 分講座：BGP」 — <a href="https://www.nic.ad.jp/ja/newsletter/No35/0800.html" rel="noopener">原典</a>（「▼代表的なパス属性」節。経路が通過してきた AS 番号のリストによるループ防止）</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.28〜29。AS の並びが最も短い経路を選ぶ best path アルゴリズムの説明）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-04-routing.txt p.46。「Policy can't be expressed by scalar cost」という、コスト・契約などの事情で経路が選ばれるという整理）</li>
+    <li class="cite" data-src="61">[#61] Cloudflare Learning Center「How to make the Internet faster for everyone」 — <a href="https://www.cloudflare.com/learning/performance/more/speed-up-the-web/" rel="noopener">原典</a>（「BGP is effective at keeping the internet infrastructure globally connected, but is not 'smart' when it comes to traffic levels」という、混雑を考慮しない性質の裏付け）</li>
+    <li class="cite" data-src="69">[#69] IIJ「IIR Vol.68「インターネットの動向」」 — <a href="https://www.iij.ad.jp/dev/report/iir/068/01.html" rel="noopener">原典</a>（インターネット全体の総経路数が 2025 年 10 月時点で 100 万を突破したという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m09-3">
+    <div class="q" data-q="1">
+      <p class="q-text">同じ宛先への経路が複数あるとき、必ず AS の並びが一番短い経路が選ばれるとは限らないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">BGP には経路を選ぶ基準が無く、ランダムに選ばれるから</button></li>
+        <li><button type="button" data-correct="false">常に一番新しく広告された経路が優先されるから</button></li>
+        <li><button type="button" data-correct="true">各 AS が契約やコストなど独自の事情に基づく方針を持っており、その方針が優先されることがあるから</button></li>
+        <li><button type="button" data-correct="false">AS の並びの長さは、経路選択にはそもそも関係しないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、各 AS が契約やコストなど独自の事情に基づく方針を持っており、その方針が優先されることがあるから、です。並びの長さは基本の基準ですが、各 AS の方針がそれより優先されることがあります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">BGP で経路の情報を交換するとき、経路と一緒に伝えられる情報は何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信を暗号化するための鍵</button></li>
+        <li><button type="button" data-correct="false">経路上にある各ルータの MAC アドレスの一覧</button></li>
+        <li><button type="button" data-correct="false">経路上の全ルータの詳しい設定情報</button></li>
+        <li><button type="button" data-correct="true">その経路がどの AS を通ってここまで来たかという、AS の並び</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その経路がどの AS を通ってここまで来たかという、AS の並び、です。暗号化の鍵や MAC アドレス、ルータの設定情報とは別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">BGP が経路の並びの長さは見るが、考慮しないものは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">その経路が今どれくらい混んでいるか</button></li>
+        <li><button type="button" data-correct="false">その経路がどの AS を通ってきたか</button></li>
+        <li><button type="button" data-correct="false">AS の並びの長さそのもの</button></li>
+        <li><button type="button" data-correct="false">各 AS が持つ経路選択の方針</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その経路が今どれくらい混んでいるか、です。BGP は AS の並びの長さや各 AS の方針は経路選択に使いますが、混雑の度合いは考慮しません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m09-2.html">← 9-2 対等につながるか、対価を払ってつなげてもらうか</a>
+    <a class="up" href="m09.html">第 9 章の入口</a>
+    <a class="next" href="m09-4.html">9-4 間違った経路の情報が、そのまま広まってしまうことがある →</a>
+  </nav>
+</main>
+</body>
+</html>

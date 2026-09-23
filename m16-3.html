@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>答えには、いくつかの種類がある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m16-3" data-chapter="m16" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 16-3</p>
+  <p class="chapter-label">第 16 章 DNS の仕組み　16-3</p>
+  <h1>答えには、いくつかの種類がある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>権威サーバへの問い合わせは、いつも同じ答えが返るわけではない。<strong>聞く内容によって、返ってくる情報の種類が変わる</strong>。このページでは、その種類を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">権威サーバが答えを返すって話でしたけど、いつも同じ答えを返すんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、聞く内容によって返ってくる情報の種類が変わります。この情報のことを<strong>DNS レコード</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">具体的にはどんな種類があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">一番よく聞かれるのは、名前に対応する IPv4 アドレスで、これを A レコードと呼びます。IPv6 アドレスを聞くときは AAAA レコードです。</p>
+    <p class="s" data-who="ひよこちゃん">IPv6 のアドレスも聞けるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。他にもあります。ある名前が、別の名前の別名になっていることを示す CNAME レコードもあります。</p>
+    <p class="s" data-who="ひよこちゃん">別名ってどういうときに使うんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、ある名前を、別の名前の言い換えとして扱いたいときに使われることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">権威サーバの名前自体も、レコードとして記録されてたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">まさにそうです。前のページの試してみようで見た、権威サーバの名前を答えるのが NS レコードです。</p>
+    <p class="s" data-who="ひよこちゃん">メールの宛先を調べるときも、この仕組みを使うんですか?</p>
+    <p class="t" data-who="ふくろう先生">使います。メールをどのサーバに送ればいいかを答えるのが MX レコードです。</p>
+    <p class="s" data-who="ひよこちゃん">他にもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">自由な文字列を記録できる TXT レコードもあります。用途は決まっていません。</p>
+    <p class="s" data-who="ひよこちゃん">NS レコードって、前のページで見たゾーンの話ともつながってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。NS レコードが答えるのは、まさにそのゾーンを管理している権威サーバの名前そのものです。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの型を聞いたら、答えはいつも 1 件だけ返ってくるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうとは限りません。同じ型でも、複数の答えがまとめて返ってくることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">全部聞いてみたら、同じ名前なのに毎回違う答えが返ってくるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。同じ example.com でも、A を聞けば IPv4 アドレス、AAAA を聞けば IPv6 アドレスが返ります。</p>
+    <p class="s" data-who="ひよこちゃん">聞いたのに、答えが 1 件も無いこともあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。聞いた型のレコードが、そのドメイン名には登録されていない場合です。</p>
+    <p class="s" data-who="ひよこちゃん">問い合わせの内容次第で、いろんな種類の答えが返ってくるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、この答えがどれくらいの間そのまま使い回されるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>権威サーバへの問い合わせに対する答えは DNS レコードと呼ばれ、聞く内容によって返ってくる種類が変わる。</li>
+      <li>A は IPv4 アドレス、AAAA は IPv6 アドレスを答える DNS レコードである。</li>
+      <li>CNAME は別の名前への別名、NS は権威サーバの名前、MX はメールの転送先、TXT は自由な文字列を答える DNS レコードである。</li>
+      <li>NS レコードが答える権威サーバの名前は、前のページで見たゾーンを管理しているサーバそのものを指す。</li>
+      <li>同じ型でも複数の答えがまとめて返ることがあり、聞いた型がそのドメイン名に登録されていなければ、答えが 1 件も返らないこともある。</li>
+      <li>問い合わせる側は、目的に合わせて型を選んで聞き分ける必要があり、型を指定しなければ知りたい情報にたどり着けない。IP アドレスが欲しいのか、メールの転送先が欲しいのかで、聞くべき型が変わる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>権威サーバへの問い合わせの答えは DNS レコードと呼ばれ、聞く内容（型）によって返ってくる情報の種類が変わる(#71 p.21、#4 p.16〜17)。A は名前に対応する IPv4 アドレス、AAAA は IPv6 アドレスを答える(#71 p.21)。CNAME は、その名前が別の名前の別名になっていることを答え、NS は、その名前を管理している権威サーバの名前を答える(#4 p.16〜17)。MX はそのドメイン宛てのメールを受け取るサーバを答え、TXT は用途を限定しない自由な文字列を答える(#71 p.21)。同じ型でも、複数の答えがまとめて返ることがあり、逆に、聞いた型がそのドメイン名に登録されていなければ、答えが 1 件も返らないこともある。よく使われる型を下の表にまとめる。</p>
+    <table>
+      <tr><th>型</th><th>意味</th><th>何を聞くと返るか</th></tr>
+      <tr><td>A</td><td>IPv4 アドレス</td><td>名前に対応する IPv4 のアドレス</td></tr>
+      <tr><td>AAAA</td><td>IPv6 アドレス</td><td>名前に対応する IPv6 のアドレス</td></tr>
+      <tr><td>CNAME</td><td>別名</td><td>その名前が別名になっている、別の名前</td></tr>
+      <tr><td>NS</td><td>権威サーバの名前</td><td>その名前を管理している権威サーバの名前</td></tr>
+      <tr><td>MX</td><td>メールの転送先</td><td>そのドメイン宛てのメールを受け取るサーバの名前</td></tr>
+      <tr><td>TXT</td><td>自由な文字列</td><td>用途を限定しない、任意の文字列</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig example.com AAAA</code></pre>
+    <p>見方: 答えの区画に、AAAA という型の答えが並ぶ。同じ名前に問い合わせても、聞く型を変えると、返ってくる DNS レコードの種類が変わることを確認できる。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.21 Domain Resource Records の表。A・AAAA・NS・MX・CNAME・TXT の型）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（`09_DNS_Mail.txt` p.16〜17 Resource Record の一覧。A・AAAA・NS・MX・CNAME の型）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m16-3">
+    <div class="q" data-q="1">
+      <p class="q-text">同じドメイン名に問い合わせても、聞く DNS レコードの型によって返ってくる中身が変わるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">権威サーバが毎回ランダムに違う答えを選んで返しているから</button></li>
+        <li><button type="button" data-correct="true">1 つの名前に対して、複数の種類の情報が DNS レコードとして別々に記録されているから</button></li>
+        <li><button type="button" data-correct="false">聞くたびに、そのドメイン名の管理者が変わっているから</button></li>
+        <li><button type="button" data-correct="false">IPv4 と IPv6 で、問い合わせを受け付ける権威サーバ自体が別だから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 つの名前に対して、複数の種類の情報が DNS レコードとして別々に記録されているから、です。権威サーバはランダムに答えを選んでおらず、管理者や権威サーバ自体が問い合わせのたびに変わるわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">MX レコードの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前に対応する IPv4 アドレスを答える DNS レコード</button></li>
+        <li><button type="button" data-correct="false">ある名前が別の名前の別名であることを答える DNS レコード</button></li>
+        <li><button type="button" data-correct="true">そのドメイン宛てのメールを受け取るサーバを答える DNS レコード</button></li>
+        <li><button type="button" data-correct="false">権威サーバの名前を答える DNS レコード</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、そのドメイン宛てのメールを受け取るサーバを答える DNS レコード、です。IPv4 アドレスを答えるのは A、別名を答えるのは CNAME、権威サーバの名前を答えるのは NS です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">NS レコードの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前に対応する IPv6 アドレスを答える DNS レコード</button></li>
+        <li><button type="button" data-correct="true">その名前を管理している権威サーバの名前を答える DNS レコード</button></li>
+        <li><button type="button" data-correct="false">自由な文字列を答える、用途を限定しない DNS レコード</button></li>
+        <li><button type="button" data-correct="false">メールの転送先を答える DNS レコード</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その名前を管理している権威サーバの名前を答える DNS レコード、です。IPv6 アドレスを答えるのは AAAA、自由な文字列を答えるのは TXT、メールの転送先を答えるのは MX です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m16-2.html">← 16-2 階層をたどって答えにたどり着く</a>
+    <a class="up" href="m16.html">第 16 章の入口</a>
+    <a class="next" href="m16-4.html">16-4 答えには、覚えておいてよい期限がある →</a>
+  </nav>
+</main>
+</body>
+</html>

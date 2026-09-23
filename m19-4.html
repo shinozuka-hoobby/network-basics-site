@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTPS のページに http の部品が混ざる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m19-4" data-chapter="m19" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 19-4</p>
+  <p class="chapter-label">第 19 章 HTTPS を運用する　19-4</p>
+  <h1>HTTPS のページに http の部品が混ざる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ページ全体を https にしても、<strong>中の画像やスクリプトが http のままだと、そこだけ守られないことがある</strong>。このページでは、この現象と、ブラウザの反応を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ページ全体を https にすれば、もう安心なんですよね?</p>
+    <p class="t" data-who="ふくろう先生">ページ本体は安心です。ただ、中の画像やスクリプトまでは別です。</p>
+    <p class="s" data-who="ひよこちゃん">え、中身も一緒に暗号化されるんじゃないんですか?</p>
+    <p class="t" data-who="ふくろう先生">ページの中で http のまま呼び出している画像やスクリプトがあると、<strong>その部分だけは暗号化されずに送られます</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">それの何が困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">その部分だけ、途中で書き換えられたり中身を見られたりする隙が残ります。だからブラウザは読み込みを止めたり、警告を出したりします。これを混在コンテンツと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">どうやって気づくんですか?</p>
+    <p class="t" data-who="ふくろう先生">ブラウザが警告を表示したり、鍵のマークの見た目が変わったりすることで気づけます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、https 化したのに画像が表示されなかったり、警告が出たりしたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさに、http のまま画像を呼び出していたための混在コンテンツですね。呼び出し先を https に直せば直ります。</p>
+    <p class="s" data-who="ひよこちゃん">スクリプトでも同じことが起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。画像に限らず、http のまま呼び出している部品であれば、同じことが起きます。</p>
+    <p class="s" data-who="ひよこちゃん">一部だけ古いまま忘れてる、みたいなことも起きそうですね。</p>
+    <p class="t" data-who="ふくろう先生">よくあります。サイト全体を https にした直後は、こうした部品の直し忘れが残っていないか確認することが多いです。</p>
+    <p class="s" data-who="ひよこちゃん">表示は特に変じゃないのに、実は混在コンテンツになってる、みたいなこともあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。画像が小さかったり目立たなかったりすると、見た目だけでは気づきにくいことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、どうやって確認するのがいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">ブラウザの開発者ツールを開くと、どの部品が http のまま読み込まれているか、詳しく確認できます。</p>
+    <p class="s" data-who="ひよこちゃん">これは、https に切り替えた直後だけの問題なんですか?</p>
+    <p class="t" data-who="ふくろう先生">切り替え直後に多いですが、後から追加した部品が http のままだった、ということもあります。</p>
+    <p class="s" data-who="ひよこちゃん">外部のサービスから取り込んでいる部品も対象になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">なります。自分で用意した部品だけでなく、外部から取り込んでいる部品も、呼び出し先が http のままなら同じことが起きます。</p>
+    <p class="s" data-who="ひよこちゃん">ページを https にするときは、部品も全部確認しないといけないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この暗号を解く役目を誰が受け持つかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ページ本体を https にしても、中の画像やスクリプトが http のまま呼び出されていると、その部分だけは暗号化されずに送られる。</li>
+      <li>これを混在コンテンツと呼び、ブラウザは警告を出したり、その部品の読み込みを止めたりする。</li>
+      <li>混在コンテンツは、ブラウザの警告や見た目の変化から気づけることが多いが、部品が目立たない場合は見た目だけでは気づきにくいこともある。</li>
+      <li>ブラウザの開発者ツールを開くと、どの部品が http のまま読み込まれているかを詳しく確認できる。</li>
+      <li>https 化したのに画像が表示されない、警告が出るといった現象は、http のまま部品を呼び出していることが原因であることが多い。切り替え直後だけでなく、後から追加した部品が原因になることもある。</li>
+      <li>画像に限らず、スクリプトなど呼び出す部品すべてが対象になる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ページ本体を https にしても、その中で http のまま呼び出している画像やスクリプトがあると、その部分だけは暗号化されずに送られる。これを混在コンテンツと呼ぶ。その部分だけ、途中で書き換えられたり中身を見られたりする隙が残るため、ブラウザはその部品の読み込みを止めたり、警告を出したりする。画像に限らず、http のまま呼び出している部品であれば、スクリプトなど種類を問わず同じことが起きる。https 化したのに画像が表示されない、警告が出るといった現象は、こうした部品の呼び出し先を http のまま直し忘れていることが原因であることが多い。呼び出し先を https に直せば、この現象は解消する。混在コンテンツは、部品が小さかったり目立たなかったりすると、見た目だけでは気づきにくいことがある。ブラウザの開発者ツールを使うと、どの部品が http のまま読み込まれているかを詳しく確認できる。https 化した直後だけでなく、後から追加した部品が原因になることもある。混在コンテンツは、Web サイトを https に切り替える作業でよく起きる典型的な見落としであり、自分で用意した部品か外部から取り込んだ部品かを問わず、呼び出し先を https に揃えることが根本的な対策になる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="89">[#89] Cloudflare Learning Center「What is mixed content?」 — <a href="https://www.cloudflare.com/learning/ssl/what-is-mixed-content/" rel="noopener">原典</a>(部品が http のままだと守られない記述)</li>
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(TLS が通信を守るという前提の確認)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m19-4">
+    <div class="q" data-q="1">
+      <p class="q-text">ページ全体を https 化しても、中の部品が http のままだと守られないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">その部品だけは暗号化されずに送られるから</button></li>
+        <li><button type="button" data-correct="false">ページ本体の暗号化が自動的に解除されてしまうから</button></li>
+        <li><button type="button" data-correct="false">ブラウザが古いキャッシュを使い続けてしまうから</button></li>
+        <li><button type="button" data-correct="false">認証局がその部品を承認していないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その部品だけは暗号化されずに送られるから、です。ページ本体の暗号化が解除されるわけではなく、キャッシュや認証局の承認とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">混在コンテンツの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">https のページの中で、部品が http のまま呼び出されている状態</button></li>
+        <li><button type="button" data-correct="false">http のページの中に、https の部品が混ざっている状態</button></li>
+        <li><button type="button" data-correct="false">複数の認証局が発行した身分証が混在している状態</button></li>
+        <li><button type="button" data-correct="false">身分証の有効期間が複数の長さで混在している状態</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、https のページの中で、部品が http のまま呼び出されている状態、です。逆向き(http のページに https の部品)や、認証局・有効期間の混在とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">https 化したのに画像が表示されない、警告が出るという現象の原因として、本文で説明されているものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">画像の呼び出し先が http のままになっていること</button></li>
+        <li><button type="button" data-correct="false">身分証の有効期間が切れていること</button></li>
+        <li><button type="button" data-correct="false">発行した認証局が変更されたこと</button></li>
+        <li><button type="button" data-correct="false">サーバの秘密鍵が漏れたこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、画像の呼び出し先が http のままになっていること、です。有効期間切れや認証局の変更、秘密鍵の漏洩は、このページで説明した原因ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m19-3.html">← 19-3 常に HTTPS でつなぐようブラウザに覚えさせる</a>
+    <a class="up" href="m19.html">第 19 章の入口</a>
+    <a class="next" href="m19-5.html">19-5 暗号を解く場所を選ぶ →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相手の MAC アドレスを、IP アドレスから調べる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m07-2" data-chapter="m07" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 7-2</p>
+  <p class="chapter-label">第 7 章 ARP と同一ネットワーク内の通信　7-2</p>
+  <h1>相手の MAC アドレスを、IP アドレスから調べる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じサブネットの相手に送るには、宛先の MAC アドレスが必要になる。しかし、相手の MAC アドレスを最初から知っていることはほとんど無い。このページでは、<strong>IP アドレスから対応する MAC アドレスを調べる仕組み</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、同じサブネットならフレームの宛先に MAC アドレスが要るって話でしたけど、相手の MAC アドレスなんて最初から知らないですよね?</p>
+    <p class="t" data-who="ふくろう先生">知りません。だから IP アドレスから調べます。この仕組みを ARP と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">3-1 でちらっと名前だけ出てきましたよね。どうやって調べるんですか、知らない相手なのに?</p>
+    <p class="t" data-who="ふくろう先生">同じサブネットにいる機械全部に向けて、「この IP アドレスを持っているのは誰か、MAC アドレスを教えてほしい」とブロードキャストで尋ねます。</p>
+    <p class="s" data-who="ひよこちゃん">全員に聞くんですか。みんな答えちゃうんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、その IP アドレスを持つ機械だけが、尋ねてきた相手に自分の MAC アドレスを返します。</p>
+    <p class="s" data-who="ひよこちゃん">尋ねる方は全員に聞くのに、答える方は 1 台だけなんですね。なんで全員答えなくていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">尋ねている内容は「この IP アドレスの持ち主」なので、当てはまらない機械が答える必要は無いんです。無駄な返事を減らせます。</p>
+    <p class="s" data-who="ひよこちゃん">尋ねるときのブロードキャストって、第 3 章で見た、宛先を 1 台に絞らない送り方のことですよね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ARP はそのブロードキャストを使って、まだ MAC アドレスを知らない相手を探しに行く仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">毎回みんなに聞くのは大変そうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。だから一度調べた対応は、ARP キャッシュという表にしばらく覚えておきます。次に同じ相手に送るときは、聞き直さずに済みます。</p>
+    <p class="s" data-who="ひよこちゃん">あ、それって第 3 章 3-2 の試してみようで見た、あの表のことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。あの表の正式な名前が ARP キャッシュです。IP アドレスと MAC アドレスの対応が、そこに並びます。</p>
+    <p class="s" data-who="ひよこちゃん">その表の中身は、ずっと覚えたままなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、しばらく使われなかった対応は自動的に消えます。機械をつなぎ替えたときに、古い対応がいつまでも残らないようにするためです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、デフォルトゲートウェイの MAC アドレスを調べたいときも、同じ仕組みが使えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">使えます。デフォルトゲートウェイも同じサブネットにいる機械の 1 台なので、同じように ARP で MAC アドレスを調べます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、相手が本人でもデフォルトゲートウェイでも、やり方は変わらないんですね。ちなみに、ARP は別のサブネットにいる相手にも直接使えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">使えません。ARP のブロードキャストが届くのは同じサブネットの中だけです。だからこそ前のページで見たとおり、別サブネット宛てのときは、相手本人ではなくデフォルトゲートウェイの MAC アドレスを調べる必要があるんです。</p>
+    <p class="s" data-who="ひよこちゃん">前のページの判定と、このページの ARP が、やっとつながりました。</p>
+    <p class="t" data-who="ふくろう先生">これで、宛先の MAC アドレスを調べる部品がそろいました。次のページで、1 回の送信としてつなげてみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ARP は、同じサブネット内の相手の IP アドレスから、対応する MAC アドレスを調べる仕組みである。</li>
+      <li>調べるときは、同じサブネットにいる機械全部にブロードキャストで尋ね、その IP アドレスを持つ機械だけが MAC アドレスを返す。</li>
+      <li>一度調べた IP アドレスと MAC アドレスの対応は、ARP キャッシュという表にしばらく覚えておき、聞き直す手間を省く。</li>
+      <li>ARP キャッシュの中の対応は、しばらく使われないと自動的に消える。</li>
+      <li>デフォルトゲートウェイの MAC アドレスを調べるときも、同じ ARP の仕組みが使われる。</li>
+      <li>ARP のブロードキャストが届くのは同じサブネットの中だけで、別のサブネットにいる相手には直接使えない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>送信元の機械は、送る前に自分の ARP キャッシュを確認し、宛先の IP アドレスに対応する MAC アドレスが無ければ、同じサブネットの全機械にブロードキャストで尋ねる(#47)。尋ねられた機械はそれぞれ自分の IP アドレスと見比べ、一致する機械だけが、尋ねてきた相手に自分の MAC アドレスを返す(#3)。送信元は受け取った対応を ARP キャッシュに記録し、以後は同じ相手への送信のたびに尋ね直さずに済む。ARP キャッシュの対応は永久には残らず、しばらく使われなかったものから順に自動的に消えていく(#47)。この仕組みは相手が最終的な宛先かデフォルトゲートウェイかを区別せず、同じサブネットにいる機械であれば同じように働く。ただしブロードキャストが届く範囲は同じサブネットの中に限られるため、別のサブネットにいる相手には ARP を直接使えない(#47)。前のページで、別サブネット宛てのときにデフォルトゲートウェイの MAC アドレスを調べる理由は、この範囲の限界にある。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>arp -a</code></pre>
+    <p>見方: 実行結果には、近くの機械の IP アドレスと MAC アドレスの対応が並ぶ。これが、このページで見た ARP キャッシュの中身であり、第 3 章 3-2 の試してみようで見た表の正体である。</p>
+    <p class="try-note">command not found と出たら、この回は読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="47">[#47] Cisco「Address Resolution Protocol」 — <a href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/xe-16/arp-xe-16-book/arp-config-arp.pdf" rel="noopener">原典</a>（"Overview of the Address Resolution Protocol" — キャッシュを確認し、無ければブロードキャストし、該当する機械だけが MAC アドレスを返すという動作。"ARP Caching" — 対応をキャッシュしてブロードキャストを減らすという設計理由と、しばらく使われない対応が自動的に消えること）</li>
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論（IP）」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（ARP request を送り、宛先ホストから ARP reply が返るという一連のやり取りの図）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m07-2">
+    <div class="q" data-q="1">
+      <p class="q-text">ARP で MAC アドレスを尋ねるとき、尋ねる側はブロードキャストなのに、答える側は尋ねてきた相手だけに返すのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">その IP アドレスに当てはまる機械以外は、答える必要が無いから</button></li>
+        <li><button type="button" data-correct="false">答える側もブロードキャストで返さないと、通信の決まりに違反するから</button></li>
+        <li><button type="button" data-correct="false">尋ねる側の機械が、答えを 1 台からしか受け取れない仕組みになっているから</button></li>
+        <li><button type="button" data-correct="false">ARP キャッシュには、1 台分の対応しか記録できないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その IP アドレスに当てはまる機械以外は、答える必要が無いから、です。尋ねている内容は特定の IP アドレスの持ち主なので、当てはまらない機械が答える必要はなく、無駄な返事を減らせます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ARP キャッシュの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ARP で調べた IP アドレスと MAC アドレスの対応を、しばらくの間覚えておく表のこと</button></li>
+        <li><button type="button" data-correct="false">ブロードキャストで送れる範囲そのもののこと</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイだけの MAC アドレスを記録する、専用の表のこと</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクの値を覚えておくための表のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ARP で調べた IP アドレスと MAC アドレスの対応を、しばらくの間覚えておく表のこと、です。デフォルトゲートウェイに限らず、同じサブネットの機械であれば対応が記録されます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">送信元の機械が、送る前に確認する順序として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">自分の ARP キャッシュを確認し、対応が無ければブロードキャストで尋ねる</button></li>
+        <li><button type="button" data-correct="false">必ず先にブロードキャストで尋ね、その後で ARP キャッシュに記録があるか確認する</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイに確認してから、ARP キャッシュを更新する</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクを確認してから、ARP キャッシュを消去する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、自分の ARP キャッシュを確認し、対応が無ければブロードキャストで尋ねる、です。すでに対応が分かっていれば、尋ね直さずに済みます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m07-1.html">← 7-1 送り先は、同じサブネットにいるとは限らない</a>
+    <a class="up" href="m07.html">第 7 章の入口</a>
+    <a class="next" href="m07-3.html">7-3 パケットが宛先に届くまでを、順番に追う →</a>
+  </nav>
+</main>
+</body>
+</html>

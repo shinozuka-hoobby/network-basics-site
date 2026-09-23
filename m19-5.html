@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>暗号を解く場所を選ぶ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m19-5" data-chapter="m19" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 19-5</p>
+  <p class="chapter-label">第 19 章 HTTPS を運用する　19-5</p>
+  <h1>暗号を解く場所を選ぶ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>TLS の暗号を解く役目は、必ずしも自分のサーバが受け持つとは限らない。<strong>手前の機械が代わりに受け持つと、その先の通信や身分証の置き場所が変わる</strong>。このページでは、この役目の分担と、その影響を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">この章では、身分証の取得や更新、失効の話をしてきましたけど、その身分証って、いつも自分のサーバに置いてあるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうとは限りません。TLS の暗号を解く役目を、どの機械が受け持つかを<strong>TLS 終端</strong>と呼び、これにはいくつかの選択肢があります。</p>
+    <p class="s" data-who="ひよこちゃん">解く役目、ですか? どこでもいいってことですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つ目は自分のサーバです。第 18 章で見た TLS ハンドシェイクの相手が、そのまま自分のサーバになります。</p>
+    <p class="s" data-who="ひよこちゃん">他にも選択肢があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。手前に<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>(同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械)を置いて、そこで解く方法です。詳しくは第 23 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">もう 1 つは何ですか?</p>
+    <p class="t" data-who="ふくろう先生">利用者の近くにある配信専用の機械、<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>で解く方法です。詳しくは第 22 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">自分のサーバ以外で解くと、何が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">手前で暗号を解くと、そこから先のサーバへの通信は、<strong>暗号化されないまま転送される</strong>ことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、ロードバランサで終端していたら、サーバ側のアプリが自分は http で受けていると勘違いしていた、という話を聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">手前で暗号を解くと、サーバに届くのは解いた後の通信です。だからサーバ側の仕組みは、利用者との間が https だったかどうかを、自分では知りようがありません。何も伝えてもらわなければ、http で受けたものとして扱ってしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">自分のサーバで解く場合と、手前で解く場合、どっちがいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">一概には言えません。運用の手間や、証明書の管理のしやすさなど、いくつかの観点で選びます。</p>
+    <p class="s" data-who="ひよこちゃん">身分証は、どこに置くことになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">暗号を解く役目を受け持つ機械に置くことになります。自分のサーバで解くなら自分のサーバに、手前で解くなら手前の機械に置きます。</p>
+    <p class="s" data-who="ひよこちゃん">CDN で解く場合も、身分証はそこに置くってことですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。配信専用の機械が、利用者との間の暗号化を代わりに引き受けるので、そのための身分証もそちら側に用意されます。</p>
+    <p class="s" data-who="ひよこちゃん">置き場所が変わると、更新の手間も変わりそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。手前でまとめて解いていれば、更新もそこでまとめて行えます。</p>
+    <p class="s" data-who="ひよこちゃん">終端する場所は、あとから変更できるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。ただし、身分証の置き場所や設定を移す作業が必要になります。</p>
+    <p class="s" data-who="ひよこちゃん">終端する場所によって、いろいろ変わるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この続きは、Web を届ける仕組みを扱う次の Part で見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>TLS の暗号を解く役目(TLS 終端)は、自分のサーバが受け持つ場合と、手前のロードバランサや CDN が代わりに受け持つ場合とがある。</li>
+      <li>手前で暗号を解くと、そこから先のサーバへの通信は、暗号化されないまま転送されることがある。</li>
+      <li>手前で終端していると、サーバ側の仕組みは利用者との間が https だったかどうかを自分では知りようがなく、何も伝えてもらわなければ http で受けたものとして扱ってしまうことがある。</li>
+      <li>身分証は、暗号を解く役目を受け持つ機械に置かれる。終端する場所が変われば、更新の手間も変わる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TLS の暗号を解く(元の中身に戻す)役目を、どの機械が受け持つかを TLS 終端と呼ぶ。自分のサーバが受け持つ場合、TLS ハンドシェイクの相手はそのまま自分のサーバになる(#55)。手前のロードバランサが受け持つ場合、通信はロードバランサの層で終端されたあとバックエンドへ転送され(#31)、その転送先ではプロトコルとして http と https のどちらも選べる(#25)。転送先が http を選んでいれば、そこから先の通信は暗号化されないまま送られる。利用者の近くにある配信専用の機械(CDN)が受け持つ場合も同様で、安全な通信を配信するための身分証は、その機械側に用意される(#62)。身分証は、暗号を解く役目を受け持つ機械に置かれ、終端する場所が変われば、身分証の置き場所や更新の手間も変わる。自分のサーバで解くか、手前の機械で解くかは、運用の手間や証明書の管理のしやすさなど、複数の観点から選ばれ、この選択は身分証をどこで更新するかという運用にも直結する。手前でまとめて終端していれば、複数台のサーバへ配る身分証を 1 か所にまとめて置け、更新の作業もそこに集約できる。終端する場所は、あとから変更することもできるが、そのときは身分証の置き場所や設定を移す作業が必要になる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://&lt;あなたのサイト&gt;</code></pre>
+    <p>見方: 応答の中の server という行を見てください。自分のサーバの名前ではなく、配信事業者の名前が書かれていれば、その事業者側で暗号を解いている手がかりになります。</p>
+    <p class="try-note">server という行自体が無いサーバもあります。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(TLS ハンドシェイクは、ブラウザが自分のサーバに問い合わせ始めるとき、TCP 接続が開いたあとに起きるという記述)</li>
+    <li class="cite" data-src="31">[#31] Google Cloud「Cloud Load Balancing overview」 — <a href="https://docs.cloud.google.com/load-balancing/docs/load-balancing-overview" rel="noopener">原典</a>(利用者の近くで接続を終端するという記述、プロキシ型のネットワークロードバランサでトラフィックがロードバランサの層で終端されバックエンドへ転送されるという記述、SSL offload の有無を示す表)</li>
+    <li class="cite" data-src="25">[#25] AWS「How Elastic Load Balancing works」 — <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" rel="noopener">原典</a>(ターゲットグループのプロトコルに HTTP・HTTPS・TCP・TLS があるという記述)</li>
+    <li class="cite" data-src="62">[#62] Akamai「How Akamai works」 — <a href="https://techdocs.akamai.com/start/docs/how-akamai-works" rel="noopener">原典</a>(配信事業者のサーバが自分のサーバの代わりに立ち、安全なトラフィックを配信するには専用の身分証が要るという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m19-5">
+    <div class="q" data-q="1">
+      <p class="q-text">手前のロードバランサで TLS を終端していると、サーバ側のアプリが利用者との間は http だったと思い込むことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">サーバに届くのは暗号を解いた後の通信であり、サーバ側はそれだけを見て判断するから</button></li>
+        <li><button type="button" data-correct="false">ロードバランサが、利用者に代わってサーバへ警告を送るから</button></li>
+        <li><button type="button" data-correct="false">サーバの身分証の有効期間が切れているから</button></li>
+        <li><button type="button" data-correct="false">サーバがロードバランサからの通信を拒否しているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、サーバに届くのは暗号を解いた後の通信であり、サーバ側はそれだけを見て判断するから、です。ロードバランサが警告を送る仕組みではなく、身分証の有効期間やサーバの拒否とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TLS 終端の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">TLS の暗号を解く役目を、自分のサーバではなく手前の機械が代わりに受け持つこともできる</button></li>
+        <li><button type="button" data-correct="false">TLS の暗号は、必ず自分のサーバでしか解けない</button></li>
+        <li><button type="button" data-correct="false">TLS を終端すると、身分証が不要になる</button></li>
+        <li><button type="button" data-correct="false">TLS を終端すると、通信は必ず暗号化されたまま届く</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TLS の暗号を解く役目を、自分のサーバではなく手前の機械が代わりに受け持つこともできる、です。自分のサーバでしか解けないわけではなく、身分証が不要になることも、必ず暗号化されたまま届くこともありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">暗号を解く役目を受け持つ場所と、身分証の置き場所の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">身分証は、暗号を解く役目を受け持つ機械に置かれる</button></li>
+        <li><button type="button" data-correct="false">身分証は、常に利用者の端末に置かれる</button></li>
+        <li><button type="button" data-correct="false">身分証の置き場所は、終端する場所とは無関係に決まる</button></li>
+        <li><button type="button" data-correct="false">身分証は、認証局のサーバにのみ置かれる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、身分証は、暗号を解く役目を受け持つ機械に置かれる、です。利用者の端末や認証局のサーバに置かれるわけではなく、終端する場所と無関係でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m19-4.html">← 19-4 HTTPS のページに http の部品が混ざる</a>
+    <a class="up" href="m19.html">第 19 章の入口</a>
+    <a class="next" href="m20.html">第 20 章 HTTP/1.1 →</a>
+  </nav>
+</main>
+</body>
+</html>

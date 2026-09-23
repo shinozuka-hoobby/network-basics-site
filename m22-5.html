@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>控えが近くにあると、なぜ速いのか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m22-5" data-chapter="m22" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 22-5</p>
+  <p class="chapter-label">第 22 章 CDN とキャッシュ　22-5</p>
+  <h1>控えが近くにあると、なぜ速いのか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>控えを近くから受け取ると、待ち時間が短くなる。<strong>理由は、往復にかかる時間そのものが短くなることと、もとのサーバへの問い合わせの回数が減ることにある</strong>。このページでは、この 2 つの理由を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">CDN を使うと、なんで速くなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">理由はいくつかありますが、まずは第 2 章 2-2 で見た、遠い相手ほど往復時間(RTT)が長くなるという話を思い出してください。</p>
+    <p class="s" data-who="ひよこちゃん">はい、伝搬遅延の話ですよね。</p>
+    <p class="t" data-who="ふくろう先生">ページの表示には、接続を作る手続き(第 13 章)や暗号化の手続き(第 18 章)も含めて、何度もやり取りが必要です。やり取りのたびに、この往復時間がかかります。</p>
+    <p class="s" data-who="ひよこちゃん">近くのエッジサーバから返せば、その往復時間自体が短くなるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。相手が近いほど、それぞれの往復にかかる時間も短く済みます。</p>
+    <p class="s" data-who="ひよこちゃん">実際に、どれくらい違うものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">ある資料の例では、ニューヨークの利用者がシンガポールのオリジンサーバへ直接アクセスすると、合計でおよそ 3000 ミリ秒かかりました。同じ内容を、アトランタに置かれたエッジサーバの控えから受け取ると、およそ 1100 ミリ秒で済みました。</p>
+    <p class="s" data-who="ひよこちゃん">2000 ミリ秒近く縮んでるんですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。距離が縮んだ分、TCP の接続を作る手続きの往復も、その後の要求と応答の往復も、それぞれ短くなった結果です。</p>
+    <p class="s" data-who="ひよこちゃん">エッジサーバから返ることには、往復時間が短くなる以外の利点もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。多くの利用者への応答をエッジサーバが肩代わりする分、もとのオリジンサーバへの問い合わせの回数自体も減ります。</p>
+    <p class="s" data-who="ひよこちゃん">オリジンサーバの負担も減るってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。問い合わせが集中しにくくなる分、オリジンサーバの負荷も抑えられます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、海外の利用者だけ表示が遅いって相談を受けたことがあるらしいんですけど、あれもこの理由だったんですかね?</p>
+    <p class="t" data-who="ふくろう先生">まさにそうです。相手が遠い分、往復時間そのものが長くなり、接続やハンドシェイクの往復にも影響していたはずです。近くのエッジサーバから返せていれば、防げていたかもしれません。</p>
+    <p class="s" data-who="ひよこちゃん">第 14 章で見た帯域遅延積にも関係あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。往復時間が短くなれば、必要な帯域遅延積も小さくなり、同じ量のデータでも頭打ちになりにくくなります。</p>
+    <p class="s" data-who="ひよこちゃん">後で試す、経由する機器と時間を見る方法って、近くのエッジサーバに届いてる証拠になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">手がかりにはなりますが、Anycast の仕組みそのものが働いていることの証拠にはなりません。あくまで、近くに届いていそうだ、という材料として見てください。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきたエッジサーバ、キャッシュキー、TTL、パージ、Anycast が、ここでつながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。CDN や HTTP/2、TLS 1.3 が性能全体にどう効くかは、第 30 章でまとめて振り返りましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>遠い相手ほど、往復時間(RTT)が長くなる。近くのエッジサーバから返せば、この往復時間そのものが短くなる。</li>
+      <li>接続を作る手続き(第 13 章)や暗号化の手続き(第 18 章)も複数回のやり取りを伴うため、相手が近いほど、それぞれの往復も短く済む。</li>
+      <li>ある資料の例では、遠いオリジンサーバへ直接アクセスするとおよそ 3000 ミリ秒、近くのエッジサーバの控えから受け取るとおよそ 1100 ミリ秒だった。</li>
+      <li>多くの利用者への応答をエッジサーバが肩代わりする分、オリジンサーバへの問い合わせの回数が減り、負荷が抑えられる。</li>
+      <li>往復時間が短くなれば、第 14 章で見た帯域遅延積も小さくなる。</li>
+      <li>配信事業者によっては、世界 200 の都市にデータセンターを置いており、これが利用者との距離を縮める土台になっている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>控えを近くのエッジサーバから受け取ると速くなる理由は、大きく 2 つある。1 つは、第 2 章 2-2 で見た往復時間(RTT)そのものが短くなることである。ページの表示には、接続を作る手続き(第 13 章 13-1)や暗号化の手続き(第 18 章 18-4)を含めて複数回のやり取りが必要で、そのたびに往復時間がかかるため、相手が近いほど短縮の効果が大きい。ある資料の例では、ニューヨークの利用者がシンガポールのオリジンサーバへ TCP で直接アクセスした場合、合計でおよそ 3000 ミリ秒かかったのに対し、アトランタに置かれたエッジサーバの控えから受け取った場合はおよそ 1100 ミリ秒で済んだ(#58)。もう 1 つの理由は、多くの利用者への応答をエッジサーバが肩代わりする分、オリジンサーバへの問い合わせの回数そのものが減り、負荷が抑えられることである(#71 p.45)。往復時間が短くなれば、第 14 章 14-5 で見た帯域遅延積も小さくなり、同じ量のデータでも頭打ちになりにくくなる。配信事業者によっては、世界 200 の都市にデータセンターを置いており(#61)、これが利用者との距離を縮める土台になっている。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>traceroute -m 15 example.com</code></pre>
+    <p>見方: 経由する機器の数と、応答が返ってくるまでの時間(ミリ秒)を見てください。この Mac で確認したところ、家庭用ルータや回線事業者の機器を数段経由したあと、10 ミリ秒前後で応答が返ってきました。近くの配信先に届いていることの手がかりですが、Anycast の仕組みそのものが働いていることの証拠にはなりません。</p>
+    <p class="try-note">実行に十数秒かかることがあります。途中に "*" が並ぶ行が出ても、そのまま読み進めてよい。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="58">[#58] Cloudflare Learning Center「CDN performance」 — <a href="https://www.cloudflare.com/learning/cdn/performance/" rel="noopener">原典</a>(「What is the difference in load times with and without a CDN?」の節。ニューヨーク-シンガポール間の直接アクセス〈約 3000ms〉と、アトランタのエッジサーバ経由〈約 1100ms〉の数値例。TCP の接続を作る手続きに複数回の往復が加算されるという記述)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab(インターネット工学研究室)「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(2018-06-application.txt p.45「Web Caches (proxy servers)」の節。近ければ応答時間が短くなること、Web サーバ側の負荷が減ることという記述)</li>
+    <li class="cite" data-src="61">[#61] Cloudflare Learning Center「How to make the Internet faster for everyone」 — <a href="https://www.cloudflare.com/learning/performance/more/speed-up-the-web/" rel="noopener">原典</a>(「How do CDNs speed up the Internet?」の節。CDN が世界中にコンテンツを控えることで、利用者までの距離を減らし、ネットワークの遅延を減らすという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m22-5">
+    <div class="q" data-q="1">
+      <p class="q-text">近くのエッジサーバから返すと、TCP や TLS のハンドシェイクを含めて速くなるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">近くのエッジサーバは、ハンドシェイクの手順そのものを省略できるから</button></li>
+        <li><button type="button" data-correct="true">ハンドシェイクは複数回のやり取りを伴い、そのたびに往復時間がかかるため、近いほど短縮の効果が大きいから</button></li>
+        <li><button type="button" data-correct="false">近くのエッジサーバは、暗号化を行わずに通信するから</button></li>
+        <li><button type="button" data-correct="false">近くのエッジサーバは、回線の帯域幅を自動的に太くしてくれるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ハンドシェイクは複数回のやり取りを伴い、そのたびに往復時間がかかるため、近いほど短縮の効果が大きいから、です。手順の省略や暗号化の省略、帯域幅の変更が理由ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ニューヨークの利用者が、シンガポールのオリジンサーバへ直接アクセスした場合と、アトランタのエッジサーバの控えから受け取った場合の比較として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">直接アクセスは合計およそ 3000 ミリ秒、エッジサーバ経由は合計およそ 1100 ミリ秒だった</button></li>
+        <li><button type="button" data-correct="false">直接アクセスもエッジサーバ経由も、合計時間はほとんど変わらなかった</button></li>
+        <li><button type="button" data-correct="false">エッジサーバ経由の方が、直接アクセスより時間がかかった</button></li>
+        <li><button type="button" data-correct="false">直接アクセスは合計およそ 1100 ミリ秒、エッジサーバ経由は合計およそ 3000 ミリ秒だった</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、直接アクセスは合計およそ 3000 ミリ秒、エッジサーバ経由は合計およそ 1100 ミリ秒だった、です。距離が縮んだ分、エッジサーバ経由の方が短い時間で済みました。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">多くの利用者への応答をエッジサーバが肩代わりすることが、オリジンサーバにとってどのような関係になるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">オリジンサーバへの問い合わせの回数が増え、負荷が高まる</button></li>
+        <li><button type="button" data-correct="true">オリジンサーバへの問い合わせの回数が減り、負荷が抑えられる</button></li>
+        <li><button type="button" data-correct="false">オリジンサーバが不要になり、電源を切ってもよくなる</button></li>
+        <li><button type="button" data-correct="false">オリジンサーバの往復時間(RTT)が短くなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、オリジンサーバへの問い合わせの回数が減り、負荷が抑えられる、です。オリジンサーバが不要になるわけでも、負荷が増えるわけでもなく、RTT が短くなるのはエッジサーバと利用者の間の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m22-4.html">← 22-4 近くの配信先に、自動でたどり着く仕組み</a>
+    <a class="up" href="m22.html">第 22 章の入口</a>
+    <a class="next" href="m23.html">第 23 章 ロードバランシング →</a>
+  </nav>
+</main>
+</body>
+</html>

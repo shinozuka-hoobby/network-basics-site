@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>動画が乱れるのと、海外サイトが遅いのは、理由が違う — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m02-1" data-chapter="m02" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 2-1</p>
+  <p class="chapter-label">第 2 章 信号と回線　2-1</p>
+  <h1>動画が乱れるのと、海外サイトが遅いのは、理由が違う</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>回線が太いことと、応答が速いことは、別の性質である。<strong>一度に運べる量を表す物差しと、届くまでにかかる時間を表す物差しは別々にある</strong>。このページでは、動画が乱れる場合と海外サイトが遅い場合とで、当てはまる性質が違うことを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">先週ビデオ通話をしてたら、途中で映像が乱れて固まったりしたんですよね。てっきり自宅の回線が細いせいだと思ってました。</p>
+    <p class="t" data-who="ふくろう先生">回線が細いことだけが原因とは限りません。第 1 章で見た図を覚えていますか。手元の端末から Web サーバまで、機器と機器を結ぶ線が何本も並んでいました。</p>
+    <p class="s" data-who="ひよこちゃん">覚えてます。今日はその線の話をするんですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。今日は、その線 1 本 1 本の中で、信号がどう伝わるかを見ていきます。線の中を伝わるのは、電気の信号だったり、光の信号だったり、電波だったりします。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、海外のサイトを見たときだけ、やたら表示が遅いこともあるんですけど、これも回線が細いせいですか。</p>
+    <p class="t" data-who="ふくろう先生">実は、それとはまた別の理由です。回線には、大きく分けて 2 つの物差しがあります。</p>
+    <p class="s" data-who="ひよこちゃん">2 つ、ですか。</p>
+    <p class="t" data-who="ふくろう先生">1 つ目は、一度にどれだけの量を運べるかという物差しです。道路にたとえると、車線の数にあたります。これを<strong>帯域幅</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">契約している回線のプランにも、100Mbps とか 1Gbps って書いてありますけど、あれのことですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ビット(0 か 1 で表す情報の最小単位)を数える単位が bps で、「1 秒間に送れるビット数」を表します。100Mbps なら 1 秒間に約 1 億ビット送れるという意味になり、プランの表示はまさにこの帯域幅の値です。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど。じゃあ、契約プランの数字が大きいほど、色々速くなるってことですか。</p>
+    <p class="t" data-who="ふくろう先生">そこが誤解しやすいところです。車線の数(帯域幅)と、車が走りきるまでの時間は、別の話です。</p>
+    <p class="s" data-who="ひよこちゃん">別、ですか。てっきり車線が多い方が全部速いのかと思ってました。</p>
+    <p class="t" data-who="ふくろう先生">2 つ目の物差しが、まさにその「車が走りきるまでの時間」にあたります。データを送ってから相手に届くまでにかかる時間のことを、<strong>遅延時間</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">車線がいくら多くても、道のりが長ければ時間がかかる、ということですか。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。帯域幅は回線の太さ、遅延時間は届くまでの時間で、この 2 つは別々に決まります。</p>
+    <p class="s" data-who="ひよこちゃん">大きなファイルをダウンロードするときと、ボタンを押してすぐ反応してほしいときとでは、気にする物差しが違うってことですか。</p>
+    <p class="t" data-who="ふくろう先生">良い着眼点です。ダウンロードのように量が多いやり取りは帯域幅が効きやすく、ボタンの反応のようにすぐ返事がほしいやり取りは遅延時間が効きやすいんです。</p>
+    <p class="s" data-who="ひよこちゃん">契約するときは、帯域幅の数字だけ見ておけば十分ってことですか。</p>
+    <p class="t" data-who="ふくろう先生">動画配信や大きなファイルのやり取りが多いなら参考になりますが、ページがすぐ表示されるかどうかは遅延時間の影響も受けます。両方を意識しておくとよいでしょう。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、ビデオ通話が乱れるのと、海外サイトが遅いのって、どっちがどっちの物差しの問題なんですか。</p>
+    <p class="t" data-who="ふくろう先生">それぞれ理由が違います。この先のページで 1 つずつ見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">気になります。次のページから教えてください。</p>
+    <p class="t" data-who="ふくろう先生">はい。まずは、届くまでの時間の方から見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>回線には、一度にどれだけの量を運べるかを表す帯域幅と、送ってから届くまでにかかる遅延時間という、性質の異なる 2 つの物差しがある。</li>
+      <li>道路にたとえると、帯域幅は車線の数、遅延時間は車が道を走りきる時間にあたる。契約プランに書かれた「100Mbps」のような表示は帯域幅の値である。</li>
+      <li>車線が多い(帯域幅が大きい)ことと、車が速く着く(遅延時間が短い)ことは、別々に決まる。</li>
+      <li>ダウンロードのように量が多いやり取りは帯域幅が、ボタンの反応のようにすぐ返事がほしいやり取りは遅延時間が、それぞれ効きやすい。</li>
+      <li>ビデオ通話が乱れる理由と、海外サイトが遅い理由は、それぞれ別の物差しに関わっており、この先のページで順番に確認する。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>回線を道路にたとえると、帯域幅は車線の数、遅延時間は車が道を走りきるまでの時間にあたる。実際の回線に置き換えると、車線の数にあたるのは、一定の時間に送り出せるデータの量の上限であり、単位には bps(1 秒間に送れるビット数)が使われる。走行時間にあたるのは、信号が送り出されてから相手に届くまでにかかる時間である。車線を増やす(帯域幅を大きくする)ことと、道のりを短くする(遅延時間を短くする)ことは、別々の工夫であり、一方を変えても他方は変わらない。回線が太くても、遠い相手には時間がかかる。逆に近い相手でも、回線が細ければ一度に送れる量は増えない。この章ではこのあと、遅延時間がどんな要素で決まるか(2-2、2-3)、そして回線の種類によってどんな制約が支配的か(2-4)を、順番に見ていく。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="61">[#61] Cloudflare Learning Center「How to make the Internet faster for everyone」 — <a href="https://www.cloudflare.com/learning/performance/more/speed-up-the-web/" rel="noopener">原典</a>(「Network congestion」の節: 一定時間に運べる最大量を帯域幅と呼ぶという記述)</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>(p.6、リンクはケーブルや電波であり、伝わるのは電気信号であるという整理)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m02-1">
+    <div class="q" data-q="1">
+      <p class="q-text">帯域幅が大きい(回線が太い)ことと、遅延時間が短いことの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">帯域幅が大きければ、必ず遅延時間も短くなる</button></li>
+        <li><button type="button" data-correct="true">帯域幅と遅延時間は別々の物差しであり、一方が良くても他方が良いとは限らない</button></li>
+        <li><button type="button" data-correct="false">遅延時間が短ければ、必ず帯域幅も大きくなる</button></li>
+        <li><button type="button" data-correct="false">帯域幅と遅延時間は、同じ性質を違う言葉で言い換えただけである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、帯域幅と遅延時間は別々の物差しであり、一方が良くても他方が良いとは限らない、です。道路にたとえると車線の数(帯域幅)と車が走りきる時間(遅延時間)にあたり、車線を増やしても道のりが短くなるわけではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">帯域幅の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">データを送ってから相手に届くまでにかかる時間</button></li>
+        <li><button type="button" data-correct="true">一定の時間に送れるデータの量の上限</button></li>
+        <li><button type="button" data-correct="false">回線を流れる信号が暗号化されているかどうか</button></li>
+        <li><button type="button" data-correct="false">回線を契約している会社(ISP)の名前</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、一定の時間に送れるデータの量の上限、です。データを送ってから相手に届くまでにかかる時間は遅延時間のことで、帯域幅とは別の物差しです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">遅延時間の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">一定の時間に送れるデータの量の上限</button></li>
+        <li><button type="button" data-correct="true">データを送ってから相手に届くまでにかかる時間</button></li>
+        <li><button type="button" data-correct="false">回線の設置にかかる工事の日数</button></li>
+        <li><button type="button" data-correct="false">回線を流れるデータの暗号化の強さ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、データを送ってから相手に届くまでにかかる時間、です。一定の時間に送れるデータの量の上限は帯域幅のことで、遅延時間とは別の物差しです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m02.html">← 第 2 章の入口</a>
+    <a class="up" href="m02.html">第 2 章の入口</a>
+    <a class="next" href="m02-2.html">2-2 遠い相手ほど、届くまでに時間がかかる →</a>
+  </nav>
+</main>
+</body>
+</html>

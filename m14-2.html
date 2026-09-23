@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相手が受け取れる量に、送る量を合わせる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m14-2" data-chapter="m14" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 14-2</p>
+  <p class="chapter-label">第 14 章 TCP のフロー制御と輻輳制御　14-2</p>
+  <h1>相手が受け取れる量に、送る量を合わせる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>送り手は、受け手がまだ処理できずに置いておける量を教えてもらい、<strong>その量を超えないように送る量を加減している</strong>。この量は固定ではなく、受け手の処理の進み具合に応じて増えたり減ったりする。このページでは、この数字の伝わり方と、変わり方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、受け取る側の限界の話が出ましたけど、それって具体的にはどうやって送り手に伝わるんですか? 何か特別な合図でもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">受け手が「これだけならまだ置いておける」という数字を、送り手に伝えます。これを受信ウィンドウと呼びます。特別な合図ではなく、いつものやり取りに数字を乗せて伝えます。</p>
+    <p class="s" data-who="ひよこちゃん">その数字は、どうやって伝わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ACK と一緒に伝えられます。データが届いたことの確認と、次にどれだけ置いておけるかという数字が、セットになって返ってくるんです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、送り手はその数字を見て、送る量を決めてるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。送り手は受信ウィンドウの数字を超えないように、データを送ります。この仕組みをフロー制御と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">受け手が処理してデータを片付けたら、この数字も変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">変わります。受け手がデータを処理して置き場所が空くと、受信ウィンドウは大きくなります。逆に、受け手の処理が追いつかず置き場所が埋まってくると、受信ウィンドウは小さくなります。</p>
+    <p class="s" data-who="ひよこちゃん">つまり、受信ウィンドウは通信の途中でも変わり続けるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。固定された値ではなく、ACK のたびに更新される、動く数字です。</p>
+    <p class="s" data-who="ひよこちゃん">その受信ウィンドウの初期値って、だいたいどれくらいの大きさなんですか?</p>
+    <p class="t" data-who="ふくろう先生">接続を始めた直後の初期値は、OS の設定によって決まります。あとで実際に自分の Mac で確認する方法も紹介します。</p>
+    <p class="s" data-who="ひよこちゃん">受信ウィンドウが 0 になったら、どうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手はいったん送るのをやめて待ちます。受け手の置き場所に余裕ができて、新しい受信ウィンドウが伝えられるまで、待機します。相手の準備が整うまで、無理に送り込むことはしません。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど。受信ウィンドウが小さいのは、受け手の処理が追いついていない証拠なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。経路が混んでいるかどうかとは、また別の話です。</p>
+    <p class="s" data-who="ひよこちゃん">たとえば、スマホのアプリが固まって処理が追いつかなくなったときも、受信ウィンドウが関係するんですか?</p>
+    <p class="t" data-who="ふくろう先生">関係します。アプリの処理が遅れて置き場所が埋まってくると、受信ウィンドウが小さくなり、送り手はそれに合わせて送る量を減らします。</p>
+    <p class="s" data-who="ひよこちゃん">受け手の側から、送り手に「ちょっと待って」と言ってるようなものですね。</p>
+    <p class="t" data-who="ふくろう先生">近いイメージです。実際に言葉で伝えるのではなく、数字を小さくすることで、送り手に伝えます。声を出さずに合図を送っているようなものです。</p>
+    <p class="s" data-who="ひよこちゃん">この仕組みって、フロー制御っていう名前でしたよね。受け取る側の都合だけを見ている、ということでいいですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。フロー制御は、受け手の処理力に送り手の送信量を合わせる仕組みで、受け手の事情だけを見ています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、これはあくまで相手側の都合であって、途中の道が混んでいるかどうかとは関係ないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。途中の道が混んでいるかどうかも、もう一つの理由でしたね。次のページで、そちらを詳しく見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>受け手は「まだこれだけなら置いておける」という数字(受信ウィンドウ)を、ACK に添えて送り手に伝える。特別な合図ではなく、いつものやり取りに乗せて伝えられる。</li>
+      <li>受信ウィンドウは固定値ではなく、受け手の処理が進んで置き場所が空くと大きくなり、置き場所が埋まって残りが少なくなってくると小さくなる。</li>
+      <li>送り手は受信ウィンドウを超えないようにデータを送る。この仕組みをフロー制御と呼ぶ。</li>
+      <li>フロー制御は受け手の処理力だけを見ており、途中の経路が混んでいるかどうかとは関係ない。</li>
+      <li>次のページでは、送り手が自分で見積もる経路の混雑という、もう一つの理由を見ていく。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>送り手は、受け手がまだ処理できずに置いておける量を、受信ウィンドウという数字で教えてもらう。この数字は ACK に添えて送り手に伝えられ、固定された値ではなく、受け手がデータを処理して置き場所が空くたびに大きくなり、置き場所が埋まってくると小さくなる。送り手は受信ウィンドウの数字を超えないよう送る量を加減する。この、受け手の処理力に送る量を合わせる仕組みをフロー制御と呼ぶ。受信ウィンドウが小さいのは受け手の処理が追いついていない証拠であり、途中の経路が混んでいるかどうかとは別の事情である。受信ウィンドウの初期値は OS の設定によって決まり、その後は通信の状況に応じて変わっていく。値が 0 になると、送り手はいったん送信を止めて待ち、置き場所に余裕ができるのを待つ。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>sysctl -n net.inet.tcp.recvspace</code></pre>
+    <p>見方: 表示された数字が、受け取ったデータを一時的に置いておく場所の大きさの初期値(バイト数)です。相手に伝える受信ウィンドウの元になる値だと考えてください。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.23〜26 スライディングウィンドウ、受信側が設定する window）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.16 buffered transfer、p.31〜32 sliding window）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m14-2">
+    <div class="q" data-q="1">
+      <p class="q-text">受信ウィンドウが小さくなる場合の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">途中の経路が混んでいる証拠である</button></li>
+        <li><button type="button" data-correct="true">受け手の処理が追いつかず、置いておける場所が少なくなっている証拠である</button></li>
+        <li><button type="button" data-correct="false">送り手が、経路の混雑を見て自分で量を減らした結果である</button></li>
+        <li><button type="button" data-correct="false">ACK が届かなくなった証拠である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、受け手の処理が追いつかず、置いておける場所が少なくなっている証拠である、です。受信ウィンドウはフロー制御のための数字で、受け手の処理力だけを表し、途中の経路の混雑とは別の事情です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">受信ウィンドウの値はどのように送り手に伝わるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">TCP 接続を作り直すたびに 1 回だけ伝えられる</button></li>
+        <li><button type="button" data-correct="true">ACK に添えて、そのたびに伝えられる</button></li>
+        <li><button type="button" data-correct="false">送り手が経路の様子を見て自分で推測する</button></li>
+        <li><button type="button" data-correct="false">受け手が別途、専用のメッセージを送って知らせる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ACK に添えて、そのたびに伝えられる、です。受信ウィンドウは固定値ではなく、受け手の処理状況に応じて ACK のたびに更新されて伝えられます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">フロー制御の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">受け手の処理できる量に送り手が合わせる仕組みで、受け手の事情だけを見ている</button></li>
+        <li><button type="button" data-correct="false">途中の経路の混み具合を見ながら送る量を加減する仕組み</button></li>
+        <li><button type="button" data-correct="false">送ったデータが届いたことを確認する仕組み</button></li>
+        <li><button type="button" data-correct="false">通信を始める前に行う、決まった手順のあいさつ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、受け手の処理できる量に送り手が合わせる仕組みで、受け手の事情だけを見ている、です。途中の経路の混み具合を見て量を加減するのは、次のページ以降で扱う別の仕組みであり、フロー制御とは見ている相手が異なります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m14-1.html">← 14-1 送りすぎると何が起きるか</a>
+    <a class="up" href="m14.html">第 14 章の入口</a>
+    <a class="next" href="m14-3.html">14-3 はじめは少なく、様子を見ながら増やしていく →</a>
+  </nav>
+</main>
+</body>
+</html>

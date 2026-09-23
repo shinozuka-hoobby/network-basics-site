@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TCP を土台にした通信は、なぜ遅くなったり止まったりするのか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m15-1" data-chapter="m15" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 15-1</p>
+  <p class="chapter-label">第 15 章 QUIC — UDP 上に作り直したトランスポート　15-1</p>
+  <h1>TCP を土台にした通信は、なぜ遅くなったり止まったりするのか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>TCP の接続を作ったあと、相手を確かめて鍵を決める手続きも済ませてからでないと、データのやり取りは始まらない。この 2 つの手続きが別々に重なることと、1 本の接続の中で 1 つのデータの取りこぼしが後ろに届いたデータまで止めてしまうことには、<strong>性質の異なる 2 つの原因</strong>がある。このページでは、この 2 つの問題と、それを解決するために作り直された新しいデータの運び方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前の章の最後で、新しいトランスポート技術があるって聞いたんですけど、それがこれですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。まずは、今までの TCP を土台にした通信で何が問題だったかから見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">TCP は第 13 章で接続を作る手続きを習いましたけど、それだけでは足りないんですか?</p>
+    <p class="t" data-who="ふくろう先生">https の通信では足りません。TCP 接続を作ったあとに、もう一つ、相手を確かめながらこの先の通信を守る鍵を決める、暗号化の手続きが必要です。</p>
+    <p class="s" data-who="ひよこちゃん">その暗号化の手続きって、名前は無いんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。<a class="term" href="glossary.html#tls" data-term="tls">TLS</a>と呼び、相手が本物かどうかを確かめながら、この先の通信を守る鍵を取り決める手続きです。詳しくは第 18 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、TCP の接続を作る手続きと、この TLS の手続き、それぞれ別々にやり取りするってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。接続を作る往復と、暗号化の往復が別々に重なるので、最初のやり取りができるまでの待ち時間が積み重なります。</p>
+    <p class="s" data-who="ひよこちゃん">待ち時間が伸びるのは分かりました。他にも問題があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。もう一つは、1 本の接続の中でデータが届く順番に関する問題です。</p>
+    <p class="s" data-who="ひよこちゃん">順番、ですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。TCP は、1 本の接続の中でデータを順番どおりに届ける決まりになっていて、順番がまだ来ていないデータより後ろのものは、実際に届いていても渡しません。</p>
+    <p class="s" data-who="ひよこちゃん">それの何が困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">複数のやり取りを同じ接続にまとめて運んでいると、1 つのデータが失われただけで、後ろに届いていた別のデータまで足止めされてしまいます。これを HOL ブロッキングと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、複数の画像を 1 本の接続で並行して取得していたら、1 つの画像の取りこぼしで、他の画像まで表示が遅れたことがあります。まさにこれだったんですね。</p>
+    <p class="t" data-who="ふくろう先生">まさにそれです。今の説明のとおり、TCP が順番を守る決まりを持っているために起きる現象です。</p>
+    <p class="s" data-who="ひよこちゃん">接続の往復が重なる問題と、この HOL ブロッキングの問題は、同じ原因なんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、別の問題です。前者は接続を作るまでの待ち時間の話、後者は接続ができたあとにデータが届く順番の話で、原因も対処も異なります。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、TCP 自体を直接直せばよかったんじゃないですか?</p>
+    <p class="t" data-who="ふくろう先生">直したくても簡単ではありません。TCP は OS の中核部分に組み込まれているので、変更を思いついても、実際に OS に実装されて広く行き渡るまでには長い時間がかかります。</p>
+    <p class="s" data-who="ひよこちゃん">この 2 つを一気に解決する方法があるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。TCP を使うのをやめて、UDP の上に、この 2 つの問題を解決する形で作り直したのが QUIC です。</p>
+    <p class="s" data-who="ひよこちゃん">QUIC って、TCP や UDP みたいに、新しいプロトコルってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。接続を作る手続きと暗号化の手続きをまとめ、データが届く順番の問題も解決する形で設計された、新しいデータの運び方です。次のページから、それぞれの解決策を順番に見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>送り手と受け手は、接続を作る手続き(TCP)と暗号化の手続き(TLS)をそれぞれ別々に行っており、この 2 つの往復が重なって最初のやり取りまでの待ち時間が積み重なる。</li>
+      <li>TCP は 1 本の接続の中でデータを順番どおりに届ける決まりのため、1 つのデータが失われると、後ろに届いていたデータも渡されずに足止めされる。これを HOL ブロッキングと呼ぶ。</li>
+      <li>複数のやり取りを 1 本の接続にまとめて運んでいるときほど、HOL ブロッキングの影響は大きい。</li>
+      <li>QUIC は、この 2 つの問題を TCP の代わりに UDP の上で解決する形で作り直された、新しいデータの運び方である。</li>
+      <li>接続の往復が重なる問題と、HOL ブロッキングの問題は、原因も対処も異なる別の問題である。</li>
+      <li>TCP は OS の中核部分に組み込まれているため、直接変えるとしても、実装されて広く行き渡るまでに時間がかかる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TCP を使った通信では、接続を作る手続き(TCP)と、相手を確かめながら鍵を決める暗号化の手続き(TLS)を、それぞれ別々に行う。この 2 つの往復が重なるため、最初のやり取りができるまでの待ち時間が積み重なる。もう一つの問題は、TCP が 1 本の接続の中でデータを順番どおりに届ける決まりを持つことに由来する。順番がまだ来ていないデータより後ろのものは、実際に届いていても渡されない。複数のやり取りを 1 本の接続にまとめて運んでいるときほどこの影響は大きく、1 つのデータの損失が、それより後ろに届いていた別のデータまで足止めする。これを HOL ブロッキングと呼ぶ。QUIC は、この 2 つの問題を、TCP の代わりに UDP の上で解決する形で作り直された、新しいデータの運び方である。TCP は OS の中核部分に組み込まれているため、仮に直接変えようとしても、実装されて広く行き渡るまでに時間がかかるという事情もある。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://&lt;あなたのサイト&gt;</code></pre>
+    <p>見方: 応答の中に alt-svc という行があり、h3 という文字が含まれていれば、そのサイトが「QUIC の上でも HTTP を受け付ける」と知らせています。行が無ければ、そのサイトは QUIC を案内していません。</p>
+    <p class="try-note">自分のサイトで行が出なくても、それ自体が観察の結果です。GitHub Pages のように QUIC を案内していないサービスもあります。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座:HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>(複数の画像を 1 本の接続で並行して転送する例と HoLB の説明、QUIC が UDP 上で TCP のような信頼性・TLS のような暗号化を提供するという概要、QUIC がユーザーランドで動き TCP のような OS 側の機能は展開に時間がかかるという記述)</li>
+    <li class="cite" data-src="57">[#57] Cloudflare Learning Center「What is HTTP/3?」 — <a href="https://www.cloudflare.com/learning/performance/what-is-http3/" rel="noopener">原典</a>(head-of-line blocking の説明、接続を作る手続きと暗号化の手続きを 1 つにまとめるという記述)</li>
+    <li class="cite" data-src="64">[#64] Fastly「What is HTTP/3?」 — <a href="https://www.fastly.com/learning/what-is-http-3" rel="noopener">原典</a>(「Head-of-line blocking」の節、TCP でパケットが失われたときの影響の説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m15-1">
+    <div class="q" data-q="1">
+      <p class="q-text">接続の往復が重なる問題と、HOL ブロッキングの問題の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">接続の往復が重なる問題が解決すれば、HOL ブロッキングも自動的に解決する</button></li>
+        <li><button type="button" data-correct="true">原因も対処も異なる、別々の問題である</button></li>
+        <li><button type="button" data-correct="false">HOL ブロッキングは、接続を作る手続きが遅いために起きる</button></li>
+        <li><button type="button" data-correct="false">どちらも、暗号化の手続きだけが原因で起きる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、原因も対処も異なる、別々の問題である、です。接続の往復が重なる問題は接続を作るまでの待ち時間の話、HOL ブロッキングは接続ができたあとにデータが届く順番の話で、片方を解決してももう片方は解決しません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HOL ブロッキングの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">受け取る側の処理が追いつかず、データを受け取れなくなること</button></li>
+        <li><button type="button" data-correct="true">1 本の接続の中で、先頭のデータが届かないと、それより後ろの届いているデータも渡せず待たされること</button></li>
+        <li><button type="button" data-correct="false">途中の回線が混雑して、データそのものが失われること</button></li>
+        <li><button type="button" data-correct="false">接続を作る手続きに時間がかかること</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 本の接続の中で、先頭のデータが届かないと、それより後ろの届いているデータも渡せず待たされること、です。TCP はデータを順番どおりに届ける決まりのため、複数のやり取りを 1 本の接続にまとめて運んでいるときほど、この影響を受けやすくなります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">QUIC の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">TCP の代わりに UDP の上に、接続を作る手続きと暗号化の手続きをまとめて作り直した、新しいデータの運び方</button></li>
+        <li><button type="button" data-correct="false">TCP をそのまま使いながら、暗号化の手続きだけを省略する仕組み</button></li>
+        <li><button type="button" data-correct="false">TLS を使わずに通信を暗号化する、TCP 専用の拡張機能</button></li>
+        <li><button type="button" data-correct="false">UDP を廃止して新しく作られた、トランスポート層のプロトコル</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP の代わりに UDP の上に、接続を作る手続きと暗号化の手続きをまとめて作り直した、新しいデータの運び方、です。QUIC は UDP を廃止するのではなく、UDP の上に作られています。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m15.html">← 第 15 章の入口</a>
+    <a class="up" href="m15.html">第 15 章の入口</a>
+    <a class="next" href="m15-2.html">15-2 1 本の接続の中に、独立した流れを複数持たせる →</a>
+  </nav>
+</main>
+</body>
+</html>

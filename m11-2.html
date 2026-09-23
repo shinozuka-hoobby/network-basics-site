@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARP の役目を、新しい仕組みが引き継ぐ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m11-2" data-chapter="m11" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 11-2</p>
+  <p class="chapter-label">第 11 章 IPv6　11-2</p>
+  <h1>ARP の役目を、新しい仕組みが引き継ぐ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じネットワークの中にいる相手と実際に通信するには、IP アドレスだけでなく相手の MAC アドレスも必要になる。<strong>新しい形式の IP アドレスでは、この役目を ARP とは別の仕組みが引き継いでいる</strong>。このページでは、その仕組みがどう働くのかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 7 章 7-2 で見た ARP、新しい形式の IP アドレスでも同じように使うんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じネットワーク内の相手の MAC アドレスを調べる必要があるのは同じですが、ARP そのものは使いません。新しい形式の IP アドレスでは、別の仕組みが使われます。</p>
+    <p class="s" data-who="ひよこちゃん">え、じゃあどうやって調べるんですか?</p>
+    <p class="t" data-who="ふくろう先生">近隣探索(ND)という仕組みが、同じ役目を引き継いでいます。IP アドレスから対応する MAC アドレスを調べるという目的は、ARP とまったく同じです。</p>
+    <p class="s" data-who="ひよこちゃん">ARP とは別の、新しい専用の仕組みが用意されたんですか?</p>
+    <p class="t" data-who="ふくろう先生">専用の仕組みではなく、第 6 章で見た ICMP の IPv6 版(ICMPv6 と呼びます)の一部として組み込まれています。新しい形式のアドレスに合わせて、すでにある ICMP の仕組みの中に入れる形が選ばれました。</p>
+    <p class="s" data-who="ひよこちゃん">ICMP の一部だったんですね。尋ね方も ARP と同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、違います。ARP は第 7 章 7-2 で見たとおり、同じネットワークの全員に一斉に呼びかけるブロードキャストを使いましたが、近隣探索はブロードキャストを使いません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、どうやって呼びかけるんですか?</p>
+    <p class="t" data-who="ふくろう先生">マルチキャストと呼ばれる、宛先を絞ったグループ全員にだけ届く呼びかけ方を使います。動画の配信などにも使われる仕組みで、近隣探索でもこの呼びかけ方が使われています。</p>
+    <p class="s" data-who="ひよこちゃん">答える側は、ARP と同じように本人だけが返事をするんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、そこは ARP と同じです。呼びかけられた中で、その IP アドレスを持つ機械だけが返事をします。全員に返事をさせないことで、無駄なやり取りを減らせます。</p>
+    <p class="s" data-who="ひよこちゃん">第 7 章 7-1 で見たデフォルトゲートウェイの MAC アドレスを調べたいときも、近隣探索が使われるんですか?</p>
+    <p class="t" data-who="ふくろう先生">使われます。近隣探索は、相手が最終的な宛先かデフォルトゲートウェイかを区別せず、同じネットワークにいる機械であれば同じように働きます。</p>
+    <p class="s" data-who="ひよこちゃん">ちなみに、第 7 章 7-2 の ARP キャッシュみたいに、調べた対応をしばらく覚えておく仕組みもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。近隣探索でも、一度調べた対応はしばらく覚えておく仕組みが用意されています。ARP キャッシュと同じような考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、違うのは呼びかけ方と、仕組みの位置づけくらいなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ARP は独立した専用の仕組みで、近隣探索は既存の仕組みに相乗りしている、という違いです。役目は同じでも、作り方が違います。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、役目は同じでも仕組みの作り方が違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この新しい形式の IP アドレス自体が、どうやって機械に割り当てられるのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>同じネットワーク内の相手の MAC アドレスを調べる役目は、新しい形式の IP アドレスでも必要である。</li>
+      <li>この役目は ARP ではなく、近隣探索(ND)と呼ばれる仕組みが引き継いでいる。</li>
+      <li>近隣探索は独立した専用の仕組みではなく、ICMP の IPv6 版(ICMPv6)の一部として実現されている。一度調べた対応をしばらく覚えておく、ARP キャッシュに似た仕組みも持っている。</li>
+      <li>第 7 章 7-2 で見た ARP は同じネットワーク全員に一斉に呼びかけるブロードキャストを使うが、近隣探索はマルチキャスト(宛先を絞ったグループ全員にだけ届く呼びかけ方)を使う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>同じネットワーク内の機械同士が通信するには、相手の MAC アドレスを知る必要がある。第 7 章 7-2 で見た ARP は、これを調べるための独立した専用の仕組みだった。新しい形式の IP アドレスでは、この役目を近隣探索(ND)と呼ばれる仕組みが引き継いでいる(#3)。近隣探索は ARP のような専用の仕組みではなく、第 6 章で見た ICMP の IPv6 版である ICMPv6 の一部として実現されている。呼びかけ方にも違いがあり、ARP は同じネットワークの全員に一斉に呼びかけるブロードキャストを使うが、近隣探索はマルチキャスト、つまり宛先を絞ったグループ全員にだけ届く呼びかけ方を使う(#4)。呼びかけられた機械のうち、その IP アドレスを持つ機械だけが返事をする点は ARP と同じである。また、一度調べた対応をしばらく覚えておく、ARP キャッシュに似た仕組みも近隣探索は持っている。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論「IP」」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（「(*) IPv6 では、Neighbor Discovery Protocol が提供」という記述。ARP/RARP の役目を IPv6 では NDP が引き継ぐことの根拠）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（06_IP.txt p.44「IPv6 Multicast Address」の "Mainly used by NDP (Neighbor Discovery Protocol) in IPv6" という記述。近隣探索がブロードキャストではなくマルチキャストを使うことの根拠）</li>
+    <li class="cite" data-src="77">[#77] IETF「RFC 4861: Neighbor Discovery for IP version 6 (IPv6)」 — <a href="https://www.rfc-editor.org/rfc/rfc4861.html" rel="noopener">原典</a>（近隣探索が ICMPv6 の一部という点）</li>
+    <li class="cite" data-src="78">[#78] IETF「RFC 4291: IP Version 6 Addressing Architecture」 — <a href="https://www.rfc-editor.org/rfc/rfc4291.html" rel="noopener">原典</a>（近隣探索がマルチキャストを使う点）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m11-2">
+    <div class="q" data-q="1">
+      <p class="q-text">ARP と、新しい形式の IP アドレスにおける近隣探索は、同じ役目を果たすが、仕組みとしてどう違うか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ARP は独立した専用の仕組みだが、近隣探索は ICMP というすでにある仕組みの一部として実現されている</button></li>
+        <li><button type="button" data-correct="false">ARP は IP アドレスから MAC アドレスを調べるが、近隣探索は MAC アドレスから IP アドレスを調べる</button></li>
+        <li><button type="button" data-correct="false">ARP は同じネットワーク内でしか使えないが、近隣探索は別のネットワークの相手にも直接使える</button></li>
+        <li><button type="button" data-correct="false">ARP は調べた対応を覚えておかないが、近隣探索はずっと覚えておき続ける</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ARP は独立した専用の仕組みだが、近隣探索は ICMP というすでにある仕組みの一部として実現されている、です。両方とも IP アドレスから MAC アドレスを調べる仕組みで、同じネットワーク内でしか使えない点も共通しています。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">近隣探索の呼びかけ方について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">宛先を絞ったグループ全員にだけ届く、マルチキャストという呼びかけ方を使う</button></li>
+        <li><button type="button" data-correct="false">ARP と同じように、同じネットワーク全員に一斉に呼びかけるブロードキャストを使う</button></li>
+        <li><button type="button" data-correct="false">呼びかける相手を 1 台ずつ指定して、順番に尋ねていく</button></li>
+        <li><button type="button" data-correct="false">あらかじめ登録された相手にだけ、決まった時間に呼びかける</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先を絞ったグループ全員にだけ届く、マルチキャストという呼びかけ方を使う、です。ARP のようなブロードキャストは使いません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">近隣探索について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ICMP の IPv6 版(ICMPv6)の一部として実現されている</button></li>
+        <li><button type="button" data-correct="false">ARP とは別の、独立した専用のプロトコルとして新しく作られた</button></li>
+        <li><button type="button" data-correct="false">同じネットワークだけでなく、別のネットワークの相手にも直接使える</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスから IP アドレスを調べるための仕組みである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ICMP の IPv6 版(ICMPv6)の一部として実現されている、です。独立した専用の仕組みではない点が、ARP との違いです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m11-1.html">← 11-1 新しい形式の IP アドレスは、8 つの組でできている</a>
+    <a class="up" href="m11.html">第 11 章の入口</a>
+    <a class="next" href="m11-3.html">11-3 新しい IP アドレスは、機械が自分で組み立てることもできる →</a>
+  </nav>
+</main>
+</body>
+</html>

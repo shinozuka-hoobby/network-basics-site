@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>確認も送り直しもしない、身軽な届け方 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m12-2" data-chapter="m12" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 12-2</p>
+  <p class="chapter-label">第 12 章 ポートと UDP　12-2</p>
+  <h1>確認も送り直しもしない、身軽な届け方</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>データの届け方には複数の方式があり、その一つは、通信の前触れを作らず、届いたかどうかの確認も送り直しもせずに送りっぱなしにする方式である。<strong>確認や送り直しの手間が無い分、身軽で速い</strong>。このページでは、その方式の性質と、向く場面を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ポート番号で行き先のプログラムが決まるのは分かったんですけど、データの運び方自体はいつも同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は複数の方式があります。よく使われる方式の一つは、届いたか確認して、足りなければ送り直す方式で、これを<a class="term" href="glossary.html#tcp" data-term="tcp">TCP</a>と呼び、詳しくは第 13 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、確認も送り直しもしない方式もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。それがこのページで見る UDP です。接続を作らず、届いたかどうかの確認も、順番の直しも、<strong>送り直しもしません</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">送りっぱなしで大丈夫なんですか? データが消えても気づけないですよね。</p>
+    <p class="t" data-who="ふくろう先生">気づけません。UDP 自身は届いたかどうかを確認しないため、届かなかったときに気づいて対処するかどうかは、UDP を使うアプリ自身が用意する必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">そんな方式、なんのために使うんですか?</p>
+    <p class="t" data-who="ふくろう先生">確認や送り直しの手間が無い分、身軽で速いんです。届いたかどうかより、速さを優先したい場面に向いています。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、まさにそういう場面がありました。音声を送るアプリを作っていたとき、たまに音が一瞬途切れることがあったんですけど、誰にも教えてもらえずそのまま進んでいたことがあって。</p>
+    <p class="t" data-who="ふくろう先生">なぜ気づけなかったかというと、UDP は確認も送り直しもしない代わりに、送る量を加減したり誤りを直したりする仕組みも持っていないからです。気づいて対処するかどうかは、<strong>アプリの作り次第</strong>なんです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、UDP のせいというより、アプリ側の作り方の問題でもあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。音声や動画では、少しくらい乱れても止まらずに先へ進むほうが自然なので、あえて送り直さない作りにすることが多いんです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、それ以外にも UDP が向いてる場面ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。名前を IP アドレスに変える問い合わせのような、短く済むやり取りでよく使われ、これは<a class="term" href="glossary.html#dns" data-term="dns">DNS</a>と呼ばれる仕組みの一場面です。詳しくは第 16 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">短いやり取りだと、確認や送り直しの手間のほうが大きくなっちゃうんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。DHCP のような、たまに行う短いやり取りにも同じ理由で使われます。</p>
+    <p class="s" data-who="ひよこちゃん">毎回接続を作っていたら、その分待ち時間がかかっちゃうってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。接続を作るための手間や待ち時間が無い分、一往復で済むような短いやり取りほど、UDP の身軽さが活きてきます。</p>
+    <p class="s" data-who="ひよこちゃん">速さや身軽さが欲しい場面で選ばれる方式なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。実は、UDP の上に新しく作られた運び方もあり、<a class="term" href="glossary.html#quic" data-term="quic">QUIC</a>と呼ばれています。詳しくは第 15 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">UDP を土台にした、新しい方式もあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、今どのプログラムがどの番号で通信しているかを確認する方法を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>データの運び方には複数の方式があり、その一つが UDP で、接続を作らず、届いたかどうかの確認も、順番の直しも、送り直しもしない。</li>
+      <li>UDP 自身は届いたかどうかを確認しないため、届かなかったときに気づいて対処するかどうかは、UDP を使うアプリ自身の作り次第である。</li>
+      <li>確認や送り直しの手間が無い分身軽で速く、名前解決(DNS)のような短い問い合わせや、DHCP、音声や動画のように速さを優先したい場面で使われる。</li>
+      <li>UDP の上に新しく作られた運び方(QUIC)もある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>UDP は、通信の前に接続を作らず、データをそのまま送り出す方式である(#71 p.42)。TCP と違い、届いたことの確認や、順番の入れ替わりの修正、失われたデータの送り直しを行わない(#50)。その代わりに、こうした制御にかかる時間や手間が無く、身軽に送り出せる(#71 p.43)。送る量を加減したり誤りを直したりする仕組みも持たず、必要であればアプリケーション自身がそれを用意する(#4 p.54)。この性質から、名前解決のような短い問い合わせ(#71 p.44)や、音声・動画のように多少の乱れより速さを優先したい場面(#4 p.56)で使われる。近年は、UDP の上に新しい仕組みを組み立てる QUIC のような方式も登場している(#4 p.77)。</p>
+    <details class="more">
+      <summary>もっと知りたい人へ</summary>
+      <p>UDP のデータには、送信元ポート番号、宛先ポート番号、データ全体の長さ、誤りを検出するための検査用の値が付いている(#4 p.52, p.54)。この検査を行うかどうかは選べる作りになっている(#71 p.42)。</p>
+    </details>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>scutil --dns</code></pre>
+    <p>見方: 並んでいる IP アドレスが、名前解決の問い合わせ先である。この Mac では家庭用ルータのアドレスだった。契約している回線事業者のサーバや、公開されているサーバが問い合わせ先になる構成もある。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.42 コネクションレスな転送・ソケットとの送受信、p.43 接続の状態を持たないことの利点、p.44 名前解決のような簡単な問い合わせに向く理由)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`07_TCP.txt` p.51〜54 UDP ヘッダと、送る量を加減したり誤りを直したりする仕組みを持たないこと、p.56 音声や動画で UDP が使われる例、p.77 UDP の上にアプリケーションで実装する新しい方式)</li>
+    <li class="cite" data-src="50">[#50] Cloudflare Learning Center「What is the Internet Protocol?」 — <a href="https://www.cloudflare.com/learning/network-layer/internet-protocol/" rel="noopener">原典</a>(「What is TCP/IP?」「What is UDP/IP?」の節。TCP は確認応答して送り直す、UDP は速いが届く保証をしないという対比)</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>(TCP が sequence numbers と acknowledgment messages を使って届いたかどうかを確認し、必要なら送り直すという説明)</li>
+    <li class="cite" data-src="82">[#82] IETF「RFC 2131: Dynamic Host Configuration Protocol」 — <a href="https://www.rfc-editor.org/rfc/rfc2131.html" rel="noopener">原典</a>（DHCP が UDP を使うこと）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m12-2">
+    <div class="q" data-q="1">
+      <p class="q-text">UDP を使うアプリで、データが届かなかったときの対処が必要になるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">UDP は届いたデータの中身を書き換えてしまうことがあるから</button></li>
+        <li><button type="button" data-correct="true">TCP と違い、UDP は届いたかどうかの確認も送り直しもしないから</button></li>
+        <li><button type="button" data-correct="false">UDP は 1 回の通信で送れるデータの量に上限が無いから</button></li>
+        <li><button type="button" data-correct="false">UDP は宛先のポート番号を毎回変えてしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP と違い、UDP は届いたかどうかの確認も送り直しもしないから、です。TCP は届いたかを確認して足りなければ送り直しますが、UDP はそれをしないため、届かなかったときの対処はアプリ自身が用意する必要があります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">UDP の性質として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信を始める前に、相手と接続を作ってからデータを送る</button></li>
+        <li><button type="button" data-correct="true">接続を作らず、順番の入れ替わりの修正や送り直しをせずにデータを送る</button></li>
+        <li><button type="button" data-correct="false">送ったデータが届かないと、自動で別の経路に切り替える</button></li>
+        <li><button type="button" data-correct="false">宛先のポート番号を使わずに、IP アドレスだけでやり取りする</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、接続を作らず、順番の入れ替わりの修正や送り直しをせずにデータを送る、です。接続を作ってから送るのは TCP の性質で、経路の自動切り替えや、ポート番号を使わない通信は UDP の性質ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">UDP が向く場面として正しい組み合わせはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">銀行の送金のような、1 円のずれも許されないやり取り</button></li>
+        <li><button type="button" data-correct="true">名前解決のような短い問い合わせや、多少の乱れより速さを優先したい音声・動画</button></li>
+        <li><button type="button" data-correct="false">大きなファイルを 1 バイトも欠けさせずに転送する場面</button></li>
+        <li><button type="button" data-correct="false">通信の途中経過をすべて記録し、あとで検証する必要がある場面</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決のような短い問い合わせや、多少の乱れより速さを優先したい音声・動画、です。確認や送り直しの手間を省いて身軽に送れることが UDP の利点で、1 円のずれも許されない送金や、欠け無く転送したい場面には向きません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m12-1.html">← 12-1 同じ IP アドレス宛てでも、行き先は番号で分かれる</a>
+    <a class="up" href="m12.html">第 12 章の入口</a>
+    <a class="next" href="m12-3.html">12-3 どのプログラムが、どの番号で待ち受けているか →</a>
+  </nav>
+</main>
+</body>
+</html>

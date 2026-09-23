@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 社で、呼び方はこう変わる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m25-5" data-chapter="m25" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 25-5</p>
+  <p class="chapter-label">第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド　25-5</p>
+  <h1>3 社で、呼び方はこう変わる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>25-1 から 25-4 で見た呼び方は、いずれも AWS のものである。<strong>GCP・Azure では呼び方や、確認できた資料の厚みが違う</strong>。このページでは、3 社の対応を 1 つの表で整理する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ここまで AWS の言葉で見てきましたけど、GCP や Azure だとどう呼ぶんですか?</p>
+    <p class="t" data-who="ふくろう先生">呼び方が違うだけのものが多いです。表で整理しましょう。</p>
+    <p class="s" data-who="ひよこちゃん">VPC ピアリングは、GCP だと VPC Network Peering って呼ぶんですね。制約も同じですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。GCP の VPC Network Peering も、推移しないことと、互いの IP アドレスの範囲が重ならないことが必要な点は同じです。</p>
+    <p class="s" data-who="ひよこちゃん">Transit Gateway や共有 VPC は、GCP だとどう呼ぶんですか?</p>
+    <p class="t" data-who="ふくろう先生">Transit Gateway に近いのは Network Connectivity Center、共有 VPC はそのまま Shared VPC と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">VPN や専用線は?</p>
+    <p class="t" data-who="ふくろう先生">VPN に近いのは Cloud VPN、専用線に近いのは Cloud Interconnect です。PrivateLink に近いのは Private Service Connect と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">GCP の Cloud VPN って、AWS の VPN と全く同じ役目なんですか?</p>
+    <p class="t" data-who="ふくろう先生">大まかには同じですが、GCP の資料には、Cloud VPN を、Transit Gateway のように中心に集めてつなぐ「ハブ＆スポーク」の中継ぎとして使える、という記述もあります。3 社で細部まで完全に一致するわけではありません。</p>
+    <p class="s" data-who="ひよこちゃん">Azure の列に「—」が多いのが気になります。</p>
+    <p class="t" data-who="ふくろう先生">Azure にも同じ役目のサービスの見出しはあるのですが、収集した資料には仕組みを説明した本文までは含まれていませんでした。</p>
+    <p class="s" data-who="ひよこちゃん">無いってことじゃなくて、確認できていないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。無いと決まったわけではなく、確認できていない、という意味だと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">表を見ると、共有 VPC と VPC ピアリングの行だけ、Azure の名前が全く無いんですね。</p>
+    <p class="t" data-who="ふくろう先生">そこも同じ理由です。索引にも見出しが見つかりませんでした。</p>
+    <p class="s" data-who="ひよこちゃん">呼び方や資料の厚みは違っても、解決している問題自体は共通しているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この章で見た 4 つの答え、VPC ピアリング・ハブ・VPN や専用線・PrivateLink を、用途と制約で選び分けられるようになれば、この章の目標は達成です。次は第 26 章で、ネットワークセキュリティの基礎を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>AWS の VPC ピアリングに近いのは、GCP の VPC Network Peering である。Azure には対応する記述が見つからなかった。</li>
+      <li>AWS の Transit Gateway に近いのは、GCP の Network Connectivity Center である。</li>
+      <li>AWS の共有 VPC に近いのは、GCP の Shared VPC である。Azure には対応する記述が見つからなかった。</li>
+      <li>AWS の VPN・専用線に近いのは、GCP の Cloud VPN・Cloud Interconnect である。</li>
+      <li>AWS の PrivateLink に近いのは、GCP の Private Service Connect である。</li>
+      <li>Azure の列の「—」は、仕組みを説明した本文が収集資料に見つからなかったことを意味し、無いと決まったわけではない。</li>
+      <li>GCP の Cloud VPN には、ハブ＆スポークの中継ぎとして使えるという記述もあり、3 社で細部まで完全に一致するわけではない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>25-1〜25-4 で見た AWS の呼び方と、GCP・Azure の呼び方を対応づけると、次のとおりである。考え方は共通していても、名前や資料の厚みは 3 社で異なる。Azure の「—」は、索引の見出し以上の説明が収集資料に見つからなかったことを表し、無いと決まったわけではない。</p>
+    <table>
+      <tr><th>役目</th><th>AWS</th><th>GCP</th><th>Azure</th></tr>
+      <tr><td>1 対 1 で直接つなぐ</td><td>VPC ピアリング</td><td>VPC Network Peering</td><td>—</td></tr>
+      <tr><td>ハブでまとめてつなぐ</td><td>Transit Gateway</td><td>Network Connectivity Center</td><td>Virtual WAN(見出しのみ)</td></tr>
+      <tr><td>複数チームで VPC を使う</td><td>共有 VPC</td><td>Shared VPC</td><td>—</td></tr>
+      <tr><td>暗号化トンネルでつなぐ</td><td>VPN</td><td>Cloud VPN</td><td>VPN Gateway(見出しのみ)</td></tr>
+      <tr><td>物理回線で直接つなぐ</td><td>専用線</td><td>Cloud Interconnect</td><td>ExpressRoute(見出しのみ)</td></tr>
+      <tr><td>特定のサービスだけへ</td><td>PrivateLink</td><td>Private Service Connect</td><td>Private Link(見出しのみ)</td></tr>
+    </table>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="29">[#29] Google Cloud「Virtual Private Cloud (VPC) overview」 — <a href="https://docs.cloud.google.com/vpc/docs/overview" rel="noopener">原典</a>(「Network Connectivity Center」「VPC Network Peering」「Shared VPC」「Cloud VPN」「Cloud Interconnect」「Private Service Connect」の各節)</li>
+    <li class="cite" data-src="30">[#30] Google Cloud Architecture Center「Best practices for VPC design」 — <a href="https://docs.cloud.google.com/architecture/best-practices-vpc-design" rel="noopener">原典</a>(VPC 接続方法の比較表、Cloud VPN の行)</li>
+    <li class="cite" data-src="39">[#39] Microsoft Learn「Azure networking documentation」 — <a href="https://learn.microsoft.com/en-us/azure/networking/" rel="noopener">原典</a>(「What is Azure Private Link?」「What is Azure VPN Gateway?」「What is Azure ExpressRoute?」「What is Azure Virtual WAN?」などの見出しのみ。索引ページのリンク見出しであり、仕組みの説明は含まれていない)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m25-5">
+    <div class="q" data-q="1">
+      <p class="q-text">AWS の VPC ピアリングと GCP の VPC Network Peering に共通する制約は何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どちらも 1 つの VPC につき 1 本しか接続を作れない</button></li>
+        <li><button type="button" data-correct="true">どちらも推移しないことと、互いの IP アドレスの範囲が重ならないことが必要な点</button></li>
+        <li><button type="button" data-correct="false">どちらも同じアカウント内の VPC どうしでしか使えない</button></li>
+        <li><button type="button" data-correct="false">どちらも契約と工事が必要な点</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、どちらも推移しないことと、互いの IP アドレスの範囲が重ならないことが必要な点、です。接続数の制限やアカウントの制約、契約・工事の話ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">表の Azure の列に「—」が多いことについて、正しい読み方はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">Azure には、対応する仕組みが存在しないと確認できた</button></li>
+        <li><button type="button" data-correct="true">収集した資料には、仕組みを説明した本文が見つからなかっただけで、無いと決まったわけではない</button></li>
+        <li><button type="button" data-correct="false">Azure は AWS・GCP よりサービスの種類が少ない</button></li>
+        <li><button type="button" data-correct="false">Azure の資料はすべて有料でしか読めない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、収集した資料には、仕組みを説明した本文が見つからなかっただけで、無いと決まったわけではない、です。存在しないと確認できたわけでも、種類の多さや料金の話でもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Transit Gateway・共有 VPC・VPN・専用線・PrivateLink の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どれか 1 つを選べば、残りは不要になる</button></li>
+        <li><button type="button" data-correct="true">それぞれ目的が異なり、用途と制約に応じて選び分けたり組み合わせたりする</button></li>
+        <li><button type="button" data-correct="false">すべて同じ仕組みの、呼び方だけが違うものである</button></li>
+        <li><button type="button" data-correct="false">古い方式から新しい方式へ、順に置き換えられてきたものである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、それぞれ目的が異なり、用途と制約に応じて選び分けたり組み合わせたりする、です。1 つに絞られるものでも、同じ仕組みの呼び方違いでも、置き換えの歴史でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m25-4.html">← 25-4 相手のサービスだけを、内側から使う</a>
+    <a class="up" href="m25.html">第 25 章の入口</a>
+    <a class="next" href="m26.html">第 26 章 ネットワークセキュリティの基礎 →</a>
+  </nav>
+</main>
+</body>
+</html>

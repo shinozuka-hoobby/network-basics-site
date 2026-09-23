@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>この講座の歩き方 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m01-5" data-chapter="m01" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 1-5</p>
+  <p class="chapter-label">第 1 章 パケットの旅　1-5</p>
+  <h1>この講座の歩き方</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>この講座は全 31 章、9 つの Part で構成され、番号順に読み進めることを前提に積み上げていく。<strong>前の章で説明した用語は、後の章で再説明せずそのまま使う</strong>。このページでは、この先の道筋と、毎回のページの読み方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">今日だけでもお腹いっぱいなんですけど、この後どんな順番で進むんですか?</p>
+    <p class="t" data-who="ふくろう先生">導入の Part 0 を除くと、残りは大きく 8 つの Part に分かれています。まず Part 1 で、電気や光の信号や、家庭のネットワーク機器を扱います。</p>
+    <p class="s" data-who="ひよこちゃん">番号順に読まなきゃダメなんですか? 気になるところだけ拾い読みしたい気もします。</p>
+    <p class="t" data-who="ふくろう先生">一応可能ですが、おすすめしません。この講座は前の章で説明した用語を、後の章で説明し直さずにそのまま使うので、拾い読みすると前提の説明が抜けたまま読むことになります。</p>
+    <p class="s" data-who="ひよこちゃん">つまり、前の章の用語を知らないまま後の章を読むと、途中で分からなくなるということですね。全部で 31 章もあるんですよね。読み切れるか不安になってきました。</p>
+    <p class="t" data-who="ふくろう先生">そうです。1 ページ 10 分で読めるように作っているので、1 日 1 ページでも読み進められます。読んだ記録は端末に保存されるので、続きから再開できます。</p>
+    <p class="s" data-who="ひよこちゃん">今日出てきた<a class="term" href="glossary.html#mac-address" data-term="mac-address">MAC アドレス</a>の話が、もっと詳しくなるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。Part 2 で住所の付け方や経路の選び方、Part 3 で通信の運び方の違いを扱います。</p>
+    <p class="s" data-who="ひよこちゃん"><a class="term" href="glossary.html#dns" data-term="dns">DNS</a> や<a class="term" href="glossary.html#tls-certificate" data-term="tls-certificate">TLS 証明書</a>はどこで出てくるんですか?</p>
+    <p class="t" data-who="ふくろう先生">Part 4 です。DNS の仕組みと運用、TLS 証明書の裏側もここでまとめて扱います。</p>
+    <p class="s" data-who="ひよこちゃん">今日は名前解決や TLS 証明書、さらっとしか説明してもらってない気がします。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。第 16 章から第 19 章で、もっと詳しく扱います。今日は「順番と役割」だけ覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">Web サーバの手前にいた<a class="term" href="glossary.html#home-router" data-term="home-router">家庭用ルータ</a>とか、<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>や<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>は?</p>
+    <p class="t" data-who="ふくろう先生">家庭用ルータは Part 1、ロードバランサと CDN は Part 5 で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">クラウドの話は出てこないんですか?</p>
+    <p class="t" data-who="ふくろう先生">Part 6 です。クラウドで仮想的なネットワークを組み立てるときの部品を扱います。ここまでの層の知識が土台になります。</p>
+    <p class="s" data-who="ひよこちゃん">最後は?</p>
+    <p class="t" data-who="ふくろう先生">Part 7 で、ネットワークの状態を確認するコマンドの使い方を練習します。そして Part 8 の最終章で、「繋がらない」「遅い」を層ごとに切り分ける総合演習をやります。</p>
+    <p class="s" data-who="ひよこちゃん">毎回このかけあいとまとめとしくみの話とクイズの流れで進むんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。かけあいで疑問や誤解をほどき、まとめで要点を押さえ、しくみの話で正確な用語に戻し、最後にクイズで区別できるかを確認する。この繰り返しで進みます。</p>
+    <p class="s" data-who="ひよこちゃん">クイズって、暗記できてるかを見るだけのものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">それだけではありません。似た用語同士を混同していないか、境目を正しく引けているかを確認するためのものです。</p>
+    <p class="s" data-who="ひよこちゃん">この講座を読み終わる頃には、何ができるようになってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">障害が起きたとき、どの層の話かを自分で切り分けられるようになりますし、クラウドのネットワーク設定も、手順書に頼らず自分の判断で組めるようになります。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>この講座は全 31 章、9 つの Part(Part 0〜Part 8)で構成され、番号順に読むことを前提に積み上げていく。</li>
+      <li>前の章で説明した用語は後の章で再説明されないため、拾い読みより番号順に読み進める方が理解しやすい。</li>
+      <li>各ページは「かけあい → まとめ → しくみの話 → (試してみよう) → クイズ」の順で読む。</li>
+      <li>クイズは暗記の確認だけでなく、似た用語同士を混同していないかを確認するためのものである。</li>
+      <li>読み終える頃には、障害を層ごとに切り分けたり、クラウドのネットワークを自分の判断で組んだりできるようになることを目指す。</li>
+      <li>用語がつながって、他の人に自分の言葉で説明できるようになることが、この講座の一番のゴールである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>この講座は全 31 章、9 つの Part(Part 0〜Part 8)で構成される。番号順に読み進めると、前の章で説明した用語をそのまま参照できる。東京大学の講義(#1)も、データ伝送・プロトコル・Web 技術・セキュリティ・運用管理といった区分で全体像を示しており、この講座の Part 構成もおおむね対応する。Microsoft Learn の基礎教材が挙げる学習目標(プロトコルとネットワーク規格、機器の種類、DNS やポートの動作)とも重なる(#36)。各ページは、かけあいで疑問や誤解をほどき、まとめで要点を押さえ、しくみの話で正確な用語に戻し、試してみようで手を動かし、クイズで区別できるかを確認する、という順で構成されている。番号順に読み進めることで、後の章で新しく出てくる専門用語も、この章で先取りした説明とつながった状態で理解しやすくなる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="1">[#1] 東京大学 UTokyo OCW「ネットワーク工学概論（講義ページ）」 — <a href="https://ocw.u-tokyo.ac.jp/course_11320/" rel="noopener">原典</a></li>
+    <li class="cite" data-src="36">[#36] Microsoft Learn「Fundamentals of computer networking」 — <a href="https://learn.microsoft.com/en-us/training/modules/network-fundamentals/" rel="noopener">原典</a></li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m01-5">
+    <div class="q" data-q="1">
+      <p class="q-text">この講座で番号順に読み進めることが勧められるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">番号順に読まないと、クイズの採点が正しく行われない仕組みになっているから</button></li>
+        <li><button type="button" data-correct="true">前の章で説明した用語を、後の章で再説明せずそのまま使うから</button></li>
+        <li><button type="button" data-correct="false">各章の内容が独立していて、読む順番に意味がないから</button></li>
+        <li><button type="button" data-correct="false">後の章の方が、前の章より易しく書かれているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、前の章で説明した用語を、後の章で再説明せずそのまま使うから、です。この講座は積み上げ式で書かれており、前の章の用語がそのまま後の章で使われます。拾い読みすると、前提の説明が抜けたまま読むことになります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">DNS の仕組みや TLS 証明書を詳しく扱うのはどの Part か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">Part 2</button></li>
+        <li><button type="button" data-correct="false">Part 3</button></li>
+        <li><button type="button" data-correct="true">Part 4</button></li>
+        <li><button type="button" data-correct="false">Part 6</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は Part 4 です。Part 4「名前と信頼」で DNS の仕組みとあわせて、TLS 証明書や HTTPS の運用までを扱います。Part 2 はネットワーク層、Part 3 はトランスポート層、Part 6 はクラウドの仮想ネットワークを扱うため、TLS 証明書の詳細はここでは扱いません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">この講座の読み方として正しい説明はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どの章から読んでも、前提知識なしで理解できるように書かれている</button></li>
+        <li><button type="button" data-correct="true">番号順に読み進めることを前提に、前の章で説明した用語は再説明せず参照する</button></li>
+        <li><button type="button" data-correct="false">クイズにさえ正解すれば、かけあいやしくみの話は読み飛ばしてよい</button></li>
+        <li><button type="button" data-correct="false">各章の内容は独立しており、他の章と関連づける必要はない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、番号順に読み進めることを前提に、前の章で説明した用語は再説明せず参照する、です。この講座は積み上げ式で書かれており、前の章の用語がそのまま後の章で使われます。拾い読みや一部だけの学習では、前提の説明が抜けたまま読むことになります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m01-4.html">← 1-4 層に分ける理由と封筒の重なり</a>
+    <a class="up" href="m01.html">第 1 章の入口</a>
+    <a class="next" href="m02.html">第 2 章 信号と回線 →</a>
+  </nav>
+</main>
+</body>
+</html>

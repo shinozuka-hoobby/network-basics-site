@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAT とプライベートネットワーク — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m10" data-chapter="m10" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 10 章</p>
+  <p class="chapter-label">第 10 章</p>
+  <h1>NAT とプライベートネットワーク</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>家庭用ルータが、家の中のプライベートアドレスを外向けのグローバルアドレスに付け替えている仕組み(NAT)を説明できる。</li>
+      <li>複数の機器が 1 つのグローバルアドレスを共有するとき、アドレスとポート番号の組を使った変換表(NAPT)で、戻ってきた返事の届け先を判断する仕組みを説明できる。</li>
+      <li>外から中の機器へつなぐにはあらかじめ対応を決めておく必要があること(ポートフォワード)と、双方が NAT の内側にいると直接つながりにくい理由を説明できる。</li>
+      <li>クラウドの仮想ネットワークでも、内側から外へ出るときにアドレスを付け替える専用の部品が用意されていることを説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 340" role="img" aria-label="家の中に 2 台の機器(パソコン 192.168.1.10、スマホ 192.168.1.11)があり、それぞれ家庭用ルータにつながっている。家庭用ルータの中には変換表があり、外に出るときは家の中の番号を、共有された外向けの番号(例 203.0.113.5 のポート違い)に付け替えてインターネットの先へ送る。外から戻ってきたデータは、この変換表と照合してどの機器に届けるかを判断する。">
+      <defs>
+        <marker id="m10-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m10-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <!-- 家の中 -->
+      <rect x="20" y="30" width="260" height="230" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="150" y="20" text-anchor="middle" font-size="12" fill="var(--fig-muted)">家の中</text>
+
+      <rect x="45" y="55" width="200" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="145" y="80" text-anchor="middle" font-size="12" fill="var(--fig-ink)">パソコン</text>
+      <text x="145" y="98" text-anchor="middle" font-size="11" fill="var(--fig-muted)">192.168.1.10:51000</text>
+
+      <rect x="45" y="180" width="200" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="145" y="205" text-anchor="middle" font-size="12" fill="var(--fig-ink)">スマホ</text>
+      <text x="145" y="223" text-anchor="middle" font-size="11" fill="var(--fig-muted)">192.168.1.11:52000</text>
+
+      <!-- 家庭用ルータ -->
+      <rect x="340" y="100" width="180" height="120" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="430" y="130" text-anchor="middle" font-size="13" fill="var(--fig-ink)">家庭用ルータ</text>
+      <line x1="355" y1="145" x2="505" y2="145" stroke="var(--fig-muted)" stroke-width="1"/>
+      <text x="430" y="163" text-anchor="middle" font-size="11" fill="var(--fig-ink)">変換表</text>
+      <text x="430" y="180" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(中の番号 ⇔ 外の番号)</text>
+      <text x="430" y="200" text-anchor="middle" font-size="10" fill="var(--fig-muted)">NAT・NAPT</text>
+
+      <line x1="245" y1="85" x2="340" y2="140" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m10-arrow-ink)"/>
+      <line x1="245" y1="205" x2="340" y2="175" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m10-arrow-ink)"/>
+
+      <!-- インターネットの先 -->
+      <rect x="640" y="115" width="220" height="90" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="750" y="150" text-anchor="middle" font-size="12" fill="var(--fig-accent)">インターネットの先</text>
+      <text x="750" y="168" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(Web サーバなど)</text>
+
+      <line x1="520" y1="145" x2="640" y2="145" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m10-arrow-ink)"/>
+      <text x="580" y="135" text-anchor="middle" font-size="10" fill="var(--fig-ink)">203.0.113.5:40001</text>
+
+      <line x1="640" y1="185" x2="520" y2="185" stroke="var(--fig-accent)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m10-arrow-accent)"/>
+      <text x="580" y="200" text-anchor="middle" font-size="10" fill="var(--fig-accent)">変換表と照合して戻す</text>
+
+      <text x="450" y="290" text-anchor="middle" font-size="12" fill="var(--fig-ink)">クラウドの仕切られたネットワークでも、外へ出る境目に同じ役目の専用部品が置かれる</text>
+    </svg>
+    <p class="fig-cap">家の中の複数の機器は、家庭用ルータの中にある変換表を使って、1 つの共有されたグローバルアドレスの中でも別々のポート番号に割り当てられ、外のインターネットとやり取りする(NAT・NAPT)。外から戻ってきたデータは、この変換表と照合してどの機器に届けるかが決まる。クラウドの仕切られたネットワークでも、外へ出る境目に同じ役目を担う専用の部品が用意されている。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m10"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m09.html">← 第 9 章 インターネットの経路制御 — BGP と AS</a>
+    <a class="next" href="m11.html">第 11 章 IPv6 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クラウドの仮想ネットワーク（VPC） — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m24" data-chapter="m24" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 24 章</p>
+  <p class="chapter-label">第 24 章</p>
+  <h1>クラウドの仮想ネットワーク（VPC）</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>手順書どおりに作った、仕切られたネットワークの範囲が、実際には何を区切っていたのかを説明できる。</li>
+      <li>外のインターネットへの<strong>経路を決める設定</strong>と、その出入り口の役目を説明できる。</li>
+      <li>サーバ単位で通信を許可する設定と、区切りの境目で許可・拒否する設定の、対象範囲の違いを説明できる。</li>
+      <li>内側だけで使う番号のサーバが、外へ出るときに<strong>経由する専用の部品</strong>の位置づけを説明できる。</li>
+      <li>ここまでの用語が、他のクラウド事業者ではどう呼ばれるかを対応づけられる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 320" role="img" aria-label="仕切られたネットワークの範囲の中に、公開用と内部用の 2 つの区画がある図。公開用の区画のサーバは、外との出入り口へ直接つながる。内部用の区画のサーバは、公開用の区画にある、番号を付け替える部品を経由してから、同じ出入り口へつながる。出入り口の先はインターネットにつながる。">
+      <defs>
+        <marker id="m24-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m24-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="30" y="40" width="300" height="250" rx="10" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="45" y="30" font-size="13" fill="var(--fig-muted)">仕切られたネットワークの範囲</text>
+
+        <rect x="55" y="65" width="250" height="95" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="180" y="82" text-anchor="middle" font-size="12">区画(公開用)</text>
+        <rect x="70" y="95" width="70" height="45" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.2"/>
+        <text x="105" y="121" text-anchor="middle">サーバ</text>
+        <rect x="185" y="95" width="100" height="45" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.2"/>
+        <text x="235" y="114" text-anchor="middle" font-size="11">番号を付け替える</text>
+        <text x="235" y="128" text-anchor="middle" font-size="11">部品</text>
+
+        <rect x="55" y="190" width="250" height="80" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="180" y="207" text-anchor="middle" font-size="12">区画(内部用)</text>
+        <rect x="70" y="220" width="70" height="40" rx="4" fill="none" stroke="var(--fig-ink)" stroke-width="1.2"/>
+        <text x="105" y="244" text-anchor="middle">サーバ</text>
+
+        <rect x="620" y="130" width="160" height="60" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="700" y="155" text-anchor="middle">外との</text>
+        <text x="700" y="172" text-anchor="middle">出入り口</text>
+
+        <text x="835" y="165" font-size="12" fill="var(--fig-ink)">インター</text>
+        <text x="835" y="180" font-size="12" fill="var(--fig-ink)">ネット</text>
+      </g>
+
+      <line x1="140" y1="117" x2="620" y2="150" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m24-arrow-ink)"/>
+      <text x="420" y="105" text-anchor="middle" font-size="11" fill="var(--fig-ink)">直接つながる</text>
+
+      <line x1="105" y1="220" x2="215" y2="140" stroke="var(--fig-muted)" stroke-width="1.5" marker-end="url(#m24-arrow-ink)"/>
+      <text x="150" y="185" text-anchor="middle" font-size="10" fill="var(--fig-muted)">外へ出るときだけ経由</text>
+
+      <line x1="285" y1="117" x2="620" y2="163" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m24-arrow-accent)"/>
+
+      <line x1="780" y1="160" x2="830" y2="160" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m24-arrow-ink)"/>
+
+      <text x="370" y="55" text-anchor="middle" font-size="11" fill="var(--fig-muted)">どちらへ進むかは、経路を決める設定で決まる</text>
+    </svg>
+    <p class="fig-cap">仕切られたネットワークの範囲の中に、2 つの区画がある。外へ出る経路はどちらも同じ出入り口を通るが、区画の種類によって、直接出る場合と、番号を付け替える部品を経由してから出る場合とに分かれる。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m24"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m23.html">← 第 23 章 ロードバランシング</a>
+    <a class="next" href="m25.html">第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド →</a>
+  </nav>
+</main>
+</body>
+</html>

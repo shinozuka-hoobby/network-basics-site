@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>警告が出たら、証明書を確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m31-3" data-chapter="m31" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 31-3</p>
+  <p class="chapter-label">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける　31-3</p>
+  <h1>警告が出たら、証明書を確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ブラウザの警告や curl のエラーという症状を、openssl s_client の証明書チェーンと有効期間、SNI で見分ける。<strong>原因の候補は 1 つとは限らない</strong>。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ケース 2、ブラウザの警告や curl のエラーですね。</p>
+    <p class="t" data-who="ふくろう先生">31-1 の④、握手の段階です。openssl s_client で証明書を確かめます。</p>
+    <p class="s" data-who="ひよこちゃん">第 19 章 19-1 で、更新を忘れて期限が切れてサイトに警告が出たって話がありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。証明書チェーンの NotBefore・NotAfter を見れば、期限切れかどうかがその場で分かります。</p>
+    <p class="s" data-who="ひよこちゃん">NotBefore と NotAfter って、第 18 章 18-3 で見た証明書チェーンの s: と i: とは違うものですか。</p>
+    <p class="t" data-who="ふくろう先生"><strong>別の情報</strong>です。s: と i: はチェーンの誰が誰を保証しているかを示し、NotBefore・NotAfter はその証明書の有効期間を示します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、チェーンの方に問題があるケースもあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">あります。第 18 章 18-3 で見たとおり、証明書チェーンは、上位の証明書へと保証がつながっていく仕組みでした。途中の証明書が欠けていると、ブラウザは一番上の信頼できる証明書までたどり着けず、チェーンを検証できません。</p>
+    <p class="s" data-who="ひよこちゃん">証明書チェーンが途切れるっていうのは、保証のつながりのどこか一段が欠けている状態、ということですか。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。どの段階の保証が欠けていても、ブラウザから見れば同じで、一番上の信頼できる証明書まで検証をたどり着けません。</p>
+    <p class="s" data-who="ひよこちゃん">第 18 章 18-5 で見た、名前不一致の方はどう見分けるんですか。</p>
+    <p class="t" data-who="ふくろう先生">つなごうとした名前と、証明書に書かれた名前を見比べます。SNI が正しく伝わっていても、サーバ側がその名前用の証明書を持っていなければ起こります。</p>
+    <p class="s" data-who="ひよこちゃん">期限も名前もチェーンも問題ないのに、警告が出ることもあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">あります。第 19 章 19-4 で見た混在コンテンツです。ページ本体は正しく暗号化されていても、中の一部の部品が http のまま呼び出されていると、<strong>その部分だけ</strong>警告の対象になります。</p>
+    <p class="s" data-who="ひよこちゃん">握手が成立していても、まだ疑う場所が残っているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。31-1 の④が正常でも、⑤(応答の中身)の手前で別の原因が残っていることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">証明書チェーン、有効期限、名前不一致、混在コンテンツと、原因の候補がけっこう多いですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。だからこそ、証明書そのものの問題(チェーン・期限・名前)と、応答の中身に関わる問題(混在コンテンツ)を、順番に切り分けることが大事なんです。</p>
+    <p class="s" data-who="ひよこちゃん">結局、警告が出たらどの順で確かめればいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">まず openssl s_client で有効期間とチェーンを確かめ、次に名前が一致しているかを見ます。それでも警告が続くなら、部品の呼び出し先を疑います。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、握手の内側にも、さらに順番があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">次のケースでは、経路とセキュリティグループを見ていくんですよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページで見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>証明書の有効期間(NotBefore・NotAfter)が過ぎていれば、握手の段階で期限切れが原因だと分かる。</li>
+      <li>証明書チェーンが途中で途切れていると、ブラウザは一番上の信頼できる証明書までたどり着けず、検証できない。</li>
+      <li>つなごうとした名前と証明書に書かれた名前が食い違う名前不一致も、握手の段階で確認する。</li>
+      <li>握手そのものが正常でも、部品が http のまま呼び出される混在コンテンツのように、応答の手前で別の原因が残ることがある。</li>
+      <li>証明書そのものの問題(チェーン・期限・名前)と、応答の中身に関わる問題(混在コンテンツ)を分けて、順番に確かめるとよい。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>第 18 章 18-3 で確立したとおり、証明書チェーンは上位の証明書が下位の証明書を保証する形でつながっており、最後はブラウザや OS があらかじめ信頼している証明書に行き着く(#55、#84)。この保証のつながりが途中で欠けていると、ブラウザは一番上の証明書までたどり着けず、チェーンを検証できない。第 19 章 19-1 で確立したとおり、証明書には有効期間があり、更新の手続きをしないまま過ぎるとブラウザは警告を出す(#21、#87、#90)。第 18 章 18-5 で確立した名前不一致は、つなごうとした名前と証明書に書かれた名前が食い違う場合に起きる(#54、#85)。第 19 章 19-4 で確立した混在コンテンツは、ページの一部の部品が http のまま呼び出されている場合に起きる、握手そのものとは別の原因である(#89、#21)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>openssl s_client -connect example.com:443 -servername example.com &lt;/dev/null</code></pre>
+    <p>見方: Certificate chain の中の NotBefore と NotAfter の行を見る。この日付の範囲を過ぎていれば、31-1 の④の段階のうち、証明書の期限切れが原因だと判断できる。</p>
+    <p class="try-note">出力は長めですが、NotBefore と NotAfter を含む行だけを追えば十分。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>（第 18 章 18-3 で確立。証明書チェーンの保証のつながり）</li>
+    <li class="cite" data-src="84">[#84] IETF「RFC 5280: Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile」 — <a href="https://www.rfc-editor.org/rfc/rfc5280.html" rel="noopener">原典</a>（第 18 章 18-3 で確立。証明書チェーンの定義）</li>
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座：SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>（第 18 章 18-3・18-5、第 19 章 19-1・19-4 で確立。認証局、名前不一致、有効期間、混在コンテンツの前提）</li>
+    <li class="cite" data-src="85">[#85] IETF「RFC 6066: Transport Layer Security (TLS) Extensions: Extension Definitions」 — <a href="https://www.rfc-editor.org/rfc/rfc6066.html" rel="noopener">原典</a>（第 18 章 18-5 で確立。SNI）</li>
+    <li class="cite" data-src="87">[#87] IETF「RFC 8555: Automatic Certificate Management Environment (ACME)」 — <a href="https://www.rfc-editor.org/rfc/rfc8555.html" rel="noopener">原典</a>（第 19 章 19-1 で確立。証明書の自動更新）</li>
+    <li class="cite" data-src="90">[#90] Cloudflare Learning Center「What is an SSL certificate?」 — <a href="https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/" rel="noopener">原典</a>（第 19 章 19-1 で確立。認証局への申請・発行・有効期限）</li>
+    <li class="cite" data-src="89">[#89] Cloudflare Learning Center「What is mixed content?」 — <a href="https://www.cloudflare.com/learning/ssl/what-is-mixed-content/" rel="noopener">原典</a>（第 19 章 19-4 で確立。混在コンテンツ）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m31-3">
+    <div class="q" data-q="1">
+      <p class="q-text">TLS のハンドシェイクは成立し、証明書の有効期限も問題ないのに、一部の画像だけが読み込まれない場合、疑うべき原因はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">証明書チェーンが途中で途切れている</button></li>
+        <li><button type="button" data-correct="false">証明書の名前不一致</button></li>
+        <li><button type="button" data-correct="true">混在コンテンツ(その部品が http のまま呼び出されている)</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL が切れている</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、混在コンテンツです。握手そのもの(証明書チェーン・有効期限・名前一致)が正常でも、個々の部品の呼び出し方に原因が残っていることがあります。DNS の TTL は名前解決の段階の話で、この症状とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">証明書チェーンが途中で途切れていると、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ブラウザは一番上の信頼できる証明書までたどり着けず、検証できない</button></li>
+        <li><button type="button" data-correct="false">通信速度が遅くなるだけで、警告は出ない</button></li>
+        <li><button type="button" data-correct="false">DNS の問い合わせが失敗する</button></li>
+        <li><button type="button" data-correct="false">HTTP のステータスコードが変わる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ブラウザは一番上の信頼できる証明書までたどり着けず、検証できない、です。速度低下や DNS の失敗、ステータスコードの変化とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">名前不一致が起きる原因として、本文で説明されているものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">SNI が正しく伝わっていても、サーバ側がその名前用の証明書を持っていない</button></li>
+        <li><button type="button" data-correct="false">DNS キャッシュの TTL が切れている</button></li>
+        <li><button type="button" data-correct="false">TCP 接続がタイムアウトした</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 を使っていない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、SNI が正しく伝わっていても、サーバ側がその名前用の証明書を持っていない、です。DNS キャッシュ・TCP 接続・HTTP のバージョンは、名前不一致の原因として本文では説明していません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m31-2.html">← 31-2 名前が解けているかを、まず確かめる</a>
+    <a class="up" href="m31.html">第 31 章の入口</a>
+    <a class="next" href="m31-4.html">31-4 届かないときは、経路と入口を確かめる →</a>
+  </nav>
+</main>
+</body>
+</html>

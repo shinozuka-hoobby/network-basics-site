@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>送り先は、同じサブネットにいるとは限らない — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m07-1" data-chapter="m07" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 7-1</p>
+  <p class="chapter-label">第 7 章 ARP と同一ネットワーク内の通信　7-1</p>
+  <h1>送り先は、同じサブネットにいるとは限らない</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>手元の機械が誰かにデータを送るとき、相手が自分と同じサブネットにいるかどうかで、その後の送り方が変わる。このページでは、送り手がその違いをどうやって見分けているかを確認する。<strong>同じサブネットかどうかの判定</strong>が、この先何回も出てくる考え方の土台になる。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 1 章で、フレームの宛先は次に渡す隣の機器のもので、パケットの宛先は最終的な相手のものだって聞いたんですけど、宛先が隣にいなかったらどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず、宛先が自分と同じサブネットにいるかどうかを確かめます。同じなら話は簡単で、違うときにひと工夫が必要になります。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットが同じかどうかって、何を見れば分かるんですか?</p>
+    <p class="t" data-who="ふくろう先生">自分の IP アドレスとサブネットマスクを使って自分のネットワークの範囲を求め、宛先の IP アドレスがその範囲に入っているかどうかを比べます。範囲の求め方自体は、第 5 章で計算したものと同じです。</p>
+    <p class="s" data-who="ひよこちゃん">同じ範囲に入っていたら、IP アドレスから MAC アドレスを調べて、直接送ればいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。IP アドレスから対応する MAC アドレスを調べる仕組みがあり、<a class="term" href="glossary.html#arp" data-term="arp">ARP</a>と呼びます。詳しくは 7-2 で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">別のサブネットだったら、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">その場合は、いったん別の機械に届け先を託すことになります。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば第 4 章で、DHCP が「外へ出るときの出口となる機器」のアドレスも配るって聞きました。もしかして、それのことですか?</p>
+    <p class="t" data-who="ふくろう先生">まさにそれです。その機械を正式にはデフォルトゲートウェイと呼びます。同じサブネットにいない相手あての通信を、とりあえず託しておく先です。</p>
+    <p class="s" data-who="ひよこちゃん">デフォルトゲートウェイって、具体的にはどんな機械なんですか?</p>
+    <p class="t" data-who="ふくろう先生">多くの場合、行き先に応じて次の転送先を選ぶ、<a class="term" href="glossary.html#router" data-term="router">ルータ</a>という機械です。詳しくは第 8 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">デフォルトゲートウェイのアドレスも、自分の IP アドレスと同じように、手動で設定できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。ただ、多くの場合は第 4 章で見た DHCP によって、IP アドレスやサブネットマスクと一緒に自動で配られます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、同じサブネットかどうかの判定だけで、送り先まで全部決まるってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">判定の結果によって、直接送るかデフォルトゲートウェイに託すかが決まる、というところまでです。託した先で何が起こるかは、第 8 章で見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた話なんですけど、デフォルトゲートウェイの設定を忘れていて、困ったことがあるらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">よくある話です。デフォルトゲートウェイが設定されていないと、別のサブネット宛ての通信をどこに託せばいいか分からず、そこで止まってしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">でも、同じサブネットの相手とは普通に話せていたと言っていました。なんでですか?</p>
+    <p class="t" data-who="ふくろう先生">同じサブネット内の相手には ARP で直接 MAC アドレスを調べられるので、デフォルトゲートウェイが無くても影響しません。別のサブネット宛てのときだけ、託し先が分からず困るんです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、同じサブネットかどうかで、影響を受けるかどうかも変わるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、その ARP が実際にどうやって MAC アドレスを調べているのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>送り手は、宛先の IP アドレスと自分のサブネットマスクを使って、相手が自分と同じサブネットにいるかどうかを判定する。</li>
+      <li>同じサブネットの相手には、ARP で調べた MAC アドレスを使って直接送る。</li>
+      <li>別のサブネットの相手には、いったんデフォルトゲートウェイに届け先を託す。</li>
+      <li>デフォルトゲートウェイは、第 4 章で DHCP が配ると説明した「外へ出るときの出口となる機器」のアドレスの、正式な名前である。手動で設定することも、DHCP で自動的に配ることもできる。</li>
+      <li>デフォルトゲートウェイが設定されていないと、別のサブネット宛ての通信だけが届かなくなる。同じサブネット宛ての通信には影響しない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>送信元ホストは、自分の IP アドレスと自分のサブネットマスクを掛け合わせて求めたネットワークの範囲に、宛先の IP アドレスが入るかどうかを比べる(#65)。範囲に入っていれば宛先は直接つながっている同じサブネットにいると判断し、ARP で調べた宛先本人の MAC アドレス宛てにフレームを送る。範囲から外れていれば宛先は別のサブネットにいると判断し、あらかじめ設定されているか DHCP で配られているデフォルトゲートウェイのアドレス宛てに送る(#4、#65)。デフォルトゲートウェイは、ネットワークをまたいで使う IP アドレスをもとに、間接的につながった機械どうしを結ぶ役目を担う点で、同じ配線の中だけで使う MAC アドレスの働きとは異なる(#47)。IP アドレスの割り当てと同時にデフォルトゲートウェイのアドレスも決まるのは、この判定の結果に備えるためである。デフォルトゲートウェイのアドレスが設定されていない機械は、別のサブネット宛ての通信だけ託し先が分からず、そこで止まってしまう。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 自分の IP アドレスと、「netmask」の行に出るサブネットマスクを確認する。この 2 つが、送り先が同じサブネットかどうかを判定するときに使われる材料である。</p>
+    <p class="try-note">command not found と出たら、この回は読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（クライアントは IP アドレスと一緒にデフォルトゲートウェイのアドレスを教えられること、サブネットマスクを使って別サブネットだと判定し転送すること）</li>
+    <li class="cite" data-src="47">[#47] Cisco「Address Resolution Protocol」 — <a href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/xe-16/arp-xe-16-book/arp-config-arp.pdf" rel="noopener">原典</a>（"Layer 2 and Layer 3 Addressing" — 直接つながった機器どうしと、間接的につながった機器どうしで使われる番号が違うという区別）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（06_IP.txt、DHCP が配布する項目の一覧に Default Gateway が含まれるという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m07-1">
+    <div class="q" data-q="1">
+      <p class="q-text">デフォルトゲートウェイが設定されていない機械で、同じサブネットの相手には届くのに、別のサブネットの相手には届かないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じサブネットの相手には ARP で直接 MAC アドレスを調べられるが、別のサブネット宛ての通信は託し先が分からず止まってしまうから</button></li>
+        <li><button type="button" data-correct="false">同じサブネットの相手とは、IP アドレスを使わずに通信しているから</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイが無いと、ARP の仕組みそのものが使えなくなるから</button></li>
+        <li><button type="button" data-correct="false">別のサブネット宛ての通信だけ、サブネットマスクを使わずに判定されるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じサブネットの相手には ARP で直接 MAC アドレスを調べられるが、別のサブネット宛ての通信は託し先が分からず止まってしまうから、です。同じサブネット宛ての通信はデフォルトゲートウェイを経由しないため影響を受けません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">デフォルトゲートウェイの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じサブネットにいない相手あての通信を、とりあえず託しておく先として決められた機械のこと</button></li>
+        <li><button type="button" data-correct="false">同じサブネット内の機械どうしを、電気的につなぐための配線のこと</button></li>
+        <li><button type="button" data-correct="false">宛先の MAC アドレスをすべて覚えておく表のこと</button></li>
+        <li><button type="button" data-correct="false">IP アドレスを MAC アドレスに変換する仕組みそのもののこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じサブネットにいない相手あての通信を、とりあえず託しておく先として決められた機械のこと、です。配線をつなぐ機械や MAC アドレスの表、IP アドレスから MAC アドレスを調べる仕組みは、いずれも別の機械や仕組みです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">送り手が、宛先が自分と同じサブネットにいるかどうかを判定するために使う情報の組み合わせとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">宛先の IP アドレスと、自分のサブネットマスク</button></li>
+        <li><button type="button" data-correct="false">宛先の MAC アドレスと、自分の IP アドレス</button></li>
+        <li><button type="button" data-correct="false">自分の MAC アドレスだけ</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイの MAC アドレスだけ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先の IP アドレスと、自分のサブネットマスクです。自分のサブネットマスクを使って自分のネットワークの範囲を求め、そこに宛先の IP アドレスが入るかどうかで判定します。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m07.html">← 第 7 章の入口</a>
+    <a class="up" href="m07.html">第 7 章の入口</a>
+    <a class="next" href="m07-2.html">7-2 相手の MAC アドレスを、IP アドレスから調べる →</a>
+  </nav>
+</main>
+</body>
+</html>

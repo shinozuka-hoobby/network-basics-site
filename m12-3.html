@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>どのプログラムが、どの番号で待ち受けているか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m12-3" data-chapter="m12" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 12-3</p>
+  <p class="chapter-label">第 12 章 ポートと UDP　12-3</p>
+  <h1>どのプログラムが、どの番号で待ち受けているか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>通信の相手を特定するために、IP アドレスとポート番号を組にした情報が使われている。<strong>自分の機械で今どのプログラムがどの番号で待ち受け・通信しているかは、確認する方法がある</strong>。このページでは、この組の考え方と、確認の仕方を見ていく。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">今動いてるプログラムが、どのポート番号を使ってるかって、外からどうやって分かるんですか?</p>
+    <p class="t" data-who="ふくろう先生">機械の中では、IP アドレスとポート番号を組にした情報で、どの相手とのどのやり取りかを区別しています。これを<strong>ソケット</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">片方だけの情報じゃ、区別できないんですか?</p>
+    <p class="t" data-who="ふくろう先生">できません。1 本のやり取りは、自分側と相手側、両方のソケットの組で区別されます。どちらか一方の番号が違うだけでも、別のやり取りとして扱われます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、今、自分の機械でどのプログラムがどの番号で待ち受けているか、確認する方法もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。実行結果を見ると、プログラム名とポート番号の組が一覧で分かります。</p>
+    <p class="s" data-who="ひよこちゃん">実際に見てみたら、プログラム名と番号がずらっと並んでますね。名前で分かるのは助かります。</p>
+    <p class="t" data-who="ふくろう先生">そうです。今この機械の、どのプログラムがどの番号で通信しているかが、この一覧から分かります。</p>
+    <p class="s" data-who="ひよこちゃん">たとえば、Web サーバのソケットって、具体的にはどんな感じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">203.0.113.5 の 443 番、これで 1 つのソケットです。相手側にも同じように IP アドレスとポート番号の組があり、両方の組み合わせでやり取りが特定されます。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの機械で、複数のプログラムが同時に別々の番号で待ち受けることもできるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。番号さえ重ならなければ、いくつでも同時に待ち受けられます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、「ポートが開いていない」と言われて調べたら、プログラムが想定と違うポートで待ち受けてた、って話を聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">なぜかというと、プログラムは自分が待ち受ける番号を自分で決めて登録します。想定と違う番号で待ち受けていると、期待した番号にはどのプログラムも結び付いていないので、<strong>応答するプログラムが存在しない</strong>んです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、そういうときはどうやって気づくんですか?</p>
+    <p class="t" data-who="ふくろう先生">さっきの一覧をもう一度確認すれば、そのプログラムが実際にどの番号で待ち受けているかが分かります。想定していた番号と見比べれば、ずれにすぐ気づけます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、番号を変えて設定しなおせば直る話だったんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。設定を直して、想定していた番号で待ち受けるようにすれば、同じ問い合わせでも今度はきちんと応答が返ってきます。</p>
+    <p class="s" data-who="ひよこちゃん">最初から一覧で確認していれば、気づくのも早かったかもしれませんね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ソケットという組の考え方は、実は第 10 章の変換表とも関係します。変換表が記録していたのも、IP アドレスとポート番号の組でした。</p>
+    <p class="s" data-who="ひよこちゃん">あのときの話とつながるんですね。ところで、<a class="term" href="glossary.html#tcp" data-term="tcp">TCP</a>と UDP で、この見え方に違いってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。TCP は、今も話せる状態かどうかという情報を保ち続けますが、UDP にはそもそもそのような情報がありません。詳しくは第 13 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">UDP には、保つべき情報そのものが無いってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次の章では、TCP がどうやってその状態を保ちながらやり取りしているかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報をソケットと呼ぶ。1 本のやり取りは、自分側と相手側、両方のソケットの組で区別される。</li>
+      <li>実行結果を確認すると、今どのプログラムがどの番号で通信しているかが分かる。</li>
+      <li>プログラムが想定と違う番号で待ち受けていると、期待した番号にはどのプログラムも結び付いていないため、その番号宛ての通信には応答が返らない。</li>
+      <li>TCP は会話できる状態かどうかという情報を保ち続けるが、UDP にはそもそもそのような情報が無い。この違いは第 13 章で詳しく見ていく。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>機械の中では、通信の相手を特定するために、IP アドレスとポート番号を組にした情報が使われており、これをソケットと呼ぶ(#4 p.6)。1 本のやり取りは、自分側のソケットと相手側のソケット、両方の組で区別され、宛先 IP アドレス・宛先ポート番号・送信元 IP アドレス・送信元ポート番号の 4 つのうち 1 つでも違えば、別のやり取りとして扱われる(#4 p.6)。動いているプログラムは、IP アドレスとポート番号の組で識別される(#71 p.5)。この考え方は、第 10 章で見た変換表が、家の中の番号と外向けの番号の組を記録していたことと同じ発想である。今この機械でどのプログラムがどの番号で通信しているかは、実行結果を確認することで分かる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>lsof -i :443</code></pre>
+    <p>見方: 実行結果の各行には、プログラム名とポート番号の組が並ぶ。今この機械で、どのプログラムが 443 番を使って通信しているかが分かる。見慣れない語が交ざっていても、ここでは「どのプログラムが、どの番号で」の 1 点だけに注目すれば十分である。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`07_TCP.txt` p.6 「Connection ("Stream") Identifier = "Socket" {dst_IP_addr, dst_port, src_IP_addr, src_port}」)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.5 「Unique identification of process ¨(IP, port)」)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m12-3">
+    <div class="q" data-q="1">
+      <p class="q-text">通信の相手との「今の状態」の保ち方について、TCP と UDP の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">TCP は今も話せる状態かどうかという情報を保ち続けるが、UDP にはそもそもそのような情報が無い</button></li>
+        <li><button type="button" data-correct="false">UDP は今も話せる状態かどうかという情報を保ち続けるが、TCP にはそのような情報が無い</button></li>
+        <li><button type="button" data-correct="false">TCP も UDP も、同じように状態の情報を保ち続ける</button></li>
+        <li><button type="button" data-correct="false">状態の情報を保つかどうかは、機械の設定次第でどちらでも選べる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP は今も話せる状態かどうかという情報を保ち続けるが、UDP にはそもそもそのような情報が無い、です。UDP は接続を作らない方式なので、保つべき状態の情報自体がありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">自分が使っていると思っていた番号にデータを送っても応答が無いとき、原因として考えられるのはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">そのプログラムが、想定と違う番号で待ち受けている</button></li>
+        <li><button type="button" data-correct="false">相手の機械の IP アドレスが変わった</button></li>
+        <li><button type="button" data-correct="false">ポート番号は 65535 番までしか使えないから</button></li>
+        <li><button type="button" data-correct="false">通信を始めるたびに、宛先のポート番号がランダムに変わるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、そのプログラムが、想定と違う番号で待ち受けている、です。プログラムは自分が待ち受ける番号を自分で決めて登録するため、想定と違う番号で待ち受けていると、期待した番号にはどのプログラムも結び付いておらず、応答が返りません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ソケットとは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">MAC アドレスと IP アドレスを組にした情報</button></li>
+        <li><button type="button" data-correct="true">通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報</button></li>
+        <li><button type="button" data-correct="false">ドメイン名と IP アドレスを組にした情報</button></li>
+        <li><button type="button" data-correct="false">TCP と UDP のどちらを使うかを切り替えるための設定</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報、です。1 本のやり取りは、自分側と相手側、両方のソケットの組で区別されます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m12-2.html">← 12-2 確認も送り直しもしない、身軽な届け方</a>
+    <a class="up" href="m12.html">第 12 章の入口</a>
+    <a class="next" href="m13.html">第 13 章 TCP の接続と信頼性 →</a>
+  </nav>
+</main>
+</body>
+</html>

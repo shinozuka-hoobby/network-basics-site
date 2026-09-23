@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>控えを消す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m22-3" data-chapter="m22" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 22-3</p>
+  <p class="chapter-label">第 22 章 CDN とキャッシュ　22-3</p>
+  <h1>控えを消す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>控えは、期限が来るまで自動では消えない。<strong>期限より前に、控えを強制的に消させる操作がある</strong>。このページでは、その操作と、更新したのに古い内容が出続けるときの対処を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、控えには使ってよい期限があるって聞きましたけど、その期限が来る前に、控えを消したくなることってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。中身が古くなったときや、間違いに気づいたとき、急ぎの更新があったときなどです。</p>
+    <p class="s" data-who="ひよこちゃん">期限を待たずに、消す方法があるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。期限前でも、控えを強制的に消させる操作があります。これを<strong>パージ</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">パージすれば、次からはすぐに新しい内容に切り替わるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。控えが消されたあとの最初の要求では、エッジサーバがオリジンサーバまで新しい内容を取りに行きます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、サイトの画像を新しいものに差し替えたのに、しばらく古い画像のままだったことがあります。</p>
+    <p class="t" data-who="ふくろう先生">それは、差し替えた画像も同じキャッシュキーへの要求である以上、キャッシュの TTL が切れるまではエッジサーバに残った古い控えがそのまま返され続けていたからです。</p>
+    <p class="s" data-who="ひよこちゃん">キャッシュキーが同じだと、中身を差し替えても、控えの方が優先されちゃうってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。控えを使うかどうかは期限が切れているかどうかで判断されるので、中身が新しくなったこと自体は、エッジサーバには伝わりません。</p>
+    <p class="s" data-who="ひよこちゃん">そのときは、パージすればよかったんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。パージすれば、期限前でも控えを消させられます。</p>
+    <p class="s" data-who="ひよこちゃん">パージ以外に、直す方法ってないんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。画像のファイル名自体を変える方法です。ファイル名が変われば URL も変わるので、前のページで見たキャッシュキーも変わり、新しい控えとして扱われて、古い控えの影響を受けません。</p>
+    <p class="s" data-who="ひよこちゃん">パージとファイル名を変える方法、どっちがいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">状況によります。すでに配っている URL を変えたくないならパージ、多くの人に新しい URL として案内し直せるならファイル名を変える方法が向いています。</p>
+    <p class="s" data-who="ひよこちゃん">パージした後は、どうやって新しくなったか確かめるんですか?</p>
+    <p class="t" data-who="ふくろう先生">エッジサーバへの次の要求を見れば分かりますが、パージは配信事業者が用意する仕組みを通じて行う操作なので、ターミナルからの観察だけでは前後を直接比べられません。</p>
+    <p class="s" data-who="ひよこちゃん">控えを管理するには、期限だけじゃなくて、こういう手段も知っておく必要があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、利用者がそもそもどうやって近くのエッジサーバにたどり着くのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>期限より前に、控えを強制的に消させる操作をパージと呼ぶ。</li>
+      <li>パージは、内容が古くなったときや間違いに気づいたとき、急ぎの更新があったときなどに使われる。</li>
+      <li>パージされた控えへの最初の要求では、エッジサーバがオリジンサーバまで新しい内容を取りに行く。</li>
+      <li>ファイル名を変えれば、キャッシュキー(要求先の URL)が変わるので、そもそも新しい控えとして扱われ、古い控えの影響を受けない。</li>
+      <li>画像を差し替えたのに古い画像が出続けたのは、キャッシュの TTL が切れておらず、エッジサーバに残った控えがそのまま返され続けていたためである。</li>
+      <li>パージは配信事業者が用意する仕組みを通じて行う操作であり、これまでの章で見た承認済みの観察方法だけでは、パージの前後を直接比べることはできない。</li>
+      <li>パージは、キャッシュの TTL が切れるのを待たずに、控えだけを先に消させる操作である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>控えは、キャッシュの TTL が切れるまで自動では消えない。画像を差し替えても、期限が切れるまではエッジサーバに残った古い控えがそのまま返され続けることがある。この期限より前に、控えを強制的に消させる操作をパージと呼び、内容が古くなったときや、間違いに気づいたとき、急ぎの更新があったときなどに使われる(#63)。パージは、キャッシュの TTL が切れるのを待たずに、控えだけを先に消させる操作だと言い換えられる。パージされた控えへの最初の要求では、エッジサーバはオリジンサーバまで新しい内容を取りに行き、その答えを新しい控えとして残す。もう 1 つの対処として、ファイル名を変える方法もある。ファイル名が変わればキャッシュキー(要求先の URL)も変わるため、そもそも新しい控えとして扱われ、古い控えの影響を受けない。どちらを選ぶかは、すでに配っている URL を変えたくないか、新しい URL として案内し直せるかによって決まる。パージは配信事業者が用意する仕組みを通じて行う操作であり、これまでの章で見た承認済みの観察方法だけでは、パージの前後を直接比べることはできない。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="63">[#63] Fastly「Content delivery learning center」 — <a href="https://www.fastly.com/learning/cdn/what-is-cache-purging" rel="noopener">原典</a>(「What is cache purging?」の要約。パージは期限前に控えを無効化する操作であり、内容が誤り・古い・急ぎの更新のときに使われるという記述。索引ページのリンク見出しの要約文)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m22-3">
+    <div class="q" data-q="1">
+      <p class="q-text">サイトの画像を差し替えたのに、しばらく古い画像が表示され続けることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">オリジンサーバが、差し替えを受け付けていないから</button></li>
+        <li><button type="button" data-correct="true">キャッシュの TTL が切れておらず、エッジサーバに残った控えがそのまま返され続けているから</button></li>
+        <li><button type="button" data-correct="false">利用者の端末側に問題があり、通信ができていないから</button></li>
+        <li><button type="button" data-correct="false">エッジサーバが、画像だけは控えを持たない決まりになっているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、キャッシュの TTL が切れておらず、エッジサーバに残った控えがそのまま返され続けているから、です。オリジンサーバへの差し替え自体は済んでおり、利用者の端末やエッジサーバの決まりの問題ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">パージの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">控えを、期限が切れるまで大切に保存し続ける操作のこと</button></li>
+        <li><button type="button" data-correct="true">期限が来る前に、控えを強制的に消させる操作のこと</button></li>
+        <li><button type="button" data-correct="false">要求先の URL を、自動的に短く書き換える操作のこと</button></li>
+        <li><button type="button" data-correct="false">エッジサーバとオリジンサーバの通信を暗号化する操作のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、期限が来る前に、控えを強制的に消させる操作のこと、です。控えを保存し続ける操作や、URL の書き換え、暗号化とは別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">画像のファイル名を変えることが、古い控えの対処になるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ファイル名を変えると、エッジサーバがすべて再起動するから</button></li>
+        <li><button type="button" data-correct="true">ファイル名が変わると URL も変わり、キャッシュキーが変わるので、新しい控えとして扱われるから</button></li>
+        <li><button type="button" data-correct="false">ファイル名を変えると、キャッシュの TTL が自動的に 0 になるから</button></li>
+        <li><button type="button" data-correct="false">ファイル名を変えると、オリジンサーバへの経路が変わるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ファイル名が変わると URL も変わり、キャッシュキーが変わるので、新しい控えとして扱われるから、です。エッジサーバの再起動や TTL の変化、経路の変化が理由ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m22-2.html">← 22-2 何を、いつまで控えるか</a>
+    <a class="up" href="m22.html">第 22 章の入口</a>
+    <a class="next" href="m22-4.html">22-4 近くの配信先に、自動でたどり着く仕組み →</a>
+  </nav>
+</main>
+</body>
+</html>

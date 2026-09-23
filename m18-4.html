@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鍵を決めるまでに、何回のやり取りが必要か — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m18-4" data-chapter="m18" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 18-4</p>
+  <p class="chapter-label">第 18 章 TLS と PKI　18-4</p>
+  <h1>鍵を決めるまでに、何回のやり取りが必要か</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>TCP 接続ができたあと、送り手と受け手は身分証の確認と鍵の取り決めをまとめて行う手続きに入る。今広く使われている版では、この手続きは<strong>TCP 接続のあと 1 往復で終わる</strong>。このページでは、この手続きの流れと、往復の回数を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 13 章で TCP ハンドシェイクを習いましたけど、名前が似てますよね。今回の TLS の手続きも同じようなものですか?</p>
+    <p class="t" data-who="ふくろう先生">別の手続きです。TCP ハンドシェイクは接続を作るための 3 回のやり取りで、これが終わると会話できる状態になります。</p>
+    <p class="t" data-who="ふくろう先生">TLS ハンドシェイクは、その接続ができたあとに行う、身分証の確認と鍵の取り決めの手続きです。</p>
+    <p class="s" data-who="ひよこちゃん">つまり、まず TCP ハンドシェイクが終わってから、TLS ハンドシェイクが始まるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。TCP 接続ができていない状態では、TLS ハンドシェイクは始まりません。</p>
+    <p class="s" data-who="ひよこちゃん">TLS ハンドシェイクって、何回のやり取りで終わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">今広く使われている TLS 1.3 では、TCP 接続のあと 1 往復で終わります。</p>
+    <p class="s" data-who="ひよこちゃん">1 往復って、具体的にはどういう流れですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手がまず、対応できる暗号化の方式などを伝える最初のやり取りを送ります。受け手は、それに対して身分証と保証の印を返し、自分の準備ができたことを伝えます。</p>
+    <p class="t" data-who="ふくろう先生">送り手は、身分証を確認し、自分の準備ができたことを伝え返します。ここまでで 1 往復です。</p>
+    <p class="s" data-who="ひよこちゃん">前の版の TLS は、もっと回数がかかったんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。TLS 1.3 では、それより前の版にあった危険な方式を捨てたことで、手続きを短くできました。</p>
+    <p class="s" data-who="ひよこちゃん">危険な方式を捨てるだけで、往復の回数まで減らせるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">選べる方式の種類を絞り込んだことで、最初のやり取りの時点で使う方式をほぼ決め打ちできるようになり、確認のやり取りが減りました。</p>
+    <p class="s" data-who="ひよこちゃん">1 往復の中で、身分証の確認と鍵の取り決めが両方終わるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この往復が終わると、両側は同じ対称鍵を持てた状態になり、以降のやり取りはその鍵で暗号化されます。</p>
+    <p class="s" data-who="ひよこちゃん">第 15 章で見た QUIC も、似たような話をしていた気がします。</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていましたね。QUIC は、この身分証の確認と鍵の取り決めの手続きを、接続そのものを作る手続きと重ねて行っています。</p>
+    <p class="t" data-who="ふくろう先生">そのため、以前に接続したことがある相手となら、さらに短い往復でデータを送り始められます(0-RTT)。</p>
+    <p class="s" data-who="ひよこちゃん">TCP の上で TLS を使うときと、QUIC のときとでは、仕組みが違うってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。TCP の上の TLS は、TCP 接続のあとに 1 往復かかりますが、QUIC はその往復を接続の手続き自体に組み込んでいる、という違いです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、1 台のサーバが複数の名前を持っている場合はどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。その話は次のページで見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>TCP ハンドシェイクは接続を作るための手続き、TLS ハンドシェイクはその接続ができたあとに行う、身分証の確認と鍵の取り決めの手続きである。</li>
+      <li>TLS 1.3 では、TLS ハンドシェイクは TCP 接続のあと 1 往復で終わる。それより前の版にあった危険な方式を捨てたことで、手続きが短くなった。</li>
+      <li>1 往復の中で、送り手と受け手はそれぞれ最初のやり取りを送り合い、身分証の確認と対称鍵の取り決めを終える。</li>
+      <li>この往復が終わると、両側は同じ対称鍵を持てた状態になり、以降のやり取りはその鍵で暗号化される。</li>
+      <li>第 15 章で見た QUIC は、この身分証の確認と鍵の取り決めの手続きを、接続そのものを作る手続きと重ねて行っており、以前に接続したことがある相手となら、さらに短い往復でデータを送り始められる(0-RTT)。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TCP ハンドシェイクは接続を作るための手続きで、これが終わると会話できる状態になる。TLS ハンドシェイクは、その接続ができたあとに行う、身分証の確認と鍵の取り決めの手続きである。今広く使われている TLS 1.3 では、TLS ハンドシェイクは TCP 接続のあと 1 往復で終わる。送り手がまず、対応できる暗号化の方式などを伝える最初のやり取りを送り、受け手が身分証と保証の印を返して準備ができたことを伝え、送り手が身分証を確認して準備ができたことを伝え返すと、ここまでで 1 往復になる。それより前の版の TLS にあった危険な方式を捨て、選べる方式の種類を絞り込んだことで、最初のやり取りの時点で使う方式をほぼ決め打ちでき、確認のやり取りが減った。往復が終わると、両側は同じ対称鍵を持てた状態になり、以降のやり取りはその鍵で暗号化される。第 15 章で見た QUIC は、この身分証の確認と鍵の取り決めの手続きを、接続そのものを作る手続きと重ねて行っており、以前に接続したことがある相手となら、さらに短い往復でデータを送り始められる(0-RTT)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sv https://example.com -o /dev/null</code></pre>
+    <p>見方: 実行結果に Client hello、Server hello、Certificate、Finished という語を含む行が、この順に並んでいることを確認してください。これが、このページで見た TLS ハンドシェイクの流れです。あわせて TLSv1.3 という表記も探してみてください。</p>
+    <p class="try-note">出力は長めですが、TLS handshake という語を含む行だけを追えば十分です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(TLS 1.3 のハンドシェイクが前の版より短いこと、client hello・server hello・Finished という流れの記述、TLS handshake は TCP handshake のあとに起きるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m18-4">
+    <div class="q" data-q="1">
+      <p class="q-text">TCP ハンドシェイクと TLS ハンドシェイクの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">同じ手続きを違う名前で呼んでいるだけである</button></li>
+        <li><button type="button" data-correct="true">TCP ハンドシェイクで接続ができたあとに、TLS ハンドシェイクで身分証の確認と鍵の取り決めを行う</button></li>
+        <li><button type="button" data-correct="false">TLS ハンドシェイクが終わってから、TCP ハンドシェイクが始まる</button></li>
+        <li><button type="button" data-correct="false">どちらも同時に、互いに関係なく進む</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP ハンドシェイクで接続ができたあとに、TLS ハンドシェイクで身分証の確認と鍵の取り決めを行う、です。TCP ハンドシェイクは接続を作るための手続き、TLS ハンドシェイクはそのあとに行う別の手続きです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TLS 1.3 の TLS ハンドシェイクは、TCP 接続のあと何往復で終わるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">3 往復</button></li>
+        <li><button type="button" data-correct="false">2 往復</button></li>
+        <li><button type="button" data-correct="true">1 往復</button></li>
+        <li><button type="button" data-correct="false">往復は不要</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は 1 往復です。それより前の版にあった危険な方式を捨てたことで、手続きを短くできました。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 15 章で見た QUIC と、TCP の上で使う TLS との違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">QUIC は身分証の確認と鍵の取り決めの手続きを、接続そのものを作る手続きと重ねて行っている</button></li>
+        <li><button type="button" data-correct="false">QUIC では身分証の確認そのものが不要になる</button></li>
+        <li><button type="button" data-correct="false">TCP の上の TLS の方が、常に少ない往復で終わる</button></li>
+        <li><button type="button" data-correct="false">QUIC は TLS の手続きを一切使わない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、QUIC は身分証の確認と鍵の取り決めの手続きを、接続そのものを作る手続きと重ねて行っている、です。これにより、以前に接続したことがある相手となら、さらに短い往復でデータを送り始められます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m18-3.html">← 18-3 その身分証を、誰が本物だと保証しているのか</a>
+    <a class="up" href="m18.html">第 18 章の入口</a>
+    <a class="next" href="m18-5.html">18-5 同じ相手でも、名前ごとに身分証が違うことがある →</a>
+  </nav>
+</main>
+</body>
+</html>

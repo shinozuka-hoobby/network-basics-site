@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ここから先へ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m31-5" data-chapter="m31" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 31-5</p>
+  <p class="chapter-label">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける　31-5</p>
+  <h1>ここから先へ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>「遅い」の切り分けも、「つながらない」と同じ考え方に戻る。この講座の Packet Tracer 演習がどの章の復習に当たるかと、<strong>この講座で扱わなかった領域</strong>を確認し、最後にここまでの歩みを振り返る。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">3 つのケース、どれも「分かること・分からないこと」の組み合わせで進めるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。「遅い」の切り分けも、同じ考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">第 30 章で見た、RTT が支配する場面と帯域が支配する場面の話ですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。第 30 章 30-1 で見た、小さなやり取りを繰り返す場面では RTT が支配し、第 30 章 30-2 で見た、まとまった量を運ぶ場面では帯域と帯域遅延積が支配します。</p>
+    <p class="s" data-who="ひよこちゃん">まず、どっちが原因かを見分けるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。回線を太くしても改善しないなら、<strong>RTT が支配する場面</strong>である可能性が高いです。</p>
+    <p class="s" data-who="ひよこちゃん">この講座、Packet Tracer の演習もあったんですよね。結局どの章の復習になるんですか。</p>
+    <p class="t" data-who="ふくろう先生">13 本あります。詳しくは、しくみの話の表を見てください。</p>
+    <p class="s" data-who="ひよこちゃん">16.5.3 の FTP と 16.6.4 の Telnet・SSH は、この講座で扱ってない気がするんですけど。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この 2 つは、第 12 章で見たポート番号によるサービスの多重化という考え方の復習に位置づけています。プロトコルそのものは扱っていません。</p>
+    <p class="s" data-who="ひよこちゃん">16.1.5 とか 16.4.3、17.1.3 は、題名だけからの判断なんですか。</p>
+    <p class="t" data-who="ふくろう先生">はい。実際の演習の中身までは確認していません。題名からの対応づけです。</p>
+    <p class="s" data-who="ひよこちゃん">この講座で触れなかったこともあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">あります。第 26 章で基礎を扱ったセキュリティの実務(侵入テストや運用など)や、第 27・28 章で扱った観測の道具をさらに体系立てて扱う可観測性という領域には、この講座では踏み込んでいません。</p>
+    <p class="s" data-who="ひよこちゃん">そうなんですね。じゃあ、この講座で学んだことって何だったんでしょう。</p>
+    <p class="t" data-who="ふくろう先生">第 1 章 1-5 で、この講座を読み終えたら、障害が起きたときどの層の話かを自分で切り分けられるようになる、クラウドのネットワーク設定も手順書に頼らず自分の判断で組めるようになる、と言いましたね。</p>
+    <p class="s" data-who="ひよこちゃん">覚えてます。あのときは、正直ピンと来てなかったんですけど。</p>
+    <p class="t" data-who="ふくろう先生">今はどうですか。</p>
+    <p class="s" data-who="ひよこちゃん">名前解決、経路、入口、握手、応答っていう 5 段階で考えれば、どこを疑えばいいか、前よりずっと見当がつく気がします。</p>
+    <p class="t" data-who="ふくろう先生"><strong>その感覚</strong>が、この講座で一番身につけてほしかったものです。</p>
+    <p class="s" data-who="ひよこちゃん">用語がつながって、人に説明できるようになる、っていう最初の目標も、今なら少し自信が持てます。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。障害が起きたとき、どの層の話かを自分で切り分けられるようになりましたし、クラウドのネットワーク設定も、自分の判断で組めるようになったはずです。</p>
+    <p class="s" data-who="ひよこちゃん">31 章、長かったですけど、ここまでお付き合いいただいてありがとうございました。</p>
+    <p class="t" data-who="ふくろう先生">こちらこそ、お疲れさまでした。ここで学んだことを、実際のネットワークで確かめてみてください。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>「遅い」は、往復の回数が支配する場面(第 30 章 30-1)か、まとまった量を運ぶ場面(第 30 章 30-2)かを見分けて切り分ける。</li>
+      <li>Packet Tracer 演習 13 本(#43)は、この講座のいずれかの章の復習に対応する。うち 3 件(16.1.5・16.4.3・17.1.3)は題名からの対応づけであり、演習の中身までは確認していない。2 件(16.5.3・16.6.4)は本講座で扱わなかったプロトコルのため第 12 章の復習に位置づける。</li>
+      <li>この講座は、セキュリティの実務や可観測性のように、扱わなかった領域がある。次に学ぶ候補として、この 2 つを知っておくとよい。</li>
+      <li>第 1 章 1-5 の「どの層の話かを自分で切り分けられる」「クラウドの設定を自分の判断で組める」という目標を、この最後の章で確かめた。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>第 30 章 30-1・30-2 で確立したとおり、待ち時間は往復の回数が支配する場面(#58)と、帯域・帯域遅延積が支配する場面(#35)に分かれる。回線を太くして改善するのは後者だけである。Packet Tracer 演習 13 本(#43、ファイル名からの対応づけ)は、次のとおり各章の復習に対応する。</p>
+    <table>
+      <tr><th>演習</th><th>対応する章</th></tr>
+      <tr><td>4.4.4</td><td>第 4 章</td></tr>
+      <tr><td>8.1.3</td><td>第 1 章</td></tr>
+      <tr><td>11.2.3</td><td>第 4 章</td></tr>
+      <tr><td>12.2.2</td><td>第 10 章</td></tr>
+      <tr><td>13.1.3</td><td>第 3・7 章</td></tr>
+      <tr><td>14.3.3</td><td>第 8 章</td></tr>
+      <tr><td>14.3.4</td><td>第 3 章</td></tr>
+      <tr><td>16.1.5</td><td>第 1 章</td></tr>
+      <tr><td>16.4.3</td><td>第 20 章</td></tr>
+      <tr><td>16.5.3</td><td>第 12 章</td></tr>
+      <tr><td>16.6.4</td><td>第 12 章</td></tr>
+      <tr><td>17.1.3</td><td>第 27 章</td></tr>
+      <tr><td>17.1.6</td><td>第 27 章</td></tr>
+    </table>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="58">[#58] Cloudflare Learning Center「CDN performance」 — <a href="https://www.cloudflare.com/learning/cdn/cdn-performance/" rel="noopener">原典</a>（第 30 章 30-1 で確立。往復の回数が支配する場面）</li>
+    <li class="cite" data-src="35">[#35] Google Cloud「TCP optimization for network performance」 — <a href="https://docs.cloud.google.com/compute/docs/networking/tcp-optimization-for-network-performance-in-gcp-and-hybrid" rel="noopener">原典</a>（第 30 章 30-2 で確立。帯域・帯域遅延積が支配する場面）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（`files/labs/` の Packet Tracer 演習ファイル一覧。演習の題名から章に対応づけた）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m31-5">
+    <div class="q" data-q="1">
+      <p class="q-text">回線を太いプランに変えても、ページの表示速度がほとんど変わらなかった。まず疑うべきなのはどちらか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">往復の回数が支配する場面ではないか(RTT の制約)</button></li>
+        <li><button type="button" data-correct="false">運ぶ量が支配する場面ではないか(帯域の制約)</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL が長すぎるのではないか</button></li>
+        <li><button type="button" data-correct="false">証明書の有効期限が近いのではないか</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、往復の回数が支配する場面ではないか、です。回線を太くして改善しないのは、帯域ではなく往復の回数(RTT)が支配している場面の特徴です。DNS の TTL や証明書の期限は、この症状とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">Packet Tracer 演習「16.5.3 Use FTP Services」を、本講座ではどう位置づけているか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">第 16 章(DNS の仕組み)の復習として扱う</button></li>
+        <li><button type="button" data-correct="true">FTP そのものは扱っていないため、第 12 章(ポート番号によるサービスの多重化)の復習に位置づける</button></li>
+        <li><button type="button" data-correct="false">第 20 章(HTTP/1.1)の復習として扱う</button></li>
+        <li><button type="button" data-correct="false">演習の中身を確認したうえで、正確な対応章を決めている</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、FTP そのものは扱っていないため、第 12 章の復習に位置づける、です。本講座は FTP というプロトコル自体は扱っておらず、演習の中身も確認していません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">この講座が扱わなかった領域として、本文で挙げられているものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">DNS の仕組み</button></li>
+        <li><button type="button" data-correct="false">TCP の 3 ウェイハンドシェイク</button></li>
+        <li><button type="button" data-correct="true">セキュリティの実務や、可観測性を体系立てて扱う領域</button></li>
+        <li><button type="button" data-correct="false">TLS ハンドシェイクの流れ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、セキュリティの実務や、可観測性を体系立てて扱う領域、です。DNS・TCP・TLS の仕組みは、いずれもこの講座の中ですでに扱っています。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m31-4.html">← 31-4 届かないときは、経路と入口を確かめる</a>
+    <a class="up" href="m31.html">第 31 章の入口</a>
+    <a class="next" href="index.html">サイトの入口へ →</a>
+  </nav>
+</main>
+</body>
+</html>

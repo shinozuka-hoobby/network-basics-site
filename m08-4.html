@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>この表は、誰がどうやって書いているのか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m08-4" data-chapter="m08" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 8-4</p>
+  <p class="chapter-label">第 8 章 ルーティングの基本　8-4</p>
+  <h1>この表は、誰がどうやって書いているのか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>中継役の機械が持つ表の中身は、人があらかじめ決めた情報をそのまま使う場合と、近くの機械どうしが情報をやり取りしながら<strong>自動的に作られる場合</strong>とがある。このページでは、この 2 つの作り方の違いと、自動で作る仕組みの代表的な例を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">そういえば、この表って誰が書いているのか、まだ聞いてなかったです。</p>
+    <p class="t" data-who="ふくろう先生">大きく分けて 2 つのやり方があります。</p>
+    <p class="s" data-who="ひよこちゃん">1 つ目は?</p>
+    <p class="t" data-who="ふくろう先生">管理者があらかじめ手で書いておくやり方です。静的経路と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">手で書くのって、大変じゃないですか? 回線が切れたりしたら?</p>
+    <p class="t" data-who="ふくろう先生">そこが弱点です。手で書いた内容は、実際の回線の状態が変わっても自動では直りません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、もう 1 つのやり方は?</p>
+    <p class="t" data-who="ふくろう先生">隣のルータどうしが経路の情報を教え合って、表を自動的に作っていくやり方があります。これを動的経路と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">教え合うって、具体的にどうやるんですか?</p>
+    <p class="t" data-who="ふくろう先生">やり方にはいくつか種類がありますが、代表的なものの一つが OSPF です。隣り合うルータどうしが経路の情報を交換し合いながら、自動的に表を作っていきます。</p>
+    <p class="s" data-who="ひよこちゃん">交換し合うって、最初はどうやって始まるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず近くのルータどうしが「隣どうしである」と確認し合い、そのあとお互いが知っている経路の情報をやり取りします。細かい手順はここでは扱いません。</p>
+    <p class="s" data-who="ひよこちゃん">自動ってことは、回線が切れたりしても直るんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。隣のルータからの情報が変われば、表も自動的に更新されます。これが静的経路との大きな違いです。</p>
+    <p class="s" data-who="ひよこちゃん">前のページで見た、お互いをデフォルトルートに設定してしまった事例、動的経路を使っていれば防げたかもしれないですね。</p>
+    <p class="t" data-who="ふくろう先生">その視点はいいですね。動的経路には、回線の変化を検知して表を直す働きもあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、動的経路だけ使っておけば安心ですね。</p>
+    <p class="t" data-who="ふくろう先生">そうとも言い切れません。仕組みが複雑になる分、規模の小さいネットワークでは、あえて静的経路が使われることもあります。</p>
+    <p class="s" data-who="ひよこちゃん">規模が小さいと、なぜ静的経路でも困らないんですか?</p>
+    <p class="t" data-who="ふくろう先生">書く行の数が少なく、構成もめったに変わらないなら、手で書いた内容がそのまま長く使えるからです。変化が少ない場所ほど、静的経路の弱点が表面化しにくいんです。</p>
+    <p class="s" data-who="ひよこちゃん">状況によって使い分けるってことなんですね。この章で見てきた、ルータが表を見て転送先を決めること、その表の読み方、特別な行のデフォルトルート、そして表の作り方が、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。次の章では、インターネット全体でどう経路を決めるか、また別の仕組みを見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ルーティングテーブルの中身の作り方には、管理者があらかじめ手で書いておく静的経路と、隣のルータどうしが情報を教え合って自動的に作る動的経路がある。</li>
+      <li>静的経路は、回線の状態が変わっても、書き直すまで表の内容が変わらない。</li>
+      <li>動的経路は、隣のルータからの情報が変われば、表も自動的に更新される。</li>
+      <li>OSPF は、隣り合うルータどうしが経路の情報を交換し合い、自動的に表を作っていく動的経路の代表例である。</li>
+      <li>動的経路は変化に対応できる代わりに仕組みが複雑になるため、規模の小さいネットワークではあえて静的経路が使われることもある。</li>
+      <li>動的経路では、近くのルータどうしがまず隣どうしであることを確認し合ってから、経路の情報をやり取りし始める。</li>
+      <li>書く行の数が少なく構成もめったに変わらない小規模なネットワークでは、静的経路の弱点が表面化しにくい。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ルーティングテーブルの中身の作り方には、大きく分けて 2 通りがある。静的経路は、管理者があらかじめ手で書いておく、変更のない経路で(#44、#71)、回線の状態が変わっても、書き直すまでは表の中にそのまま残り続ける(#65)。動的経路は、近くのルータどうしが経路の情報を教え合い、その内容をもとに表を自動的に作ったり更新したりする仕組みで(#71)、回線の状態が変わると表も自動で書き換わる。動的経路では、近くのルータどうしがまず「隣どうしである」ことを確認し合い、そのうえでお互いが知っている経路の情報を交換し始める(#65)。OSPF は、隣り合うルータどうしが経路の情報を交換し合い、自動的に表を作っていく動的経路の代表例の一つで、多くのネットワークで使われている(#65)。静的経路は仕組みが単純で分かりやすい一方、変化に自動では対応できないという弱点があり、動的経路は変化に対応できる代わりに仕組みが複雑になる、という違いがある(#65)。書く行の数が少なく構成もめったに変わらない小規模なネットワークでは、この弱点が表面化しにくいため、静的経路がそのまま使われ続けることも多い(#65)。OSPF のような動的経路の仕組みは、こうした手作業の手間を減らせるだけでなく、数百台規模のルータが並ぶ大きなネットワークでも経路の情報を交換し合えるように作られている(#65)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.11 静的経路の位置づけ、p.47〜48 OSPF の章。vMX1 が vMX0 と隣接関係を結び、経路をやり取りし始める様子）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-04-routing.txt p.5〜6、Static routing = Compute route a priori、Dynamic routing = Reflect dynamic state of network、Hop-by-hop routing = Every node computes next hop という整理）</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>（"Dynamic routing requires the software in the routing devices to calculate routes... static routing calls for routes to be established by the network administrator"）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m08-4">
+    <div class="q" data-q="1">
+      <p class="q-text">回線の状態が変わったとき、静的経路と動的経路とでは対応がどう違うか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">静的経路は自動的に表を更新するが、動的経路は手で直すまで変わらない</button></li>
+        <li><button type="button" data-correct="true">動的経路は隣との情報交換によって表が自動的に更新されるが、静的経路は手で直すまで表の内容が変わらない</button></li>
+        <li><button type="button" data-correct="false">どちらも自動的に表を更新するが、更新にかかる時間だけが違う</button></li>
+        <li><button type="button" data-correct="false">どちらも変化には対応できず、常に人が直す必要がある</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、動的経路は隣との情報交換によって表が自動的に更新されるが、静的経路は手で直すまで表の内容が変わらない、です。静的経路は手で書いた内容がそのまま残り、動的経路は隣の情報が変わるたびに自動で書き換わります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">OSPF の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">管理者が手で経路を書いておく方式の一つ</button></li>
+        <li><button type="button" data-correct="true">隣り合うルータどうしが経路の情報を交換し合い、自動的に表を作っていく動的経路の代表例</button></li>
+        <li><button type="button" data-correct="false">通信の内容を暗号化して守るための仕組み</button></li>
+        <li><button type="button" data-correct="false">スイッチが MAC アドレステーブルを作る仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、隣り合うルータどうしが経路の情報を交換し合い、自動的に表を作っていく動的経路の代表例、です。手で書く方式は静的経路であり、OSPF は動的経路の側に分類されます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">動的経路の方が変化に自動で対応できるのに、規模の小さいネットワークであえて静的経路が使われることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">静的経路の方が、常に動的経路より通信の速度が速いから</button></li>
+        <li><button type="button" data-correct="true">動的経路は仕組みが複雑になる一方、静的経路は単純で分かりやすいから</button></li>
+        <li><button type="button" data-correct="false">動的経路は、ルータが 1 台しかないネットワークでは使えない決まりだから</button></li>
+        <li><button type="button" data-correct="false">静的経路の方が、回線の変化に自動で対応できるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、動的経路は仕組みが複雑になる一方、静的経路は単純で分かりやすいから、です。動的経路は変化への対応力と引き換えに仕組みが複雑になるため、規模が小さく変化の少ないネットワークでは静的経路が選ばれることがあります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m08-3.html">← 8-3 どの行にも当てはまらないときの行き先</a>
+    <a class="up" href="m08.html">第 8 章の入口</a>
+    <a class="next" href="m09.html">第 9 章 インターネットの経路制御 — BGP と AS →</a>
+  </nav>
+</main>
+</body>
+</html>

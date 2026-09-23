@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>パケットの中に書かれていること — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m06-1" data-chapter="m06" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 6-1</p>
+  <p class="chapter-label">第 6 章 IP パケットと配送の仕組み　6-1</p>
+  <h1>パケットの中に書かれていること</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>第 1 章では、IP アドレス宛ての情報のかたまりを「パケット」と呼ぶことを確認した。ここでは、その中に実際にどんな情報が書き込まれているかを見ていく。<strong>送信元と宛先の IP アドレスだけでなく、全体の大きさや中身の種類を示す情報</strong>も一緒に書き込まれている。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 1 章で、IP アドレス宛ての情報のかたまりがパケットだって聞いたんですけど、あの中には実際に何が書いてあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず、送信元と宛先の IP アドレスが書かれています。</p>
+    <p class="s" data-who="ひよこちゃん">宛先だけでいいんじゃないんですか? 届けばそれで十分な気がします。</p>
+    <p class="t" data-who="ふくろう先生">宛先だけだと、相手はどこに返事を送り返せばいいか分かりません。だから送信元の IP アドレスも一緒に書かれているんです。</p>
+    <p class="s" data-who="ひよこちゃん">たしかに、返事がもらえないと困りますね。</p>
+    <p class="t" data-who="ふくろう先生">他にも、このかたまり全体の大きさを示す「全長」という情報が書かれています。</p>
+    <p class="s" data-who="ひよこちゃん">大きさまで書いておく必要があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">途中の機械が、どこまでが 1 つのかたまりなのかを判断するのに使います。長さが分からないと、次のかたまりとの境目が分かりません。</p>
+    <p class="s" data-who="ひよこちゃん">境目が分からないと、何が困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">次のパケットの先頭を、今のパケットの続きだと勘違いしてしまうかもしれません。全長は 16 ビット(0 か 1 のひと桁が 16 個並んだもの)の数字で表されていて、IP パケット全体の大きさは最大でも 65,535 バイトまでしか表せません(#71)。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、境目を示す情報でもあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そしてもう 1 つ、中身がどんな種類のやり取りかを示す番号もあります。</p>
+    <p class="s" data-who="ひよこちゃん">中身の種類って、何が入ってるかによって変わるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。詳しい種類は後の章(第 12 章・第 13 章)で扱いますので、ここでは、そういう番号もある、ということだけ押さえてください。</p>
+    <p class="s" data-who="ひよこちゃん">他にも書いてある数字ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。あと何回機械を経由できるかを表す<a class="term" href="glossary.html#ttl-ip" data-term="ttl-ip">IP の TTL</a>という数字もその一つです。詳しくは 6-2 で見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">送信元、宛先、大きさ、中身の種類、TTL…けっこう色々書いてあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">これらをまとめて IP ヘッダと呼びます。第 1 章で見た、データの前に付け足す宛先などの情報という説明を覚えていますか?</p>
+    <p class="s" data-who="ひよこちゃん">はい、覚えてます。あの「ヘッダ」の、IP の分がこれってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この IP ヘッダと、その後ろに続く中身をあわせたひとかたまり全体を、あらためて<strong>IP パケット</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">1-4 で見たパケットを、もう少し詳しく見た感じですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。1-4 では「IP アドレス宛ての情報を持ったひとかたまり」という大まかな説明でしたが、その中身が今日見た IP ヘッダだった、という関係になります。</p>
+    <p class="s" data-who="ひよこちゃん">封筒の中の、住所欄や中身の説明欄を細かく見た感じですね。</p>
+    <p class="t" data-who="ふくろう先生">近いです。次のページでは、TTL が実際にどう働くかを詳しく見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP パケットの IP ヘッダには、送信元と宛先の IP アドレスが書かれている。</li>
+      <li>パケット全体の大きさを示す情報も書かれており、途中の機械はこれを見てかたまりの境目を判断する。</li>
+      <li>中身がどんな種類のやり取りかを示す番号や、あと何回機械を経由できるかを示す TTL という数字も書かれている。</li>
+      <li>これらの情報(IP ヘッダ)と中身をあわせたひとかたまり全体を、IP パケットと呼ぶ。</li>
+      <li>全長は 16 ビットの数字であり、IP パケット全体は理論上最大 65,535 バイトまで表せる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <pre class="fig" aria-label="IP パケットの中の並び順">IP ヘッダ(送信元/宛先 IP アドレス、全長、TTL、プロトコル番号など) → データ</pre>
+    <p>IP パケットは、IP ヘッダと呼ばれる部分と、その後ろに続く中身(データ)からできている。この並び順は、フレームの中に IP パケットが入り、IP パケットの中にヘッダと中身が入るという、第 1 章 1-4 の封筒の図・第 3 章 3-1 のフレームの図と同じ向きである。IP ヘッダは、追加の項目(オプション)が無ければ 20 バイトの大きさになる(#3、#71)。主な項目は次のとおり。</p>
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>送信元 IP アドレス</td><td>どの機械から送られたかを示す</td></tr>
+      <tr><td>宛先 IP アドレス</td><td>どの機械に届けるかを示す</td></tr>
+      <tr><td>全長</td><td>この IP パケット全体の大きさ(バイト数)</td></tr>
+      <tr><td>TTL</td><td>あと何回機械を経由できるかを示す数字</td></tr>
+      <tr><td>プロトコル番号</td><td>中身がどんな種類のやり取りかを示す番号</td></tr>
+    </table>
+    <p>この章では、現在広く使われている IPv4 を前提に説明する。宛先だけでなく送信元も書かれているのは、相手が返事を送り返せるようにするためである。全長は、途中の機械が次のパケットとの境目を判断するために必要であり、これが無ければパケットどうしを正しく区切れない。プロトコル番号も、宛先の機械が中身をどう扱えばよいかを判断する手がかりとして使われている。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 1 行目に HTTP のバージョンと 200 のようなステータスコードが返ってくる。この応答も、内側に今日見た IP パケットが使われて届いている。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論「IP」」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>(p.29 IPv4 ヘッダフォーマット図)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.41 IPv4 ヘッダ図)</li>
+    <li class="cite" data-src="50">[#50] Cloudflare Learning Center「What is the Internet Protocol?」 — <a href="https://www.cloudflare.com/learning/network-layer/internet-protocol/" rel="noopener">原典</a>(IP ヘッダが持つ項目の一覧)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m06-1">
+    <div class="q" data-q="1">
+      <p class="q-text">IP パケットに送信元の IP アドレスも書かれているのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">宛先の IP アドレスを暗号化するために必要だから</button></li>
+        <li><button type="button" data-correct="true">相手がどこに返事を送り返せばよいか分かるようにするため</button></li>
+        <li><button type="button" data-correct="false">パケット全体の大きさを計算するために必要だから</button></li>
+        <li><button type="button" data-correct="false">途中の機械がパケットを分割するときの目印にするため</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、相手がどこに返事を送り返せばよいか分かるようにするため、です。宛先の IP アドレスだけでは、相手はどこへ返事を送り返せばよいか分かりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">IP ヘッダに書かれている情報として正しい組み合わせはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">MAC アドレスと、暗号化に使う鍵</button></li>
+        <li><button type="button" data-correct="true">送信元/宛先の IP アドレスと、全体の大きさ</button></li>
+        <li><button type="button" data-correct="false">ドメイン名と、ポート番号の一覧</button></li>
+        <li><button type="button" data-correct="false">HTTP のステータスコードと、応答の本文</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送信元/宛先の IP アドレスと、全体の大きさ、です。MAC アドレスはフレームの情報、ドメイン名は名前解決の情報、ステータスコードは HTTP の情報であり、いずれも IP ヘッダの項目ではない。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 1 章 1-4 で見た「パケット」と、この章で見た「IP パケット」の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">まったく無関係の、別々の仕組みである</button></li>
+        <li><button type="button" data-correct="true">1-4 で大まかに説明したものを、IP ヘッダの中身まで含めてもう一歩詳しく見たものである</button></li>
+        <li><button type="button" data-correct="false">IP パケットのほうが、パケットより古い呼び方である</button></li>
+        <li><button type="button" data-correct="false">パケットは有線 LAN、IP パケットは無線 LAN でのみ使われる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1-4 で大まかに説明したものを、IP ヘッダの中身まで含めてもう一歩詳しく見たものである、です。1-4 の「パケット」は入門レベルの説明で、この章では同じ対象を IP ヘッダの項目という具体的な観点から見直している。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m06.html">← 第 6 章の入口</a>
+    <a class="up" href="m06.html">第 6 章の入口</a>
+    <a class="next" href="m06-2.html">6-2 届く保証はないけれど、あきらめずに届けようとする →</a>
+  </nav>
+</main>
+</body>
+</html>

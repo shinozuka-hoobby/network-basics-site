@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>どの行にも当てはまらないときの行き先 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m08-3" data-chapter="m08" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 8-3</p>
+  <p class="chapter-label">第 8 章 ルーティングの基本　8-3</p>
+  <h1>どの行にも当てはまらないときの行き先</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>中継役の機械が持つ表には、他のどの行にも当てはまらなかったときのための、特別な行がある。このページでは、<strong>その行の役割</strong>と、似た名前を持つ別の仕組み(前の章で見た、自分の機械側の送り先)との違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで出てきた、あの 0.0.0.0/0 の行についてもう少し聞きたいです。</p>
+    <p class="t" data-who="ふくろう先生">あれがデフォルトルートです。宛先が他のどの行にも当てはまらなかったときに、とりあえずここへ送ると決めておく行のことです。</p>
+    <p class="s" data-who="ひよこちゃん">そんな行、本当に必要なんですか? 全部の宛先を書いておけばいいのでは?</p>
+    <p class="t" data-who="ふくろう先生">宛先の数だけ行を書くのは大変ですし、書き漏れも起きます。よく使う行き先だけ書いておいて、それ以外はまとめてデフォルトルートに任せる、というやり方が現実的なんです。</p>
+    <p class="s" data-who="ひよこちゃん">第 7 章で習ったデフォルトゲートウェイと似た名前ですけど、同じものですか?</p>
+    <p class="t" data-who="ふくろう先生">似ていますが、立場が違います。デフォルトゲートウェイは、あなたの機械から見た「とりあえずここに送る」出口の機械です。デフォルトルートは、ルータの表の中にある、行き先が見つからないときに使う行のことです。</p>
+    <p class="s" data-who="ひよこちゃん">その 2 つ、実際の設定を見ただけで区別が付くものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">名前だけでは紛らわしいですが、デフォルトゲートウェイは手元の機械の設定に、デフォルトルートはルータの表の中に、それぞれ別の場所に出てきます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、この行を間違えて設定すると、どうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例を紹介します。2 台のルータが、お互いを自分のデフォルトルートに設定してしまったことがありました。</p>
+    <p class="s" data-who="ひよこちゃん">お互いを、ということは?</p>
+    <p class="t" data-who="ふくろう先生">片方が「分からない宛先はこちらへ」ともう片方に投げ、投げられた側も同じように送り返す、という形になっていました。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その宛先のないデータはどうなったんですか?</p>
+    <p class="t" data-who="ふくろう先生">2 台の間を行ったり来たりし続けました。ただし無限に続くわけではなく、第 6 章で見た IP の TTL が 1 台経由するごとに減っていくので、最後には尽きて捨てられます。</p>
+    <p class="s" data-who="ひよこちゃん">TTL って、こういうときにも役立つんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。無限に往復し続けるわけではない、という歯止めになっています。</p>
+    <p class="s" data-who="ひよこちゃん">デフォルトルートが無かったら、この行き来はどうなっていたんですか?</p>
+    <p class="t" data-who="ふくろう先生">そもそも起きません。行き先が見つからないデータは、その場でただ捨てられるだけです。デフォルトルートがあるからこそ、行き場のないデータにも一応の行き先が与えられるんです。</p>
+    <p class="s" data-who="ひよこちゃん">便利な仕組みだけど、設定を間違えると危ないってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この表そのものを、誰がどうやって書いているのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>デフォルトルートは、宛先が他のどの行にも当てはまらなかったときに使う、ルーティングテーブルの中の特別な行である。</li>
+      <li>デフォルトゲートウェイ(自分の機械側の出口)とデフォルトルート(ルータの表の中の行)は、名前は似ているが立場が違う。</li>
+      <li>2 台のルータが互いを自分のデフォルトルートに設定してしまうと、宛先のないデータが両者の間を往復し続けることがある。</li>
+      <li>この往復は無限には続かず、IP の TTL が 1 台経由するごとに減っていくため、最後には捨てられる。</li>
+      <li>デフォルトルートが無ければ、行き先の見つからないデータはその場で捨てられるだけであり、デフォルトルートはそうしたデータに一応の行き先を与えている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>デフォルトルートは、宛先が表の他のどの行にも当てはまらなかったときに使われる行で、範囲としては 0.0.0.0/0 のように最も広く、最長一致の検索の最後に選ばれる(#71)。自分の機械から見た「とりあえずここに送る」出口であるデフォルトゲートウェイ(第 7 章)とは立場が異なり、デフォルトゲートウェイは手元の機械の設定に現れる情報であるのに対し、デフォルトルートはルータの表の中にある行そのものを指す。宛先の数だけ行を書く代わりに、よく使う宛先だけを書いておき、それ以外をまとめてデフォルトルートに任せておけば、表の行数を大きく減らせる(#65)。2 台のルータが、お互いを自分のデフォルトルートに設定してしまうと、宛先のないデータがその 2 台の間を行ったり来たりし続けることがある(#65)。この往復は無限には続かず、IP の TTL(第 6 章)が 1 台経由するごとに 1 減っていくため、TTL が尽きたところでそのデータは捨てられる(#65)。デフォルトルートは、インターネットへの出口にあたるルータでとくによく使われる。社内やその周辺以外の宛先は、まとめてインターネットのどこかにあるとみなし、その先の細かい経路は次のルータに任せてしまえるからである(#65)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.8 デフォルトルートの定義、p.19〜20 2 台のルータが互いを default static route に設定し、経路をたどるコマンドの実行結果にループが観測された事例と、その注意書き）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-04-routing.txt p.57〜58、Default route = 0.0.0.0/0 と、Longest prefix match の検索の最後に一致するという整理）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m08-3">
+    <div class="q" data-q="1">
+      <p class="q-text">デフォルトゲートウェイとデフォルトルートの違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">同じものを指す、別の呼び方に過ぎない</button></li>
+        <li><button type="button" data-correct="true">デフォルトゲートウェイは自分の機械から見た出口の機械、デフォルトルートはルータの表の中にある、行き先が見つからないときに使う行</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイはルータだけが持ち、デフォルトルートはすべての機械が持つ</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイは表の中の行を指し、デフォルトルートは機械そのものを指す</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、デフォルトゲートウェイは自分の機械から見た出口の機械、デフォルトルートはルータの表の中にある、行き先が見つからないときに使う行、です。名前は似ていますが、指しているもの(機械か、表の中の行か)が違います。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">デフォルトルートとは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">宛先に合う行き先が表の中に見つからないとき、とりあえずここへ送ると決めておく行</button></li>
+        <li><button type="button" data-correct="false">通信の内容を暗号化するために使う鍵</button></li>
+        <li><button type="button" data-correct="false">宛先ネットワークの範囲を計算するための数式</button></li>
+        <li><button type="button" data-correct="false">スイッチが MAC アドレスを学習して記録する仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先に合う行き先が表の中に見つからないとき、とりあえずここへ送ると決めておく行、です。暗号化の鍵やスイッチの学習の仕組みとは、まったく別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">2 台のルータが互いを自分のデフォルトルートに設定してしまうと、宛先の無いデータはどうなるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">すぐにエラーが返り、送信元に通知される</button></li>
+        <li><button type="button" data-correct="true">2 台の間を往復し続けるが、IP の TTL が尽きたところで捨てられる</button></li>
+        <li><button type="button" data-correct="false">相手のルータが壊れるまで、際限なく往復し続ける</button></li>
+        <li><button type="button" data-correct="false">最初の 1 回だけ送られて、それ以降は送られなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、2 台の間を往復し続けるが、IP の TTL が尽きたところで捨てられる、です。IP の TTL は機械を経由するごとに減っていくため、往復が無限には続かず、最後には捨てられます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m08-2.html">← 8-2 その表の中から、どの行を選ぶか</a>
+    <a class="up" href="m08.html">第 8 章の入口</a>
+    <a class="next" href="m08-4.html">8-4 この表は、誰がどうやって書いているのか →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>使えるかどうかは、何で決まるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m21-4" data-chapter="m21" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 21-4</p>
+  <p class="chapter-label">第 21 章 HTTP/2 と HTTP/3　21-4</p>
+  <h1>使えるかどうかは、何で決まるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前のページまでで見た新しい版は、<strong>通信の両側が対応していて初めて使われる</strong>。このページでは、実際に使われるかどうかを決める材料と、通信の中身が常に暗号化されているという前提を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">HTTP/3、いいことづくめですね。もうみんな使っているんですか?</p>
+    <p class="t" data-who="ふくろう先生">そう単純でもありません。使うには、いくつか条件があります。</p>
+    <p class="s" data-who="ひよこちゃん">条件、ですか?</p>
+    <p class="t" data-who="ふくろう先生">まず、通信の両側、利用者のブラウザと、配信側の仕組みの両方が対応している必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、サーバ側で HTTP/3 を有効にしたのに、思ったほど速くなった実感が無かったという話を聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">片方が対応していても、もう片方が対応していなければ使われません。ブラウザは気づかれないまま、自動的に前の版に切り替えます。</p>
+    <p class="s" data-who="ひよこちゃん">効果を実感するには、利用者側の環境もそろっている必要があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。もう一つ、HTTP/3 の通信は常に HTTPS、つまり暗号化された状態が前提になっています。暗号化しない HTTP/3 はありません。</p>
+    <p class="s" data-who="ひよこちゃん">HTTP/1.1 や HTTP/2 は、暗号化しなくても使えましたよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。この章の前半で見た HTTP/1.1・HTTP/2 は、暗号化するかどうかを選べました。HTTP/3 は、常に暗号化された状態が前提です。</p>
+    <p class="s" data-who="ひよこちゃん">サーバ側の対応はどれくらい進んでいるんですか?</p>
+    <p class="t" data-who="ふくろう先生">主要なブラウザはすべて対応しています。配信を代行する<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>(利用者の近くにある配信専用の機械。詳しくは第 22 章で)も対応が進んでいます。</p>
+    <p class="s" data-who="ひよこちゃん">サーバ側の対応も、ブラウザほど早く進むものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">少し事情が違います。#20 によれば、Nginx をはじめいくつかのサーバの実装が公開され、クラウドの振り分けの仕組みや各社の CDN も対応が進んでいます。ただし、対応しているサーバの数と、実際に HTTP/3 で運ばれている通信の量は別の話です。</p>
+    <p class="s" data-who="ひよこちゃん">実際、どれくらいの通信が HTTP/3 になっているんですか?</p>
+    <p class="t" data-who="ふくろう先生">#20 が紹介する Cloudflare の統計では、通信の 25% 程度が HTTP/3 になっているという報告があります。ただし、これは特定の時点の、特定の配信事業者の統計にすぎません。</p>
+    <p class="s" data-who="ひよこちゃん">つまり、まだ全部が HTTP/3 というわけではないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。既存のサーバの対応状況によっては、今でも HTTP/2 や HTTP/1.1 が使われ続けます。</p>
+    <p class="s" data-who="ひよこちゃん">既存のシステムを急いで変える必要は無いんですね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。相手が対応していなくても、自動的に前の版で通信が続けられるので、急いで全部を作り直す必要はありません。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた、多重化、ヘッダの送り方、接続の土台、採用の条件が、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。次の章では、配信を代行するこの仕組み(CDN)を詳しく見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>HTTP/3 を使うには、利用者のブラウザと配信側の仕組みの両方が対応している必要がある。</li>
+      <li>片方でも対応していなければ、ブラウザは気づかれないまま自動的に HTTP/2 や HTTP/1.1 に切り替える。</li>
+      <li>HTTP/3 の通信は常に暗号化(HTTPS)が前提で、暗号化しない HTTP/3 は無い。HTTP/1.1・HTTP/2 は暗号化を選べた。</li>
+      <li>主要なブラウザはすべて対応しており、配信を代行する CDN の対応も進んでいる。サーバ側もいくつかの実装が公開され、クラウドの振り分けの仕組みも対応が進んでいるが、対応するサーバの数と実際に HTTP/3 で運ばれる通信の量は別の話である。</li>
+      <li>ある統計では通信の 25% 程度が HTTP/3 になっているが、これは特定の時点・特定の配信事業者の数字であり、既存サーバの対応状況によっては HTTP/2・HTTP/1.1 も使われ続ける。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP/3 を使うには、利用者のブラウザと、配信側の仕組み(サーバや CDN)の両方が対応している必要がある。片方でも対応していなければ、ブラウザは自動的に HTTP/2 や HTTP/1.1 に切り替える(#64)。この切り替えは利用者に気づかれずに行われるため、サーバ側で有効にしても、利用者側の環境が対応していなければ効果を実感しにくい。加えて、HTTP/3 の通信は常に暗号化されており、平文の通信をサポートしない(#64)。主要なブラウザはすべて HTTP/3 に対応しており、サーバ側の対応も広がっている(#20)。#20 が紹介する Cloudflare の統計では、通信の 25% 程度が HTTP/3 になっているという報告があるが、これは特定の時点・特定の配信事業者の数字であり、採用の広がりを示す一つの材料にとどめて捉える。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://&lt;あなたのサイト&gt;</code></pre>
+    <p>見方: 応答の中に alt-svc という行があり、その中に h3 という文字が含まれているかどうかで、そのサイトが HTTP/3 の採用をどこまで進めているかの手がかりになる。行があれば QUIC の上でも HTTP を受け付けると案内しており、行が無ければ、その環境やサイトがまだ案内していないと分かる。</p>
+    <p class="try-note">行が無くても、それ自体が観察の結果である。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="64">[#64] Fastly「What is HTTP/3?」 — <a href="https://www.fastly.com/learning/what-is-http-3" rel="noopener">原典</a>(通信は常に暗号化され平文をサポートしないという記述、主要ブラウザの対応と protocol negotiation による自動的な切り替えの記述、サーバ・プロキシ・CDN 側に QUIC と HTTP/3 対応が必要という記述)</li>
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座:HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>(主要ブラウザの対応状況、サーバ側の実装状況、Cloudflare の利用統計で通信の 25% 程度が HTTP/3 になっているという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m21-4">
+    <div class="q" data-q="1">
+      <p class="q-text">サーバ側で HTTP/3 を有効にしても、効果が実感できないことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">通信の両側がそろって対応していないと使われず、片方でも対応していなければ自動的に前の版に切り替わるから</button></li>
+        <li><button type="button" data-correct="false">HTTP/3 はサーバ側だけで完結する仕組みで、利用者側には関係が無いから</button></li>
+        <li><button type="button" data-correct="false">HTTP/3 を有効にすると、常に HTTP/1.1 に戻ってしまうから</button></li>
+        <li><button type="button" data-correct="false">HTTP/3 は暗号化を無効にしないと動かないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、通信の両側がそろって対応していないと使われず、片方でも対応していなければ自動的に前の版に切り替わるから、です。HTTP/3 は利用者側の対応も必要で、常に HTTP/1.1 に戻るわけでも、暗号化を無効にする必要もありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HTTP/3 の通信について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">常に暗号化(HTTPS)された状態が前提で、暗号化しない通信は無い</button></li>
+        <li><button type="button" data-correct="false">HTTP/1.1 と同じく、暗号化するかどうかを選べる</button></li>
+        <li><button type="button" data-correct="false">暗号化は、利用者が設定で切り替えられる</button></li>
+        <li><button type="button" data-correct="false">暗号化されるのは本文だけで、ヘッダは平文のまま送られる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、常に暗号化(HTTPS)された状態が前提で、暗号化しない通信は無い、です。HTTP/1.1 や HTTP/2 とは異なり、選ぶことも、設定で切り替えることもできません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">「ある統計で通信の 25% 程度が HTTP/3 になっている」という数字の扱い方として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">特定の時点・特定の配信事業者の数字であり、採用の広がりを知る一つの材料として捉える</button></li>
+        <li><button type="button" data-correct="false">インターネット全体の通信のうち、常に正確に 25% が HTTP/3 であることを意味する</button></li>
+        <li><button type="button" data-correct="false">この数字は、今後変わることのない固定値である</button></li>
+        <li><button type="button" data-correct="false">この数字は、HTTP/2 の利用がすでに終わったことを意味する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、特定の時点・特定の配信事業者の数字であり、採用の広がりを知る一つの材料として捉える、です。インターネット全体の正確な値でも、固定値でもなく、HTTP/2 の利用が終わったことも意味しません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m21-3.html">← 21-3 接続の土台を変えて、残った詰まりを無くす</a>
+    <a class="up" href="m21.html">第 21 章の入口</a>
+    <a class="next" href="m22.html">第 22 章 CDN とキャッシュ →</a>
+  </nav>
+</main>
+</body>
+</html>

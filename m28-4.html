@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>残したものから、さらに絞り込む — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m28-4" data-chapter="m28" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 28-4</p>
+  <p class="chapter-label">第 28 章 パケットキャプチャ — tcpdump と Wireshark　28-4</p>
+  <h1>残したものから、さらに絞り込む</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>28-2 で見た絞り込みは、記録する時点でのものだった。<strong>記録し終えたあとにも、条件を変えて絞り込み直せる</strong>仕組みがある。このページでは、その書き方と、28-2 との違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">28-3 で保存したファイル、あとから見る内容を変えたいときはどうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">Wireshark には、記録し終えたあとに条件を変えて絞り込める仕組みがあります。表示フィルタと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">28-2 で見たキャプチャフィルタと同じものですか?</p>
+    <p class="t" data-who="ふくろう先生">役目が違います。キャプチャフィルタは記録する時点で絞り込みますが、表示フィルタは記録し終えたあとに、何度でも条件を変えて絞り込めます。</p>
+    <p class="s" data-who="ひよこちゃん">どうやって書くんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば ip.addr==192.168.0.1 のように書くと、そのアドレスが送信元でも宛先でも一致する通信が表示されます。</p>
+    <p class="s" data-who="ひよこちゃん">== の他にも書き方があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。and でつなげば両方の条件を満たす通信、or でつなげばどちらか一方でも満たす通信が表示されます。</p>
+    <p class="s" data-who="ひよこちゃん">特定の通信だけ除外したいときは、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">not を使えば、その条件に一致しない通信だけを表示できます。and・or・not を組み合わせて、条件を細かく書けます。</p>
+    <p class="s" data-who="ひよこちゃん">プロトコルの種類だけじゃなくて、もっと細かい条件も書けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">書けます。フィールドの名前を直接指定する形で、例えば dns.qry.name と書けば、名前解決で問い合わせている名前の中身を条件にできます。</p>
+    <p class="s" data-who="ひよこちゃん">よくある間違いってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ip.addr==A and ip.addr==B と書いて、A と B 両方の通信を広く見ようとする人がいますが、これだと A と B の間の通信だけに絞られてしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">え、and でつないだのに、狭くなっちゃうんですか?</p>
+    <p class="t" data-who="ふくろう先生">ip.addr は、指定したアドレスが送信元でも宛先でも一致する条件です。and でつなぐと、1 つの通信の中に A と B の両方が現れる場合だけに絞られます。</p>
+    <p class="s" data-who="ひよこちゃん">A が他の相手とやり取りしてる通信や、B が他の相手とやり取りしてる通信は出てこないってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。A と B、それぞれを広く見たいときは、and ではなく or でつなぎます。</p>
+    <p class="s" data-who="ひよこちゃん">and や or は、大文字で書いてもいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">新しい版の Wireshark では、大文字・小文字のどちらでも構いません。&& や || という記号で書くこともできます。</p>
+    <p class="s" data-who="ひよこちゃん">他にどんな条件が書けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">dns と書けば DNS の通信だけ、tcp.port==443 と書けば 443 番のポートの通信だけを表示できます。</p>
+    <p class="s" data-who="ひよこちゃん">ポート番号での絞り込みは、28-2 のキャプチャフィルタと似てますね。</p>
+    <p class="t" data-who="ふくろう先生">似ています。ただし表示フィルタは、記録済みの内容に対してあとから何度でも条件を変えられる点が違います。次のページでは、1 回の通信を最初から最後まで記録の中でたどってみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>表示フィルタは、記録済みのパケットの中から、条件に合うものだけを画面に表示する仕組みである。何度でも条件を書き直せる。</li>
+      <li>==(eq)で値を比較し、and でつなぐと両方を満たす通信、or でつなぐとどちらか一方でも満たす通信に絞り込める。</li>
+      <li>ip.addr==A and ip.addr==B と書くと、A と B の間の通信だけに絞られ、A・B それぞれが他の相手とやり取りしている通信は表示されない。両方を広く見たいときは or でつなぐ。</li>
+      <li>dns や tcp.port==443 のように、プロトコル名やポート番号でも絞り込める。dns.qry.name のように、フィールドの中身を条件にすることもできる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>表示フィルタは、すでに記録済みのパケットの中から、条件に合うものだけを画面に表示させる仕組みである。ip.addr==192.168.0.1 のように書くと、そのアドレスが送信元でも宛先でも一致する通信が表示される(#108)。条件は and(両方を満たす)、or(どちらか一方でも満たす)、not(条件に一致しないものだけ表示する)でつなげ、これらは記号(&&・||・!)でも書ける(#108)。ip.addr==A and ip.addr==B と書くと、1 つの通信の中に A と B の両方が現れる場合だけに絞られ、A・B それぞれが他の相手とやり取りする通信までは表示されない。両方を広く見たいときは or でつなぐ。dns のようにプロトコル名を書いたり、tcp.port==443 のようにポート番号を指定したりもできる(#48)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="108">[#108] Wireshark Foundation「6.4. Building Display Filter Expressions (Wireshark User's Guide)」 — <a href="https://www.wireshark.org/docs/wsug_html_chunked/ChWorkBuildDisplayFilterSection.html" rel="noopener">原典</a>(27 行目「ip.addr==192.168.0.1 で、そのアドレスから／への通信を表示する」という説明、Table 6.6 の ==(eq)比較演算子、Table 6.8 の and・or 論理演算子と例)</li>
+    <li class="cite" data-src="48">[#48] Cisco TAC「Capture and Analyze Network Traffic with Wireshark for Diagnostics」 — <a href="https://www.cisco.com/c/en/us/support/docs/security/umbrella/225250-capture-and-analyze-network-traffic.html" rel="noopener">原典</a>(==・&&・|| の演算子表、dns・tcp.port==80 などのフィルタ例)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m28-4">
+    <div class="q" data-q="1">
+      <p class="q-text">ip.addr==A and ip.addr==B という表示フィルタを ip.addr==A or ip.addr==B に書き換えると、何が変わるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">A と B の間の通信だけでなく、A 単独の通信や B 単独の通信も含めて、より広い範囲が表示されるようになる</button></li>
+        <li><button type="button" data-correct="false">表示される通信が完全に無くなる</button></li>
+        <li><button type="button" data-correct="false">A と B の間の通信だけが、さらに厳しく絞り込まれる</button></li>
+        <li><button type="button" data-correct="false">表示フィルタ自体が使えなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、A と B の間の通信だけでなく、A 単独の通信や B 単独の通信も含めて、より広い範囲が表示されるようになる、です。表示が無くなったり、さらに絞られたり、機能が使えなくなったりはしません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ip.addr==A and ip.addr==B と書いたのに、A や B が他の相手とやり取りしている通信が表示されなかったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ip.addr は送信元でも宛先でも一致する条件で、and でつなぐと、1 つの通信の中に A と B の両方が現れる場合だけに絞られるから</button></li>
+        <li><button type="button" data-correct="false">and という書き方自体が表示フィルタでは使えないから</button></li>
+        <li><button type="button" data-correct="false">A と B のどちらかの入力が間違っていたから</button></li>
+        <li><button type="button" data-correct="false">Wireshark のバージョンが古かったから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ip.addr は送信元でも宛先でも一致する条件で、and でつなぐと、1 つの通信の中に A と B の両方が現れる場合だけに絞られるから、です。and 自体は使え、入力ミスやバージョンの問題ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">キャプチャフィルタと表示フィルタの違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">キャプチャフィルタは記録する時点で絞り込み、表示フィルタは記録済みの内容をあとから何度でも条件を変えて絞り込める</button></li>
+        <li><button type="button" data-correct="false">キャプチャフィルタは Wireshark 専用で、表示フィルタは tcpdump 専用である</button></li>
+        <li><button type="button" data-correct="false">両者は全く同じ仕組みで、名前が違うだけである</button></li>
+        <li><button type="button" data-correct="false">表示フィルタは記録する前にしか使えない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、キャプチャフィルタは記録する時点で絞り込み、表示フィルタは記録済みの内容をあとから何度でも条件を変えて絞り込める、です。専用ツールの話ではなく、同じ仕組みでもなく、表示フィルタは記録後にこそ使うものです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m28-3.html">← 28-3 保存して後で見る</a>
+    <a class="up" href="m28.html">第 28 章の入口</a>
+    <a class="next" href="m28-5.html">28-5 TCP・DNS・TLS のやり取りを、記録の中でたどる →</a>
+  </nav>
+</main>
+</body>
+</html>

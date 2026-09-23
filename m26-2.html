@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>差出人の住所は、名乗ったとおりとは限らない — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m26-2" data-chapter="m26" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 26-2</p>
+  <p class="chapter-label">第 26 章 ネットワークセキュリティの基礎　26-2</p>
+  <h1>差出人の住所は、名乗ったとおりとは限らない</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>パケットの送信元の情報は、送り主が自分で書き込む欄であり、<strong>途中の機械が正しいかどうかを毎回確かめているわけではない</strong>。このページでは、この欄を偽って送る手口と、その対策を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、境目の内側にいるという理由だけで信用してよいのか、という話がありましたけど、境目を守る仕組み自体をすり抜けるような手口ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。1 つは、送信元の情報を偽る手口です。第 6 章で見た IP パケットのヘッダには、送信元の IP アドレスが入っていましたね。</p>
+    <p class="s" data-who="ひよこちゃん">はい、宛先だけじゃなくて送信元も入ってましたよね。</p>
+    <p class="t" data-who="ふくろう先生">この送信元のアドレスを、本物とは違うものに書き換えて送る手口を、IP スプーフィングと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">差出人の欄に、自分とは違う住所を書いて荷物を送るようなものですか?</p>
+    <p class="t" data-who="ふくろう先生">近い例えです。差出人の住所が偽物だと、受け取った側がその住所に苦情の荷物を送り返しても、本当の送り主には届きません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、攻撃してきた相手を特定するのも難しくなりそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。送信元を追いにくくすることも、書き換える目的の 1 つです。</p>
+    <p class="s" data-who="ひよこちゃん">応答は、書き換えた本人が受け取るために偽装するものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうとは限りません。送信元の欄に、狙った別の相手のアドレスを書いておくこともできます。</p>
+    <p class="s" data-who="ひよこちゃん">自分ではなく、別の誰かに応答が届くように仕向けるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。狙った相手のアドレスを名乗って問い合わせを送ると、応答はその狙った相手に届きます。<strong>これは、次のページで見る大量の通信を送りつける攻撃でも使われることがあります</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">なんで、そんなことができちゃうんですか? 普通は自分の住所を勝手に名乗れないですよね。</p>
+    <p class="t" data-who="ふくろう先生">パケットの送信元アドレスの欄は、送り主が自分で書き込む欄です。<strong>途中の機械が、その正しさを毎回確かめているわけではありません</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、受け取った側は防ぎようがないんですか?</p>
+    <p class="t" data-who="ふくろう先生">受け取る側だけで防ぐのは難しいですが、途中の経路で対策する方法があります。ある経路から来るはずのない送信元アドレスのパケットを、その経路の入口で弾く、という考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">入口で、来るはずのない住所のパケットを弾くってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この考え方をまとめた、国際的な標準化文書もあります。</p>
+    <p class="s" data-who="ひよこちゃん">「経路の入口」って、もう少し具体的にはどこのことですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、利用者をインターネットにつなぐ通信事業者が、自分のところにつながっている利用者から届く通信の送信元アドレスが、その利用者に割り当てた範囲に収まっているかを確認する、というような場所です。</p>
+    <p class="s" data-who="ひよこちゃん">これを使えば、完全に防げるんですか?</p>
+    <p class="t" data-who="ふくろう先生">残念ながら、完全には防げません。すべての経路の入口でこの対策が行われているわけではないためです。</p>
+    <p class="s" data-who="ひよこちゃん">防ぎきれない手口なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、この送信元の書き換えが使われることもある、大量の通信を送りつける攻撃を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP スプーフィングは、パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口である。</li>
+      <li>送信元アドレスの欄は送り主が自分で書き込む欄であり、途中の機械が毎回確かめているわけではない。</li>
+      <li>送信元を偽装すると、受け取った側の応答が本当の送信者には届かず、攻撃者の特定も難しくなる。</li>
+      <li>送信元の欄に狙った別の相手のアドレスを書いておくと、応答をその相手に送りつけることもでき、大量の通信を送りつける攻撃でも使われることがある。</li>
+      <li>経路の入口で、来るはずのない送信元アドレスのパケットを弾くという対策(国際的な標準化文書にまとめられている)があるが、完全には防げない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>IP パケットのヘッダには、宛先だけでなく送信元の IP アドレスも入っている。IP スプーフィングは、この送信元アドレスの欄を、本物とは違うアドレスに書き換えて送る手口である。送信元アドレスの欄は送り主が自分で書き込む欄であり、途中の機械がその正しさを毎回確かめる仕組みには基本的にはなっていないため、書き換えても気づかれにくい。これにより、受け取った側が応答を返しても、本当の送り主には届かず、攻撃者の特定も難しくなる。送信元の欄に、書き換えた本人ではなく、狙った別の相手のアドレスを書いておくこともでき、この場合は応答がその狙った相手に送りつけられる。この性質は、大量の通信を送りつける攻撃の一部でも利用されることがある。対策としては、ある経路から来るはずのない送信元アドレスのパケットを、その経路の入口で弾くという考え方があり、国際的な標準化文書としてまとめられている。ただし、すべての経路の入口でこの対策が行われているわけではないため、完全には防げない。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="103">[#103] Cloudflare Learning Center「What is IP spoofing?」 — <a href="https://www.cloudflare.com/learning/ddos/glossary/ip-spoofing/" rel="noopener">原典</a>(3 行目。送信元アドレスを書き換えた IP パケットを作ることだという定義。5 行目。IP パケットのヘッダに送信元アドレスが含まれるという記述。7 行目。差出人の住所を偽った荷物に例えた記述と、応答が本当の送信者には届かないという記述。11 行目。送信元の欄に別の機器のアドレスを書いておくと、応答がその機器に送りつけられ、大量の通信を送りつける攻撃の一部で利用されるという記述)</li>
+    <li class="cite" data-src="101">[#101] IETF(RFC Editor)「RFC 2827: Network Ingress Filtering: Defeating Denial of Service Attacks which employ IP Source Address Spoofing」 — <a href="https://www.rfc-editor.org/rfc/rfc2827" rel="noopener">原典</a>(Abstract。送信元アドレスを偽装したサービス妨害攻撃に対して、経路の入口でのフィルタリングという対策を示す文書であるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m26-2">
+    <div class="q" data-q="1">
+      <p class="q-text">IP スプーフィングを受けた側が応答を返しても、なぜ本当の攻撃者には届かないのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">応答が暗号化されて、途中で読めなくなるから</button></li>
+        <li><button type="button" data-correct="true">送信元アドレスが偽物に書き換えられており、応答は偽の宛先に届くから</button></li>
+        <li><button type="button" data-correct="false">攻撃者は IP アドレスを持っていないから</button></li>
+        <li><button type="button" data-correct="false">ファイアウォールが応答をすべて止めてしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「送信元アドレスが偽物に書き換えられており、応答は偽の宛先に届くから」です。暗号化やファイアウォールの話ではなく、応答の宛先そのものが偽物になっている点が理由です。攻撃者も IP アドレスを持つ機械を使っています。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">IP スプーフィングとは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">パケットの宛先 IP アドレスを書き換えて、別のサーバに転送する手口</button></li>
+        <li><button type="button" data-correct="false">送信元のポート番号だけを、通信のたびに変える仕組み</button></li>
+        <li><button type="button" data-correct="true">パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの中身を暗号化して送る仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口」です。宛先の書き換えやポート番号だけの変更、暗号化はいずれも本文の定義と違います。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">経路の入口で送信元アドレスを確認するという対策について、正しいのはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">この対策を使えば、IP スプーフィングを完全に防げる</button></li>
+        <li><button type="button" data-correct="false">この対策は、受け取る側のサーバだけで行うものである</button></li>
+        <li><button type="button" data-correct="false">この対策を使うと、通信の中身が暗号化される</button></li>
+        <li><button type="button" data-correct="true">すべての経路の入口で行われているわけではないため、完全には防げない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「すべての経路の入口で行われているわけではないため、完全には防げない」です。この対策は受け取る側ではなく経路の途中の入口で行うもので、通信を暗号化するものでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m26-1.html">← 26-1 境目で選んでも、内側までは見えない</a>
+    <a class="up" href="m26.html">第 26 章の入口</a>
+    <a class="next" href="m26-3.html">26-3 一斉に押し寄せる通信をどう防ぐか →</a>
+  </nav>
+</main>
+</body>
+</html>

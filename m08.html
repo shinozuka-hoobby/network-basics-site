@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ルーティングの基本 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m08" data-chapter="m08" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 8 章</p>
+  <p class="chapter-label">第 8 章</p>
+  <h1>ルーティングの基本</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>ルータが持つルーティングテーブルの読み方(宛先のネットワーク、次に渡す機械(ネクストホップ)、最も細かく一致する行を選ぶルール(最長一致))を説明できる。</li>
+      <li>デフォルトルートが、宛先が表のどの行にも当てはまらないときに使われる特別な行であることを説明できる。</li>
+      <li>人があらかじめ手で書く静的経路と、近くの機械どうしが自動で作る動的経路の違いを説明できる。</li>
+      <li>OSPF が、隣り合うルータどうしが経路の情報を交換し合って自動的に表を作る仕組みの代表例であることを説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 340" role="img" aria-label="ルータの箱の中にルーティングテーブルがあり、3 行(直結のネットワーク、遠くのネットワーク、デフォルトルート)が書かれている。それぞれの行から、直結の機器、遠くのネットワーク、インターネットの先へと矢印が伸びる。下部には、この表が管理者の手書き(静的経路)か、隣のルータどうしが自動で作る仕組み(動的経路、例: OSPF)のいずれかで作られていることが示されている。">
+      <defs>
+        <marker id="m08-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m08-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <!-- ルータの箱 -->
+      <rect x="30" y="110" width="140" height="90" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="100" y="145" text-anchor="middle" font-size="14" fill="var(--fig-ink)">ルータ</text>
+      <text x="100" y="163" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(中継役の機械)</text>
+
+      <!-- ルーティングテーブル -->
+      <rect x="220" y="30" width="330" height="130" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="385" y="50" text-anchor="middle" font-size="12" fill="var(--fig-ink)">ルーティングテーブル</text>
+      <line x1="220" y1="60" x2="550" y2="60" stroke="var(--fig-muted)" stroke-width="1"/>
+      <text x="235" y="82" font-size="12" fill="var(--fig-ink)">192.168.1.0/24(直結) → 直接</text>
+      <text x="235" y="112" font-size="12" fill="var(--fig-ink)">203.0.113.0/24 → 次のルータへ</text>
+      <text x="235" y="142" font-size="12" fill="var(--fig-accent)">0.0.0.0/0(デフォルトルート) → 次のルータへ</text>
+
+      <line x1="170" y1="150" x2="220" y2="95" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m08-arrow-ink)"/>
+
+      <!-- 3つの行き先 -->
+      <rect x="620" y="20" width="220" height="50" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="730" y="50" text-anchor="middle" font-size="12" fill="var(--fig-ink)">直結の機器</text>
+      <line x1="550" y1="75" x2="620" y2="45" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m08-arrow-ink)"/>
+
+      <rect x="620" y="100" width="220" height="50" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="730" y="130" text-anchor="middle" font-size="12" fill="var(--fig-ink)">遠くのネットワーク</text>
+      <line x1="550" y1="105" x2="620" y2="120" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m08-arrow-ink)"/>
+
+      <rect x="620" y="180" width="220" height="50" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="730" y="205" text-anchor="middle" font-size="12" fill="var(--fig-accent)">インターネットの先</text>
+      <text x="730" y="221" text-anchor="middle" font-size="10" fill="var(--fig-muted)">(どこにも当てはまらない宛先)</text>
+      <line x1="550" y1="135" x2="620" y2="200" stroke="var(--fig-accent)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m08-arrow-accent)"/>
+
+      <text x="450" y="270" text-anchor="middle" font-size="12" fill="var(--fig-ink)">この表は、管理者が手で書く(静的経路)か、隣のルータどうしが自動で作る(動的経路、例: OSPF)</text>
+      <text x="450" y="292" text-anchor="middle" font-size="12" fill="var(--fig-ink)">いずれかの方法で作られている</text>
+    </svg>
+    <p class="fig-cap">ルータは、宛先ごとに次の送り先が書かれたルーティングテーブルを持つ。直結の宛先や遠くの宛先に一致する行があればそれに従い、どの行にも当てはまらない宛先はデフォルトルートに従ってインターネットの先へ送られる。この表は静的経路(手書き)か動的経路(OSPF などによる自動作成)で作られる。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m08"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m07.html">← 第 7 章 ARP と同一ネットワーク内の通信</a>
+    <a class="next" href="m09.html">第 9 章 インターネットの経路制御 — BGP と AS →</a>
+  </nav>
+</main>
+</body>
+</html>

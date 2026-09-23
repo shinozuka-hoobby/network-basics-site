@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>接続を使い回す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m20-3" data-chapter="m20" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 20-3</p>
+  <p class="chapter-label">第 20 章 HTTP/1.1　20-3</p>
+  <h1>接続を使い回す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>1 つのやり取りごとに、通信のための道筋を新しく作り直していると、その分の時間がかかってしまう。このページでは、<strong>この無駄を避けるために、一度作った道筋を次のやり取りにも使い回す仕組み</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 13 章で、TCP 接続を作るのに 3 回のやり取りが要るって習いましたけど、Web ページを開くたびに毎回それをやってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">昔はそうでした。1 つのリクエストごとに、いちいち新しい TCP 接続を作り直していたんです。</p>
+    <p class="s" data-who="ひよこちゃん">1 つのページに画像が何枚もあったら、その分だけ接続を作るってことですか? 大変そうです。</p>
+    <p class="t" data-who="ふくろう先生">そうです。1 つのオブジェクトを取得するたびに新しい接続を開く方式を、非持続的な HTTP と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">さっきから出てくるオブジェクトって、具体的には何のことですか?</p>
+    <p class="t" data-who="ふくろう先生">HTML 本体や、その中に埋め込まれた画像・CSS ファイルなど、1 つ 1 つの部品のことです。</p>
+    <p class="s" data-who="ひよこちゃん">非持続的な方式って、今はもう使われていないんですか?</p>
+    <p class="t" data-who="ふくろう先生">非持続的な方式は古い HTTP/1.0 の方式で、この章で見ている HTTP/1.1 では、持続的な方式が基本になっています。</p>
+    <p class="s" data-who="ひよこちゃん">接続を作るたびに、何が余分にかかるんですか?</p>
+    <p class="t" data-who="ふくろう先生">接続を作る往復が、オブジェクトの数だけ繰り返し発生します。</p>
+    <p class="s" data-who="ひよこちゃん">往復が増えると、どれくらい遅くなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">非持続的な場合、合計の時間はオブジェクトの数掛ける、2 倍の往復時間足す転送時間になります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、API を毎回別の接続で呼んでいたら遅かったって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさにそれです。呼び出しの数だけ、接続を作る往復が積み重なっていたんだと思います。</p>
+    <p class="s" data-who="ひよこちゃん">この無駄を避ける方法があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組みが考えられました。これを Keep-Alive と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">接続を使い回すと、何が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">最初に接続を開く往復は 1 回で済み、2 番目以降のオブジェクトは、その接続をそのまま使います。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、合計の時間はどう変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">持続的な場合、合計の時間は往復時間 1 回足す、オブジェクトの数掛ける往復時間足す転送時間になります。</p>
+    <p class="s" data-who="ひよこちゃん">接続を使い回せば、その分の往復が省けるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。実際に使い回されているところを確かめてみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">使い回した接続は、いつか切れるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。しばらくやり取りが無ければ切れますし、どちらかが明示的に切ることもあります。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>オブジェクトとは、HTML 本体やその中の画像・CSS ファイルなど、1 つ 1 つの部品のことである。非持続的な HTTP(古い HTTP/1.0 の方式)は、この 1 つ 1 つを取得するたびに新しい TCP 接続を開くため、オブジェクトの数だけ接続を作る往復が繰り返し発生する。</li>
+      <li>一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組みを Keep-Alive と呼ぶ。</li>
+      <li>Keep-Alive を使う持続的な HTTP(この章で扱う HTTP/1.1 の基本方式)では、最初に接続を開く往復は 1 回で済み、2 番目以降のオブジェクトはその接続をそのまま使う。</li>
+      <li>API を毎回別の接続で呼んでいたケースは、呼び出しの数だけ接続を作る往復が積み重なっていたために遅かったと考えられる。</li>
+      <li>使い回された接続も、しばらくやり取りが無ければ切れ、どちらかが明示的に切ることもある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>オブジェクトとは、HTML 本体や、その中に埋め込まれた画像・CSS ファイルなど、1 つ 1 つの部品を指す。1 つのオブジェクトを取得するたびに新しい TCP 接続を開く方式を、非持続的な HTTP と呼び、これは古い HTTP/1.0 の方式にあたる(#71 p.37)。この場合、合計の応答時間はオブジェクトの数 ×(2 × 往復時間 + 転送時間)になり、オブジェクトが増えるほど、接続を作る往復の回数も増えていく(#71 p.38)。1 回のリクエストのたびにファイルの種類ごとに TCP 接続を確立し直す必要があり、アクセス数が増えるとサーバの負荷も大きくなる(#4 p.5〜6)。この無駄を避けるため、一度作った接続をやり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組みが Keep-Alive である。この章で扱う HTTP/1.1 では、持続的な HTTP が基本になっており、最初に接続を開く往復は 1 回で済み、合計の応答時間は往復時間 + オブジェクトの数 ×(往復時間 + 転送時間)になる(#71 p.39)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>curl -sv https://example.com https://example.com -o /dev/null -o /dev/null</code></pre>
+    <p>見方: 出力の中に "Re-using existing connection" という行があるかを見てください。この行があれば、2 回目の要求で新しい接続を作らず、1 回目の接続をそのまま使い回した証拠です。</p>
+    <p class="try-note">出力は行数が多いですが、"Re-using existing connection" の行だけを探せば十分です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.37 Types of connections = 非持続的/持続的 HTTP の定義、p.38 Non-persistent HTTP の応答時間の式、p.39 Persistent HTTP の応答時間の式）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.5〜6 1 回の HTTP リクエストごとにファイル形状ごとの TCP セッション確立が必要で、アクセス数の増加に対しサーバの負荷が増加するという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m20-3">
+    <div class="q" data-q="1">
+      <p class="q-text">1 つのリクエストごとに新しい TCP 接続を作り直していると、何が問題になるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">接続を作るたびに往復が発生し、対象が増えるほど待ち時間やサーバの負担が増える</button></li>
+        <li><button type="button" data-correct="false">ステータスコードが正しく返らなくなる</button></li>
+        <li><button type="button" data-correct="false">ヘッダの中身が壊れる</button></li>
+        <li><button type="button" data-correct="false">名前解決をやり直す必要が生じる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、接続を作るたびに往復が発生し、対象が増えるほど待ち時間やサーバの負担が増える、です。ステータスコードやヘッダの中身、名前解決とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">Keep-Alive の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組み</button></li>
+        <li><button type="button" data-correct="false">複数の接続を同時に開いて並行して使う仕組み</button></li>
+        <li><button type="button" data-correct="false">応答を暗号化せずに送る仕組み</button></li>
+        <li><button type="button" data-correct="false">DNS の答えを覚えておく仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組み、です。複数接続の並行利用や暗号化、DNS キャッシュとは別の仕組みです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">接続を使い回すと、2 番目以降のオブジェクトの取得で何を省けるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">新しい接続を作るたびに必要になる往復</button></li>
+        <li><button type="button" data-correct="false">ステータスコードの確認</button></li>
+        <li><button type="button" data-correct="false">ヘッダの読み込み</button></li>
+        <li><button type="button" data-correct="false">名前解決</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、新しい接続を作るたびに必要になる往復、です。持続的な HTTP では最初の 1 回だけ接続を開く往復が発生し、2 番目以降はその接続をそのまま使うため、この往復を省けます。ステータスコードの確認やヘッダの読み込み、名前解決は毎回必要です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m20-2.html">← 20-2 主要なヘッダ</a>
+    <a class="up" href="m20.html">第 20 章の入口</a>
+    <a class="next" href="m20-4.html">20-4 順番待ちで詰まる →</a>
+  </nav>
+</main>
+</body>
+</html>

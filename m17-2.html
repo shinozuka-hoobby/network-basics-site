@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>変更が「伝わる」の正体 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m17-2" data-chapter="m17" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 17-2</p>
+  <p class="chapter-label">第 17 章 DNS の運用と障害　17-2</p>
+  <h1>変更が「伝わる」の正体</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>DNS レコードを変更しても、すぐには新しい答えに切り替わらないことがある。よく「変更が伝播するまで待つ」と言われるが、実際に起きているのは、権威サーバへの反映と、各地に残った DNS キャッシュの期限切れという、<strong>性質の違う 2 つの段階</strong>である。このページでは、この 2 段階の正体を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">DNS レコードを変更したとき、「変更が伝播するまで待つ」って言い方を先輩がしてました。第 16 章で見た DNS の TTL と DNS キャッシュの話と同じことですか?</p>
+    <p class="t" data-who="ふくろう先生">近い話ですが、もう一歩踏み込むと、その「伝播」という言い方は<strong>少し正確ではありません</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">え、どういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">変更は 2 段階で反映されます。まず、変更した内容が権威サーバに書き込まれる段階。次に、各地の DNS リゾルバが持っている古い答えの DNS キャッシュが、期限切れになって初めて新しい答えを取り直す段階です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、新しい答えが古いキャッシュに「押し出されて」広まっていくわけじゃないんですね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。押し出されるのではなく、それぞれの DNS リゾルバが自分の DNS の TTL が切れたタイミングで、勝手に取り直しに行くだけです。</p>
+    <p class="s" data-who="ひよこちゃん">権威サーバへの反映のほうは、すぐに終わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">管理画面や API で変更を保存すれば、権威サーバ側はすぐに新しい内容になります。時間がかかるのは、その先の DNS キャッシュの取り直しのほうです。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、DNS の TTL を 1 日にしたまま移行したら、切り替えが丸 1 日終わらなかったという話を聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">DNS の TTL が高すぎると、DNS リゾルバが古い答えを長く覚えたままになるので、切り替えに時間がかかります。だいたい 86400 秒(24 時間)が典型的な上限で、多くのサービスはもっと短く、6 時間以下に設定しています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、切り替えの予定が決まっているときは、前もって DNS の TTL を短くしておくといいんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。短くしすぎると問い合わせの回数が増えるという別の負担もあるので、普段は程よい長さにしておき、予定が分かっているときだけ短くしておくのがよくあるやり方です。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、「伝播」っていう言葉のイメージだけで考えると、勘違いしそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。実際に起きているのは、権威サーバへの反映と、DNS キャッシュの期限切れという、別々の 2 つの出来事です。</p>
+    <p class="s" data-who="ひよこちゃん">権威サーバへの反映自体が失敗することもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。設定の保存操作そのものが失敗すれば、その時点で反映されません。ただし、それは今回見てきた「時間差」とは別の問題です。</p>
+    <p class="s" data-who="ひよこちゃん">この 2 段階、自分で確認する方法ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">権威サーバへの反映そのものを外から直接見る方法はありません。DNS キャッシュの期限切れのほうは、前の章で DNS の TTL の数字を見て確認しましたね。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>俗に「伝播」と呼ばれる現象の正体は、権威サーバへの反映と、各地の DNS キャッシュの期限切れという、性質の異なる 2 段階である。</li>
+      <li>新しい答えが古いキャッシュに押し出されるのではなく、各 DNS リゾルバが自分の DNS の TTL が切れたタイミングで勝手に取り直すだけである。</li>
+      <li>管理画面や API での変更の保存自体は、権威サーバ側にはすぐに反映される。時間がかかるのは、その先の DNS キャッシュの取り直しである。</li>
+      <li>DNS の TTL が高すぎると、切り替えに時間がかかる。典型的な上限は 86400 秒(24 時間)で、多くのサービスはそれより短く 6 時間以下に設定している。</li>
+      <li>切り替えの予定が決まっているときは、前もって DNS の TTL を短くしておくと、この時間差を短くできる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DNS レコードの変更は、俗に「伝播」と呼ばれるが、実際には 2 つの別々の段階で起きる。まず、変更した内容が権威サーバに書き込まれる段階。次に、各地の DNS リゾルバが持つ DNS キャッシュが、それぞれの DNS の TTL の期限切れ後に新しい答えを取り直す段階である(#32「Propagation of changes」)。新しい答えが各地のキャッシュへ能動的に配られるわけではなく、DNS リゾルバ側がそれぞれ独自のタイミングで期限切れを迎え、取り直しに行くだけである。DNS の TTL が高いと、DNS リゾルバは古い答えを長く覚えたままになり、変更がゆっくりとしか反映されない。典型的な上限は 86400 秒(24 時間)だが、多くのサービスはそれより短く、6 時間以下に設定している(#53「Time-to-live (TTL) is set too high」)。切り替えの予定が決まっている場合は、前もって DNS の TTL を短くしておくことで、この時間差を短くできる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="32">[#32] Google Cloud「Cloud DNS overview」 — <a href="https://cloud.google.com/dns/docs/overview" rel="noopener">原典</a>（「Propagation of changes」の節。変更は権威サーバへの反映と DNS リゾルバのキャッシュ期限切れの 2 段階で伝わるという記述、TTL がキャッシュを制御するという記述）</li>
+    <li class="cite" data-src="53">[#53] Cloudflare Learning Center「Common DNS issues and how to fix them」 — <a href="https://www.cloudflare.com/learning/dns/common-dns-issues/" rel="noopener">原典</a>（「Time-to-live (TTL) is set too high」の節。TTL の典型的な上限が 86400 秒で、多くは 6 時間以下という記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m17-2">
+    <div class="q" data-q="1">
+      <p class="q-text">管理画面で DNS レコードの変更を保存した直後に、まだ古い答えが返ってくることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">権威サーバへの反映と DNS キャッシュの期限切れは別の段階で、後者は DNS の TTL が切れるまで終わらないから</button></li>
+        <li><button type="button" data-correct="false">変更が権威サーバに反映されるまでに、承認の手続きが必要だから</button></li>
+        <li><button type="button" data-correct="false">DNS レコードの変更は、1 日に 1 回しか行えない決まりだから</button></li>
+        <li><button type="button" data-correct="false">新しい IP アドレスは DNS キャッシュに保存できない決まりだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、権威サーバへの反映と DNS キャッシュの期限切れは別の段階で、後者は DNS の TTL が切れるまで終わらないから、です。承認手続きや変更回数の制限、保存の可否が理由ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">俗に「伝播」と呼ばれる現象の実際の正体として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">権威サーバが変更内容を各 DNS リゾルバに一斉に送信すること</button></li>
+        <li><button type="button" data-correct="true">新しい答えが押し出されるのではなく、各 DNS リゾルバが自分の DNS の TTL が切れたタイミングで勝手に取り直すこと</button></li>
+        <li><button type="button" data-correct="false">DNS キャッシュが毎秒自動的に更新され続けること</button></li>
+        <li><button type="button" data-correct="false">変更内容がインターネット全体に瞬時に反映されること</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、新しい答えが押し出されるのではなく、各 DNS リゾルバが自分の DNS の TTL が切れたタイミングで勝手に取り直すこと、です。一斉送信や瞬時の反映、毎秒の自動更新ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">DNS の TTL を長くしすぎると、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">権威サーバへの問い合わせがエラーになりやすくなる</button></li>
+        <li><button type="button" data-correct="false">DNS レコードが自動的に削除されてしまう</button></li>
+        <li><button type="button" data-correct="true">変更を反映しても DNS リゾルバが古い答えを長く覚えたままになり、切り替えに時間がかかる</button></li>
+        <li><button type="button" data-correct="false">権威サーバの負荷が急激に増える</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、変更を反映しても DNS リゾルバが古い答えを長く覚えたままになり、切り替えに時間がかかる、です。エラーの増加やレコードの削除、権威サーバの負荷増加とは関係ありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m17-1.html">← 17-1 「名前が無い」と「答えられなかった」は別の失敗</a>
+    <a class="up" href="m17.html">第 17 章の入口</a>
+    <a class="next" href="m17-3.html">17-3 名前解決で遅くなる →</a>
+  </nav>
+</main>
+</body>
+</html>

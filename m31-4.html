@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>届かないときは、経路と入口を確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m31-4" data-chapter="m31" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 31-4</p>
+  <p class="chapter-label">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける　31-4</p>
+  <h1>届かないときは、経路と入口を確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>「届かない」「応答が返らない」という症状を、ルートテーブル、セキュリティグループと NACL の違い、VPC ピアリングの制約で見分ける。<strong>クラウド側の診断ツールとフローログ</strong>も、この段階を確かめる助けになる。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ケース 3、届かない、または応答が返らない、ですね。</p>
+    <p class="t" data-who="ふくろう先生">31-1 の②と③、経路と入口の段階です。</p>
+    <p class="s" data-who="ひよこちゃん">第 24 章 24-2 で、ルートテーブルにインターネットゲートウェイへの経路が無くて、公開用の区画のサーバに外からアクセスできなかった話がありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。サーバ自体は動いていても、経路が無ければ外とはやり取りできません。31-1 の②(相手に届くか)で止まる例です。</p>
+    <p class="s" data-who="ひよこちゃん">経路があるのに応答が返らないこともあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 24 章 24-3 で見た、NACL がステートレスだった話です。行きの通信を許可しても、戻りの通信を別に許可しないと通りません。</p>
+    <p class="s" data-who="ひよこちゃん">セキュリティグループと NACL、どちらを先に疑えばいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">セキュリティグループはステートフルなので、行きを許可すれば戻りは自動で通ります。<strong>応答が返らないなら、まず NACL の戻りの許可を疑う</strong>のが理にかなっています。</p>
+    <p class="s" data-who="ひよこちゃん">nc -zv example.com 443 のような道具では、この違いは分かるんですか。</p>
+    <p class="t" data-who="ふくろう先生">分かりません。第 12 章 12-1 で見たとおり、この道具は入口まで届いたかどうかを外から確かめるだけです。セキュリティグループの設定なのか、NACL の設定なのか、そもそも相手が待ち受けていないだけなのかは、この結果だけでは区別できません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、どうやって区別するんですか。</p>
+    <p class="t" data-who="ふくろう先生">クラウド側で確かめます。第 29 章 29-1 で見た経路診断ツールは、ルートテーブルやセキュリティグループ、NACL といった設定を読み取り、実際には送らずに「届くはずか」を判定します。</p>
+    <p class="s" data-who="ひよこちゃん">実際に何が起きたかは、どこで分かるんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 29 章 29-3 で見たフローログです。実際に許可された通信と、拒否された通信が、別々の記録として残ります。</p>
+    <p class="s" data-who="ひよこちゃん">第 29 章 29-4 で、まさに 24-2 と 24-3 の事例を、その 2 つの道具で確かめ直してましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この章では、そもそもどの段階(経路か、入口か)を疑うかという手順の話をし、実際にどの道具でどう確かめるかは 29-4 に譲ります。</p>
+    <p class="s" data-who="ひよこちゃん">第 25 章 25-1 で見た、VPC ピアリングが推移しない話も、届かない原因になりますか。</p>
+    <p class="t" data-who="ふくろう先生">なります。B と C それぞれに A との接続があっても、B-C 間に直接の接続が無ければ届きません。これも 31-1 の②(相手に届くか)の段階です。</p>
+    <p class="s" data-who="ひよこちゃん">経路、入口、ピアリング、原因の候補がいろいろありますね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。まず届くか(経路・ピアリング)、次に入口が開いているか、という順で確かめると、疑う範囲を絞り込めます。</p>
+    <p class="s" data-who="ひよこちゃん">次のページでは、いよいよ「遅い」の話と、この講座のまとめですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。最後のページで見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ルートテーブルにインターネットゲートウェイへの経路が無ければ、サーバ自体が動いていても外とはやり取りできない(31-1 の②)。</li>
+      <li>セキュリティグループはステートフルで戻りの通信を自動で通すが、NACL はステートレスで戻りも別に許可が要る(31-1 の③)。</li>
+      <li>外部からの到達性を確かめる道具だけでは、セキュリティグループ・NACL・相手の不在のどれが原因かは区別できない。クラウド側の経路診断ツール(第 29 章 29-1)とフローログ(第 29 章 29-3)を組み合わせると区別できる。</li>
+      <li>VPC ピアリングは推移しないため、A-B・A-C の接続があっても B-C 間には直接の接続が無ければ届かない(31-1 の②)。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>第 24 章 24-2 で確立したとおり、ルートテーブルに宛先への経路(0.0.0.0/0 をインターネットゲートウェイへ送る行など)が無ければ、サーバ自体が動いていても外とはやり取りできない(#22)。第 24 章 24-3 で確立したとおり、セキュリティグループは一度許可した通信の戻りを自動で通す(ステートフル)が、NACL は行きと戻りをそれぞれ許可する必要がある(ステートレス)(#95、#96、#97)。第 25 章 25-1 で確立したとおり、VPC ピアリングは 1 対 1 の接続で、つないだ相手を経由してさらに別の VPC へ届けること(推移)はできない(#22、#26、#30)。第 29 章 29-1・29-3 で見るとおり、クラウド側の経路診断ツールは設定から届くはずかを推論し、フローログは実際に許可・拒否された記録を残すため、この 2 つを組み合わせると、どの設定が原因かを絞り込める。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>nc -zv example.com 443</code></pre>
+    <p>見方: 「succeeded」を含む行が出れば、443 番という入口までは到達できている(第 12 章 12-1 の見方をそのまま使う)。ただし、セキュリティグループの設定によるものか、NACL の設定によるものか、相手がそもそも 443 番で待ち受けていないだけなのかは、この結果だけでは区別できない。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（第 24 章 24-2、第 25 章 25-1 で確立。ルートテーブルと VPC ピアリング）</li>
+    <li class="cite" data-src="95">[#95] Amazon Web Services（Amazon VPC ユーザーガイド）「Control traffic to your AWS resources using security groups」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html" rel="noopener">原典</a>（第 24 章 24-3 で確立。セキュリティグループのステートフル）</li>
+    <li class="cite" data-src="96">[#96] Amazon Web Services（Amazon VPC ユーザーガイド）「Control subnet traffic with network access control lists」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html" rel="noopener">原典</a>（第 24 章 24-3 で確立。NACL のステートレス）</li>
+    <li class="cite" data-src="97">[#97] Amazon Web Services（Amazon VPC ユーザーガイド）「Infrastructure security in Amazon VPC」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html" rel="noopener">原典</a>（第 24 章 24-3 で確立。セキュリティグループと NACL の比較）</li>
+    <li class="cite" data-src="26">[#26] AWS「Building a Scalable and Secure Multi-VPC AWS Network Infrastructure」 — <a href="https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/building-scalable-secure-multi-vpc-network-infrastructure.pdf" rel="noopener">原典</a>（第 25 章 25-1 で確立。VPC ピアリングの非推移）</li>
+    <li class="cite" data-src="30">[#30] Google Cloud Architecture Center「Best practices for VPC design」 — <a href="https://docs.cloud.google.com/architecture/best-practices-vpc-design" rel="noopener">原典</a>（第 25 章 25-1 で確立。VPC ピアリングの非推移）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m31-4">
+    <div class="q" data-q="1">
+      <p class="q-text">セキュリティグループで 443 番への受信を許可したのに応答が返らない場合、まず疑うべき設定はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ルートテーブルの経路</button></li>
+        <li><button type="button" data-correct="true">NACL の戻りの許可</button></li>
+        <li><button type="button" data-correct="false">DNS のレコード</button></li>
+        <li><button type="button" data-correct="false">TLS 証明書の有効期限</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、NACL の戻りの許可です。NACL はステートレスなので、行きの通信を許可しても戻りの通信を別に許可しないと通りません。セキュリティグループはステートフルで戻りを自動で通すため、応答が返らない原因としては疑いにくいです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">nc -zv example.com 443 が failed(失敗)を返したとき、この結果だけから分かることはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">443 番の入口までは到達できなかったということだけで、セキュリティグループ・NACL・相手の不在のどれが原因かは分からない</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループの設定が原因だと確定する</button></li>
+        <li><button type="button" data-correct="false">NACL の設定が原因だと確定する</button></li>
+        <li><button type="button" data-correct="false">相手のサーバが停止していると確定する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、443 番の入口までは到達できなかったということだけで、原因までは分からない、です。原因を絞り込むには、クラウド側の経路診断ツールやフローログを確かめる必要があります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">VPC A-B と VPC A-C をそれぞれ VPC ピアリングでつないだ場合、B から C への通信について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">A を経由して自動的に通信できる</button></li>
+        <li><button type="button" data-correct="true">B-C 間に直接の VPC ピアリング接続が無ければ通信できない</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループを設定すれば、ピアリングが無くても通信できる</button></li>
+        <li><button type="button" data-correct="false">ルートテーブルの設定だけで、ピアリングが無くても通信できる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、B-C 間に直接の VPC ピアリング接続が無ければ通信できない、です。VPC ピアリングは推移しないため、A 経由の自動的な到達や、セキュリティグループ・ルートテーブルだけでの代替はできません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m31-3.html">← 31-3 警告が出たら、証明書を確かめる</a>
+    <a class="up" href="m31.html">第 31 章の入口</a>
+    <a class="next" href="m31-5.html">31-5 ここから先へ →</a>
+  </nav>
+</main>
+</body>
+</html>

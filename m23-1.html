@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ロードバランサは何を分けるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m23-1" data-chapter="m23" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 23-1</p>
+  <p class="chapter-label">第 23 章 ロードバランシング　23-1</p>
+  <h1>ロードバランサは何を分けるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じ役目を持つ複数の機械に要求を振り分ける機械が、なぜ複数台に分けて振り分けるのか、その目的を確認する。<strong>1 台に要求を集中させないことと、止まった 1 台には送らないこと</strong>が、大きな目的である。振り分け方には、通信の入り口の情報だけを見る立場と、中身まで見る立場の、2 つがある。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 19 章で、ロードバランサは「同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械」だって聞きましたけど、何のためにわざわざ複数台に分けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">大きく 2 つの理由があります。1 つは、1 台に要求が集中すると、その 1 台の処理能力の上限で頭打ちになってしまうからです。</p>
+    <p class="s" data-who="ひよこちゃん">複数台に分ければ、それぞれの負担が減るってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。もう 1 つの理由は、1 台だけだと、その 1 台が止まったときに全体が止まってしまうことです。複数台に分けておけば、<strong>1 台が止まっても残りで受け続けられます</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、集中を避けることと、1 台が止まっても全体を止めないこと、2 つの目的があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">振り分けるとき、ロードバランサは何を見て決めてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">大きく 2 つの立場があります。1 つは、TCP 接続の宛先や送信元の IP アドレスとポート番号だけを見る立場です。</p>
+    <p class="s" data-who="ひよこちゃん">ちなみに、宛先や送信元の IP アドレスとポート番号の組み合わせって、第 12 章で見たソケットのことですよね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。送信元側と宛先側、それぞれのソケット(IP アドレスとポート番号の組)の組み合わせを見ている、と考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">HTTP リクエストの中身までは見ないんですか?</p>
+    <p class="t" data-who="ふくろう先生">見ない場合もあれば、見る場合もあります。もう 1 つの立場は、HTTP リクエストの URL やヘッダの中身まで見て振り分ける立場です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあもう 1 つの立場の方は、ソケットだけじゃなくて、もっと中まで見てるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。第 20 章で見た HTTP ヘッダの中身まで見て、宛先のパスや、どんな種類の要求かによって、振り分け先を変えることもできます。</p>
+    <p class="s" data-who="ひよこちゃん">2 つの立場に、それぞれ呼び方はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。TCP 接続の情報だけを見る立場を L4、HTTP リクエストの中身まで見る立場を L7 と呼び、まとめて <strong>L4/L7</strong> という言い方をします。</p>
+    <p class="s" data-who="ひよこちゃん">L4 と L7 って、何の番号なんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 1 章 1-4 で見た、OSI 参照モデル(7 層)を覚えていますか? 下から 4 番目の層(トランスポート層)と、一番上、7 番目の層(アプリケーション層)を指しています。</p>
+    <p class="s" data-who="ひよこちゃん">下の方の層(トランスポート層)を見るのが L4、一番上の層(アプリケーション層)まで見るのが L7 ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。TCP 接続の宛先 IP アドレスやポート番号は、トランスポート層の情報ですし、HTTP リクエストの URL やヘッダは、アプリケーション層の情報です。</p>
+    <p class="s" data-who="ひよこちゃん">同じロードバランサでも、どちらの立場を取るかで、見える情報の範囲が違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この違いは、次のページ以降で見ていく、振り分け先の決め方や仕組みにも関わってきます。</p>
+    <p class="s" data-who="ひよこちゃん">この 2 つの立場、両方を兼ねるロードバランサもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">製品によって異なります。次のページから、実際にどの 1 台に送るかを具体的に見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ロードバランサは、同じ役目を持つ複数の機械に要求を振り分ける機械である。</li>
+      <li>1 台への集中を避けることと、1 台が止まっても全体を止めないことの、2 つの目的で置かれる。</li>
+      <li>振り分け方には大きく 2 つの立場があり、TCP 接続の宛先・送信元の IP アドレスとポート番号だけを見る立場を L4 での振り分けと呼ぶ。</li>
+      <li>HTTP リクエストの URL やヘッダの中身まで見る立場を L7 での振り分けと呼ぶ。</li>
+      <li>L4 と L7 は、第 1 章で見た OSI 参照モデル(7 層)のうち、下から 4 番目の層(トランスポート層)と一番上、7 番目の層(アプリケーション層)を指し、まとめて L4/L7 と呼ぶ。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ロードバランサは、同じ役目を持つ複数の機械へ要求を振り分ける機械である。1 台に要求が集中すると処理能力の上限で頭打ちになり(#31)、1 台だけだと止まったときに全体が止まってしまうため(#25)、複数台に分けて振り分ける。振り分け方には大きく 2 つの立場がある。TCP 接続の宛先・送信元の IP アドレスとポート番号など、トランスポート層の情報だけを見る立場を L4 と呼び(#40)、HTTP リクエストの URL やヘッダなど、アプリケーション層の情報まで見る立場を L7 と呼ぶ(#31)。まとめて L4/L7 という言い方をする。前面の機械が複数の後方の機械へ要求を振り分けるという構成そのものは、基本的な形である(#71)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="25">[#25] AWS「How Elastic Load Balancing works」 — <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" rel="noopener">原典</a>(3 行目。ロードバランサが登録先の健康状態を監視し、健康な登録先だけに要求を送るという記述)</li>
+    <li class="cite" data-src="31">[#31] Google Cloud「Cloud Load Balancing overview」 — <a href="https://docs.cloud.google.com/load-balancing/docs/load-balancing-overview" rel="noopener">原典</a>(1 行目。複数のインスタンスに要求を分散させることで、性能問題のリスクを減らすという記述。27〜32 行目「Layer 4 and Layer 7 load balancing」の節。Layer 4 はネットワーク・トランスポート層のプロトコルの情報、Layer 7 は HTTP ヘッダや URI などの属性を見るという記述。76〜91 行目。Application Load Balancer は Layer 7、Network Load Balancer は Layer 4 という記述)</li>
+    <li class="cite" data-src="40">[#40] Microsoft「Azure Load Balancer overview」 — <a href="https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview" rel="noopener">原典</a>(17 行目。Layer 4 の TCP・UDP トラフィックを分散するという記述。30 行目。Azure Load Balancer が OSI モデルの layer 4 で動作するという記述)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab(インターネット工学研究室)「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(2018-06-application.txt p.50「Server Farms」。前面の機械〈front-end〉が複数のサーバへ要求を振り分けるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m23-1">
+    <div class="q" data-q="1">
+      <p class="q-text">なぜロードバランサは、振り分け先の機械が 1 台ではなく複数台なのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">複数台の方が、電気代を安く抑えられるから</button></li>
+        <li><button type="button" data-correct="true">1 台に要求が集中すると処理能力の上限で頭打ちになったり、1 台が止まると全体が止まったりするため、複数に分けることでどちらも避けられるから</button></li>
+        <li><button type="button" data-correct="false">複数台に分けないと、名前解決ができない決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">複数台に分けた方が、通信の暗号化が簡単になるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 台に要求が集中すると処理能力の上限で頭打ちになったり、1 台が止まると全体が止まったりするため、複数に分けることでどちらも避けられるから、です。電気代や名前解決、暗号化とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">L4 での振り分けの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">HTTP リクエストの URL やヘッダの中身まで見て、振り分け先を決める</button></li>
+        <li><button type="button" data-correct="true">TCP 接続の宛先や送信元の IP アドレスとポート番号など、トランスポート層の情報だけを見て、振り分け先を決める</button></li>
+        <li><button type="button" data-correct="false">振り分け先を 1 台だけに固定し、他の機械には送らない</button></li>
+        <li><button type="button" data-correct="false">利用者のブラウザの種類だけを見て、振り分け先を決める</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP 接続の宛先や送信元の IP アドレスとポート番号など、トランスポート層の情報だけを見て、振り分け先を決める、です。HTTP リクエストの中身まで見るのは L7 での振り分けで、1 台への固定やブラウザの種類だけを見る話ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">L4 と L7 という呼び方の由来として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">第 1 章で見た OSI 参照モデル(7 層)のうち、下から 4 番目の層(トランスポート層)と、一番上、7 番目の層(アプリケーション層)を指す</button></li>
+        <li><button type="button" data-correct="false">ロードバランサの製造番号を表す</button></li>
+        <li><button type="button" data-correct="false">振り分け先の機械の台数を表す</button></li>
+        <li><button type="button" data-correct="false">1 秒間に処理できる要求の件数を表す</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、第 1 章で見た OSI 参照モデル(7 層)のうち、下から 4 番目の層(トランスポート層)と、一番上、7 番目の層(アプリケーション層)を指す、です。製造番号や台数、処理件数を表す番号ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m23.html">← 第 23 章の入口</a>
+    <a class="up" href="m23.html">第 23 章の入口</a>
+    <a class="next" href="m23-2.html">23-2 どの 1 台に送るか →</a>
+  </nav>
+</main>
+</body>
+</html>

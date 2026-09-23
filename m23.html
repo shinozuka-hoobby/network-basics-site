@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ロードバランシング — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m23" data-chapter="m23" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 23 章</p>
+  <p class="chapter-label">第 23 章</p>
+  <h1>ロードバランシング</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>同じ役目を持つ複数の機械に要求を振り分ける仕組みが、<strong>何のために置かれ、通信の何を見て振り分け先を決めるか</strong>を説明できる。</li>
+      <li>実際にどの 1 台に送るか、代表的な 2 つの決め方を説明できる。</li>
+      <li>振り分け先の 1 台が動かなくなったとき、それをどう見つけ、他の機械に切り替えるかを説明できる。</li>
+      <li>同じ利用者からの複数回の要求を、<strong>できるだけ同じ機械に送り続ける仕組み</strong>と、その限界を説明できる。</li>
+      <li>利用者が振り分ける機械自体にどうたどり着くか、名前解決を使った方法を説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 320" role="img" aria-label="利用者からの要求が、振り分ける機械へ届く図。振り分ける機械は、正常に動いている 2 台の機械には要求を送り(実線の矢印)、止まっている 1 台には送らない(破線の矢印)。">
+      <defs>
+        <marker id="m23-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m23-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-muted)"/>
+        </marker>
+      </defs>
+
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="20" y="128" width="140" height="65" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="90" y="166" text-anchor="middle">利用者</text>
+
+        <rect x="360" y="128" width="180" height="65" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="450" y="156" text-anchor="middle">振り分ける機械</text>
+        <text x="450" y="176" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(健康な機械だけに送る)</text>
+
+        <rect x="700" y="30" width="160" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="780" y="63" text-anchor="middle">機械 A</text>
+
+        <rect x="700" y="133" width="160" height="55" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="780" y="166" text-anchor="middle">機械 B</text>
+
+        <rect x="700" y="236" width="160" height="55" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="780" y="260" text-anchor="middle" fill="var(--fig-muted)">機械 C</text>
+        <text x="780" y="277" text-anchor="middle" font-size="11" fill="var(--fig-muted)">(止まっている)</text>
+      </g>
+
+      <line x1="160" y1="160" x2="360" y2="160" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m23-arrow-ink)"/>
+      <text x="260" y="150" text-anchor="middle" font-size="12" fill="var(--fig-ink)">要求</text>
+
+      <path d="M 540 145 L 700 57" fill="none" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m23-arrow-ink)"/>
+      <path d="M 540 160 L 700 160" fill="none" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m23-arrow-ink)"/>
+      <path d="M 540 175 L 700 263" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m23-arrow-muted)"/>
+    </svg>
+    <p class="fig-cap">利用者からの要求は、まず振り分ける機械に届く。振り分ける機械は、正常に動いている機械にだけ要求を送り、止まっている機械には送らない。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m23"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m22.html">← 第 22 章 CDN とキャッシュ</a>
+    <a class="next" href="m24.html">第 24 章 クラウドの仮想ネットワーク（VPC） →</a>
+  </nav>
+</main>
+</body>
+</html>

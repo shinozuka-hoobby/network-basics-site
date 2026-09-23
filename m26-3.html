@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一斉に押し寄せる通信をどう防ぐか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m26-3" data-chapter="m26" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 26-3</p>
+  <p class="chapter-label">第 26 章 ネットワークセキュリティの基礎　26-3</p>
+  <h1>一斉に押し寄せる通信をどう防ぐか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>大量の通信を一斉に送りつけて、サーバやネットワークを使えなくしてしまう攻撃がある。<strong>攻撃には、狙う対象によっていくつかの種類がある</strong>。このページでは、その種類と、これまで見てきた仕組みによる緩和策を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、大量の通信を送りつける攻撃があるって話が出ましたけど、詳しく知りたいです。</p>
+    <p class="t" data-who="ふくろう先生">これを DDoS と呼びます。乗っ取った複数の機械から、一斉に大量の通信を送りつけて、対象を使えなくしてしまう攻撃です。</p>
+    <p class="s" data-who="ひよこちゃん">複数の機械を乗っ取るって、どうやるんですか?</p>
+    <p class="t" data-who="ふくろう先生">不正なプログラムを送り込むなどして、遠隔から操作できるようにした機械の集まりを、ボットネットと呼びます。攻撃者はこのボットネットに一斉に指示を送ります。</p>
+    <p class="s" data-who="ひよこちゃん">攻撃の種類にはどんなものがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">大きく 3 つあります。1 つは、帯域そのものを埋め尽くしてしまう攻撃です。</p>
+    <p class="s" data-who="ひよこちゃん">回線をパンクさせるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。大量のデータを送りつけて、対象までの回線をふさいでしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">前のページで、なりすましがこの攻撃でも使われるって話がありましたけど、具体的にはどう使われるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送信元の欄を、狙った相手のアドレスに書き換えて、色々なサーバに問い合わせを送ります。すると、その返事がまとめて狙った相手に届き、通信量が膨れ上がります。</p>
+    <p class="s" data-who="ひよこちゃん">他の 2 つはどんな攻撃なんですか?</p>
+    <p class="t" data-who="ふくろう先生">もう 1 つは、第 23 章で見たトランスポート層の弱点を突いて、ファイアウォールやロードバランサのような機器の処理能力を消耗させる攻撃です。</p>
+    <p class="s" data-who="ひよこちゃん">機器そのものを疲れさせちゃうんですね。</p>
+    <p class="t" data-who="ふくろう先生">3 つ目は、第 20 章で見た HTTP のやり取りを大量に送りつけて、アプリケーション層でサーバに応答を作らせ続ける攻撃です。<strong>1 件あたりの処理は軽くても、大量に送られると負荷が積み重なります</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">よくある事例として聞いたんですけど、DNS のサービスが DDoS 攻撃を受けて、世界中で色々なサイトにアクセスできなくなったことがあるらしいです。</p>
+    <p class="t" data-who="ふくろう先生">2016 年に、DNS のサービスを提供する Dyn という会社が実際に DDoS 攻撃を受け、世界の広い範囲で利用者がインターネットサービスを使えなくなりました。</p>
+    <p class="s" data-who="ひよこちゃん">DNS のサーバが止まると、Web サーバ自体は無事でも困るんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。名前解決ができなければ、利用者は IP アドレスにたどり着けません。</p>
+    <p class="s" data-who="ひよこちゃん">防ぐ方法はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 22 章で見た Anycast は、通信を複数の場所に分散させられるので、大量の通信を受けたときの緩和にも役立ちます。</p>
+    <p class="s" data-who="ひよこちゃん">第 23 章で見たロードバランサも、役に立ちますか?</p>
+    <p class="t" data-who="ふくろう先生">役立つことがあります。複数のサーバに振り分ける仕組みなので、一斉に届いた通信の負荷を分散できます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>DDoS は、乗っ取った複数の機械(ボットネット)から大量の通信を送りつけ、対象のサーバやネットワークを使えなくしてしまう攻撃である。</li>
+      <li>DDoS には、帯域を埋め尽くす攻撃、機器の処理能力を消耗させる攻撃、アプリケーション層で負荷をかける攻撃の 3 種類がある。</li>
+      <li>前のページで見た送信元の書き換えを使い、狙った相手の代わりに色々なサーバへ問い合わせを送りつけて、返事を狙った相手に集中させる手口もある。</li>
+      <li>名前解決を担う DNS サーバが攻撃を受けると、Web サーバ自体は無事でも、利用者はサイトにたどり着けなくなることがある(2016 年の Dyn の例)。</li>
+      <li>Anycast による通信の分散や、ロードバランサによる複数サーバへの振り分けは、DDoS の影響を緩和することにも役立つ。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DDoS は、遠隔操作できるように乗っ取った複数の機械(ボットネット)から、対象に向けて一斉に通信を送りつける攻撃である。攻撃の種類は大きく 3 つに分けられる。1 つ目は、帯域そのものを埋め尽くす攻撃である。前のページで見た送信元の書き換えを使い、狙った相手のアドレスを名乗って色々なサーバへ問い合わせを送りつけ、その返事を狙った相手に集中させることで、この種類の攻撃を成立させる手口もある。2 つ目は、トランスポート層(L4)の弱点を突いて、ファイアウォールやロードバランサなどの機器の処理能力を消耗させる攻撃である。3 つ目は、アプリケーション層(L7)で HTTP のやり取りを大量に発生させ、サーバに応答を作らせ続けて負荷をかける攻撃である。DNS のように、名前解決という特定の役割を担うサーバが標的にされることもあり、この場合は対象の Web サーバ自体が無事でも、利用者は名前解決ができずサイトにたどり着けなくなる。Anycast による経路の分散や、ロードバランサによる複数サーバへの振り分けは、こうした攻撃の影響を抑えることにも役立つ。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="102">[#102] Cloudflare Learning Center「What is a DDoS attack?」 — <a href="https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/" rel="noopener">原典</a>(3 行目。DDoS の定義。11 行目。乗っ取った機械の集まりをボットネットと呼ぶという記述。13 行目。攻撃者がボットネットに指示を送り攻撃を実行するという記述。19〜21 行目。帯域を埋め尽くす攻撃(Volumetric attacks)。23〜25 行目。レイヤー 3・4 の弱点を突く攻撃(Protocol attacks)。27〜29 行目。アプリケーション層で負荷をかける攻撃(Application layer attacks))</li>
+    <li class="cite" data-src="103">[#103] Cloudflare Learning Center「What is IP spoofing?」 — <a href="https://www.cloudflare.com/learning/ddos/glossary/ip-spoofing/" rel="noopener">原典</a>(11 行目。送信元の欄に別の機器のアドレスを書いておくと、応答がその機器に送りつけられ、帯域を埋め尽くす攻撃の一部で利用されるという記述。第 26 章 26-2 で参照済みの内容をここで振り返る)</li>
+    <li class="cite" data-src="53">[#53] Cloudflare Learning Center「Common DNS issues and how to fix them」 — <a href="https://www.cloudflare.com/learning/dns/common-dns-issues/" rel="noopener">原典</a>(25〜29 行目。DNS への DDoS 攻撃の説明と、2016 年に DNS サービス事業者 Dyn が攻撃を受け、世界の広い範囲で利用者がインターネットサービスを使えなくなったという記述)</li>
+    <li class="cite" data-src="59">[#59] Cloudflare Learning Center「CDN reliability and load balancing」 — <a href="https://www.cloudflare.com/learning/cdn/cdn-load-balance-reliability/" rel="noopener">原典</a>(7 行目。ロードバランサによる負荷分散が、トラフィック急増(DDoS 攻撃時を含む)の緩和にも役立つという記述。31 行目。Anycast ネットワークが、ボットネットによる攻撃の通信を複数のデータセンターに分散し、影響を抑えられるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m26-3">
+    <div class="q" data-q="1">
+      <p class="q-text">DNS サーバが DDoS 攻撃を受けると、Web サーバ自体は無事でも利用者は困ることがある。なぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">Web サーバのデータが消えてしまうから</button></li>
+        <li><button type="button" data-correct="false">HTTPS の証明書が失効してしまうから</button></li>
+        <li><button type="button" data-correct="true">名前解決ができなくなり、利用者が IP アドレスにたどり着けなくなるから</button></li>
+        <li><button type="button" data-correct="false">ルーティングテーブルが書き換えられてしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「名前解決ができなくなり、利用者が IP アドレスにたどり着けなくなるから」です。Web サーバのデータや証明書、ルーティングテーブルが直接壊れるわけではなく、名前解決という手前の段階でつまずいてしまう点が理由です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">アプリケーション層で大量の HTTP リクエストを送りつけ、サーバに応答を作らせ続ける攻撃は、次のどれに分類されるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">帯域を埋め尽くす攻撃</button></li>
+        <li><button type="button" data-correct="false">送信元アドレスを書き換える攻撃(IP スプーフィング)</button></li>
+        <li><button type="button" data-correct="true">アプリケーション層で負荷をかける攻撃</button></li>
+        <li><button type="button" data-correct="false">名前解決の答えを偽装する攻撃</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「アプリケーション層で負荷をかける攻撃」です。帯域を埋め尽くす攻撃は回線そのものを狙うもの、IP スプーフィングは送信元を偽る手口、名前解決の答えの偽装は前のページ以前で扱っていない別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Anycast やロードバランサが、DDoS 攻撃の影響を抑えるのに役立つのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の中身を暗号化して、読めなくするから</button></li>
+        <li><button type="button" data-correct="false">送信元 IP アドレスを検証して、弾くから</button></li>
+        <li><button type="button" data-correct="true">通信が複数の場所や複数のサーバに分散され、1 か所に集中しにくくなるから</button></li>
+        <li><button type="button" data-correct="false">サーバの処理能力そのものを増やす仕組みだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「通信が複数の場所や複数のサーバに分散され、1 か所に集中しにくくなるから」です。暗号化や送信元の検証、処理能力の増強とは別の理由で、分散によって集中を避けている点が本文の説明です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m26-2.html">← 26-2 差出人の住所は、名乗ったとおりとは限らない</a>
+    <a class="up" href="m26.html">第 26 章の入口</a>
+    <a class="next" href="m26-4.html">26-4 暗号化は、どこからどこまでを守っているか →</a>
+  </nav>
+</main>
+</body>
+</html>

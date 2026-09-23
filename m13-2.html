@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>番号を付けて、届いたことを確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m13-2" data-chapter="m13" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 13-2</p>
+  <p class="chapter-label">第 13 章 TCP の接続と信頼性　13-2</p>
+  <h1>番号を付けて、届いたことを確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>会話できる状態ができたあと、送り手は送るデータの一つ一つに<strong>通し番号を付けて送り</strong>、受け取る側はその番号をもとに「ここまで届いた」という返事を送り返す。このページでは、この番号と返事の仕組みによって、抜け落ちや順序の乱れに気づけることを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">会話できる状態ができたら、もうデータを送るだけですよね。でも、途中でデータが抜け落ちたり、順番が入れ替わったりしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうならないように、送るデータの一つ一つに通し番号を付けています。これを<strong>シーケンス番号</strong>と呼びます。データを受け取った側は、この番号を手がかりに元の順番を組み立て直せます。</p>
+    <p class="s" data-who="ひよこちゃん">その番号を見て、受け取る側は何をするんですか?</p>
+    <p class="t" data-who="ふくろう先生">「ここまで届いた」という返事を送り返します。これを ACK と呼び、次にどの番号のデータを待っているかを、この返事とセットで伝えます。</p>
+    <p class="s" data-who="ひよこちゃん">その返事は、データを送った側にしか送られないんですか?</p>
+    <p class="t" data-who="ふくろう先生">TCP 接続は双方向なので、実際には両側がそれぞれデータを送り、それぞれに ACK を返し合います。ここでは分かりやすく、片方向だけを見ています。</p>
+    <p class="s" data-who="ひよこちゃん">あ、さっきのあいさつのときにも ACK って出てきましたよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。あいさつのときにも、データが届いたことを知らせるときにも、同じ ACK という仕組みが使われています。</p>
+    <p class="s" data-who="ひよこちゃん">番号と返事があれば、抜けてるところにも気づけるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。届いた番号に抜けがあったり、順番が入れ替わっていたりすれば、受け取る側はすぐに気づけます。</p>
+    <p class="s" data-who="ひよこちゃん">シーケンス番号って、送ったデータの 1 個目、2 個目、みたいな数え方をしてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は少し違います。正確なところは「しくみの話」で説明しますね。ここでは、送ったデータに付ける通し番号、とだけ覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">受け取る側は、ACK をいつ送り返すんですか?</p>
+    <p class="t" data-who="ふくろう先生">データを受け取るたびに送り返します。この ACK が積み重なっていくことで、送り手はどこまで無事に届いたかをずっと把握できます。</p>
+    <p class="s" data-who="ひよこちゃん">もし届いていない番号があるのに気づいたら、受け取る側からもう一度送ってって頼むんですか?</p>
+    <p class="t" data-who="ふくろう先生">直接頼むというより、届いていない番号への返事がなかなか来ないことが、送り手にとってのきっかけになります。詳しくは次のページ(13-3)で見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">TCP 接続を作るときの SYN や ACK と、データを送るときのシーケンス番号や ACK って、同じ仕組みの中でずっと使われ続けてるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。会話できる状態を作るところから、実際にデータをやり取りするところまで、一貫してこの番号と ACK の仕組みが使われています。</p>
+    <p class="s" data-who="ひよこちゃん">番号と返事があるだけで、ずいぶん信頼できる通信になるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。IP 自身は届く保証をしませんでしたが、この番号と ACK の仕組みが、その上に信頼性を作り出しています。</p>
+    <p class="s" data-who="ひよこちゃん">つまり、IP が運ぶ役目で、TCP が確認する役目、って分担してるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、その返事が返ってこなかったときに何が起きるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>送り手は、送るデータの一つ一つにシーケンス番号(通し番号)を付ける。受け取る側はこの番号を手がかりに元の順番を組み立て直せる。</li>
+      <li>受け取る側は、データが届くたびに ACK(「ここまで届いた」という返事)を送り返し、次にどの番号を待っているかを伝える。TCP 接続は双方向なので、実際には両側が互いにこれを行う。</li>
+      <li>あいさつ(TCP ハンドシェイク)のときと、データを送るときの両方で、同じ ACK という仕組みが使われている。</li>
+      <li>シーケンス番号と ACK があることで、受け取る側は抜け落ちや順序の乱れに気づける。IP 自身が保証しない信頼性を、この仕組みが TCP の上に作り出している。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TCP は、送るデータの一つ一つにシーケンス番号という通し番号を付け、受け取る側はデータを受け取るたびに ACK(確認応答)を返す(#44)。ここまでは「送ったデータの何個目か」を数える番号であるかのように<span class="tag-simp">簡略化</span>して説明したが、実際にはシーケンス番号は、送ったデータをバイト単位で数えた位置を表す 32 ビットの番号であり、ACK は次に受け取るはずのバイト位置を伝えている(#4 p.6)。この仕組みにより、受け取る側は届いた範囲や順序の乱れを正確に把握できる(#71 p.9〜10、#12 p.21〜22)。13-1 で見た SYN/ACK の ACK と、ここで見たデータ確認の ACK は、名前も仕組みも同じものである。TCP 接続は双方向であるため、実際には送り手と受け手のそれぞれがデータとシーケンス番号を送り、それぞれに ACK を返し合う。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.6 シーケンス番号と ACK の仕組み）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.9〜10 具体的なやり取りの例）</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>（シーケンス番号と確認応答による配送情報の伝達）</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>（p.21〜22 シーケンス番号の平易な紹介）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m13-2">
+    <div class="q" data-q="1">
+      <p class="q-text">シーケンス番号と ACK があることで、受け取る側は何ができるようになるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">データを暗号化して読めなくできる</button></li>
+        <li><button type="button" data-correct="true">データの抜け落ちや順序の乱れに気づけるようになる</button></li>
+        <li><button type="button" data-correct="false">通信の相手が本物かどうかを確認できる</button></li>
+        <li><button type="button" data-correct="false">送信元の IP アドレスを書き換えられる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、データの抜け落ちや順序の乱れに気づけるようになる、です。送られたデータにはシーケンス番号が付いており、受け取る側はどこまで届いたかを ACK で確認できるため、抜けや順序の乱れに気づけます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ACK の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信を始める前に送る、最初の合図のこと</button></li>
+        <li><button type="button" data-correct="true">受け取る側が「ここまで届いた」と送り手に伝える返事のこと</button></li>
+        <li><button type="button" data-correct="false">送り手が受け取る側の処理速度を測るための信号のこと</button></li>
+        <li><button type="button" data-correct="false">通信を暗号化するための鍵のやり取りのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、受け取る側が「ここまで届いた」と送り手に伝える返事のこと、です。ACK はデータを受け取るたびに送り返され、次にどの番号を待っているかも一緒に伝えます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">TCP 接続を作るときに出てきた SYN/ACK の ACK と、データが届いたことを知らせる ACK の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前がたまたま同じなだけで、まったく別の仕組みである</button></li>
+        <li><button type="button" data-correct="true">名前も仕組みも同じ ACK が、接続を作るときにもデータを届けるときにも使われている</button></li>
+        <li><button type="button" data-correct="false">SYN/ACK の ACK の方が、データを届けるときの ACK より優先して処理される</button></li>
+        <li><button type="button" data-correct="false">データが届いたことを知らせる ACK は、接続を作り直すときにしか使われない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前も仕組みも同じ ACK が、接続を作るときにもデータを届けるときにも使われている、です。ACK は「届いたことを知らせる」という同じ役割を、あいさつの場面でもデータのやり取りの場面でも果たしています。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m13-1.html">← 13-1 「会話できる状態」を作ってから話し始める</a>
+    <a class="up" href="m13.html">第 13 章の入口</a>
+    <a class="next" href="m13-3.html">13-3 届かなかったら、送り直す →</a>
+  </nav>
+</main>
+</body>
+</html>

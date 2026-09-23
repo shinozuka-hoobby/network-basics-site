@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>手順書どおりに作った、あの仕切られた範囲 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m24-1" data-chapter="m24" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 24-1</p>
+  <p class="chapter-label">第 24 章 クラウドの仮想ネットワーク（VPC）　24-1</p>
+  <h1>手順書どおりに作った、あの仕切られた範囲</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>クラウドの中には、自分専用に仕切られたネットワークの範囲を用意できる。<strong>その範囲の中を、さらに小さな区画に分けて使う</strong>。このページでは、この仕切りと区画が、これまでの章で見た IP アドレスの範囲の区切り方と同じ考え方であることを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前に、AWS の手順書をなぞって VPC を作ったことがあるんですけど、あれって結局何を作ってたんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 10 章 10-4 で少し触れましたが、今日はその中身を見ていきましょう。あなたが作ったのは、クラウドの中に用意する、自分専用の仕切られたネットワークの範囲です。これを VPC と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">仕切られた範囲、っていうのは、第 5 章で見たサブネットみたいなものですか?</p>
+    <p class="t" data-who="ふくろう先生">近い話ですが、範囲の大きさが違います。VPC の中に、IP アドレスの範囲を指定して、サブネットを作ります。</p>
+    <p class="s" data-who="ひよこちゃん">あ、手順書で「10.0.1.0/24」みたいな数字を入力した覚えがあります。</p>
+    <p class="t" data-who="ふくろう先生">それが、第 5 章 5-2 で見た CIDR 表記です。VPC の中でサブネットを作るときも、同じ書き方で範囲を指定します。</p>
+    <p class="s" data-who="ひよこちゃん">作った VPC の中に、最初からサブネットが用意されてたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">アカウントによっては、最初から使える VPC とサブネットが用意されていることもあります。手順書で新しく作ったなら、自分で範囲を指定した、独自の VPC とサブネットです。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットって、1 つの VPC の中にいくつも作れるんですか?</p>
+    <p class="t" data-who="ふくろう先生">作れます。外から届く Web サーバ用の区画と、データベース用の区画のように、役割ごとに分けて作ることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">なんで分けるんですか? 1 つのサブネットにまとめちゃだめなんですか?</p>
+    <p class="t" data-who="ふくろう先生">まとめても動きますが、外から直接アクセスさせたくないサーバを、別の区画に分けて置いておける、という理由があります。</p>
+    <p class="s" data-who="ひよこちゃん">そのデータベース用の区画は、外からは直接アクセスできないようにしておく、ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページで、このサブネットから外に出る経路がどう決まるかを見ていきます。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、その VPC 自体は、AWS だと 1 つのリージョンに閉じてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。リージョンとは、AWS が世界各地に用意しているデータセンターの拠点のことで、AWS の VPC は 1 つのリージョンの中に閉じています。サブネットは、その VPC の中の、さらに細かい区画という位置づけです。</p>
+    <p class="s" data-who="ひよこちゃん">IPv4 だけじゃなくて、IPv6 の CIDR も設定できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。VPC には、IPv4 の CIDR と、AWS が提供する IPv6 の CIDR の、両方を設定できます。IPv6 については第 11 章で見た内容がそのまま活きます。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットを作っただけで、もう外のインターネットと通信できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。区画を分けただけでは、まだ何も通信できません。次のページで、外への経路がどう決まるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>VPC は、クラウドの中に用意する、自分専用の仕切られたネットワークの範囲である。</li>
+      <li>VPC の中に IP アドレスの範囲を CIDR 表記で指定して、サブネットという区画を作る。第 5 章 5-2 で見た CIDR 表記と同じ書き方を使う。</li>
+      <li>サブネットは役割ごとに分けて作ることができ、外から直接アクセスさせたくないサーバを、別の区画に置いておける。</li>
+      <li>AWS の VPC は 1 つのリージョンの中に閉じており、サブネットはその VPC の中のさらに細かい区画である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>VPC（Virtual Private Cloud）は、クラウドの中に用意する、自分専用の仕切られたネットワークの範囲である(#22)。VPC を作るときは、IP アドレスの範囲を CIDR 表記で指定する(#22)。この範囲の中に、さらに細かい区画としてサブネットを作り、それぞれにも IP アドレスの範囲を CIDR 表記で指定する。サブネットは役割ごとに分けて作ることができ、外から直接アクセスさせたい Web サーバ用の区画と、直接アクセスさせたくないデータベース用の区画を、別のサブネットに分けて置くことがある(#97)。AWS の VPC は 1 つのリージョンの中に閉じており、サブネットはその VPC の中のさらに細かい区画という位置づけになる(#22)。アカウントによっては、あらかじめ使える VPC とサブネットが用意されていることもあるが、手順書で新しく作った場合は、自分で範囲を指定した独自の VPC とサブネットである(#22)。VPC には、IPv4 の CIDR に加えて、IPv6 の CIDR も設定できる(#22)。また、VPC 自体を、対象のワークロードや組織ごとに分けて使うこともある(#97)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（「VPCs and subnets」の節: VPC・サブネットの定義と CIDR の記述、「Default and nondefault VPCs」の節: 既定の VPC・サブネットと独自に作る VPC・サブネットの違い）</li>
+    <li class="cite" data-src="97">[#97] AWS「Infrastructure security in Amazon VPC」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html" rel="noopener">原典</a>（「Network isolation」の節: Web・アプリケーション・データベースのようにサブネットを役割ごとに分ける使い方、外から直接アクセスさせたくないサーバは private subnet に置くという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m24-1">
+    <div class="q" data-q="1">
+      <p class="q-text">VPC とサブネットの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">VPC は仕切られたネットワークの範囲全体で、サブネットはその中をさらに細かく区切った区画である</button></li>
+        <li><button type="button" data-correct="false">VPC とサブネットは同じものを指す、別の呼び方である</button></li>
+        <li><button type="button" data-correct="false">サブネットの中に、複数の VPC を作ることができる</button></li>
+        <li><button type="button" data-correct="false">VPC は物理的な機械そのものを指す言葉である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、VPC は仕切られたネットワークの範囲全体で、サブネットはその中をさらに細かく区切った区画である、です。同じものの別名ではなく、範囲の大小が逆でもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">サブネットを役割ごとに分けて作る理由として、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">分けるとクラウドの利用料金が安くなるから</button></li>
+        <li><button type="button" data-correct="false">分けないと IP アドレスが足りなくなるから</button></li>
+        <li><button type="button" data-correct="true">外から直接アクセスさせたくないサーバを、別の区画に分けて置いておけるから</button></li>
+        <li><button type="button" data-correct="false">分けないとサーバの処理速度が落ちるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、外から直接アクセスさせたくないサーバを、別の区画に分けて置いておけるから、です。料金・IP アドレスの不足・処理速度とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">AWS の VPC とリージョンの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">1 つの VPC が、複数のリージョンにまたがって存在する</button></li>
+        <li><button type="button" data-correct="true">1 つの VPC は、1 つのリージョンの中に閉じている</button></li>
+        <li><button type="button" data-correct="false">リージョンとは、VPC の中のサブネットの別名である</button></li>
+        <li><button type="button" data-correct="false">VPC とリージョンは無関係で、対応する範囲が無い</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 つの VPC は、1 つのリージョンの中に閉じている、です。複数リージョンにまたがることはなく、リージョンはサブネットの別名でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m24.html">← 第 24 章の入口</a>
+    <a class="up" href="m24.html">第 24 章の入口</a>
+    <a class="next" href="m24-2.html">24-2 クラウドにも、あの表と出入り口がある →</a>
+  </nav>
+</main>
+</body>
+</html>

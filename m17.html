@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DNS の運用と障害 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m17" data-chapter="m17" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 17 章</p>
+  <p class="chapter-label">第 17 章</p>
+  <h1>DNS の運用と障害</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>名前が存在しないという答えと、答えを出せなかったという失敗の違いを説明できる。</li>
+      <li>DNS レコードの変更が反映されるまでに時間差が生じる理由を説明できる。</li>
+      <li>名前解決が遅くなる原因を説明できる。</li>
+      <li>答えが本物かを確かめる仕組みと、問い合わせの中身を隠す仕組みの違いを説明できる。</li>
+      <li>クラウドの DNS サービスが、何を単位に設定を行うかを説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 300" role="img" aria-label="DNS への問い合わせという 1 つの箱から、結果が 4 通りに分かれることを示す図。名前が無いという答え、答えられないという失敗、遅いという結果、本物か分からないという心配、の 4 つに矢印が伸びている。">
+      <defs>
+        <marker id="m17-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+      </defs>
+
+      <rect x="360" y="20" width="180" height="56" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="450" y="53" text-anchor="middle" font-size="13" fill="var(--fig-ink)">DNS への問い合わせ</text>
+
+      <line x1="420" y1="76" x2="130" y2="140" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m17-arrow-ink)"/>
+      <line x1="445" y1="76" x2="335" y2="140" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m17-arrow-ink)"/>
+      <line x1="465" y1="76" x2="565" y2="140" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m17-arrow-ink)"/>
+      <line x1="490" y1="76" x2="770" y2="140" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m17-arrow-ink)"/>
+
+      <g font-size="12" fill="var(--fig-ink)">
+        <rect x="30" y="140" width="200" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+        <text x="130" y="165" text-anchor="middle">名前が無い</text>
+        <text x="130" y="183" text-anchor="middle" font-size="11" fill="var(--fig-muted)">という答え(17-1)</text>
+
+        <rect x="245" y="140" width="200" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+        <text x="345" y="165" text-anchor="middle">答えられない</text>
+        <text x="345" y="183" text-anchor="middle" font-size="11" fill="var(--fig-muted)">という失敗(17-1)</text>
+
+        <rect x="460" y="140" width="200" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+        <text x="560" y="165" text-anchor="middle">遅い</text>
+        <text x="560" y="183" text-anchor="middle" font-size="11" fill="var(--fig-muted)">という結果(17-3)</text>
+
+        <rect x="675" y="140" width="200" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+        <text x="775" y="165" text-anchor="middle">本物か分からない</text>
+        <text x="775" y="183" text-anchor="middle" font-size="11" fill="var(--fig-muted)">という心配(17-4)</text>
+      </g>
+
+      <text x="450" y="240" text-anchor="middle" font-size="12" fill="var(--fig-muted)">17-2: 変更が反映されるまでの時間差 / 17-5: クラウドでの設定の単位</text>
+      <text x="450" y="266" text-anchor="middle" font-size="11" fill="var(--fig-muted)">この章では、うまくいかない場合を順番に見ていく</text>
+    </svg>
+    <p class="fig-cap">DNS への問い合わせがうまくいかないとき、起きていることは一様ではない。指定した名前がそもそも存在しない場合、答えそのものを返せなかった場合、答えは返ってきても時間がかかる場合、そして答えが本物かどうか確かめられない場合がある。この章では、この 4 つに加えて、変更が反映されるまでの時間差と、クラウドでの設定の単位も順番に見ていく。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m17"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m16.html">← 第 16 章 DNS の仕組み</a>
+    <a class="next" href="m18.html">第 18 章 TLS と PKI →</a>
+  </nav>
+</main>
+</body>
+</html>

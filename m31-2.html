@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>名前が解けているかを、まず確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m31-2" data-chapter="m31" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 31-2</p>
+  <p class="chapter-label">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける　31-2</p>
+  <h1>名前が解けているかを、まず確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>「名前が解けない」「古い IP アドレスに行く」という症状を、dig の結果だけで見分ける。<strong>この段階で原因が確定すれば、それより後の段階は確かめる必要が無い</strong>。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ケース 1、練習してみましょう。「名前が解けない」とか「古い IP アドレスに行く」っていう症状でしたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。31-1 の①、まず dig で確かめます。</p>
+    <p class="s" data-who="ひよこちゃん">第 17 章 17-1 で、レコードを書き間違えて「このサイトにアクセスできません」が出た話がありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていますね。あの状況を、31-1 の手順に当てはめて見直してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">dig を実行すると、どこを見ればいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">status の行を見てください。NXDOMAIN と出れば、名前が存在しないという<strong>確定した答え</strong>です。</p>
+    <p class="s" data-who="ひよこちゃん">確定した答え、っていうのはどういう意味ですか。</p>
+    <p class="t" data-who="ふくろう先生">dig 自体は正しく問い合わせを処理していて、その結果として「無い」と分かった、という意味です。dig 自体が失敗したわけではありません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ NXDOMAIN が出たら、それより後の段階、例えば経路とか証明書とかは、もう疑わなくていいんですか。</p>
+    <p class="t" data-who="ふくろう先生">疑う必要はありません。名前が存在しないという答えが確定している以上、後の段階を確かめても<strong>手がかりにならない</strong>からです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、31-1 で見た考え方そのものですね。じゃあ「古い IP アドレスに行く」方は、どう見分けるんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 1 章 1-2 で見た、サーバを引っ越したのに古いサーバへ繋がり続けた話を覚えていますか。</p>
+    <p class="s" data-who="ひよこちゃん">はい、TTL とキャッシュの話でしたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。あちらは NXDOMAIN にはならず、答え自体は返ってきます。dig の ANSWER の区画に出る IP アドレスと TTL の数字を見てください。</p>
+    <p class="s" data-who="ひよこちゃん">TTL の数字を見て、どう判断すればいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">複数の場所に残ったキャッシュの控えが、まだ古い答えを保持している可能性を疑います。時間を置いて聞き直すと、新しい答えに変わっていることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">SERVFAIL の場合はどうですか。</p>
+    <p class="t" data-who="ふくろう先生">SERVFAIL は、権威サーバに届かなかったり、時間内に答えが得られなかったりして、答えそのものを返せなかった失敗です。レコードの書き間違いとは、原因の性質が違います。</p>
+    <p class="s" data-who="ひよこちゃん">NXDOMAIN は「無いという確定した答え」、SERVFAIL は「答えを返せなかった失敗」ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">第 27 章 27-3 で、dig コマンド自体の終了コードと、DNS の答えの中身は別物だっていう話がありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。NXDOMAIN や SERVFAIL が返ってきても、dig 自体は正常に動作しています。この区別を混同すると、原因を見誤ります。</p>
+    <p class="s" data-who="ひよこちゃん">dig の結果 1 つで、原因の見当がだいぶ絞れるんですね。ケース 1 は、これで終わりですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。31-1 の①の段階だけで完結する、3 つのケースの中でも比較的見分けやすいケースでした。次のケースでは、握手の段階、TLS と証明書を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>dig の status が NXDOMAIN なら、名前が存在しないという確定した答えであり、それより後の段階を疑う必要は無い。</li>
+      <li>SERVFAIL は、権威サーバに届かなかったり時間内に答えが得られなかったりして、答えそのものを返せなかった失敗であり、NXDOMAIN とは原因の性質が違う。</li>
+      <li>「古い IP アドレスに行く」症状は、dig の ANSWER の区画に出る IP アドレスと TTL の数字を見て、キャッシュに残った古い答えをまだ使っている可能性を疑う。</li>
+      <li>ケース 1 は、31-1 の①(名前解決)の段階だけで完結する、3 つのケースの中でも切り分けやすいケースである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>第 17 章 17-1 で確立したとおり、NXDOMAIN は指定した名前がそもそも存在しないと分かったときに返ってくる、確定した答えである(#83)。SERVFAIL は、権威サーバに届かなかったり時間内に答えが得られなかったりして、答えそのものを返せなかった失敗である(#32)。DNS レコードの登録時に名前を書き間違えると、意図した名前に対応する情報が権威サーバに無い状態になり、NXDOMAIN が返ってくることがある(#53)。dig 自体の成否とこれらの答えは別物であり、NXDOMAIN や SERVFAIL が返ってきたということは、dig 自体は問い合わせを正しく処理できている。第 1 章 1-2 で確立したとおり、名前解決の答えには TTL という期限があり、複数の場所に残ったキャッシュの控えが期限内であれば、レコードを直した後もしばらく古い答えが返り続けることがある(#52、#12)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>dig example.com
+dig nosuchname.example.com</code></pre>
+    <p>見方: 2 つの結果の status の行を比べる。存在する名前(example.com)では NOERROR、存在しない名前(nosuchname.example.com)では NXDOMAIN になる。31-1 の手順に当てはめると、NXDOMAIN であれば①の段階で原因が確定し、それより後の段階を確かめる必要が無いと判断できる。</p>
+    <p class="try-note">2 行目は存在しないことが分かっている名前への問い合わせのため、通常の試してみようで使う候補(example.com など)とは違う名前を使っている。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="83">[#83] IETF「RFC 1035: Domain Names - Implementation and Specification」 — <a href="https://www.rfc-editor.org/rfc/rfc1035.html" rel="noopener">原典</a>（第 17 章 17-1 で確立。NXDOMAIN と SERVFAIL の区別）</li>
+    <li class="cite" data-src="53">[#53] Cloudflare Learning Center「Common DNS issues and how to fix them」 — <a href="https://www.cloudflare.com/learning/dns/common-dns-issues/" rel="noopener">原典</a>（第 17 章 17-1 で確立。レコードの誤りの事例）</li>
+    <li class="cite" data-src="32">[#32] Google Cloud「Cloud DNS overview」 — <a href="https://docs.cloud.google.com/dns/docs/overview" rel="noopener">原典</a>（第 17 章 17-1 で確立。転送先に届かない場合の SERVFAIL）</li>
+    <li class="cite" data-src="52">[#52] Cloudflare Learning Center「What is DNS?」 — <a href="https://www.cloudflare.com/learning/dns/what-is-dns/" rel="noopener">原典</a>（第 1 章 1-2 で確立。TTL とキャッシュの事例）</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>（第 1 章 1-2 で確立。TTL とキャッシュ）</li>
+    <li class="cite" data-src="105">[#105] ISC（Internet Systems Consortium）「dig - DNS lookup utility (BIND 9 Manual pages)」 — <a href="https://bind9.readthedocs.io/en/latest/manpages.html" rel="noopener">原典</a>（第 27 章 27-3 で確立。dig コマンド自体の終了コードと DNS の答えの区別）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m31-2">
+    <div class="q" data-q="1">
+      <p class="q-text">dig の結果が NXDOMAIN のとき、次に確かめるべきことはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">traceroute で経路を確かめる</button></li>
+        <li><button type="button" data-correct="false">openssl s_client で TLS の証明書を確かめる</button></li>
+        <li><button type="button" data-correct="true">それより後の段階ではなく、DNS レコードの設定を見直す</button></li>
+        <li><button type="button" data-correct="false">curl で HTTP の応答を確かめる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DNS レコードの設定を見直す、です。名前が存在しないという答えが確定している以上、経路・証明書・応答という後の段階を確かめても手がかりになりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">「答えは返ってくるが、古い IP アドレスを指す」という症状のとき、dig の結果のどこに注目すべきか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ANSWER の区画に出る IP アドレスと TTL の数字</button></li>
+        <li><button type="button" data-correct="false">status の行だけ</button></li>
+        <li><button type="button" data-correct="false">flags の行だけ</button></li>
+        <li><button type="button" data-correct="false">Query time の行だけ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ANSWER の区画に出る IP アドレスと TTL の数字、です。この症状では status は NOERROR のままなので、TTL の数字からキャッシュの残り具合を疑います。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">NXDOMAIN と SERVFAIL の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">SERVFAIL は名前が存在しないという確定した答えで、NXDOMAIN は答えを返せなかった失敗である</button></li>
+        <li><button type="button" data-correct="true">NXDOMAIN は名前が存在しないという確定した答えで、SERVFAIL は答えそのものを返せなかった失敗である</button></li>
+        <li><button type="button" data-correct="false">どちらも同じ意味で、表記が違うだけである</button></li>
+        <li><button type="button" data-correct="false">SERVFAIL は dig コマンド自体が動かなかったことを示す</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、NXDOMAIN は名前が存在しないという確定した答えで、SERVFAIL は答えそのものを返せなかった失敗である、です。2 つの説明が入れ替わったものや、同じ意味とする説明、dig コマンド自体の動作と混同する説明は誤りです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m31-1.html">← 31-1 「つながらない」を、段階に分けて確かめる</a>
+    <a class="up" href="m31.html">第 31 章の入口</a>
+    <a class="next" href="m31-3.html">31-3 警告が出たら、証明書を確かめる →</a>
+  </nav>
+</main>
+</body>
+</html>

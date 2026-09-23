@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>性能の考え方 — レイテンシ・帯域・RTT — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m30" data-chapter="m30" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 30 章</p>
+  <p class="chapter-label">第 30 章</p>
+  <h1>性能の考え方 — レイテンシ・帯域・RTT</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>名前解決や接続の手続きのように、小さなやり取りを繰り返す場面と、大きなデータを運ぶ場面とで、待ち時間の決まり方が違うことを区別できる。</li>
+      <li>送り出せる量の上限が、回線の太さと往復にかかる時間を掛け合わせた量より小さいと、回線が太くても実際に出る速度が頭打ちになることを説明できる。</li>
+      <li>これまでの章で見てきた高速化の工夫が、往復の回数を減らす・1 往復の時間を短くする・同時に運べる量を増やす、のどれに当たるかを言える。</li>
+      <li>「遅い」と感じたとき、往復にかかる時間や、手続きごとの所要時間を測る方法を知っている。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <pre class="fig" aria-label="小さなやり取りを繰り返す場面の図。名前解決、接続、要求と応答のような小さなやり取りが何度も往復し、待ち時間は往復の回数と 1 往復の時間の掛け算になる。大きなものを運ぶ場面の図。送り出せる量に上限があり、その上限が回線の太さと往復時間を掛けた量より小さいと、そこで頭打ちになる。">
+  [小さなやり取りを繰り返す場面]
+  自分の機械 --名前解決--> 相手
+  自分の機械 <---------- 相手
+  自分の機械 --接続------> 相手
+  自分の機械 <---------- 相手
+  自分の機械 --要求------> 相手
+  自分の機械 <---------- 相手
+  待ち時間 = 往復の回数 x 1 往復の時間
+
+  [大きなものを運ぶ場面]
+  自分の機械 ==送り出せる量(上限)==> 相手
+  上限が「回線の太さ x 往復時間」より小さいと、そこで頭打ちになる
+    </pre>
+    <p class="fig-cap">小さなやり取りを繰り返す場面では、待ち時間は往復の回数と 1 往復の時間で決まる。大きなものを運ぶ場面では、送り出せる量の上限が、回線の太さと往復時間を掛けた量より小さいと頭打ちになる。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m30"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m29.html">← 第 29 章 クラウド上の経路診断</a>
+    <a class="next" href="m31.html">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける →</a>
+  </nav>
+</main>
+</body>
+</html>

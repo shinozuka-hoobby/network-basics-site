@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>通った跡が、記録に残っている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m29-3" data-chapter="m29" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 29-3</p>
+  <p class="chapter-label">第 29 章 クラウド上の経路診断　29-3</p>
+  <h1>通った跡が、記録に残っている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>設定からの推論とは別に、実際にどの通信が通り、どの通信が止められたかを記録しておく仕組みがある。<strong>記録には、送信元・宛先・許可か拒否かといった情報が含まれる</strong>。このページでは、その記録の中身と、記録されない通信を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">診断機能は「届くはず」を教えてくれるって分かったんですけど、実際に何が起きたかって、あとから確かめられないんですか?</p>
+    <p class="t" data-who="ふくろう先生">確かめられます。実際に通った通信や、止められた通信を記録しておく仕組みがあり、<strong>フローログ</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">記録には何が書かれてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送信元と宛先の IP アドレス、ポート番号、それに通信が許可されたか拒否されたかが記録されます。</p>
+    <p class="s" data-who="ひよこちゃん">実際の記録って、どんな感じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">AWS の資料には、22 番ポート宛ての SSH の通信が許可された記録と、3389 番ポート宛ての通信が拒否された記録の例が載っています。許可は ACCEPT、拒否は REJECT という単語で示されます。</p>
+    <p class="s" data-who="ひよこちゃん">拒否された記録も、ちゃんと残るんですね。第 24 章 24-3 で見た、セキュリティグループは戻りを自動で許可するけど、NACL は戻りも別に許可しないといけない、って話とつながりそうです。</p>
+    <p class="t" data-who="ふくろう先生">まさにその実例があります。AWS の資料には、ピンの要求はセキュリティグループと NACL の両方で許可されて届くのに、応答が NACL で拒否される、という例が載っています。</p>
+    <p class="s" data-who="ひよこちゃん">その場合、記録はどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">要求側に ACCEPT の記録、応答側に REJECT の記録が、別々に残ります。行きと帰りで、記録が分かれて残るんです。</p>
+    <p class="s" data-who="ひよこちゃん">記録は、通信のたびに 1 行ずつ増えていくんですか?</p>
+    <p class="t" data-who="ふくろう先生">少し違います。AWS では、一定の時間の幅(既定で最大 10 分)の中でやり取りをまとめて、1 つの記録にします。この幅のことを集計間隔と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、記録を見れば、どこで止められたかがはっきり分かりますね。全部の通信が記録されるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。AWS が用意した DNS サーバへの通信や、機械の内部情報をやり取りする通信、DHCP の通信、それに ARP の通信などは記録されません。</p>
+    <p class="s" data-who="ひよこちゃん">え、記録されない通信もあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。何が記録されて、何が記録されないかは、事業者や機能ごとに決まっています。</p>
+    <p class="s" data-who="ひよこちゃん">GCP や Azure にも、似た仕組みがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。GCP にも似た仕組みがあり、サブネット単位で有効にできます。Azure には 2 つの記録の仕組みがあり、それぞれ許可・拒否を記号で記録しますが、記号の使い方は少しずつ違います。</p>
+    <p class="s" data-who="ひよこちゃん">同じ「フローログ」でも、事業者ごとに細かい違いがあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この記録と、前のページで見た診断機能を組み合わせてみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>フローログは、実際に通った通信や止められた通信を、送信元・宛先・ポート番号・許可か拒否かなどの記録として残す仕組みである。</li>
+      <li>AWS の記録には、許可された通信を示す ACCEPT と、拒否された通信を示す REJECT があり、行きと帰りの通信で別々に記録される。</li>
+      <li>AWS が用意した DNS サーバへの通信や DHCP の通信、ARP の通信など、記録されない種類の通信もある。</li>
+      <li>GCP・Azure にも似た仕組みがあるが、許可・拒否の記号の使い方は事業者ごとに違う。</li>
+      <li>1 回ごとの通信ではなく、一定の時間の幅(集計間隔)にまとめて 1 つの記録になる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>フローログは、ネットワークインタフェースを実際に通過した通信を、送信元・宛先の IP アドレスやポート番号、許可(ACCEPT)か拒否(REJECT)かとともに記録する仕組みである(#116、#118)。通信は一定の時間の幅(既定で最大 10 分、短くすると 1 分)にまとめて 1 つの記録になる(#118)。AWS の記録には、ピンの要求がセキュリティグループと NACL の両方で許可され、応答がステートレスな NACL で拒否される場合、要求側の ACCEPT と応答側の REJECT が別々に残るという例がある(#117)。AWS が用意した DNS サーバへの通信や、169.254.169.254 宛ての通信、DHCP の通信、ARP の通信などは記録されない(#119)。GCP にもサブネット単位で有効にできる同様の仕組みがある(#30)。Azure には 2 つの記録の仕組みがあり、片方は許可・拒否を独立した項目(A/D)で記録し、もう片方は通信の開始・継続・終了・拒否をまとめて 1 つの状態(B/C/E/D)として記録するなど、記録の形が異なる(#123、#124)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="116">[#116] AWS「Flow logs basics」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-basics.html" rel="noopener">原典</a>(3 行目 VPC・サブネット・ネットワークインタフェース単位で作成できるという記述、9〜16 行目 accepted／rejected／all traffic を選べるという記述)</li>
+    <li class="cite" data-src="117">[#117] AWS「Flow log record examples」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-records-examples.html" rel="noopener">原典</a>(12・14 行目 SSH の ACCEPT の記録例、15・17 行目 RDP の REJECT の記録例、32〜51 行目 ピンの要求が ACCEPT、応答が NACL で REJECT される実例)</li>
+    <li class="cite" data-src="118">[#118] AWS「Flow log records」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html" rel="noopener">原典</a>(12〜14 行目 集計間隔(aggregation interval)は既定で最大 10 分、設定により最大 1 分に短縮できるという記述、44〜59 行目 srcaddr・dstaddr・srcport・dstport・action などの項目の定義)</li>
+    <li class="cite" data-src="119">[#119] AWS「Flow log limitations」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-limitations.html" rel="noopener">原典</a>(42 行目 記録されない通信の見出し、45 行目 Amazon の DNS サーバへの通信、49 行目 169.254.169.254、54 行目 DHCP の通信、63 行目 ARP の通信)</li>
+    <li class="cite" data-src="30">[#30] Google Cloud Architecture Center「Best practices for VPC design」 — <a href="https://docs.cloud.google.com/architecture/best-practices-vpc-design" rel="noopener">原典</a>(668〜677 行目 VPC Flow Logs をサブネット単位で有効にでき、5 秒間隔で集計されリアルタイムにエクスポートされるという記述)</li>
+    <li class="cite" data-src="123">[#123] Microsoft Azure「Network security group flow logs overview」 — <a href="https://learn.microsoft.com/en-us/azure/network-watcher/nsg-flow-logs-overview" rel="noopener">原典</a>(53 行目 記録項目が 5-tuple と traffic decision を含むという定義、94 行目 Traffic decision が `A`(allowed)／`D`(denied)であるという定義)</li>
+    <li class="cite" data-src="124">[#124] Microsoft Azure「Virtual network flow logs overview」 — <a href="https://learn.microsoft.com/en-us/azure/network-watcher/vnet-flow-logs-overview" rel="noopener">原典</a>(96〜100 行目 Flow state が `B`(Begin)／`C`(Continuing)／`E`(End)／`D`(Deny)の 4 状態であるという定義)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m29-3">
+    <div class="q" data-q="1">
+      <p class="q-text">ある通信について、行きの ACCEPT の記録と、戻りの REJECT の記録が両方残っていた。何が起きたと考えられるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">行きの通信は許可されたが、戻りの通信のどこかで拒否された</button></li>
+        <li><button type="button" data-correct="false">通信が 2 回とも成功した</button></li>
+        <li><button type="button" data-correct="false">記録の取り違えが起きた</button></li>
+        <li><button type="button" data-correct="false">通信がそもそも発生しなかった</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、行きの通信は許可されたが、戻りの通信のどこかで拒否された、です。2 回とも成功したわけでも、記録の取り違えでも、通信が発生しなかったわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">フローログに記録されない通信として、AWS の資料に挙がっているものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">AWS が用意した DNS サーバへの通信</button></li>
+        <li><button type="button" data-correct="false">443 番ポート宛ての HTTPS の通信</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループで許可された SSH の通信</button></li>
+        <li><button type="button" data-correct="false">VPC ピアリングを経由する通信</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、AWS が用意した DNS サーバへの通信、です。HTTPS の通信や許可済みの SSH の通信、VPC ピアリングを経由する通信は、記録されない対象として挙がっていません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Azure の NSG フローログと VNet フローログの記録の仕方について、収集した資料から言えることはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">許可・拒否の記号の使い方が、2 つの仕組みで異なる</button></li>
+        <li><button type="button" data-correct="false">どちらも記録の項目がまったく同じである</button></li>
+        <li><button type="button" data-correct="false">Azure には記録の仕組みが 1 つしかない</button></li>
+        <li><button type="button" data-correct="false">拒否された通信は記録されない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、許可・拒否の記号の使い方が、2 つの仕組みで異なる、です。記録の項目がまったく同じというわけではなく、仕組みは 2 つあり、拒否された通信も記録されます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m29-2.html">← 29-2 3 社の診断ツールを比べる</a>
+    <a class="up" href="m29.html">第 29 章の入口</a>
+    <a class="next" href="m29-4.html">29-4 あの事例を、道具で確かめ直す →</a>
+  </nav>
+</main>
+</body>
+</html>
