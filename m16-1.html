@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>名前解決は誰に聞き、誰が答えを持っているか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m16-1" data-chapter="m16" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 16-1</p>
+  <p class="chapter-label">第 16 章 DNS の仕組み　16-1</p>
+  <h1>名前解決は誰に聞き、誰が答えを持っているか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>名前解決は、1 台の機械だけで完結する処理ではない。<strong>代わりに問い合わせに行く側と、答えを持っている側は、別の機械が担当している</strong>。このページでは、この役割分担を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">DNS って、第 1 章とか第 4 章とか、いろんなところで名前だけ出てきましたけど、結局何のことだったんでしたっけ?</p>
+    <p class="t" data-who="ふくろう先生">ドメイン名を IP アドレスに変換する仕組み全体のことを、<strong>DNS</strong> と呼びます。これまで見てきた場面は、みんなこの仕組みの一部だったんです。</p>
+    <p class="s" data-who="ひよこちゃん">変換してるのは、1 台の機械なんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、役割が分かれています。ブラウザの代わりに答えを探しに行く機械がいて、これを<strong>DNS リゾルバ</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">そのリゾルバは、誰に聞きに行くんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのドメイン名について、最終的な答えを持っている機械に聞きに行きます。これを<strong>権威サーバ</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 4 章で、DHCP が「名前を IP アドレスに変える仕組みを担当するサーバのアドレス」を配るって話がありましたけど、あれがリゾルバのアドレスだったんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。第 1 章 1-3 で見た「ISP が用意した別のサーバか、公開されている DNS サーバ」が、まさにリゾルバの居場所です。</p>
+    <p class="s" data-who="ひよこちゃん">ブラウザが権威サーバに直接聞きに行けばいい気もするんですけど、なんでリゾルバを挟むんですか?</p>
+    <p class="t" data-who="ふくろう先生">権威サーバの居場所は、聞く名前ごとに違います。リゾルバが代わりに探しに行ってくれるので、ブラウザ側は迷わずに済みます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、探す手間をリゾルバが引き受けてくれてるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。見つけた答えは、リゾルバがブラウザに返します。</p>
+    <p class="s" data-who="ひよこちゃん">これって、ページを開くたびに毎回裏側で動いてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。利用者が意識することはほとんどありませんが、ページを開くたびにこの一連のやり取りが行われています。</p>
+    <p class="s" data-who="ひよこちゃん">DNS リゾルバって、みんな同じものを使ってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。契約している回線事業者が用意したものや、誰でも使える公開のものなど、いくつか選択肢があります。</p>
+    <p class="s" data-who="ひよこちゃん">権威サーバの方は、答えを渡したら終わりですか?</p>
+    <p class="t" data-who="ふくろう先生">権威サーバの役目はそこまでです。ただ、リゾルバの側には続きがあって、この章の後半で詳しく見ていきます。</p>
+    <p class="s" data-who="ひよこちゃん">楽しみです。権威サーバは、ドメインごとに違う機械なんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。ドメインごとに、その名前を管理している権威サーバがいます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、リゾルバが権威サーバを見つけるのって、簡単なことじゃなさそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。今日のところは、代わりに聞きに行くリゾルバと、答えを持っている権威サーバという役割分担を覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">代わりに聞きに行く側と、答えを持ってる側で、役割がはっきり分かれてるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、リゾルバがどうやって権威サーバにたどり着くかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>DNS は、ドメイン名を IP アドレスに変換する仕組み全体を指す呼び名である。</li>
+      <li>ブラウザの代わりに答えを探しに行く役目を DNS リゾルバ、あるドメイン名について最終的な答えを持っている機械を権威サーバと呼ぶ。</li>
+      <li>権威サーバの居場所は名前ごとに異なるため、DNS リゾルバが代わりに探しに行き、見つけた答えをブラウザに返す。</li>
+      <li>DHCP が配る「名前を IP アドレスに変える仕組みを担当するサーバのアドレス」や、ISP が用意したサーバ・公開されている DNS サーバは、いずれも DNS リゾルバの居場所を指している。</li>
+      <li>この一連のやり取りはページを開くたびに裏側で自動的に行われており、利用者が直接操作する場面はほとんど無い。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DNS は、ドメイン名を IP アドレスに変換する仕組み全体の呼び名であり、1 台の機械だけでは成り立たず、複数の機械が役割を分担している(#52)。ブラウザの代わりに答えを探しに行く機械を DNS リゾルバ、あるドメイン名について最終的な答えを持っている機械を権威サーバと呼ぶ(#52、#71 p.22〜23、#24)。権威サーバの居場所は問い合わせる名前ごとに異なるため、ブラウザは直接権威サーバを探さず、DNS リゾルバに探索を任せる。DNS リゾルバが見つけた答えは、ブラウザに返される。この一連のやり取りは、ページを開くたびに裏側で自動的に行われており、利用者が直接操作する場面はほとんど無い(#52)。DNS リゾルバは 1 種類に決まっているわけではなく、契約している回線事業者が用意したものや、誰でも使える公開のものなど、いくつかの選択肢がある。第 4 章で見た、DHCP が配る「名前を IP アドレスに変える仕組みを担当するサーバのアドレス」は DNS リゾルバの居場所を示す情報であり、第 1 章 1-3 の「ISP が用意した別のサーバか、公開されている DNS サーバ」も同じ DNS リゾルバのことを指している。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>nslookup example.com</code></pre>
+    <p>見方: 答えの前に「Non-authoritative answer」(権威ある答えではない、という意味の注記)という一行が出る。答えを返したのは、答えを持っている権威サーバそのものではなく、代わりに探しに行った DNS リゾルバだという手がかりとして見てほしい。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="52">[#52] Cloudflare Learning Center「What is DNS?」 — <a href="https://www.cloudflare.com/learning/dns/what-is-dns/" rel="noopener">原典</a>（「How does DNS work?」「There are 4 DNS servers involved in loading a webpage」「What's the difference between an authoritative DNS server and a recursive DNS resolver?」の各節）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.17 resolver の処理手順、p.22〜23 Authoritative Name Servers／Caching Name Servers の区別）</li>
+    <li class="cite" data-src="24">[#24] AWS「Amazon Route 53 concepts」 — <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html" rel="noopener">原典</a>（「DNS concepts」の節。authoritative name server、DNS resolver の定義）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m16-1">
+    <div class="q" data-q="1">
+      <p class="q-text">ドメイン名から IP アドレスを調べるとき、DNS リゾルバと権威サーバの役割の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">DNS リゾルバが最終的な答えを持っており、権威サーバはその答えを取りに行く</button></li>
+        <li><button type="button" data-correct="true">DNS リゾルバは代わりに問い合わせに行く側であり、権威サーバはそのドメイン名について最終的な答えを持っている側である</button></li>
+        <li><button type="button" data-correct="false">DNS リゾルバと権威サーバは同じ機械の別の呼び名で、役割の違いはない</button></li>
+        <li><button type="button" data-correct="false">権威サーバはブラウザの中で動いており、DNS リゾルバは外部の機械である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DNS リゾルバは代わりに問い合わせに行く側であり、権威サーバはそのドメイン名について最終的な答えを持っている側である、です。役割が逆の選択肢や、両者を同一視する選択肢は誤りです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">DNS の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ブラウザが表示するページの中身そのもの</button></li>
+        <li><button type="button" data-correct="false">IP アドレスを暗号化して隠す仕組み</button></li>
+        <li><button type="button" data-correct="true">ドメイン名を IP アドレスに変換する仕組み全体を指す呼び名</button></li>
+        <li><button type="button" data-correct="false">ドメイン名を登録する会社の名前</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ドメイン名を IP アドレスに変換する仕組み全体を指す呼び名、です。ページの中身の表示や暗号化、登録会社の名前とは別の仕組みです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">権威サーバの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ブラウザの代わりに答えを探しに行く機械</button></li>
+        <li><button type="button" data-correct="false">ドメイン名を、人間にとって読みやすい名前に変換する機械</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータの中に組み込まれた専用の部品</button></li>
+        <li><button type="button" data-correct="true">あるドメイン名について、最終的な答えを持っている、そのドメインの管理者側の機械</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、あるドメイン名について、最終的な答えを持っている、そのドメインの管理者側の機械、です。代わりに探しに行く役目は DNS リゾルバであり、権威サーバとは役割が異なります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m16.html">← 第 16 章の入口</a>
+    <a class="up" href="m16.html">第 16 章の入口</a>
+    <a class="next" href="m16-2.html">16-2 階層をたどって答えにたどり着く →</a>
+  </nav>
+</main>
+</body>
+</html>

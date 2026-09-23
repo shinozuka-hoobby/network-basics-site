@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>何を減らすと、速くなるのか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m30-3" data-chapter="m30" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 30-3</p>
+  <p class="chapter-label">第 30 章 性能の考え方 — レイテンシ・帯域・RTT　30-3</p>
+  <h1>何を減らすと、速くなるのか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>これまでの章で見た高速化の工夫は、<strong>大きく 3 つの方向のどれかに当てはまる</strong>。1 往復にかかる時間を短くする方向、往復そのものの回数を減らす方向、そして同時に運べる量を増やす方向である。このページでは、これまでの章で見た仕組みを、この 3 つの方向で整理し直す。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 22 章の最後で、CDN や HTTP/2、TLS 1.3 が性能にどう効くかは、この章でまとめるって言ってましたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ここまで見てきた工夫は、大きく 3 つの方向のどれかに当てはまります。</p>
+    <p class="t" data-who="ふくろう先生">往復そのものの回数を減らす方向、1 往復にかかる時間を短くする方向、そして同時に運べる量を増やす方向です。</p>
+    <p class="s" data-who="ひよこちゃん">CDN はどれに当たるんですか。</p>
+    <p class="t" data-who="ふくろう先生">1 往復の時間を短くする方向です。近いエッジサーバから返すことで、それぞれの往復にかかる時間そのものが短くなるんでした。</p>
+    <p class="s" data-who="ひよこちゃん">具体的には、どれくらい違うんでしたっけ。</p>
+    <p class="t" data-who="ふくろう先生">第 22 章 22-5 で見た例では、遠いオリジンサーバへ直接アクセスするとおよそ 3000 ミリ秒、近いエッジサーバの控えから受け取るとおよそ 1100 ミリ秒でした。</p>
+    <p class="s" data-who="ひよこちゃん">HTTP/2 はどうですか。</p>
+    <p class="t" data-who="ふくろう先生">同時に運べる量を増やす方向です。1 本の接続の中に独立した複数の流れ(ストリーム)を持てるので、1 つの遅れが他を止めません。</p>
+    <p class="s" data-who="ひよこちゃん">TLS 1.3 は?</p>
+    <p class="t" data-who="ふくろう先生">往復の回数を減らす方向です。ハンドシェイクを 1 往復に短縮していて、以前に接続したことがある相手となら、次はその 1 往復すら省けます。</p>
+    <p class="s" data-who="ひよこちゃん">HTTP/3、つまり QUIC はどうなんですか。</p>
+    <p class="t" data-who="ふくろう先生">複数の方向にまたがります。接続と TLS の手続きをまとめて往復を減らしつつ、TCP 層で起きる詰まりも無くします。第 21 章 21-3 で見たとおり、電波の状態が悪くパケットが失われやすい環境ほど、この工夫の効果が大きくなります。</p>
+    <p class="s" data-who="ひよこちゃん">詰まりを無くすっていうのは、同時に運べる量を増やす方向と同じ意味ですか。</p>
+    <p class="t" data-who="ふくろう先生">近い意味です。1 つのパケットの損失が全部の流れを止めてしまう問題を無くすことで、複数の流れを本当の意味で同時に運べるようになります。</p>
+    <p class="s" data-who="ひよこちゃん">TLS 1.3 や 0-RTT の効果は、相手によって違うんですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。第 15 章 15-3 で見たとおり、往復を 1 回減らす効果は、相手までの往復時間が長いほど大きくなります。</p>
+    <p class="s" data-who="ひよこちゃん">これまでバラバラに見てきた工夫が、こうして並べると整理できますね。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。表にまとめてみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">表を見ると、CDN だけが毎回の往復の時間を短くする方向なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。CDN は通信の手続きそのものは変えず、距離を縮めることで効果を出しています。ほかの 3 つは、通信の手続き自体を作り直すことで効果を出しています。</p>
+    <p class="s" data-who="ひよこちゃん">実際に自分の接続がどれを使っているか、確かめられますか。</p>
+    <p class="t" data-who="ふくろう先生">確かめられます。試してみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>これまでの章で見た高速化の工夫は、往復の回数を減らす・1 往復にかかる時間を短くする・同時に運べる量を増やす、という 3 つの方向のどれかに当てはまる。</li>
+      <li>CDN は、近いエッジサーバから返すことで、1 往復にかかる時間そのものを短くする。</li>
+      <li>HTTP/2 の多重化は、1 本の接続の中に独立した複数の流れを持たせることで、同時に運べる量を増やす。</li>
+      <li>TLS 1.3 は、ハンドシェイクを 1 往復に短縮し、0-RTT を使えば再接続の往復さえ省く、往復の回数を減らす工夫である。</li>
+      <li>HTTP/3(QUIC)は、接続と TLS の手続きをまとめて往復を減らしつつ、TCP 層の詰まりも無くすため、複数の方向にまたがる。電波の状態が悪くパケットが失われやすい環境ほど、この工夫の効果が大きい。</li>
+      <li>目の前の遅さが、往復の回数・1 往復の時間・同時に運べる量のどれで効いているかを見分けることが、次のページで測る際の手がかりになる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>CDN・HTTP/2・TLS 1.3・HTTP/3 の工夫を、主に効く方向で整理すると次のとおりになる。</p>
+    <table>
+      <tr><th>技術</th><th>主に効く方向</th><th>理由(要約)</th><th>出典</th></tr>
+      <tr><td>CDN</td><td>1 往復を短くする</td><td>近いエッジサーバから返す</td><td>#58</td></tr>
+      <tr><td>HTTP/2</td><td>同時に運ぶ量を増やす</td><td>複数の流れを 1 本の接続に乗せる</td><td>#56・#20</td></tr>
+      <tr><td>TLS 1.3</td><td>往復を減らす</td><td>ハンドシェイクを 1 往復、0-RTT なら 0 往復</td><td>#55・#57</td></tr>
+      <tr><td>HTTP/3</td><td>往復を減らす、同時に運ぶ量を増やす</td><td>接続と TLS をまとめ、詰まりも無くす</td><td>#57・#64・#20</td></tr>
+    </table>
+    <p>CDN は通信の手続き自体は変えず距離を縮めることで効果を出し、残りの 3 つは通信の手続き自体を作り直すことで効果を出している。往復を減らすか、1 往復を短くするか、同時に運べる量を増やすか、それぞれの技術がどこを狙っているかで整理すると分かりやすい。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sv https://example.com -o /dev/null</code></pre>
+    <p>見方: 出力の中で、TLS のバージョンを示す行(TLSv1.3 という表記を含む行)を探す。この行があれば、この接続は TLS 1.3 を使っており、表でいう「往復を減らす」技術が働いている。</p>
+    <p class="try-note">HTTP の版を示す行(ALPN: server accepted h2 に類する行)も、同じ出力の中にある。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="58">[#58] Cloudflare Learning Center「CDN performance」 — <a href="https://www.cloudflare.com/learning/cdn/performance/" rel="noopener">原典</a>(「Distance reduction」の説明。27〜57 行目、遠いオリジンサーバへの直接アクセスとエッジサーバ経由の合計時間の比較。第 22 章 22-5 で使用した内容の再訪)</li>
+    <li class="cite" data-src="56">[#56] Cloudflare Learning Center「HTTP/2 vs. HTTP/1.1」 — <a href="https://www.cloudflare.com/learning/performance/http2-vs-http1.1/" rel="noopener">原典</a>(multiplexing の説明)</li>
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座:HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>(ストリームの多重化、0-RTT、HTTP/3 の QUIC 層の説明)</li>
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(TLS 1.3 のハンドシェイクが 1 往復で終わるという記述)</li>
+    <li class="cite" data-src="57">[#57] Cloudflare Learning Center「What is HTTP/3?」 — <a href="https://www.cloudflare.com/learning/performance/what-is-http3/" rel="noopener">原典</a>(0-RTT、head-of-line blocking の説明)</li>
+    <li class="cite" data-src="64">[#64] Fastly「What is HTTP/3?」 — <a href="https://www.fastly.com/learning/what-is-http-3" rel="noopener">原典</a>(TCP 層でのパケット損失が接続全体を遅らせるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m30-3">
+    <div class="q" data-q="1">
+      <p class="q-text">HTTP/2 の多重化と TLS 1.3 の 0-RTT は、それぞれ何を減らす工夫か。正しい組み合わせはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">HTTP/2 は往復の回数を減らし、TLS 1.3 は同時に運べる量を増やす</button></li>
+        <li><button type="button" data-correct="true">HTTP/2 は同時に運べる量を増やし、TLS 1.3 は往復の回数を減らす</button></li>
+        <li><button type="button" data-correct="false">どちらも 1 往復の時間を短くする工夫である</button></li>
+        <li><button type="button" data-correct="false">どちらも同時に運べる量を増やす工夫である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、HTTP/2 は同時に運べる量を増やし、TLS 1.3 は往復の回数を減らす、です。HTTP/2 は 1 本の接続に複数の流れを持たせ、TLS 1.3(0-RTT)は再接続の往復そのものを省きます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">CDN が主に効くのは、表の 3 つの方向のうちどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">往復の回数を減らす</button></li>
+        <li><button type="button" data-correct="true">1 往復にかかる時間を短くする</button></li>
+        <li><button type="button" data-correct="false">同時に運べる量を増やす</button></li>
+        <li><button type="button" data-correct="false">いずれにも当てはまらない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 往復にかかる時間を短くする、です。CDN は近いエッジサーバから返すことで、往復そのものにかかる時間を短くします。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">HTTP/3(QUIC)が、往復の回数を減らすことと同時に運べる量を増やすことの両方に当てはまるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">送るデータをすべて圧縮しているから</button></li>
+        <li><button type="button" data-correct="true">接続と TLS の手続きをまとめて往復を減らしつつ、TCP 層の詰まりも無くして複数の流れを同時に運べるようにしているから</button></li>
+        <li><button type="button" data-correct="false">TCP を使わなくなったことで、暗号化そのものが不要になったから</button></li>
+        <li><button type="button" data-correct="false">サーバの台数を自動的に増やす仕組みだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、接続と TLS の手続きをまとめて往復を減らしつつ、TCP 層の詰まりも無くして複数の流れを同時に運べるようにしているから、です。圧縮率やサーバの台数、暗号化の有無とは関係ありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m30-2.html">← 30-2 太い回線でも、頭打ちになることがある</a>
+    <a class="up" href="m30.html">第 30 章の入口</a>
+    <a class="next" href="m30-4.html">30-4 遅いと感じたら、まず測ってみる →</a>
+  </nav>
+</main>
+</body>
+</html>

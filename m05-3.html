@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>グループ全体を指す番号と、全員に呼びかける番号 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m05-3" data-chapter="m05" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 5-3</p>
+  <p class="chapter-label">第 5 章 IP アドレスとサブネット　5-3</p>
+  <h1>グループ全体を指す番号と、全員に呼びかける番号</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>IP アドレスとサブネットマスクを組み合わせると、そのサブネット全体を指す番号と、そのサブネット全体に一斉に呼びかける番号が求まる。<strong>この 2 つの番号は、個々の機械には割り当てられない</strong>。このページでは、この 2 つの番号の求め方と、実際に機械へ配れる数の数え方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで出てきたサブネットマスク、実際に使って何か計算できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。IP アドレスとサブネットマスクを組み合わせると、そのサブネット全体を指す 1 つの番号が求まります。これをネットワークアドレスと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">たとえばどんな感じになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">192.168.1.15/24 なら、後ろの 8 ビット(機械を表す部分)をすべて 0 にした 192.168.1.0 が、そのサブネットのネットワークアドレスです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、そのサブネットの全員に一斉に呼びかけたいときは、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">機械を表す部分をすべて 1 にした番号を使います。これをブロードキャストアドレスと呼びます。さっきの例だと 192.168.1.255 です。</p>
+    <p class="s" data-who="ひよこちゃん">それって、第 3 章で見た、宛先を全部の機械にするブロードキャストと同じものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">似ていますが別の層の話です。第 3 章のブロードキャストは MAC アドレスの層の全員宛て、ブロードキャストアドレスは IP アドレスの層の全員宛てを指します。</p>
+    <p class="s" data-who="ひよこちゃん">ネットワークアドレスとブロードキャストアドレスは、個々の機械には使えないんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この 2 つを除いた残りだけが、実際に機械へ配れる数になります。</p>
+    <p class="s" data-who="ひよこちゃん">/24 の場合、機械を表す部分は 8 ビットでしたよね。実際に配れる数はいくつになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">8 ビットで表せる 256 通りから、ネットワークアドレスとブロードキャストアドレスの 2 つを引いた 254 が、実際に配れる数になります。この数のことをホスト数と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">/24 と /26 で、実際どれくらい変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">後で表で比べてみましょう。/26 の方が機械を表す部分が短い分、配れる数は少なくなります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いたんですけど、同じ部屋にある 2 台のパソコンを直接つなごうとしたら、一方だけサブネットマスクの設定を間違えていて、なかなか繋がらなかったことがあるらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">機械は、相手の IP アドレスと自分のサブネットマスクを組み合わせた値と、自分の IP アドレスと自分のサブネットマスクを組み合わせた値を比べて、同じネットワークにいるかどうかを判断します。</p>
+    <p class="s" data-who="ひよこちゃん">その計算がずれると、何が起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">サブネットマスクの設定を間違えると、本当は同じ部屋にいる機械なのに、計算の結果が食い違って「別のネットワークにいる」と判定してしまうことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">別のネットワークだと判定すると、直接は届けようとしなくなるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。判定した後どこへ送るかは、第 7 章で詳しく扱います。</p>
+    <p class="s" data-who="ひよこちゃん">サブネットマスク 1 つで、こんなに判断が変わるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この 2 台が同じサブネットマスクを使っていれば、正しく同じネットワークだと判定できたはずです。</p>
+    <p class="s" data-who="ひよこちゃん">実際に自分の Mac の通信でも、こういう番号は見られるんですか?</p>
+    <p class="t" data-who="ふくろう先生">見られます。あとで確認してみましょう。次は、家庭や会社の外までその番号が届くかどうかという話に入っていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP アドレスとサブネットマスクを組み合わせると、そのサブネット全体を指すネットワークアドレスが求まる(機械を表す部分をすべて 0 にした値。例: 192.168.1.15/24 なら 192.168.1.0)。</li>
+      <li>機械を表す部分をすべて 1 にすると、そのサブネット全体に呼びかけるブロードキャストアドレスになる(同じ例では 192.168.1.255)。</li>
+      <li>ネットワークアドレスとブロードキャストアドレスは個々の機械には割り当てられず、残りの数だけが実際に配れるホスト数になる(/24 なら 254 台分)。</li>
+      <li>サブネットマスクの設定を間違えると、本当は同じネットワークにいる機械を「別のネットワークにいる」と判定してしまうことがある。判定した後どこへ送るかは第 7 章で扱う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ネットワークアドレスは、IP アドレスとサブネットマスクの対応するビットどうしを掛け合わせて求める、そのサブネット全体を指す番号である。機械を表す部分をすべて 1 にすると、そのサブネット全体に呼びかけるブロードキャストアドレスになる。この 2 つはどちらも個々の機械には割り当てられないため、実際に配れる数は、機械を表す部分のビット数で表せる総数から、この 2 つを引いた数になる。同じ 192.168.1.0 という範囲でも、CIDR 表記の数字によって配れる数は変わることが、下の表からも分かる。</p>
+    <table>
+      <tr><th>CIDR</th><th>ネットワークアドレス</th><th>ブロードキャストアドレス</th><th>使えるホスト数</th></tr>
+      <tr><td>192.168.1.0/24</td><td>192.168.1.0</td><td>192.168.1.255</td><td>254</td></tr>
+      <tr><td>192.168.1.0/26</td><td>192.168.1.0</td><td>192.168.1.63</td><td>62</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>netstat -rn</code></pre>
+    <p>見方: 宛先の欄に、「192.168.1」のような、末尾の 0 を省いた数字だけの行がある。これが、このページで見たネットワークアドレスが、実際の通信の設定の中で使われている例である。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="45">[#45] Cisco「Configure IP Addresses and Unique Subnets」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html" rel="noopener">原典</a>(「Understand Subnetting」の計算例、Host/Subnet Quantities Table)</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>(p.38-40 ネットワークアドレスの論理積計算、p.41-42 経路判定の手順、p.45 ブロードキャストアドレス)</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>(p.11-12「By using the subnet mask, Workstation A knows that Workstation B is on a different subnet」)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m05-3">
+    <div class="q" data-q="1">
+      <p class="q-text">ネットワークアドレスの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">IP アドレスとサブネットマスクを組み合わせて求める、そのサブネット全体を指す番号</button></li>
+        <li><button type="button" data-correct="false">個々の機械に割り当てられる、世界に 1 つだけの番号</button></li>
+        <li><button type="button" data-correct="false">そのサブネットの中で一番大きい番号を持つ機械の番号</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクを 10 進数に変換した値</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、IP アドレスとサブネットマスクを組み合わせて求める、そのサブネット全体を指す番号、です。機械を表す部分をすべて 0 にした値になります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ブロードキャストアドレスの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">機械を表す部分をすべて 1 にした、そのサブネット全体に呼びかけるための番号</button></li>
+        <li><button type="button" data-correct="false">そのサブネットの中で一番小さい番号を持つ機械の番号</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクと同じ値を持つ番号</button></li>
+        <li><button type="button" data-correct="false">外部のネットワークへ通信を送るときに使う番号</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、機械を表す部分をすべて 1 にした、そのサブネット全体に呼びかけるための番号、です。ネットワークアドレスとは逆に、機械を表す部分がすべて 1 になります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">サブネットマスクの設定を間違えると、機械は何を判断し損なうか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">本当は同じネットワークにいる機械を、別のネットワークにいると判定してしまう</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの前半と後半の位置を取り違える</button></li>
+        <li><button type="button" data-correct="false">CIDR 表記の数字を読み間違える</button></li>
+        <li><button type="button" data-correct="false">ブロードキャストアドレスとネットワークアドレスの値が入れ替わる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、本当は同じネットワークにいる機械を、別のネットワークにいると判定してしまう、です。相手の IP アドレスと自分のサブネットマスクを組み合わせた計算の結果が食い違うために起こります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m05-2.html">← 5-2 IP アドレスの前半と後半で、役割が違う</a>
+    <a class="up" href="m05.html">第 5 章の入口</a>
+    <a class="next" href="m05-4.html">5-4 内側だけで通じる番号と、外まで届く番号 →</a>
+  </nav>
+</main>
+</body>
+</html>

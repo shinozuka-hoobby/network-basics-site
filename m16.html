@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DNS の仕組み — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m16" data-chapter="m16" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 16 章</p>
+  <p class="chapter-label">第 16 章</p>
+  <h1>DNS の仕組み</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>ドメイン名から IP アドレスを調べるとき、代わりに問い合わせに行く側と、答えを持っている側に役割が分かれていることを説明できる。</li>
+      <li>答えにたどり着くまで、上位から順に階層をたどって問い合わせが重ねられることを説明できる。</li>
+      <li>問い合わせの内容によって、返ってくる情報の種類が違うことを説明できる。</li>
+      <li>一度調べた答えが、覚えておいてよい期限つきで、しばらくの間そのまま使い回されることを説明できる。</li>
+      <li>ターミナルから、名前解決の問い合わせの結果を自分の目で確かめる方法を説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 320" role="img" aria-label="ブラウザが、まず代わりに問い合わせに行くリゾルバに名前解決を頼む。リゾルバは、階層の一番上にあるルートサーバに聞き、次に TLD のサーバに聞き、最後にその名前を管理する権威サーバに聞いて、答え（IP アドレス）を受け取る。リゾルバはその答えをブラウザに返すと同時に、しばらくの間そのまま使えるようキャッシュに控えておく。">
+      <defs>
+        <marker id="m16-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m16-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <text x="450" y="24" text-anchor="middle" font-size="13" fill="var(--fig-muted)">① まず、代わりに問い合わせに行く側に頼む</text>
+
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="20" y="40" width="120" height="52" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="80" y="71" text-anchor="middle">ブラウザ</text>
+
+        <rect x="200" y="40" width="120" height="52" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="2"/>
+        <text x="260" y="71" text-anchor="middle" fill="var(--fig-accent)">リゾルバ</text>
+      </g>
+      <line x1="140" y1="66" x2="200" y2="66" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m16-arrow-ink)"/>
+      <text x="170" y="58" text-anchor="middle" font-size="11" fill="var(--fig-muted)">①</text>
+
+      <text x="450" y="128" text-anchor="middle" font-size="13" fill="var(--fig-muted)">② 階層を上から順にたどって聞いていく</text>
+
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="380" y="144" width="140" height="52" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="450" y="175" text-anchor="middle">ルートサーバ</text>
+
+        <rect x="580" y="144" width="140" height="52" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="650" y="175" text-anchor="middle">TLD のサーバ</text>
+
+        <rect x="780" y="144" width="100" height="52" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="830" y="169" text-anchor="middle">権威</text>
+        <text x="830" y="185" text-anchor="middle">サーバ</text>
+      </g>
+
+      <path d="M260,92 C260,150 300,170 380,170" fill="none" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m16-arrow-ink)"/>
+      <line x1="520" y1="170" x2="580" y2="170" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m16-arrow-ink)"/>
+      <line x1="720" y1="170" x2="780" y2="170" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m16-arrow-ink)"/>
+
+      <path d="M830,196 C830,245 300,255 260,230" fill="none" stroke="var(--fig-accent)" stroke-width="2" marker-end="url(#m16-arrow-accent)"/>
+      <text x="550" y="252" text-anchor="middle" font-size="12" fill="var(--fig-accent)">③ 答え（IP アドレス）がリゾルバに戻る</text>
+
+      <rect x="200" y="250" width="120" height="46" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="260" y="270" text-anchor="middle" font-size="12" fill="var(--fig-accent)">答えをしばらく</text>
+      <text x="260" y="286" text-anchor="middle" font-size="12" fill="var(--fig-accent)">控えておく</text>
+
+      <path d="M200,273 C160,273 140,240 140,92" fill="none" stroke="var(--fig-ink)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m16-arrow-ink)"/>
+      <text x="60" y="200" text-anchor="middle" font-size="12" fill="var(--fig-muted)">④ ブラウザに答える</text>
+    </svg>
+    <p class="fig-cap">ブラウザは、代わりに問い合わせに行く役目の機械に名前解決を頼む（①）。この機械は、階層の一番上のサーバから順に、聞く相手を変えながら問い合わせを重ね、最後に答えを持っている機械にたどり着く（②）。答えは問い合わせてきた機械に戻り（③）、ブラウザに渡されると同時に、しばらくの間そのまま使えるよう控えられる（④）。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m16"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m15.html">← 第 15 章 QUIC — UDP 上に作り直したトランスポート</a>
+    <a class="next" href="m17.html">第 17 章 DNS の運用と障害 →</a>
+  </nav>
+</main>
+</body>
+</html>

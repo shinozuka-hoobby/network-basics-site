@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>銅線と光ファイバと無線、弱点が違う — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m02-4" data-chapter="m02" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 2-4</p>
+  <p class="chapter-label">第 2 章 信号と回線　2-4</p>
+  <h1>銅線と光ファイバと無線、弱点が違う</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>回線には、金属の線、ガラスの線、電波という、伝わり方の違う種類がある。<strong>それぞれ、届く距離や安定性を左右する弱点が違う</strong>。このページでは、それぞれどんな制約が支配的かを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ところで、同じ「回線」でも、銅線と光ファイバと無線って何が違うんですか。</p>
+    <p class="t" data-who="ふくろう先生">まず銅線(金属のケーブル)は、信号を電気として伝えますが、距離が伸びるほど信号が弱まりやすいという弱点があります。</p>
+    <p class="s" data-who="ひよこちゃん">信号が弱まると、具体的にどうなるんですか。</p>
+    <p class="t" data-who="ふくろう先生">たとえば同じ規格のケーブルでも、銅線を使ったものは 100 メートルほどまでしか使えないのに対し、光ファイバを使ったものなら数百メートルから 5,000 メートルまで使えるものがあります。</p>
+    <p class="s" data-who="ひよこちゃん">光ファイバの方が万能なんですね。</p>
+    <p class="t" data-who="ふくろう先生">距離や容量では有利です。ただし無線には、銅線や光ファイバには無い弱点があります。</p>
+    <p class="s" data-who="ひよこちゃん">無線って、具体的にどういう仕組みなんですか。</p>
+    <p class="t" data-who="ふくろう先生">ケーブルの代わりに電波を使って機器をつなぐ仕組みを<a class="term" href="glossary.html#wireless-lan" data-term="wireless-lan">無線 LAN</a>と呼びます。詳しくは第 4 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、ビデオ通話中に映像が乱れたり音声が途切れたりすることがあると聞きました。</p>
+    <p class="t" data-who="ふくろう先生">無線は電波を使うため、壁のような障害物や他の電波との干渉で、信号が弱まったり乱れたりしやすいんです。</p>
+    <p class="s" data-who="ひよこちゃん">銅線や光ファイバでも、そういうことは起きるんですか。</p>
+    <p class="t" data-who="ふくろう先生">ケーブルに比べて周囲の影響を受けやすいのが無線の特徴です。いったん混ざった雑音は取り除きにくいので、通信の質が不安定になりやすいんです。</p>
+    <p class="s" data-who="ひよこちゃん">銅線は距離、無線は周りの環境が弱点なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。光ファイバは、この 2 つの弱点のどちらも比較的受けにくい方式です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、なんでも光ファイバにすればいいのに、って思っちゃいます。</p>
+    <p class="t" data-who="ふくろう先生">実際には敷設のコストや、機器を動かせる自由度など、他の事情も関わってきます。それはまた別の話です。</p>
+    <p class="s" data-who="ひよこちゃん">手元のスマホから海外のサーバまでの経路って、ずっと同じ種類の線を使ってるんですか。</p>
+    <p class="t" data-who="ふくろう先生">いいえ。手元は無線、家の中や会社までは銅線、その先の長距離区間は光ファイバ、というように、経路の途中で何度も種類が切り替わるのが普通です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、第 1 章で見た図の、機器と機器を結ぶ線の 1 本 1 本が、実はそれぞれ違う種類だったりするんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。区間ごとにどの弱点が支配的かは変わってきます。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた、帯域幅、遅延時間、伝搬遅延、シリアライズ遅延、それに今日の銅線・光ファイバ・無線の弱点、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">次の章では、こうした線をどうやって実際につなぎ、機器同士が信号をやり取りしているかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>銅線(金属のケーブル)は、距離が伸びるほど信号が弱まりやすく、届く距離に上限がある。</li>
+      <li>光ファイバは銅線より減衰が少なく、同じ規格でも銅線(約 100m)より長い距離(数百 m〜5,000m)まで使える。</li>
+      <li>無線 LAN は、ケーブルの代わりに電波で機器をつなぐ仕組みで、障害物や他の電波との干渉の影響を受けやすい。</li>
+      <li>ビデオ通話が乱れたり音声が途切れたりすることがあるのは、無線が周囲の環境の影響を受けやすいためである。</li>
+      <li>銅線は距離による減衰、無線は周囲の環境が、それぞれ支配的な制約であり、光ファイバはどちらの弱点も比較的受けにくい。</li>
+      <li>実際の経路では、手元は無線、建物の中は銅線、長距離区間は光ファイバというように、途中で何度も種類が切り替わるのが普通で、区間ごとに支配的な制約が変わる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>銅線(金属のケーブル)は、信号を電気として伝えるが、距離が伸びるほど信号が弱まりやすい(減衰)という制約がある。同じ通信速度の規格でも、銅線を使ったケーブルは 100 メートルほどまでしか使えないのに対し、光ファイバを使ったケーブルなら 220 メートルから 5,000 メートルまで使えるものがある(#73)。光ファイバは減衰が少なく、銅線より長い距離・大きな帯域幅に強い。無線 LAN は、ケーブルの代わりに電波で機器をつなぐ仕組みで、壁のような障害物や他の電波との干渉によって信号が弱まったり乱れたりしやすい(#4)。有線のケーブルに比べて周囲からの影響を受けやすく、いったん雑音が混ざると取り除くのが難しいため、通信の質が不安定になりやすい。銅線は距離による減衰、無線は周囲の環境が、それぞれ支配的な制約であり、光ファイバはどちらの弱点も比較的受けにくい。実際の通信経路は、手元の端末から無線、建物の中は銅線、長距離をまたぐ区間は光ファイバというように、複数の種類の回線が途中でつなぎ合わされていることが多く、区間ごとにどの制約が支配的かが変わってくる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="73">[#73] 京都大学 OCW「基礎情報処理 第 9 回『コンピュータネットワーク』」 — <a href="https://ocw.kyoto-u.ac.jp/course/120/" rel="noopener">原典</a>(p.53 付近の表。同じ速度規格でも UTP ケーブル(銅線)は最大 100m 程度、光ファイバは 220m〜5,000m まで使えるという対比)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`08_Link.txt` p.94〜96 付近「どれだけ情報を送ることができるか」: 伝送中の信号の減衰、周波数による波形の歪み、周囲からの雑音の混入という制約。p.96・p.99 付近: 有線が無線より雑音に強いこと、障害物があると減衰すること)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m02-4">
+    <div class="q" data-q="1">
+      <p class="q-text">銅線を使ったケーブルと光ファイバを使ったケーブルの違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じ通信速度の規格でも、銅線は届く距離が短く、光ファイバはより長い距離まで使える</button></li>
+        <li><button type="button" data-correct="false">銅線の方が光ファイバより長い距離まで使える</button></li>
+        <li><button type="button" data-correct="false">銅線と光ファイバは、届く距離がまったく同じである</button></li>
+        <li><button type="button" data-correct="false">光ファイバは電波を使うため、障害物の影響を受けやすい</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ通信速度の規格でも、銅線は届く距離が短く、光ファイバはより長い距離まで使える、です。銅線は距離が伸びるほど信号が弱まりやすく、光ファイバは減衰が少ないためより長い距離まで使えます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ビデオ通話中に映像が乱れたり音声が途切れたりすることがある理由として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">無線 LAN は、障害物や他の電波との干渉の影響を受けやすいため</button></li>
+        <li><button type="button" data-correct="false">光ファイバは、電波を使うため干渉に弱いため</button></li>
+        <li><button type="button" data-correct="false">銅線は、光ファイバより信号が速く伝わりすぎるため</button></li>
+        <li><button type="button" data-correct="false">無線 LAN の方が、有線よりも帯域幅が必ず大きいため</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、無線 LAN は、障害物や他の電波との干渉の影響を受けやすいため、です。無線は電波を使うため、有線のケーブルに比べて周囲からの影響を受けやすく、通信の質が不安定になりやすくなります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">無線 LAN の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">金属のケーブルを使って機器をつなぐ仕組み</button></li>
+        <li><button type="button" data-correct="false">ガラスの線を使って光の信号で機器をつなぐ仕組み</button></li>
+        <li><button type="button" data-correct="true">ケーブルの代わりに電波を使って機器をつなぐ仕組み</button></li>
+        <li><button type="button" data-correct="false">複数のサーバにリクエストを振り分ける仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ケーブルの代わりに電波を使って機器をつなぐ仕組み、です。金属のケーブルを使うのは銅線、ガラスの線を使うのは光ファイバで、いずれも無線 LAN とは異なる伝わり方です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m02-3.html">← 2-3 データの量と回線の太さで、送り出す時間が決まる</a>
+    <a class="up" href="m02.html">第 2 章の入口</a>
+    <a class="next" href="m03.html">第 3 章 イーサネットと MAC アドレス →</a>
+  </nav>
+</main>
+</body>
+</html>

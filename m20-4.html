@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>順番待ちで詰まる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m20-4" data-chapter="m20" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 20-4</p>
+  <p class="chapter-label">第 20 章 HTTP/1.1　20-4</p>
+  <h1>順番待ちで詰まる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>1 本の道筋の中では、答えを求めた順番のとおりに返す決まりがある。このページでは、この決まりのために、<strong>前の答えが遅いと後ろの答えまで待たされてしまう問題</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">Keep-Alive で接続を使い回せるなら、もう遅くなる原因は無いですよね?</p>
+    <p class="t" data-who="ふくろう先生">実は、まだ別の問題が残っています。第 15 章で見た HOL ブロッキングを覚えていますか?</p>
+    <p class="s" data-who="ひよこちゃん">1 本の接続の中で、順番が先のデータが届かないと、後ろの届いたデータも渡せず待たされることでしたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。HTTP/1.1 では、1 本の接続の中で、応答も要求した順番のとおりに返す決まりになっています。</p>
+    <p class="s" data-who="ひよこちゃん">順番どおりに返すって、具体的にはどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">先に要求したオブジェクトの応答が終わるまで、後から要求したオブジェクトの応答を先に渡すことができない、という決まりです。</p>
+    <p class="s" data-who="ひよこちゃん">何かたとえで考えると、分かりやすいですか?</p>
+    <p class="t" data-who="ふくろう先生">本を郵便で送る場面に近いです。1 章ずつ手紙で送り、相手から届いたという返事をもらってから、次の章を送るような進め方です。</p>
+    <p class="s" data-who="ひよこちゃん">画像とスタイルシートみたいに、中身が全然関係ない部品でも、同じ接続の中なら待たされるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。中身に関係が無くても、同じ接続の中で前に要求した分の応答が終わるまでは、後ろの部品の応答を先に渡すことはできません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、前の応答が遅いと、後ろも全部待たされるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。HTTP/1.1 は、1 つの資源が読み込めないと、その後ろの資源も全部止めてしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、1 枚の大きな画像の応答待ちで、後ろの小さな部品が全部止まったって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさにそれです。大きな画像の応答がまだ終わっていないと、後ろの小さな部品はもう用意できていても、順番を追い越して先に渡すことができません。</p>
+    <p class="s" data-who="ひよこちゃん">用意できているのに、渡してもらえないのはもったいないですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。これが、HTTP/1.1 の 1 本の接続で起きる順番待ちの正体です。</p>
+    <p class="s" data-who="ひよこちゃん">なんだかもどかしい仕組みですね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。1 本の接続で順番を守るという、単純な決まりが引き起こす問題です。</p>
+    <p class="s" data-who="ひよこちゃん">Keep-Alive で接続を使い回せるようになっても、この順番待ちの問題は別ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。接続を使い回す話と、順番待ちで詰まる話は、原因も対処も異なる別の問題です。</p>
+    <p class="s" data-who="ひよこちゃん">この問題は、これからも残ったままなんですか?</p>
+    <p class="t" data-who="ふくろう先生">この決まりの範囲では残ります。ただ、これを解決するために作り直されたものがあります。次の章で見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">作り直された、というと、大きな変更なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次の章を楽しみにしていてください。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>HTTP/1.1 では、1 本の接続の中で、応答も要求した順番のとおりに返す決まりになっている。</li>
+      <li>先に要求したオブジェクトの応答が終わるまで、後から要求したオブジェクトの応答を先に渡すことはできない。</li>
+      <li>これは、第 15 章で見た HOL ブロッキング(順番が先のデータが届かないと、後ろの届いたデータも渡せず待たされること)の、HTTP/1.1 の接続における現れ方である。</li>
+      <li>大きな画像のように応答に時間のかかるオブジェクトが先にあると、後ろの小さな部品はもう用意できていても待たされてしまう。中身に関係の無い部品どうしでも、順番だけは守られる。</li>
+      <li>接続を使い回す Keep-Alive と、この順番待ちの問題は、原因も対処も異なる別の問題である。片方を解決しても、もう片方は解決しない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP/1.1 は、1 本の接続の中で、応答も要求した順番のとおりに返す決まりになっている。先に要求したオブジェクトの応答が終わるまで、後から要求したオブジェクトの応答を先に渡すことはできない(#56)。これは第 15 章で見た HOL ブロッキング、1 本の接続の中で順番が先のデータが届かないと、それより後ろの届いたデータも渡せず待たされることの、HTTP/1.1 での現れ方である。大きな画像のように応答に時間のかかるオブジェクトが先に要求されていると、後ろの小さな部品はもう用意できていても、順番を追い越して先に渡すことができず、待たされてしまう。手紙のたとえで言えば、1 章分の返事を受け取るまで次の章を送れない郵送のやり取りに近く、部品どうしの中身に関係が無くても、順番だけは守られる。接続を使い回す Keep-Alive は、接続を作り直す往復を省く仕組みであり、この順番待ちの問題とは原因も対処も異なる別の問題である。Keep-Alive によって接続そのものは 1 本のまま保たれるため、この 1 本の接続が順番どおりにしか応答を返せないという決まりは、接続を使い回しても変わらない。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="56">[#56] Cloudflare Learning Center「HTTP/2 vs. HTTP/1.1」 — <a href="https://www.cloudflare.com/learning/performance/http2-vs-http1.1/" rel="noopener">原典</a>（"HTTP/1.1 loads resources one after the other, so if one resource cannot be loaded, it blocks all the other resources behind it." の記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m20-4">
+    <div class="q" data-q="1">
+      <p class="q-text">HTTP/1.1 の 1 本の接続で、前の応答が遅いと、後ろの応答も遅れてしまうのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">その接続では、応答を要求した順番のとおりに返す決まりで、追い越しができないから</button></li>
+        <li><button type="button" data-correct="false">通信全体の帯域が足りていないから</button></li>
+        <li><button type="button" data-correct="false">TLS の手続きをやり直す必要があるから</button></li>
+        <li><button type="button" data-correct="false">名前解決に時間がかかっているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、その接続では、応答を要求した順番のとおりに返す決まりで、追い越しができないから、です。帯域不足や TLS の再手続き、名前解決の遅延とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">接続を使い回す Keep-Alive と、この順番待ちの問題(HOL ブロッキング)の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">Keep-Alive で接続を使い回しても、順番待ちの問題は別に残る</button></li>
+        <li><button type="button" data-correct="false">Keep-Alive を使うと順番待ちの問題も自動的に解決する</button></li>
+        <li><button type="button" data-correct="false">Keep-Alive が順番待ちの問題の原因である</button></li>
+        <li><button type="button" data-correct="false">順番待ちの問題が解決しないと Keep-Alive は使えない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、Keep-Alive で接続を使い回しても、順番待ちの問題は別に残る、です。2 つは原因も対処も異なる別の問題で、片方を解決してももう片方は解決しません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">後ろの小さな部品がもう用意できているのに、先に渡されないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じ接続では応答を追い越して先に渡すことができないから</button></li>
+        <li><button type="button" data-correct="false">部品のファイルサイズが大きすぎるから</button></li>
+        <li><button type="button" data-correct="false">部品のステータスコードがエラーだから</button></li>
+        <li><button type="button" data-correct="false">部品の Content-Type が間違っているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ接続では応答を追い越して先に渡すことができないから、です。ファイルサイズやステータスコード、Content-Type の誤りとは別の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m20-3.html">← 20-3 接続を使い回す</a>
+    <a class="up" href="m20.html">第 20 章の入口</a>
+    <a class="next" href="m20-5.html">20-5 応答を控えておく →</a>
+  </nav>
+</main>
+</body>
+</html>

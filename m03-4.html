@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>配線は同じでも、グループを分ける仕組み — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m03-4" data-chapter="m03" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 3-4</p>
+  <p class="chapter-label">第 3 章 イーサネットと MAC アドレス　3-4</p>
+  <h1>配線は同じでも、グループを分ける仕組み</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じスイッチにつながっていても、機械をいくつかのグループに分けられる。このページでは、<strong>配線を変えずにグループを分ける仕組み</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページの最後で、配線を変えずに範囲を区切れるって言ってましたよね。どういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">1 台のスイッチにつながる機械を、配線を変えずにいくつかのグループに分ける仕組みがあります。これを VLAN と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">なんでそんなことをするんですか?</p>
+    <p class="t" data-who="ふくろう先生">たとえば、同じ配線を使っていても、部署ごとにブロードキャストドメインを分けたい場合があります。配線をつなぎ直さずに、設定だけでグループを分けられると便利です。</p>
+    <p class="s" data-who="ひよこちゃん">グループに分けると、何が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">グループごとにブロードキャストドメインが分かれます。別のグループには、ブロードキャストも普通のフレームも直接届きません。</p>
+    <p class="s" data-who="ひよこちゃん">え、同じスイッチにつながっているのに、届かなくなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。グループの外へは、直接データが届かなくなります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた話なんですけど、オフィスで VLAN を設定し直したら、隣の席の、同じスイッチにつながっているはずの機械と急に通信できなくなったことがあるらしいです。なんでですか?</p>
+    <p class="t" data-who="ふくろう先生">おそらく、隣の機械と別のグループに分けられてしまったんだと思います。VLAN で別のグループに分けると、ブロードキャストドメインが分かれ、直接データが届かなくなります。</p>
+    <p class="s" data-who="ひよこちゃん">グループをまたいでやり取りしたいときは、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 1 章で見た、遠くの宛先を見て次の転送先を選ぶ機械、<a class="term" href="glossary.html#router" data-term="router">ルータ</a>が間に立ちます。詳しくは第 8 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">グループってどうやって区別するんですか? 番号とかつけるんですか?</p>
+    <p class="t" data-who="ふくろう先生">グループごとに番号を割り当てて区別するのが一般的です。番号の付け方や設定の細かい手順は、この章では扱いません。</p>
+    <p class="s" data-who="ひよこちゃん">配線を引き直さずにグループを変えられるなら、部署の異動のときとかに便利そうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。席を移動しても、配線はそのままに設定だけでグループを移せます。</p>
+    <p class="s" data-who="ひよこちゃん">1 つのグループが、複数のスイッチにまたがることもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。スイッチどうしをつなげておけば、複数のスイッチにまたがる形でも、同じグループとして扱えます。</p>
+    <p class="s" data-who="ひよこちゃん">配線は 1 本なのに、離れた場所にある機械を同じグループにすることもできるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。実際に、離れた 2 つの拠点を、配線を新しく引くのではなく設定でつないで、同じ範囲として扱った例もあります。</p>
+    <p class="s" data-who="ひよこちゃん">配線と、VLAN が作るグループは、別々に決められるってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。グループを決めるのは配線そのものではなく、この仕組みの設定です。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、配線をいじらなくてもグループ分けできるのは、思っていたより便利な仕組みですね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。次の章では、家庭やオフィスのネットワーク全体をもう少し広く見て、無線でつながる場合や、ルータが担う役割を扱います。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>VLAN は、1 台のスイッチにつながる機械を、配線を変えずにいくつかのグループに分ける仕組みである。</li>
+      <li>VLAN でグループを分けると、グループごとにブロードキャストドメインが分かれ、別のグループへは直接データが届かなくなる。</li>
+      <li>グループをまたいでやり取りするには、ルータのような別の機械の助けが必要になる。</li>
+      <li>グループは番号で区別され、配線を引き直さずに設定だけで変えられるため、席の移動などにも対応しやすい。</li>
+      <li>VLAN が作るグループは配線そのものとは別に決められるため、離れた拠点を同じ範囲として扱うこともできる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>VLAN は、1 台のスイッチにつながる機械を、配線を変えずにいくつかのグループに分ける仕組みである。グループを分けると、それぞれのグループが別々のブロードキャストドメインになり、ブロードキャストも普通のフレームも、グループの外へは直接届かなくなる(前のページで見たブロードキャストドメインの定義そのものから導かれる)。グループをまたいでやり取りするには、ルータのような別の機械の助けが必要になる。グループはふつう番号で区別され、どの差し込み口をどのグループに割り当てるかは設定で決める。VLAN が作るグループを決めるのは配線そのものではなく設定であるため、機械の配置を変えずにグループだけを変更したり、離れた 2 つの拠点を、配線を新しく引くのではなく設定でつないで同じ範囲として扱ったりすることもできる(#16)。スイッチどうしをつなげておけば、1 つのグループを複数のスイッチにまたがる形で作ることもでき、オフィスの部署異動のたびに、配線をわざわざつなぎ直す必要もなくなる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="16">[#16] WIDE Project「IPv6 Only Network 設計・実験報告」 — <a href="https://www.wide.ad.jp/About/report/pdf2011/part02.pdf" rel="noopener">原典</a>（「StarBED と藤沢の WCC サーバ間は WIDE バックボーン上に広域 VLAN を設定して同一 L2 セグメントに収容できるようにした」）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m03-4">
+    <div class="q" data-q="1">
+      <p class="q-text">VLAN でグループを分けると何が起きるか、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">配線(物理的なつながり)は変わらないが、グループごとにブロードキャストドメインが分かれる</button></li>
+        <li><button type="button" data-correct="false">配線そのものが自動的に新しく引き直される</button></li>
+        <li><button type="button" data-correct="false">MAC アドレステーブルがまったく使われなくなる</button></li>
+        <li><button type="button" data-correct="false">スイッチが誤り検出をしなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、配線(物理的なつながり)は変わらないが、グループごとにブロードキャストドメインが分かれる、です。VLAN は配線そのものではなく設定によってグループを決めます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">オフィスで VLAN を設定し直したら、隣の席の、同じスイッチにつながっている機械と通信できなくなった。なぜか、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">別の VLAN(グループ)に分けられ、ブロードキャストドメインが分かれて直接データが届かなくなったから</button></li>
+        <li><button type="button" data-correct="false">スイッチの差し込み口の数が足りなくなったから</button></li>
+        <li><button type="button" data-correct="false">ケーブルの誤り検出でエラーが起きたから</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスが自動的に書き換わってしまったから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、別の VLAN(グループ)に分けられ、ブロードキャストドメインが分かれて直接データが届かなくなったから、です。同じスイッチにつながっていても、グループが違えば直接は届きません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">VLAN のグループをまたいでやり取りしたいとき、間に立つのはどんな機械か、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">遠くの宛先を見て次の転送先を選ぶ機械(ルータ)</button></li>
+        <li><button type="button" data-correct="false">同じ配線の中で MAC アドレスを学習して転送する機械(スイッチ)</button></li>
+        <li><button type="button" data-correct="false">配線を共有して信号を全員に流す機械(ハブ)</button></li>
+        <li><button type="button" data-correct="false">配線をつなぎ直すために使う、特別な工事用の機械</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、遠くの宛先を見て次の転送先を選ぶ機械(ルータ)、です。スイッチは同じグループの中の転送を担当し、グループをまたぐ転送はルータの役目になります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m03-3.html">← 3-3 一斉に送った合図が、どこまで届くか</a>
+    <a class="up" href="m03.html">第 3 章の入口</a>
+    <a class="next" href="m04.html">第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP →</a>
+  </nav>
+</main>
+</body>
+</html>

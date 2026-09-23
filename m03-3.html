@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一斉に送った合図が、どこまで届くか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m03-3" data-chapter="m03" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 3-3</p>
+  <p class="chapter-label">第 3 章 イーサネットと MAC アドレス　3-3</p>
+  <h1>一斉に送った合図が、どこまで届くか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>宛先がまだ分からないときや、全員に知らせたいときのために、機械には特別な送り方がある。このページでは、<strong>その送り方がどこまで届くか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページの最後で、「念のための全部」にも範囲があるって言ってましたよね。その範囲ってどこまでなんですか?</p>
+    <p class="t" data-who="ふくろう先生">まず、宛先を 1 台に絞らず、同じ範囲にいる機械全部に一斉に送る、特別な送り方があります。これをブロードキャストと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">なんでそんな送り方が必要なんですか?</p>
+    <p class="t" data-who="ふくろう先生">宛先がまだ分からない相手を探すときや、全員に知らせたいときに使います。MAC アドレスにも、宛先を全部の機械にする、全部が 1 になっている特別な番号があります。</p>
+    <p class="s" data-who="ひよこちゃん">前のページで見た、まだ表に載っていない相手に「念のため全部」に送るのと同じことですか?</p>
+    <p class="t" data-who="ふくろう先生">似ていますが違います。あれは宛先が分かるまでの一時的な動きで、ブロードキャストは最初から全員に向けて送る、意図した送り方です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、そのブロードキャストってどこまで届くんですか?</p>
+    <p class="t" data-who="ふくろう先生">スイッチでつながっている範囲全体に届きます。この範囲のことをブロードキャストドメインと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあブロードキャストドメインは、配線でつながっている範囲そのものってことですか?</p>
+    <p class="t" data-who="ふくろう先生">近い考え方ですが、正確には「ブロードキャストが届く範囲」のことです。スイッチでつながっている範囲は、ふつうそのまま 1 つのブロードキャストドメインになります。</p>
+    <p class="s" data-who="ひよこちゃん">ブロードキャストを受け取った機械は、みんな同じように処理するんですか?</p>
+    <p class="t" data-who="ふくろう先生">基本的にはそうです。宛先が自分あてかどうかに関わらず、ブロードキャストドメインの中の機械はそれぞれ中身を確認します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、宛先が自分じゃない普通のフレームは、確認しなくていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。宛先 MAC アドレスが自分と違うフレームは、確認せずに無視できます。ブロードキャストだけは、宛先に関係なく全員が確認する特別な扱いです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、だからブロードキャストが多いと、みんなの負担が増えるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">機械が増えるほど、届く先も増えるってことですよね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた話なんですけど、新しく増設したフロアで機械が増えたら、ネットワーク全体が急に遅く感じるようになったらしいんです。なんでですか?</p>
+    <p class="t" data-who="ふくろう先生">ブロードキャストは、同じブロードキャストドメインの中の機械全部に届き、受け取った機械はそれぞれ処理をします。台数が増えるほど、全員が受け取って処理する合図の数も増えるので、負担が増え、遅く感じることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、ブロードキャストドメインをむやみに広げない方がいいってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">この範囲を、配線を変えずに区切ったりはできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。次のページで見ましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>宛先を 1 台に絞らず、同じ範囲にいる機械全部に一斉に送る送り方を、ブロードキャストと呼ぶ。宛先が分からない相手を探すときや、全員に知らせたいときに使われる。</li>
+      <li>ブロードキャストが届く範囲にある機械全体のまとまりを、ブロードキャストドメインと呼ぶ。スイッチでつながっている範囲が、ふつうそのまま 1 つのブロードキャストドメインになる。</li>
+      <li>宛先がまだ分からないときにスイッチが送る「念のための全部」と、最初から全員向けに送るブロードキャストは、似ているが別の動きである。</li>
+      <li>宛先が自分でない普通のフレームは確認せずに無視できるが、ブロードキャストは宛先に関係なく、範囲の中の機械全部が中身を確認する。</li>
+      <li>ブロードキャストドメインの中の機械が増えるほど、ブロードキャストを受け取って処理する機械も増え、負担が増えて遅く感じることがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ブロードキャストは、宛先を 1 台に絞らず同じ範囲の機械全部に一斉に送る送り方で、MAC アドレスには宛先を全部の機械にする、全部が 1 になっている特別な番号が使われる(#4 p.115)。この、ブロードキャストが届く範囲にある機械全体のまとまりを、ブロードキャストドメインと呼ぶ。スイッチは、宛先 MAC アドレスがまだ分からないフレームを他の全部の差し込み口に転送するが、これは宛先が分かるまでの一時的な動きであり、最初から全員向けに送るブロードキャストとは異なる(#71 p.45〜46)。ブロードキャストは、宛先がまだ分からない相手を探す場面でも使われる(#44)。宛先 MAC アドレスが自分と異なる普通のフレームは確認せずに無視できるが、ブロードキャストは宛先に関わらず範囲の中の機械全部が中身を確認する、特別な扱いの送り方である。ブロードキャストドメインの中の機械が増えるほど、受け取って処理する機械の数も増えるため、台数の多いネットワークほどこの負担が大きくなりやすい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（08_Link.txt p.115 ブロードキャストアドレス、全部 1 の MAC アドレス）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-02-datalink.txt p.45〜46 宛先不明の MAC アドレスへの転送）</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>（"ARP uses broadcast messages to determine the hardware (MAC layer) address"）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m03-3">
+    <div class="q" data-q="1">
+      <p class="q-text">スイッチが宛先不明のフレームを念のため全部の差し込み口に送る動作と、ブロードキャストの違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">前者は宛先が分かるまでの一時的な動きで、後者は最初から全員に向けて送る、意図した送り方である</button></li>
+        <li><button type="button" data-correct="false">前者と後者はまったく同じ動きで、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">前者は MAC アドレステーブルを消す動きで、後者は誤り検出をやり直す動きである</button></li>
+        <li><button type="button" data-correct="false">前者はブロードキャストドメインの外まで届き、後者は同じブロードキャストドメインの中にしか届かない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、前者は宛先が分かるまでの一時的な動きで、後者は最初から全員に向けて送る、意図した送り方である、です。似た動きに見えますが、目的も続く期間も異なります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ブロードキャストドメインの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ブロードキャストが届く範囲にある機械全体のまとまりのこと</button></li>
+        <li><button type="button" data-correct="false">1 台のスイッチが持つ差し込み口の数のこと</button></li>
+        <li><button type="button" data-correct="false">MAC アドレステーブルに書き込める機械の最大数のこと</button></li>
+        <li><button type="button" data-correct="false">フレームの誤り検出ができる範囲のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ブロードキャストが届く範囲にある機械全体のまとまりのこと、です。スイッチでつながっている範囲が、ふつうそのまま 1 つのブロードキャストドメインになります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ブロードキャストドメインの中の機械が増えると、何が起きやすくなるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ブロードキャストを受け取って処理する機械が増え、その分の負担が増えて遅く感じることがある</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスの誤り検出ができなくなる</button></li>
+        <li><button type="button" data-correct="false">フレームの中の宛先 MAC アドレスが自動的に書き換わる</button></li>
+        <li><button type="button" data-correct="false">スイッチがフレームの送信元を覚えられなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ブロードキャストを受け取って処理する機械が増え、その分の負担が増えて遅く感じることがある、です。台数が増えるほど、全員が受け取って処理する合図の数も増えます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m03-2.html">← 3-2 機械の場所を覚えて、そこだけに届ける仕組み</a>
+    <a class="up" href="m03.html">第 3 章の入口</a>
+    <a class="next" href="m03-4.html">3-4 配線は同じでも、グループを分ける仕組み →</a>
+  </nav>
+</main>
+</body>
+</html>

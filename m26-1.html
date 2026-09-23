@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>境目で選んでも、内側までは見えない — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m26-1" data-chapter="m26" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 26-1</p>
+  <p class="chapter-label">第 26 章 ネットワークセキュリティの基礎　26-1</p>
+  <h1>境目で選んでも、内側までは見えない</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ネットワークの手前には、決めた条件に合わない通信を止める仕組みがある。<strong>ただし、この仕組みだけでは防ぎきれない場合もある</strong>。このページでは、その仕組みの中身と、境目を守るという考え方の限界を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 24 章で、セキュリティグループと NACL は「ファイアウォールの一種」だって聞いたんですけど、そもそもファイアウォールって何なんですか?</p>
+    <p class="t" data-who="ふくろう先生">決めた条件に合わない通信を、機械やネットワークの手前で止める仕組みのことです。これをファイアウォールと呼びます。セキュリティグループも NACL も、これの一種でした。</p>
+    <p class="s" data-who="ひよこちゃん">「決めた条件」って、具体的には何を見て決めるんですか?</p>
+    <p class="t" data-who="ふくろう先生">基本は、送信元と宛先の IP アドレスやポート番号です。あらかじめ許可する組み合わせを決めておいて、それ以外を止めます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、第 5 章や第 12 章で見たアドレスやポート番号を、実際にこうやって使うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。GCP の解説でも、ファイアウォールのルールがどの通信をどこへ送ってよいかを制御する仕組みだと説明されています。</p>
+    <p class="s" data-who="ひよこちゃん">ネットワークの外と中の境目に、こういう仕組みを置いておけば安心ってことですよね?</p>
+    <p class="t" data-who="ふくろう先生">そう考えられてきましたが、限界もあります。境目を一度越えてしまった通信は、それ以降は<strong>改めて確認されません</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、境目の内側に入られてしまったら、そのあとは自由に動けちゃうってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。境目の外は厳しく確認するが、内側は既定で信用する、という考え方には、そういう弱点があります。</p>
+    <p class="s" data-who="ひよこちゃん">この、境目を守るという考え方に、名前はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ネットワークとその外側の境目を守るという考え方を、境界防御と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いたんですけど、セキュリティグループの設定で、特定のポートをうっかり「どこからでもアクセス可」にしてしまっていたことがあるらしいです。</p>
+    <p class="t" data-who="ふくろう先生">よくある事故です。ファイアウォールは、決めた条件でしか選別できません。条件そのものを「どこからでも」にしてしまうと、境目を置いた意味が無くなってしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">具体的には、何が起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば SSH 用の 22 番のポートを、送信元を絞らずに開けてしまうと、世界中のどこからでもそのポートにアクセスできてしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">それだと、ファイアウォールを置いている意味が無いですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。境目に仕組みを置くこと自体は有効ですが、条件の決め方を誤ると、その効果は失われます。</p>
+    <p class="s" data-who="ひよこちゃん">最初から全部の通信を許可しておいて、危なそうなものだけ後から止める、というやり方じゃ駄目なんですか?</p>
+    <p class="t" data-who="ふくろう先生">基本は逆の考え方です。GCP の解説にも、既定ではすべての受信を拒否しておき、必要な通信だけを許可のルールとして追加していく、という説明があります。</p>
+    <p class="s" data-who="ひよこちゃん">何も設定しなければ、まず全部拒否から始まるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。許可したいものだけを、あとから明示的に追加していきます。この順番を逆にすると、22 番のポートの例のように、条件がゆるくなりやすくなります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、境目の内側にいるという理由だけで、通信を信用してよいものなんでしょうか?</p>
+    <p class="t" data-who="ふくろう先生">良い問いです。実は、ネットワークの講義資料にも「ファイアウォールだけで、システムは守れるのだろうか」という同じ問いが立てられています。この問いは、この章の最後でもう一度扱いましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ファイアウォールは、決めた条件に合わない通信を、機械やネットワークの手前で止める仕組みである。</li>
+      <li>判断の基準は、基本的に送信元・宛先の IP アドレスやポート番号などの組み合わせである。</li>
+      <li>ネットワークの外と内の境目を守るという考え方(境界防御)には、境目を越えた通信はそれ以降確認されない、という限界がある。</li>
+      <li>決めた条件を緩く設定しすぎると(送信元をどこからでも許可する、など)、境目を置いた意味そのものが失われる。</li>
+      <li>基本の考え方は、既定ではすべての通信を拒否しておき、必要な通信だけを許可の条件として追加していくことである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ファイアウォールは、あらかじめ決めた条件と、実際に来た通信の送信元・宛先の IP アドレスやポート番号などを照らし合わせ、条件に合わない通信を手前で止める仕組みである。この考え方を、ネットワークとその外側(インターネット)の境目に置くことで、外部からの望ましくない通信を先に止めようとする発想を境界防御と呼ぶ。ただし、この考え方には前提がある。境目をいったん越えてしまった通信は、それ以降あらためて確認されない、という前提である。この前提のもとでは、境目の内側にひとたび入られると、それより先の通信は素通りしてしまう。また、ファイアウォールは決めた条件でしか通信を選別できないため、条件そのものを緩く設定してしまうと(送信元をどこからでも許可する、など)、境目を置いた意味そのものが失われる。基本の考え方は、既定ではすべての通信を拒否しておき、必要な通信だけを許可の条件として追加していくというものである。先に広く許可してから危険なものだけ止める、という順番にすると、条件が緩くなりやすい。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>lsof -i :443</code></pre>
+    <p>見方: LISTEN と出ている行が、自分の Mac が外部からの接続を待ち受けているポートです。ファイアウォールが判断材料にする、宛先ポート番号の一部を確認できます。境目の内側で実際に何が起きているかまでは、この一覧からは分かりません。</p>
+    <p class="try-note">何も表示されなくても、443 番で待ち受けているアプリが無いだけなので、そのまま読み進めてよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室(wide.ad.jp)「ネットワーク工学概論(教員公開版・現行)」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`02-Security.txt` p.124 付近。ファイアウォールのパケットフィルタリングが、送信元・宛先の IP アドレスとポート番号の組み合わせを見て判断するという記述。p.128 付近。「Firewall で、システムは守れるのだろうか」という問いかけ)</li>
+    <li class="cite" data-src="29">[#29] Google Cloud「Virtual Private Cloud (VPC) overview」 — <a href="https://docs.cloud.google.com/vpc/docs/overview" rel="noopener">原典</a>(29〜31 行目。ファイアウォールルールが、どの通信をどの宛先へ送ってよいかを制御する仕組みだという記述。34〜35 行目。既定ではすべての受信を拒否し、すべての送信を許可する 2 つのルールが、どの VPC ネットワークにも用意されているという記述)</li>
+    <li class="cite" data-src="95">[#95] Amazon Web Services(Amazon VPC ユーザーガイド)「Control traffic to your AWS resources using security groups」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html" rel="noopener">原典</a>(65 行目。インバウンドルールを 0.0.0.0/0 に設定すると、指定したプロトコルでどの IP アドレスからでもアクセスできてしまうという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m26-1">
+    <div class="q" data-q="1">
+      <p class="q-text">セキュリティグループのインバウンドルールを「0.0.0.0/0」に設定すると、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">指定したポートに、どの IP アドレスからでもアクセスできるようになる</button></li>
+        <li><button type="button" data-correct="false">その通信が自動的に暗号化されるようになる</button></li>
+        <li><button type="button" data-correct="false">サブネットの境目の設定が無効になる</button></li>
+        <li><button type="button" data-correct="false">サーバへの通信がすべて禁止される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「指定したポートに、どの IP アドレスからでもアクセスできるようになる」です。0.0.0.0/0 はすべての送信元を意味するため、送信元を絞る条件が無くなります。暗号化やサブネットの設定とは別の話であり、通信を禁止するものでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ファイアウォールが通信を許可するかどうかを判断するとき、基本的に見ているものは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信を送った人の氏名や所属</button></li>
+        <li><button type="button" data-correct="true">通信の送信元・宛先の IP アドレスやポート番号などの組み合わせ</button></li>
+        <li><button type="button" data-correct="false">通信が行われた時間の長さ</button></li>
+        <li><button type="button" data-correct="false">サーバが設置されている場所の住所</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「送信元・宛先の IP アドレスやポート番号などの組み合わせ」です。氏名や所属、通信時間の長さ、設置場所は、ファイアウォールが通信そのものから読み取れる情報ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ネットワークの境目にファイアウォールを置くという考え方(境界防御)には、どのような限界があるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の速度が必ず遅くなる</button></li>
+        <li><button type="button" data-correct="false">暗号化された通信をまったく扱えない</button></li>
+        <li><button type="button" data-correct="true">境目を一度越えた通信は、それ以降あらためて確認されないことがある</button></li>
+        <li><button type="button" data-correct="false">1 台のサーバにしか設定できない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「境目を一度越えた通信は、それ以降あらためて確認されないことがある」です。速度の低下、暗号化通信の扱い、設定できる台数の制限は、本文で説明した限界ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m26.html">← 第 26 章の入口</a>
+    <a class="up" href="m26.html">第 26 章の入口</a>
+    <a class="next" href="m26-2.html">26-2 差出人の住所は、名乗ったとおりとは限らない →</a>
+  </nav>
+</main>
+</body>
+</html>

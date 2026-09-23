@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用語集 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="glossary">
+<noscript><p class="noscript-note">サイドバー・検索・進捗保存に JavaScript を使います。</p></noscript>
+
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 用語集</p>
+  <h1>用語集</h1>
+  <div class="lead">
+    <p class="lead-label">このページについて</p>
+    <p>本文中の点線下線の語からここへリンクしています。「定義」はその語を正式に説明しているページ、「用語リンクのあるページ」は本文からリンクされている全ページです（tools/build_glossary.py が自動生成、手動編集しない）。並び順は読み（reading）の五十音（あ行〜わ行）→ 0-9 → A〜Z です。</p>
+  </div>
+
+  <nav class="glossary-jump" aria-label="見出しへ移動">
+<a href="#row-あ">あ行</a>
+<a href="#row-か">か行</a>
+<a href="#row-さ">さ行</a>
+<a href="#row-た">た行</a>
+<a href="#row-な">な行</a>
+<a href="#row-は">は行</a>
+<a href="#row-ま">ま行</a>
+<a href="#row-ら">ら行</a>
+<a href="#letter-0-9">0-9</a>
+<a href="#letter-A">A</a>
+<a href="#letter-B">B</a>
+<a href="#letter-C">C</a>
+<a href="#letter-D">D</a>
+<a href="#letter-H">H</a>
+<a href="#letter-I">I</a>
+<a href="#letter-J">J</a>
+<a href="#letter-K">K</a>
+<a href="#letter-L">L</a>
+<a href="#letter-M">M</a>
+<a href="#letter-N">N</a>
+<a href="#letter-O">O</a>
+<a href="#letter-P">P</a>
+<a href="#letter-Q">Q</a>
+<a href="#letter-R">R</a>
+<a href="#letter-S">S</a>
+<a href="#letter-T">T</a>
+<a href="#letter-U">U</a>
+<a href="#letter-V">V</a>
+<a href="#letter-W">W</a>
+  </nav>
+
+<h2 id="row-あ">あ行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="access-point">
+  <p class="g-term">アクセスポイント <span class="g-aliases">（無線 LAN のアクセスポイント）</span></p>
+  <p class="g-short">無線 LAN で、電波を出して機器からの接続を受け付ける機械の役目のこと。家庭では、家庭用ルータがこの役目を兼ねていることが多い。</p>
+  <p class="g-defined">定義: <a href="m04-1.html">第 4 章 4-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ethernet">
+  <p class="g-term">イーサネット</p>
+  <p class="g-short">有線でつないだ機械どうしがデータをやり取りするときの、配線とデータの形式についての共通の約束事のこと。家庭やオフィスの有線 LAN の多くが、これに沿っている。</p>
+  <p class="g-defined">定義: <a href="m03-1.html">第 3 章 3-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-4</p>
+</li>
+<li class="g-item" id="internet-gateway">
+  <p class="g-term">インターネットゲートウェイ</p>
+  <p class="g-short">クラウドの仕切られたネットワークを、外のインターネットへつなぐ出入り口となる設定のこと。ここを通って外と通信し、この設定が無ければ外との通信はできない。</p>
+  <p class="g-defined">定義: <a href="m24-2.html">第 24 章 24-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="well-known-port">
+  <p class="g-term">ウェルノウンポート</p>
+  <p class="g-short">0 番から 1023 番までの、特定のサービス用にあらかじめ決められているポート番号のこと。80 番は HTTP、443 番は HTTPS というように、番号を見ればおおよその用途が分かる。</p>
+  <p class="g-defined">定義: <a href="m12-1.html">第 12 章 12-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="edge-server">
+  <p class="g-term">エッジサーバ</p>
+  <p class="g-short">利用者の近くに置かれ、ページや画像のコピーを代わりに届ける機械のこと。CDN の中で利用者に一番近い係を務め、もとの Web サーバまで行かなくて済む分、応答が速くなる。</p>
+  <p class="g-defined">定義: <a href="m22-1.html">第 22 章 22-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ephemeral-port">
+  <p class="g-term">エフェメラルポート <span class="g-aliases">（一時ポート、動的ポート）</span></p>
+  <p class="g-short">通信を始める側が、送信元の番号として一時的に使う、あらかじめ決まっていないポート番号のこと。通信のたびに別の番号が選ばれ、終われば使われなくなる。</p>
+  <p class="g-defined">定義: <a href="m12-1.html">第 12 章 12-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="origin-server">
+  <p class="g-term">オリジンサーバ</p>
+  <p class="g-short">ページや画像などの、もとになるデータを持っている本来の Web サーバのこと。近くの機械にコピーが無いとき、ここまで取りに行く。</p>
+  <p class="g-defined">定義: <a href="m22-1.html">第 22 章 22-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="row-か">か行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="home-router">
+  <p class="g-term">家庭用ルータ</p>
+  <p class="g-short">家庭に置かれ、無線 LAN のアクセスポイントや、機器へのアドレス配布・変換など複数の役目をまとめて持つ機械のこと。パソコンやスマホをインターネットにつなぐ役目もあり、1 台で何役もこなす。</p>
+  <p class="g-defined">定義: <a href="m04-2.html">第 4 章 4-2</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-3、1-5、4-1</p>
+</li>
+<li class="g-item" id="encapsulation">
+  <p class="g-term">カプセル化</p>
+  <p class="g-short">送りたいデータに、各層でそれぞれ宛先などの情報を付け加えながら包んでいくことを指す。何重にも封筒に包むのに似ており、実際の中身は一番内側にある。</p>
+  <p class="g-defined">定義: <a href="m01-4.html">第 1 章 1-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="cache-key">
+  <p class="g-term">キャッシュキー</p>
+  <p class="g-short">同じ要求に対して、同じ控えを返してよいかどうかを見分けるために比べる材料の組み合わせのこと。基本は、要求先の URL と、GET などの要求の種類で決まる。</p>
+  <p class="g-defined">定義: <a href="m22-2.html">第 22 章 22-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ttl-cache">
+  <p class="g-term">キャッシュの TTL</p>
+  <p class="g-short">コンテンツの控えを、この秒数の間は使ってよいとする期限のこと。Web サーバの応答に含まれる指示や、配信事業者側の設定で決まる。</p>
+  <p class="g-defined">定義: <a href="m22-2.html">第 22 章 22-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="cache-hit">
+  <p class="g-term">キャッシュヒット</p>
+  <p class="g-short">問い合わせに対して、控えが見つかり、それをそのまま返せた状態のこと。控えが無ければ、もとのサーバまで取りに行くことになる。</p>
+  <p class="g-defined">定義: <a href="m22-1.html">第 22 章 22-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="capture-filter">
+  <p class="g-term">キャプチャフィルタ</p>
+  <p class="g-short">パケットを記録する時点で、条件に合う通信だけに絞り込む仕組みのこと。相手のアドレスやポート番号などを指定して、記録する量を減らす。</p>
+  <p class="g-defined">定義: <a href="m28-2.html">第 28 章 28-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="shared-vpc">
+  <p class="g-term">共有 VPC <span class="g-aliases">（シェアード VPC、VPC sharing、Shared VPC）</span></p>
+  <p class="g-short">1 つの VPC を、複数のチームやアカウント・プロジェクトで分担して使えるようにする仕組みのこと。VPC を管理する側と、実際に使う側の役割を分けられる。</p>
+  <p class="g-defined">定義: <a href="m25-2.html">第 25 章 25-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="neighbor-discovery">
+  <p class="g-term">近隣探索 <span class="g-aliases">（NDP、近隣探索プロトコル）</span></p>
+  <p class="g-short">同じネットワークにある機械どうしが、相手の MAC アドレスを調べるために使う IPv6 の仕組みのこと。全員に一斉に呼びかけるのではなく、絞った相手にだけ届く呼びかけ方を使う。</p>
+  <p class="g-defined">定義: <a href="m11-2.html">第 11 章 11-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="global-address">
+  <p class="g-term">グローバルアドレス <span class="g-aliases">（グローバル IP アドレス、グローバルユニキャストアドレス）</span></p>
+  <p class="g-short">インターネット上で、世界中で重複しないただ一つの番号として使われる IP アドレスのこと。プライベートアドレスとは違い、直接インターネットに公開して使う。</p>
+  <p class="g-defined">定義: <a href="m05-4.html">第 5 章 5-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="reachability-tool">
+  <p class="g-term">経路診断ツール</p>
+  <p class="g-short">クラウドの中の設定を読み取り、通信が実際に届くはずかどうかや、途中のどこで止まるはずかを、送らずに確かめる、クラウド事業者の診断機能のこと。</p>
+  <p class="g-defined">定義: <a href="m29-1.html">第 29 章 29-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="route-hijack">
+  <p class="g-term">経路ハイジャック <span class="g-aliases">（BGP ハイジャック）</span></p>
+  <p class="g-short">本来その宛先を担当していない組織が、誤って、あるいは意図的にその宛先への経路を広く知らせてしまい、通信が誤った相手に届いてしまう出来事のこと。</p>
+  <p class="g-defined">定義: <a href="m09-4.html">第 9 章 9-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dns-authoritative">
+  <p class="g-term">権威サーバ <span class="g-aliases">（権威 DNS サーバ）</span></p>
+  <p class="g-short">あるドメイン名について、正しい IP アドレスを最終的に答えられる、そのドメインの管理者側の機械。答えの出どころにあたり、他の機械はここへ問い合わせに行く。</p>
+  <p class="g-defined">定義: <a href="m16-1.html">第 16 章 16-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="public-key">
+  <p class="g-term">公開鍵</p>
+  <p class="g-short">2 つで 1 組になる鍵のうち、誰に配ってもよい方のこと。この鍵で暗号化した内容は、組になるもう片方の鍵を持つ本人しか元に戻せないので、相手に安全に秘密を送るのに使える。</p>
+  <p class="g-defined">定義: <a href="m18-2.html">第 18 章 18-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="connection-id">
+  <p class="g-term">コネクション ID</p>
+  <p class="g-short">QUIC の接続 1 本 1 本に付けられる番号のこと。接続を IP アドレスとポート番号の組ではなくこの番号で見分けるので、番号が同じなら IP アドレスやポート番号が変わっても同じ接続として扱われる。</p>
+  <p class="g-defined">定義: <a href="m15-4.html">第 15 章 15-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="connection-migration">
+  <p class="g-term">コネクション移行 <span class="g-aliases">（コネクションマイグレーション）</span></p>
+  <p class="g-short">利用者がネットワークを切り替えたり、途中でポート番号が付け替えられたりして IP アドレスやポート番号が変わっても、同じ接続だと分かる番号のおかげで、接続を作り直さずに続けられること。</p>
+  <p class="g-defined">定義: <a href="m15-4.html">第 15 章 15-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="mixed-content">
+  <p class="g-term">混在コンテンツ</p>
+  <p class="g-short">HTTPS のページの中で、画像やスクリプトなどの部品が HTTP のまま呼び出されている状態のこと。その部品だけ暗号化されずに送られ、ブラウザが警告を出したり読み込みを止めたりする。</p>
+  <p class="g-defined">定義: <a href="m19-4.html">第 19 章 19-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="row-さ">さ行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="subnet">
+  <p class="g-term">サブネット</p>
+  <p class="g-short">大きな通信の集まりを、管理しやすい単位に区切った、小さな集まりの一つのこと。IP アドレスの範囲を使って区切られ、部署ごとに分けて管理する場合などに使われる。</p>
+  <p class="g-defined">定義: <a href="m05-2.html">第 5 章 5-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="subnet-mask">
+  <p class="g-term">サブネットマスク</p>
+  <p class="g-short">IP アドレスのうち、どこまでが集まりを表す部分かを示す数字のこと。この数字を使って集まりの範囲を計算し、宛先がどの集まりかを判断する。</p>
+  <p class="g-defined">定義: <a href="m05-2.html">第 5 章 5-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="sequence-number">
+  <p class="g-term">シーケンス番号</p>
+  <p class="g-short">送ったデータの一つ一つに順番として付ける番号のこと。受け取る側は、この番号を見て抜けや順序の乱れに気づき、正しい順番に組み立て直せる。</p>
+  <p class="g-defined">定義: <a href="m13-2.html">第 13 章 13-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="receive-window">
+  <p class="g-term">受信ウィンドウ</p>
+  <p class="g-short">受け取る側が、まだ処理できずに置いておける量を、あらかじめ送り手に伝えておく数字のこと。この数字は、やり取りの途中でも状況に応じて変わる。</p>
+  <p class="g-defined">定義: <a href="m14-2.html">第 14 章 14-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="certificate-chain">
+  <p class="g-term">証明書チェーン</p>
+  <p class="g-short">1 枚の身分証が本物であることを別の身分証が保証し、それをさらに別の身分証が保証するという、保証のつながりのこと。たどると、最後はブラウザや OS があらかじめ信頼している身分証に行き着く。</p>
+  <p class="g-defined">定義: <a href="m18-3.html">第 18 章 18-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="certificate-revocation">
+  <p class="g-term">証明書の失効</p>
+  <p class="g-short">有効期間の途中でも身分証を無効にする仕組みのこと。発行した機関が持つ無効になった身分証の一覧や、その都度確認する問い合わせによって、無効かどうかを見分けられる。</p>
+  <p class="g-defined">定義: <a href="m19-2.html">第 19 章 19-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="serialization-delay">
+  <p class="g-term">シリアライズ遅延 <span class="g-aliases">（送出遅延、シリアライゼーション遅延）</span></p>
+  <p class="g-short">送りたいデータのすべてを、回線に信号として送り出し終えるまでにかかる時間のこと。データの量が多いほど、また回線が細い（帯域幅が小さい）ほど長くなる。</p>
+  <p class="g-defined">定義: <a href="m02-3.html">第 2 章 2-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="autonomous-system">
+  <p class="g-term">自律システム <span class="g-aliases">（AS 番号、AS）</span></p>
+  <p class="g-short">インターネットの中で、自分の判断で経路を決められる組織の単位のこと。世界で重複しない番号が、組織ごとに 1 つ割り当てられる。</p>
+  <p class="g-defined">定義: <a href="m09-1.html">第 9 章 9-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="switch">
+  <p class="g-term">スイッチ</p>
+  <p class="g-short">同じ場所にある機械どうしをつなぎ、送られてきたデータを、送り先の機械にだけ振り分けて届ける機械のこと。遠くの宛先への中継は、この機械の役目ではない。</p>
+  <p class="g-defined">定義: <a href="m03-2.html">第 3 章 3-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="status-code">
+  <p class="g-term">ステータスコード</p>
+  <p class="g-short">HTTP のレスポンスに付く番号のことで、リクエストの結果を表す。200 番台は成功、400 番台はエラーを意味し、3 桁の数字で結果が一目で分かるようにしている。</p>
+  <p class="g-defined">定義: <a href="m20-1.html">第 20 章 20-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="quic-stream">
+  <p class="g-term">ストリーム</p>
+  <p class="g-short">QUIC の 1 本の接続の中に複数持てる、互いに独立してデータをやり取りできる小さな流れのこと。1 つの流れでデータが失われても、他の流れの処理には影響しない。</p>
+  <p class="g-defined">定義: <a href="m15-2.html">第 15 章 15-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="slow-start">
+  <p class="g-term">スロースタート</p>
+  <p class="g-short">通信を始めた直後は一度に送る量を少なくし、返事が戻ってくるたびに送る量を倍々に増やしていく、TCP の送り出し方のこと。混み具合が分からないうちに送りすぎるのを防ぐ。</p>
+  <p class="g-defined">定義: <a href="m14-3.html">第 14 章 14-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="static-route">
+  <p class="g-term">静的経路 <span class="g-aliases">（スタティックルート）</span></p>
+  <p class="g-short">管理者があらかじめ手で書いておく、変更のない経路のこと。回線がつながらなくなっても、書き直すまでは表の中にそのまま残り続ける。</p>
+  <p class="g-defined">定義: <a href="m08-4.html">第 8 章 8-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="security-group">
+  <p class="g-term">セキュリティグループ</p>
+  <p class="g-short">クラウドのサーバに対して、どの通信を許してよいかを決める仕組みのこと。許可した通信への返り値は自動的に通り、サーバごとに別々の設定を割り当てることもできる。</p>
+  <p class="g-defined">定義: <a href="m24-3.html">第 24 章 24-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="session-affinity">
+  <p class="g-term">セッションアフィニティ <span class="g-aliases">（スティッキーセッション、セッション維持）</span></p>
+  <p class="g-short">同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組みのこと。状況によっては、必ず同じ機械に届くとは限らない。</p>
+  <p class="g-defined">定義: <a href="m23-4.html">第 23 章 23-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="zero-trust">
+  <p class="g-term">ゼロトラスト</p>
+  <p class="g-short">社内のネットワークにいるからといって信用せず、誰からの通信も毎回確かめてから許可するという考え方のこと。社内にいることを理由に、確認を省略しない。</p>
+  <p class="g-defined">定義: <a href="m26-5.html">第 26 章 26-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="direct-connect">
+  <p class="g-term">専用線 <span class="g-aliases">（Direct Connect）</span></p>
+  <p class="g-short">インターネットを経由せず、契約した回線業者の物理的な専用の回線で、クラウドの仕切られたネットワークと社内のネットワークを直接つなぐ仕組みのこと。</p>
+  <p class="g-defined">定義: <a href="m25-3.html">第 25 章 25-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dns-zone">
+  <p class="g-term">ゾーン</p>
+  <p class="g-short">名前を管理するサーバが「ここは自分が答えられる」と受け持っている、ドメイン名の範囲のこと。日常語の「地域」とは別の、名前解決に特有の意味で使う。</p>
+  <p class="g-defined">定義: <a href="m16-2.html">第 16 章 16-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="socket">
+  <p class="g-term">ソケット</p>
+  <p class="g-short">通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報のこと。プログラムはこの組を手がかりに、どの相手とのどのやり取りかを区別している。</p>
+  <p class="g-defined">定義: <a href="m12-3.html">第 12 章 12-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="row-た">た行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="bandwidth-delay-product">
+  <p class="g-term">帯域遅延積</p>
+  <p class="g-short">回線の太さ（1 秒に送れる量）と往復の時間を掛けた値のこと。返事を待たずに送り続けるために必要なデータの量を表し、一度に送れる量がこれより少ないと、回線が太くても速度が出ない。</p>
+  <p class="g-defined">定義: <a href="m14-5.html">第 14 章 14-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="bandwidth">
+  <p class="g-term">帯域幅</p>
+  <p class="g-short">一定の時間に送れるデータの量の上限のこと。道路にたとえると、車線の数にあたる、太さを表す値であり、太いほど同じ時間でより多くのデータを送れる。</p>
+  <p class="g-defined">定義: <a href="m02-1.html">第 2 章 2-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="symmetric-key">
+  <p class="g-term">対称鍵 <span class="g-aliases">（共通鍵）</span></p>
+  <p class="g-short">暗号化するときの鍵と元に戻すときの鍵が同じである、鍵の使い方のこと。HTTPS では、通信を始めるときの手続きで両側が同じ鍵を決めたあと、実際のやり取りをこの鍵で暗号化する。</p>
+  <p class="g-defined">定義: <a href="m18-2.html">第 18 章 18-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="latency">
+  <p class="g-term">遅延時間 <span class="g-aliases">（レイテンシ）</span></p>
+  <p class="g-short">データを送ってから相手に届くまでにかかる時間のこと。道路にたとえると、車が走るのにかかる時間にあたり、短いほど反応が速く感じられる。</p>
+  <p class="g-defined">定義: <a href="m02-1.html">第 2 章 2-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="default-gateway">
+  <p class="g-term">デフォルトゲートウェイ</p>
+  <p class="g-short">同じ場所にいない相手あての通信を、とりあえず送っておく先として決められた機械のこと。そこから先の中継を任せる相手にあたる。</p>
+  <p class="g-defined">定義: <a href="m07-1.html">第 7 章 7-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="default-route">
+  <p class="g-term">デフォルトルート</p>
+  <p class="g-short">宛先に合う行き先が表の中に見つからないとき、とりあえずここへ送るとあらかじめ決めておく、表の中の行き先のこと。細かい行き先を一つずつ書かなくて済む。</p>
+  <p class="g-defined">定義: <a href="m08-3.html">第 8 章 8-3</a></p>
+  <p class="g-refs">用語リンクのあるページ: 8-2</p>
+</li>
+<li class="g-item" id="dual-stack">
+  <p class="g-term">デュアルスタック</p>
+  <p class="g-short">1 台の機械に、今までの形式の IP アドレスと新しい形式の IP アドレスの両方を持たせ、どちらの形式でも通信できるようにする方式のこと。</p>
+  <p class="g-defined">定義: <a href="m11-4.html">第 11 章 11-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="propagation-delay">
+  <p class="g-term">伝搬遅延 <span class="g-aliases">（伝搬遅延時間）</span></p>
+  <p class="g-short">信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間のこと。距離が長いほど、また信号の伝わる速さが遅い回線ほど、この時間は長くなる。</p>
+  <p class="g-defined">定義: <a href="m02-2.html">第 2 章 2-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dynamic-routing">
+  <p class="g-term">動的経路 <span class="g-aliases">（ダイナミックルーティング、動的ルーティング）</span></p>
+  <p class="g-short">近くのルータどうしが経路の情報を教え合い、表の中身を自動的に作ったり更新したりする仕組みのこと。回線の状態が変わると、表も自動で書き換わる。</p>
+  <p class="g-defined">定義: <a href="m08-4.html">第 8 章 8-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="transit">
+  <p class="g-term">トランジット</p>
+  <p class="g-short">ある組織が、より大きな別の組織に、多くの場合お金を払って、インターネット全体につながる経路を分けてもらう関係のこと。自分だけでは持てない、遠くの経路を分けてもらう。</p>
+  <p class="g-defined">定義: <a href="m09-2.html">第 9 章 9-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="row-な">な行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="certificate-authority">
+  <p class="g-term">認証局 <span class="g-aliases">（CA）</span></p>
+  <p class="g-short">Web サーバの持ち主を審査し、正しければ保証の印を付けた電子的な身分証を発行する、信頼できる機関のこと。ブラウザはこの印を確かめてから、相手を本物と判断する。</p>
+  <p class="g-defined">定義: <a href="m18-3.html">第 18 章 18-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="next-hop">
+  <p class="g-term">ネクストホップ</p>
+  <p class="g-short">ある宛先へ通信を送るとき、次にどの機械へ渡せばよいかを示す、表の中に書かれた情報のこと。渡された機械も、また自分の表を見て次の送り先を決める。</p>
+  <p class="g-defined">定義: <a href="m08-2.html">第 8 章 8-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="network-address">
+  <p class="g-term">ネットワークアドレス</p>
+  <p class="g-short">IP アドレスの集まりのうち、個々の機械ではなく、その集まり全体を指すために使われる、先頭の 1 つの番号のこと。この番号自体は、機械には割り当てられない。</p>
+  <p class="g-defined">定義: <a href="m05-3.html">第 5 章 5-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="row-は">は行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="purge">
+  <p class="g-term">パージ <span class="g-aliases">（キャッシュのパージ）</span></p>
+  <p class="g-short">期限が来る前に、コンテンツの控えを強制的に消させる操作のこと。中身が古くなったり間違っていたりしたときや、急ぎの更新があったときに使われる。</p>
+  <p class="g-defined">定義: <a href="m22-3.html">第 22 章 22-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="packet">
+  <p class="g-term">パケット</p>
+  <p class="g-short">通信するデータを、宛先などの情報を添えて分割した、ひとまとまりの単位のこと。ネットワークの上を、この単位で運ばれていく。</p>
+  <p class="g-defined">定義: <a href="m01-4.html">第 1 章 1-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="packet-capture">
+  <p class="g-term">パケットキャプチャ</p>
+  <p class="g-short">ネットワークを流れているパケットを、その場で記録して中身を確かめる操作のこと。専用のツールで記録し、あとから 1 つずつ読み解くことができる。</p>
+  <p class="g-defined">定義: <a href="m28-1.html">第 28 章 28-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="peering">
+  <p class="g-term">ピアリング</p>
+  <p class="g-short">インターネットを構成する組織どうしが、対等な立場でお互いのネットワークを直接つなぎ合う関係のこと。多くの場合、お互いにお金を払わない関係で結ばれる。</p>
+  <p class="g-defined">定義: <a href="m09-2.html">第 9 章 9-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="bit">
+  <p class="g-term">ビット</p>
+  <p class="g-short">0 か 1 のどちらかで表す、情報の最小の単位のこと。8 個まとめて 1 バイトと数える。回線の速さは、1 秒間に送れるビットの数（bps）で表す。</p>
+  <p class="g-defined">定義: <a href="m02-1.html">第 2 章 2-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="private-key">
+  <p class="g-term">秘密鍵</p>
+  <p class="g-short">2 つで 1 組になる鍵のうち、自分だけが持って他人に渡さない方のこと。組になるもう片方の鍵で暗号化された内容を元に戻せるのは、この鍵を持つ本人だけである。</p>
+  <p class="g-defined">定義: <a href="m18-2.html">第 18 章 18-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="display-filter">
+  <p class="g-term">表示フィルタ</p>
+  <p class="g-short">すでに記録済みのパケットの中から、条件に合うものだけを画面に表示させる仕組みのこと。記録し終えたあとでも、絞り込む条件を変えられる。</p>
+  <p class="g-defined">定義: <a href="m28-4.html">第 28 章 28-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="firewall">
+  <p class="g-term">ファイアウォール</p>
+  <p class="g-short">決めた条件に合わない通信を、機械やネットワークの手前で止める仕組みのこと。許可した通信だけを先に通し、何を許可するかはあらかじめ条件として設定しておく。</p>
+  <p class="g-defined">定義: <a href="m26-1.html">第 26 章 26-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 24-3、24-5</p>
+</li>
+<li class="g-item" id="failover">
+  <p class="g-term">フェイルオーバー</p>
+  <p class="g-short">動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替える仕組みのこと。障害が起きた場所を自動的に迂回させる考え方でもある。</p>
+  <p class="g-defined">定義: <a href="m23-3.html">第 23 章 23-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="congestion-window">
+  <p class="g-term">輻輳ウィンドウ</p>
+  <p class="g-short">送り手が、ネットワークの混み具合を見ながら、一度に送ってよい量として自分の中で決めている数字のこと。様子を見ながら、少しずつ増減させていく。</p>
+  <p class="g-defined">定義: <a href="m14-3.html">第 14 章 14-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="congestion-avoidance">
+  <p class="g-term">輻輳回避</p>
+  <p class="g-short">送る量がある目安を超えたあとは、倍々ではなく少しずつ増やし、途中でデータが失われたら大きく減らす、TCP の送り出し方のこと。混雑を起こさない範囲で出せる速度を探る。</p>
+  <p class="g-defined">定義: <a href="m14-4.html">第 14 章 14-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="congestion-control">
+  <p class="g-term">輻輳制御</p>
+  <p class="g-short">送り手が、ネットワークの混み具合を見ながら、送るデータの量を調整する仕組みのこと。混んでいれば量を減らし、受け手の事情ではなく途中の混雑を見て判断する。</p>
+  <p class="g-defined">定義: <a href="m14-3.html">第 14 章 14-3</a></p>
+  <p class="g-refs">用語リンクのあるページ: 14-1</p>
+</li>
+<li class="g-item" id="private-address">
+  <p class="g-term">プライベートアドレス</p>
+  <p class="g-short">組織や家庭の中だけで使われ、インターネットには直接出て行かない、IP アドレスの一群のこと。同じ番号が、別の家庭や組織で使われていてもかまわない。</p>
+  <p class="g-defined">定義: <a href="m05-4.html">第 5 章 5-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="browser">
+  <p class="g-term">ブラウザ</p>
+  <p class="g-short">URL を入力して Web サーバにリクエストを送り、返ってきたレスポンスをページとして表示するアプリケーションのこと。パソコンやスマホに、あらかじめ入っている。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="fragmentation">
+  <p class="g-term">フラグメンテーション <span class="g-aliases">（フラグメント化、IP フラグメンテーション）</span></p>
+  <p class="g-short">送りたいデータが一度に運べる大きさの上限を超えるとき、いくつかの小さなかたまりに分けて送り出し、届いた先で元の形に組み立て直す処理のこと。</p>
+  <p class="g-defined">定義: <a href="m06-3.html">第 6 章 6-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="frame">
+  <p class="g-term">フレーム</p>
+  <p class="g-short">同じ場所にある機械どうしでデータをやり取りするときの、送り先の番号などを添えたひとまとまりの単位のこと。この単位の中に、送り先の機械の番号が書かれている。</p>
+  <p class="g-defined">定義: <a href="m03-1.html">第 3 章 3-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-4</p>
+</li>
+<li class="g-item" id="flow-control">
+  <p class="g-term">フロー制御</p>
+  <p class="g-short">送り手が、受け取る側の処理できる量を超えないように、送るデータの量を調整する仕組みのこと。受け手の事情に合わせる点が、他の調整の仕組みと異なる。</p>
+  <p class="g-defined">定義: <a href="m14-2.html">第 14 章 14-2</a></p>
+  <p class="g-refs">用語リンクのあるページ: 14-1</p>
+</li>
+<li class="g-item" id="broadcast">
+  <p class="g-term">ブロードキャスト</p>
+  <p class="g-short">宛先を 1 台に絞らず、同じ範囲にいる機械の全部に一斉に送ることのこと。宛先がまだ分からない相手を探すときや、全員に知らせたいときに使われる。</p>
+  <p class="g-defined">定義: <a href="m03-3.html">第 3 章 3-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="broadcast-address">
+  <p class="g-term">ブロードキャストアドレス</p>
+  <p class="g-short">IP アドレスの集まりの中で、そこに属する機械全体に一斉に呼びかけるために使われる、末尾の 1 つの番号のこと。特定の 1 台を指すためには使われない。</p>
+  <p class="g-defined">定義: <a href="m05-3.html">第 5 章 5-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="broadcast-domain">
+  <p class="g-term">ブロードキャストドメイン</p>
+  <p class="g-short">1 つの合図を出したとき、その合図が届く範囲にある機械全体のまとまりのこと。スイッチでつながる範囲がこれにあたり、この範囲を越えて合図が直接届くことはない。</p>
+  <p class="g-defined">定義: <a href="m03-3.html">第 3 章 3-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="flow-hash">
+  <p class="g-term">フローハッシュ</p>
+  <p class="g-short">送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに、振り分け先を決める方式のこと。同じ組み合わせが続く間は、同じ振り分け先が選ばれ続ける。</p>
+  <p class="g-defined">定義: <a href="m23-2.html">第 23 章 23-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="flow-log">
+  <p class="g-term">フローログ</p>
+  <p class="g-short">ネットワークを実際に通過した通信を、送信元・宛先・ポート番号や、許可か拒否かといった記録として蓄積しておく仕組みのこと。あとから実際に何が起きたかを確認できる。</p>
+  <p class="g-defined">定義: <a href="m29-3.html">第 29 章 29-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="protocol">
+  <p class="g-term">プロトコル</p>
+  <p class="g-short">機械どうしが通信するときに、あらかじめ決めておく共通の約束事のこと。HTTP のやり取りも、この約束事の一つに従っている。</p>
+  <p class="g-defined">定義: <a href="m01-4.html">第 1 章 1-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="best-effort">
+  <p class="g-term">ベストエフォート</p>
+  <p class="g-short">データを送るとき、必ず届くと保証はせず、できる範囲で精一杯を尽くして届けようとするという、IP の考え方のこと。届いたかどうかの確認までは、この仕組み自体では行わない。</p>
+  <p class="g-defined">定義: <a href="m06-2.html">第 6 章 6-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="header">
+  <p class="g-term">ヘッダ</p>
+  <p class="g-short">データの本体の前に添えられる、宛先や種類などの付加情報のこと。郵便物の宛名のように、運ぶために必要な情報をまとめて持つ。</p>
+  <p class="g-defined">定義: <a href="m01-4.html">第 1 章 1-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="health-check">
+  <p class="g-term">ヘルスチェック</p>
+  <p class="g-short">複数の同じ役目の機械のうち、それぞれが正常に応答しているかどうかを定期的に確かめる仕組みのこと。応答が無い機械には、しばらく通信を送らないようにする。</p>
+  <p class="g-defined">定義: <a href="m23-3.html">第 23 章 23-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="nat-table">
+  <p class="g-term">変換表 <span class="g-aliases">（NAT 変換表、NAT の変換表）</span></p>
+  <p class="g-short">番号を付け替える機器が、家の中の番号（IP アドレスとポート番号の組）と外向けの番号の対応を記録しておく表のこと。戻ってきた返事を、元の機器へ正しく届けるために使う。</p>
+  <p class="g-defined">定義: <a href="m10-2.html">第 10 章 10-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="port">
+  <p class="g-term">ポート番号</p>
+  <p class="g-short">サービスごとに割り当てられる、入り口を示す番号のこと。同じ機械の中でも、番号ごとに別のサービスに届く(例: 80 番は http)。</p>
+  <p class="g-defined">定義: <a href="m12-1.html">第 12 章 12-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="port-forwarding">
+  <p class="g-term">ポートフォワード <span class="g-aliases">（ポート転送、ポートフォワーディング）</span></p>
+  <p class="g-short">外から来た、特定のポート番号あての通信を、家庭用ルータがあらかじめ指定しておいた家の中の機器へ転送するように設定しておく仕組みのこと。</p>
+  <p class="g-defined">定義: <a href="m10-3.html">第 10 章 10-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="botnet">
+  <p class="g-term">ボットネット</p>
+  <p class="g-short">攻撃者が遠隔で操作できるように乗っ取った、複数の機械の集まりのこと。DDoS などの攻撃で、まとめて指示を送られて使われる。</p>
+  <p class="g-defined">定義: <a href="m26-3.html">第 26 章 26-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="row-ま">ま行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="wireless-lan">
+  <p class="g-term">無線 LAN <span class="g-aliases">（Wi-Fi、無線LAN）</span></p>
+  <p class="g-short">ケーブルの代わりに電波を使って、複数の機器をネットワークにつなぐ仕組みのこと。同じ電波を機器どうしで順番に使うため、同時に使う台数が増えると 1 台あたりに使える通信量が減る。</p>
+  <p class="g-defined">定義: <a href="m04-1.html">第 4 章 4-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 2-4</p>
+</li>
+</ul>
+
+<h2 id="row-ら">ら行</h2>
+<ul class="glossary-list">
+<li class="g-item" id="round-robin">
+  <p class="g-term">ラウンドロビン</p>
+  <p class="g-short">複数の振り分け先に、届いた要求を順番どおりに 1 つずつ割り当てていく振り分け方のこと。前回どこに送ったかだけを見て次を決めるので、特定の 1 台に偏りにくい。</p>
+  <p class="g-defined">定義: <a href="m23-2.html">第 23 章 23-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="link-local-address">
+  <p class="g-term">リンクローカルアドレス</p>
+  <p class="g-short">同じネットワークの中だけで通じる、IPv6 アドレスの一種のこと。機械は電源を入れると、通信相手がいなくてもこの番号を自分で作る。</p>
+  <p class="g-defined">定義: <a href="m11-3.html">第 11 章 11-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="router">
+  <p class="g-term">ルータ</p>
+  <p class="g-short">送られてきたデータの宛先を見て、次にどの機械に送ればよいかを判断し、遠くの宛先まで中継していく機械のこと。同じ場所にある機械どうしのやり取りには、通常使われない。</p>
+  <p class="g-defined">定義: <a href="m08-1.html">第 8 章 8-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-3、1-4、3-4、4-2、6-2、7-1、7-3</p>
+</li>
+<li class="g-item" id="routing-table">
+  <p class="g-term">ルーティングテーブル</p>
+  <p class="g-short">ある宛先への通信を次にどの機械へ送ればよいかを一覧にした、機械の中にある表のこと。中継する機械は、この表を見て送り先を判断する。</p>
+  <p class="g-defined">定義: <a href="m08-1.html">第 8 章 8-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="root-server">
+  <p class="g-term">ルートサーバ</p>
+  <p class="g-short">名前の階層の一番上にあって、com や jp のような一番右側の部分を受け持つサーバのありかを教えてくれる、名前解決の問い合わせの出発点となるサーバのこと。</p>
+  <p class="g-defined">定義: <a href="m16-2.html">第 16 章 16-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="route-table-cloud">
+  <p class="g-term">ルートテーブル</p>
+  <p class="g-short">クラウドの仕切られたネットワークの中で、どの通信をどこへ送るかをまとめて決めている設定の一覧のこと。一般的な機械の中にある表と、役目は同じ考え方にあたる。</p>
+  <p class="g-defined">定義: <a href="m24-2.html">第 24 章 24-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="load-balancer">
+  <p class="g-term">ロードバランサ</p>
+  <p class="g-short">同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械のこと。1 台のサーバに負荷が集中しないようにし、特定の 1 台だけが混雑することを防ぐ。</p>
+  <p class="g-defined">定義: <a href="m23-1.html">第 23 章 23-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-3、1-5、19-5</p>
+</li>
+</ul>
+
+<h2 id="letter-0-9">0-9</h2>
+<ul class="glossary-list">
+<li class="g-item" id="zero-rtt">
+  <p class="g-term">0-RTT</p>
+  <p class="g-short">以前に接続したことがある相手となら、次に接続するとき、最初のやり取りからアプリケーションのデータを送り始められる仕組みのこと。初めて接続する相手には使えない。</p>
+  <p class="g-defined">定義: <a href="m15-3.html">第 15 章 15-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-A">A</h2>
+<ul class="glossary-list">
+<li class="g-item" id="ack">
+  <p class="g-term">ACK <span class="g-aliases">（確認応答）</span></p>
+  <p class="g-short">受け取る側が「ここまで届いた」と送り手に知らせる短い返事のこと。送り手はこの返事を見て、次のデータを送ったり、届かなかった分を送り直したりする。</p>
+  <p class="g-defined">定義: <a href="m13-2.html">第 13 章 13-2</a></p>
+  <p class="g-refs">用語リンクのあるページ: 13-1</p>
+</li>
+<li class="g-item" id="anycast">
+  <p class="g-term">Anycast <span class="g-aliases">（エニーキャスト）</span></p>
+  <p class="g-short">同じ番号を持つ複数の機械のうち、利用者から一番近い 1 台に、通信が自動で届くようにする仕組みのこと。利用者の場所が変わっても、都度近い機械が選ばれる。</p>
+  <p class="g-defined">定義: <a href="m22-4.html">第 22 章 22-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="api">
+  <p class="g-term">API</p>
+  <p class="g-short">あるプログラムが持っている機能を、他のプログラムから呼び出せるようにした窓口のこと。リクエストを送って結果を受け取り、URL と GET/POST の指定を組み合わせて呼び出す。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="arp">
+  <p class="g-term">ARP</p>
+  <p class="g-short">同じ場所にある機械どうしが通信するとき、相手の IP アドレスから、対応する機械の番号を調べる仕組みのこと。通信を始める前に必要になる、事前の作業にあたる。</p>
+  <p class="g-defined">定義: <a href="m07-2.html">第 7 章 7-2</a></p>
+  <p class="g-refs">用語リンクのあるページ: 3-1、7-1</p>
+</li>
+<li class="g-item" id="arp-cache">
+  <p class="g-term">ARP キャッシュ <span class="g-aliases">（ARP テーブル）</span></p>
+  <p class="g-short">IP アドレスと MAC アドレスの対応を、一度調べたあとしばらく覚えておく、機械の中の表のこと。同じ相手に続けて送るときは、この表を見るだけで済み、毎回調べ直さずに済む。</p>
+  <p class="g-defined">定義: <a href="m07-2.html">第 7 章 7-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-B">B</h2>
+<ul class="glossary-list">
+<li class="g-item" id="bbr">
+  <p class="g-term">BBR</p>
+  <p class="g-short">Google が設計した、TCP が送る量を決めるやり方のこと。データが失われるのを待つのではなく、回線の太さと往復の時間を測り、その回線に見合った量とペースで送る。</p>
+  <p class="g-defined">定義: <a href="m14-5.html">第 14 章 14-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="bgp">
+  <p class="g-term">BGP</p>
+  <p class="g-short">インターネットを構成する大きな組織どうしが、どの経路を通ればどこに届くかを教え合う仕組みのこと。経路は、この仕組みで決まっていく。</p>
+  <p class="g-defined">定義: <a href="m09-3.html">第 9 章 9-3</a></p>
+  <p class="g-refs">用語リンクのあるページ: 9-1、9-2</p>
+</li>
+</ul>
+
+<h2 id="letter-C">C</h2>
+<ul class="glossary-list">
+<li class="g-item" id="cache-control">
+  <p class="g-term">Cache-Control <span class="g-aliases">（キャッシュ制御ヘッダ）</span></p>
+  <p class="g-short">Web サーバが応答に添えて、この内容をどれくらいの間、控えとして使ってよいかなどを指示する項目のこと。この指示に従い、ブラウザや途中のサーバが控えを保存・再利用する。</p>
+  <p class="g-defined">定義: <a href="m20-5.html">第 20 章 20-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="cdn">
+  <p class="g-term">CDN <span class="g-aliases">（コンテンツデリバリネットワーク）</span></p>
+  <p class="g-short">画像やページなどのコピーを、利用者の近くに置かれた複数の機械にあらかじめ置いておき、近い場所から届ける仕組みのこと。利用者にとっては、表示がより速くなる。</p>
+  <p class="g-defined">定義: <a href="m22-1.html">第 22 章 22-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-3、1-5、19-5、21-4</p>
+</li>
+<li class="g-item" id="cidr">
+  <p class="g-term">CIDR <span class="g-aliases">（CIDR 表記）</span></p>
+  <p class="g-short">IP アドレスの範囲を、先頭何桁が共通かという数字を添えて表す書き方のこと。範囲の大きさを一目で表すことができ、番号の後ろにこの数字を書き添える。</p>
+  <p class="g-defined">定義: <a href="m05-2.html">第 5 章 5-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="cubic">
+  <p class="g-term">CUBIC</p>
+  <p class="g-short">多くの OS で標準になっている、TCP が送る量を決めるやり方のこと。途中でデータが失われたことを混雑の合図とみなして送る量を減らし、失われなければ再び増やしていく。</p>
+  <p class="g-defined">定義: <a href="m14-5.html">第 14 章 14-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="curl">
+  <p class="g-term">curl</p>
+  <p class="g-short">ターミナルからリクエストを送り、レスポンスを確認できるコマンドのこと。ブラウザを開かなくても通信を試すことができ、API の動作確認にもよく使われる。</p>
+  <p class="g-defined">定義: <a href="m27-4.html">第 27 章 27-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-D">D</h2>
+<ul class="glossary-list">
+<li class="g-item" id="ddos">
+  <p class="g-term">DDoS <span class="g-aliases">（DDoS 攻撃）</span></p>
+  <p class="g-short">乗っ取った複数の機械から大量の通信を送りつけ、対象のサーバやネットワークを使えなくしてしまう攻撃のこと。正規の利用者からの通信も届きにくくなる。</p>
+  <p class="g-defined">定義: <a href="m26-3.html">第 26 章 26-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dhcp">
+  <p class="g-term">DHCP</p>
+  <p class="g-short">家庭やオフィスの機械に、使ってよい番号を自動で配る仕組みのこと。手作業で番号を設定しなくても、機械はすぐに通信を始められる。</p>
+  <p class="g-defined">定義: <a href="m04-3.html">第 4 章 4-3</a></p>
+  <p class="g-refs">用語リンクのあるページ: 4-2</p>
+</li>
+<li class="g-item" id="dhcpv6">
+  <p class="g-term">DHCPv6 <span class="g-aliases">（DHCP6）</span></p>
+  <p class="g-short">IPv6 のアドレスを、サーバが機械に自動で配る仕組みのこと。アドレスに加えて、名前を IP アドレスに変換する仕組みの問い合わせ先のような追加の情報を配る場面でもよく使われる。</p>
+  <p class="g-defined">定義: <a href="m11-3.html">第 11 章 11-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dig">
+  <p class="g-term">dig</p>
+  <p class="g-short">ドメイン名に対応する IP アドレスなどを、名前を管理する仕組みに直接問い合わせて調べる、ターミナルのコマンドのこと。何が返ってきたかを細かく確認したいときに使う。</p>
+  <p class="g-defined">定義: <a href="m16-5.html">第 16 章 16-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dns">
+  <p class="g-term">DNS</p>
+  <p class="g-short">ブラウザが URL の中のドメイン名を IP アドレスに変換するとき、実際にその変換を行っている裏側の仕組み全体のこと。世界中の機械が手分けして答えている。</p>
+  <p class="g-defined">定義: <a href="m16-1.html">第 16 章 16-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-1、1-2、1-3、1-5、4-3、12-2</p>
+</li>
+<li class="g-item" id="dnssec">
+  <p class="g-term">DNSSEC</p>
+  <p class="g-short">DNS の答えが本物で、途中で書き換えられていないことを、印のようなもので確かめられるようにする仕組みのこと。中身を隠す暗号化とは別のしくみである。</p>
+  <p class="g-defined">定義: <a href="m17-4.html">第 17 章 17-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ttl-dns">
+  <p class="g-term">DNS の TTL</p>
+  <p class="g-short">ドメイン名と IP アドレスの対応を、覚えておいてよい秒数のこと。この秒数を過ぎたら、機械は古い答えを捨てて、もう一度調べ直しに行く。</p>
+  <p class="g-defined">定義: <a href="m16-4.html">第 16 章 16-4</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-2、6-2</p>
+</li>
+<li class="g-item" id="dns-cache">
+  <p class="g-term">DNS キャッシュ</p>
+  <p class="g-short">一度調べたドメイン名と IP アドレスの対応を、しばらくの間手元に覚えておく仕組み。毎回調べ直さずに済み、答えが返ってくるまでの時間を短くできる。</p>
+  <p class="g-defined">定義: <a href="m16-4.html">第 16 章 16-4</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-2</p>
+</li>
+<li class="g-item" id="dns-resolver">
+  <p class="g-term">DNS リゾルバ <span class="g-aliases">（リゾルバ）</span></p>
+  <p class="g-short">ブラウザの代わりに、ドメイン名に対応する IP アドレスを探しに行く役目の機械。途中の変換作業をこの機械が引き受けており、探した答えをブラウザに返す。</p>
+  <p class="g-defined">定義: <a href="m16-1.html">第 16 章 16-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dns-record">
+  <p class="g-term">DNS レコード <span class="g-aliases">（リソースレコード）</span></p>
+  <p class="g-short">ドメイン名について IP アドレスなどの情報を 1 件記録したもの。何の情報かによって種類が分かれる(IP アドレス用、別名用など)。</p>
+  <p class="g-defined">定義: <a href="m16-3.html">第 16 章 16-3</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-2</p>
+</li>
+<li class="g-item" id="dns-over-https">
+  <p class="g-term">DoH <span class="g-aliases">（DNS over HTTPS）</span></p>
+  <p class="g-short">DNS の問い合わせと答えを、暗号化された HTTPS の通信の中に含めて届ける方式のこと。ブラウザなどが元々使っている仕組みをそのまま使える。</p>
+  <p class="g-defined">定義: <a href="m17-4.html">第 17 章 17-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="dns-over-tls">
+  <p class="g-term">DoT <span class="g-aliases">（DNS over TLS）</span></p>
+  <p class="g-short">DNS の問い合わせと答えを、通信の中身を守る暗号化の手続きで包んで届ける方式のこと。途中の誰かに中身を見られたり、書き換えられたりしにくくなる。</p>
+  <p class="g-defined">定義: <a href="m17-4.html">第 17 章 17-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-H">H</h2>
+<ul class="glossary-list">
+<li class="g-item" id="head-of-line-blocking">
+  <p class="g-term">HOL ブロッキング <span class="g-aliases">（ヘッドオブラインブロッキング）</span></p>
+  <p class="g-short">1 本の接続の中で複数のやり取りをまとめて運んでいるとき、順番が先のデータが届かないと、それより後ろの、実際にはもう届いているデータも渡せず待たされてしまうこと。</p>
+  <p class="g-defined">定義: <a href="m15-1.html">第 15 章 15-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="hpack">
+  <p class="g-term">HPACK</p>
+  <p class="g-short">HTTP/2 で使われるヘッダ圧縮の仕組みのこと。一度送ったヘッダの内容を送り手と受け手の双方が覚えておき、次回以降は番号などで済ませることで、同じ内容を毎回送り直す無駄を減らす。</p>
+  <p class="g-defined">定義: <a href="m21-2.html">第 21 章 21-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="hsts">
+  <p class="g-term">HSTS</p>
+  <p class="g-short">ブラウザに「次からは必ず HTTPS で接続してほしい」という指示を、Web サーバが応答に含めておく仕組みのこと。最初の HTTP でのアクセスまでは守れない。</p>
+  <p class="g-defined">定義: <a href="m19-3.html">第 19 章 19-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="http">
+  <p class="g-term">HTTP</p>
+  <p class="g-short">ブラウザと Web サーバが、リクエストとレスポンスをやり取りするときの共通の約束事のこと。GET や POST という指定も、この約束事の一部にあたる。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="http2">
+  <p class="g-term">HTTP/2 <span class="g-aliases">（HTTP2）</span></p>
+  <p class="g-short">1 つの通信の道筋の上で、複数のリクエストとレスポンスを同時に運べるようにした、HTTP の新しい版のこと。画面の表示が、以前より速くなることが多い。</p>
+  <p class="g-defined">定義: <a href="m21-1.html">第 21 章 21-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="http3">
+  <p class="g-term">HTTP/3 <span class="g-aliases">（HTTP3）</span></p>
+  <p class="g-short">従来と違う新しいデータの運び方を土台にして作られた、HTTP のさらに新しい版のこと。速さと安定性を高めており、主要なブラウザはすべて対応し、サーバ側の対応も広がっている。</p>
+  <p class="g-defined">定義: <a href="m21-3.html">第 21 章 21-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="https">
+  <p class="g-term">HTTPS</p>
+  <p class="g-short">暗号化された HTTP のこと。URL が https://で始まるとき、ブラウザと Web サーバのやり取りは途中で読み取られないように暗号化されている。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="http-cache">
+  <p class="g-term">HTTP キャッシュ</p>
+  <p class="g-short">ブラウザや途中のサーバが、一度受け取った応答の控えを保存しておき、同じ要求への答えとして再利用する仕組みのこと。控えが使えれば、毎回 Web サーバまで問い合わせずに済む。</p>
+  <p class="g-defined">定義: <a href="m20-5.html">第 20 章 20-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="http-header">
+  <p class="g-term">HTTP ヘッダ</p>
+  <p class="g-short">HTTP のリクエストやレスポンスに添えられる、本文とは別の付加情報のこと。宛先のホスト名やデータの種類などが、ここに書かれている。</p>
+  <p class="g-defined">定義: <a href="m20-2.html">第 20 章 20-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="http-method">
+  <p class="g-term">HTTP メソッド <span class="g-aliases">（GET/POST）</span></p>
+  <p class="g-short">HTTP のリクエストで、「何をしたいか」を表す指定のこと。GET は取得、POST は送信の指定としてよく使われ、この指定によって Web サーバ側の処理が変わる。</p>
+  <p class="g-defined">定義: <a href="m20-1.html">第 20 章 20-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-I">I</h2>
+<ul class="glossary-list">
+<li class="g-item" id="icmp">
+  <p class="g-term">ICMP</p>
+  <p class="g-short">通信がうまく届いたかどうかや、途中で何が起きたかを機械どうしで知らせ合うための、短いお知らせの仕組みのこと。ping コマンドも、この仕組みを利用している。</p>
+  <p class="g-defined">定義: <a href="m06-4.html">第 6 章 6-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ttl-ip">
+  <p class="g-term">IP の TTL</p>
+  <p class="g-short">IP アドレスを使ったやり取りで送られるデータに付く数字で、機械をあと何回経由できるかを表す。0 になると途中で捨てられる。</p>
+  <p class="g-defined">定義: <a href="m06-2.html">第 6 章 6-2</a></p>
+  <p class="g-refs">用語リンクのあるページ: 6-1</p>
+</li>
+<li class="g-item" id="ipv4">
+  <p class="g-term">IPv4 <span class="g-aliases">（IPv4 アドレス）</span></p>
+  <p class="g-short">今インターネットで最も広く使われている IP アドレスの形式のこと。0 と 1 が 32 個並ぶ数字でできており、8 個ずつのまとまり 4 つに分けて、それぞれを 10 進数にして表す。</p>
+  <p class="g-defined">定義: <a href="m05-1.html">第 5 章 5-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ipv6">
+  <p class="g-term">IPv6</p>
+  <p class="g-short">今使われている IP アドレスの形式を置き換える、より多くの番号を用意できる新しい形式のこと。使える番号が足りなくなる問題への対策として作られた。</p>
+  <p class="g-defined">定義: <a href="m11-1.html">第 11 章 11-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 4-3、10-4</p>
+</li>
+<li class="g-item" id="ip-address">
+  <p class="g-term">IP アドレス</p>
+  <p class="g-short">機械につく番号で、インターネット上で通信の相手を指定するときに使う。ドメイン名は、この番号に変換されてから使われる。番号が分かれば、どの機械かを特定できる。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ip-spoofing">
+  <p class="g-term">IP スプーフィング <span class="g-aliases">（IP アドレスの詐称）</span></p>
+  <p class="g-short">パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口のこと。送り主を偽ったり、応答を別の相手に向けさせたりするために使われる。</p>
+  <p class="g-defined">定義: <a href="m26-2.html">第 26 章 26-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ip-packet">
+  <p class="g-term">IP パケット</p>
+  <p class="g-short">IP アドレスを使った通信で、実際にやり取りされる、宛先と中身をひとまとめにした一つの塊のこと。この塊を機械から機械へ次々に送って届ける。</p>
+  <p class="g-defined">定義: <a href="m06-1.html">第 6 章 6-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="isp">
+  <p class="g-term">ISP <span class="g-aliases">（プロバイダ、インターネットプロバイダ、インターネットサービスプロバイダ）</span></p>
+  <p class="g-short">家庭や会社を回線でインターネットにつなぐ、契約先の通信事業者のこと。ブラウザからの通信は、まずこの会社を通ってインターネットに出ていく。</p>
+  <p class="g-defined">定義: <a href="m01-3.html">第 1 章 1-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-J">J</h2>
+<ul class="glossary-list">
+<li class="g-item" id="json">
+  <p class="g-term">JSON</p>
+  <p class="g-short">データを文字列として表すときの、よく使われる書き方の一つのこと。API のレスポンスなどでよく使われ、波かっこと角かっこを使ってデータの形を表す。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-K">K</h2>
+<ul class="glossary-list">
+<li class="g-item" id="keep-alive">
+  <p class="g-term">Keep-Alive <span class="g-aliases">（キープアライブ）</span></p>
+  <p class="g-short">一度結んだ通信の道筋を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組みのこと。毎回つなぎ直す手間が省け、表示が速くなる。</p>
+  <p class="g-defined">定義: <a href="m20-3.html">第 20 章 20-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-L">L</h2>
+<ul class="glossary-list">
+<li class="g-item" id="l4-l7">
+  <p class="g-term">L4/L7 <span class="g-aliases">（レイヤー 4 とレイヤー 7）</span></p>
+  <p class="g-short">通信の役目を分けた層のうち、4 番目(データの届け方)と 7 番目(サービスの内容)を指す呼び方。振り分け方の違いを表すときに使う。</p>
+  <p class="g-defined">定義: <a href="m23-1.html">第 23 章 23-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-M">M</h2>
+<ul class="glossary-list">
+<li class="g-item" id="mac-address">
+  <p class="g-term">MAC アドレス</p>
+  <p class="g-short">機械のネットワーク部品ごとに付いている番号で、同じ場所にある機械どうしが送り先を区別するために使う。IP アドレスとは別の番号で、場所を変えても基本的には変わらない。</p>
+  <p class="g-defined">定義: <a href="m03-1.html">第 3 章 3-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-4、1-5</p>
+</li>
+<li class="g-item" id="mac-address-table">
+  <p class="g-term">MAC アドレステーブル <span class="g-aliases">（MAC アドレス表）</span></p>
+  <p class="g-short">スイッチが、送られてきたフレームの送信元 MAC アドレスから、どの機械がどの差し込み口につながっているかを覚えておく表のこと。次に届いたフレームは、この表を見て送り先の差し込み口を決める。</p>
+  <p class="g-defined">定義: <a href="m03-2.html">第 3 章 3-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="mtu">
+  <p class="g-term">MTU</p>
+  <p class="g-short">一度に送れるデータのかたまりの大きさの上限のこと。これを超えるデータは、送る側か途中の機械で小さく分けてから送られ、届いた先でもう一度つなぎ合わされる。</p>
+  <p class="g-defined">定義: <a href="m06-3.html">第 6 章 6-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-N">N</h2>
+<ul class="glossary-list">
+<li class="g-item" id="nacl">
+  <p class="g-term">NACL <span class="g-aliases">（ネットワーク ACL）</span></p>
+  <p class="g-short">クラウドの仕切りの境目で通信を許可・拒否する設定のこと。許可した内容を覚えないため、行きと帰りの両方に設定を書く必要がある。</p>
+  <p class="g-defined">定義: <a href="m24-3.html">第 24 章 24-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="napt">
+  <p class="g-term">NAPT</p>
+  <p class="g-short">複数の機器が、外に出るときに使うインターネット向けの IP アドレスを 1 つだけ共有できるように、IP アドレスだけでなくポート番号の組も使って番号を付け替える仕組みのこと。</p>
+  <p class="g-defined">定義: <a href="m10-2.html">第 10 章 10-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="nat">
+  <p class="g-term">NAT</p>
+  <p class="g-short">家庭内などで使う番号を、インターネット向けの番号に付け替える仕組みのこと。複数の機械が 1 つの番号を共有して通信でき、外からは 1 つの番号に見える。</p>
+  <p class="g-defined">定義: <a href="m10-1.html">第 10 章 10-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 4-2、5-4</p>
+</li>
+<li class="g-item" id="nat64">
+  <p class="g-term">NAT64 <span class="g-aliases">（DNS64、NAT64/DNS64）</span></p>
+  <p class="g-short">新しい形式の IP アドレスしか持たない機械が、今までの形式のアドレスしか無い相手とも通信できるようにする変換の仕組みのこと。名前を IP アドレスに変換する仕組みと組み合わせて働く。</p>
+  <p class="g-defined">定義: <a href="m11-4.html">第 11 章 11-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="nat-gateway">
+  <p class="g-term">NAT ゲートウェイ</p>
+  <p class="g-short">クラウドの仕切られたネットワークの中から外のインターネットへ出るときに、番号を付け替える役目の機械のこと。外から中へ、勝手に入ってくることはできない。</p>
+  <p class="g-defined">定義: <a href="m24-4.html">第 24 章 24-4</a></p>
+  <p class="g-refs">用語リンクのあるページ: 10-4</p>
+</li>
+<li class="g-item" id="network-tab">
+  <p class="g-term">Network タブ</p>
+  <p class="g-short">ブラウザの開発者ツールの中にある画面のことで、送ったリクエストと返ってきたレスポンスの一覧を確認できる。通信がうまくいかないときの手がかりを探すのに使う。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="nxdomain">
+  <p class="g-term">NXDOMAIN</p>
+  <p class="g-short">DNS への問い合わせに対して、指定した名前がそもそも存在しないと分かったときに返ってくる答えのこと。答えを出せない失敗とは違い、これも確定した返事の一つである。</p>
+  <p class="g-defined">定義: <a href="m17-1.html">第 17 章 17-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-O">O</h2>
+<ul class="glossary-list">
+<li class="g-item" id="osi-model">
+  <p class="g-term">OSI 参照モデル <span class="g-aliases">（OSI 7 層モデル）</span></p>
+  <p class="g-short">通信の役目を 7 つの層に分けて考える、もう一つの整理の仕方のこと。4 つの層に分ける考え方より細かく役目を分けており、名前と対応関係がよく比較される。</p>
+  <p class="g-defined">定義: <a href="m01-4.html">第 1 章 1-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ospf">
+  <p class="g-term">OSPF</p>
+  <p class="g-short">隣り合うルータどうしが経路の情報を交換し合い、その内容をもとに表を自動的に作っていく仕組みの代表例のひとつ。多くのネットワークで使われている。</p>
+  <p class="g-defined">定義: <a href="m08-4.html">第 8 章 8-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-P">P</h2>
+<ul class="glossary-list">
+<li class="g-item" id="pcap-file">
+  <p class="g-term">pcap ファイル <span class="g-aliases">（pcap 形式）</span></p>
+  <p class="g-short">記録した通信の内容を、あとで見返せるように保存しておくファイルの形式のこと。記録する側と読み解く側で同じ形式を使うので、別のツールでも開ける。</p>
+  <p class="g-defined">定義: <a href="m28-3.html">第 28 章 28-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="ping">
+  <p class="g-term">ping</p>
+  <p class="g-short">相手の機械まで通信が届くかどうかと、届くまでのおおよその時間を確かめる、ターミナルのコマンドのこと。回数を指定して、何回か続けて確かめることが多い。</p>
+  <p class="g-defined">定義: <a href="m27-1.html">第 27 章 27-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="pki">
+  <p class="g-term">PKI <span class="g-aliases">（公開鍵基盤）</span></p>
+  <p class="g-short">電子的な身分証と、それを保証する機関、身分証に入っている鍵を組み合わせて、通信の相手が本当に名乗っている相手かどうかを確かめられるようにする、仕組み全体のこと。</p>
+  <p class="g-defined">定義: <a href="m18-3.html">第 18 章 18-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="private-link">
+  <p class="g-term">PrivateLink <span class="g-aliases">（Private Link）</span></p>
+  <p class="g-short">相手が用意した特定のサービスだけに、インターネットへ出ずに内側からアクセスできるようにする仕組みのこと。相手のネットワーク全体には届かない。</p>
+  <p class="g-defined">定義: <a href="m25-4.html">第 25 章 25-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-Q">Q</h2>
+<ul class="glossary-list">
+<li class="g-item" id="quic">
+  <p class="g-term">QUIC</p>
+  <p class="g-short">ブラウザと Web サーバの間で、つながる手続きと暗号化の手続きをまとめて行い、データの取りこぼしが他のやり取りを止めないように新しく設計された、データの運び方のこと。</p>
+  <p class="g-defined">定義: <a href="m15-1.html">第 15 章 15-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 12-2</p>
+</li>
+</ul>
+
+<h2 id="letter-R">R</h2>
+<ul class="glossary-list">
+<li class="g-item" id="rpki">
+  <p class="g-term">RPKI</p>
+  <p class="g-short">広く知らされた経路の情報が、その宛先を実際に持っている組織からのものかどうかを確かめるための仕組みのこと。間違った経路が広まるのを防ぐ目的がある。</p>
+  <p class="g-defined">定義: <a href="m09-4.html">第 9 章 9-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="rtt">
+  <p class="g-term">RTT <span class="g-aliases">（往復時間、ラウンドトリップタイム）</span></p>
+  <p class="g-short">データを送ってから、相手からの返事が手元に戻ってくるまでの往復の時間のこと。相手が遠いほど長くなり、ページが表示されるまでの待ち時間を左右する。</p>
+  <p class="g-defined">定義: <a href="m02-2.html">第 2 章 2-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-S">S</h2>
+<ul class="glossary-list">
+<li class="g-item" id="servfail">
+  <p class="g-term">SERVFAIL</p>
+  <p class="g-short">DNS への問い合わせに対して、サーバ側の処理がうまくいかず、答えそのものを返せなかったことを示す失敗のこと。例えば、権威サーバに届かなかったり、時間内に答えが得られなかったりすると起こる。</p>
+  <p class="g-defined">定義: <a href="m17-1.html">第 17 章 17-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="slaac">
+  <p class="g-term">SLAAC</p>
+  <p class="g-short">IPv6 で、機械が自分自身で IP アドレスを組み立てて、サーバに頼らずに使い始めることができる仕組みのこと。ネットワーク側から届く情報と、機械自身の情報を組み合わせて作る。</p>
+  <p class="g-defined">定義: <a href="m11-3.html">第 11 章 11-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="sni">
+  <p class="g-term">SNI</p>
+  <p class="g-short">暗号化された通信を始めるとき、ブラウザが「どの名前の相手につなぎたいか」を、最初に相手へ伝える仕組みのこと。1 台の機械が複数の名前を持つ場合に必要になる。</p>
+  <p class="g-defined">定義: <a href="m18-5.html">第 18 章 18-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="syn-ack">
+  <p class="g-term">SYN/ACK</p>
+  <p class="g-short">通信を始めるあいさつの手順の中で、機械どうしがやり取りする、決まった意味を持つ短い合図のこと。あいさつが正しく終わると、データのやり取りが始められる。</p>
+  <p class="g-defined">定義: <a href="m13-1.html">第 13 章 13-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-T">T</h2>
+<ul class="glossary-list">
+<li class="g-item" id="tcp">
+  <p class="g-term">TCP</p>
+  <p class="g-short">ブラウザと Web サーバがやり取りするデータを、送った順番のとおりに、抜け落ちなく届くように管理する通信の方法。届いたことの確認も行う。</p>
+  <p class="g-defined">定義: <a href="m13-1.html">第 13 章 13-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-4、12-2、12-3</p>
+</li>
+<li class="g-item" id="tcpdump">
+  <p class="g-term">tcpdump</p>
+  <p class="g-short">機械が実際にやり取りしているデータを、その場で記録して中身を確認できる、ターミナルのコマンドのこと。あとで見返せるように、記録を保存することもできる。</p>
+  <p class="g-defined">定義: <a href="m28-1.html">第 28 章 28-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="tcp-ip-model">
+  <p class="g-term">TCP/IP モデル <span class="g-aliases">（4 層モデル）</span></p>
+  <p class="g-short">通信の役目を 4 つの層に分けて考える整理の仕方のこと。層ごとに、宛先の書き方や担当する仕事があらかじめ決まっており、上の層ほど利用者に近い役目を担う。</p>
+  <p class="g-defined">定義: <a href="m01-4.html">第 1 章 1-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="tcp-connection">
+  <p class="g-term">TCP 接続</p>
+  <p class="g-short">ブラウザと Web サーバが、データのやり取りを始める前に結ぶ、通信のための道筋のこと。HTTP のやり取りは、この道筋の上で行われる。</p>
+  <p class="g-defined">定義: <a href="m13-1.html">第 13 章 13-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-1</p>
+</li>
+<li class="g-item" id="tcp-state">
+  <p class="g-term">TCP の状態遷移 <span class="g-aliases">（コネクションの状態）</span></p>
+  <p class="g-short">通信の道筋が、今どの段階(結ばれている最中、やり取り中、切れている最中など)にあるかを表す区分のこと。段階によって、機械の振る舞いが変わる。</p>
+  <p class="g-defined">定義: <a href="m13-5.html">第 13 章 13-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="tcp-handshake">
+  <p class="g-term">TCP ハンドシェイク <span class="g-aliases">（3 ウェイハンドシェイク）</span></p>
+  <p class="g-short">ブラウザと Web サーバが通信を始める前に行う、決まった手順のあいさつのこと。これが終わってから、データのやり取りが実際に始まる。</p>
+  <p class="g-defined">定義: <a href="m13-1.html">第 13 章 13-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="tld">
+  <p class="g-term">TLD <span class="g-aliases">（トップレベルドメイン）</span></p>
+  <p class="g-short">ドメイン名の一番右側にある部分（com や jp など）のこと。この部分ごとに、どのサーバが受け持つかがあらかじめ決められている。</p>
+  <p class="g-defined">定義: <a href="m16-2.html">第 16 章 16-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="tls">
+  <p class="g-term">TLS</p>
+  <p class="g-short">ブラウザと Web サーバの間の通信を暗号化する仕組みのこと。HTTPS は、HTTP の通信をこの仕組みで暗号化したものにあたる。</p>
+  <p class="g-defined">定義: <a href="m18-1.html">第 18 章 18-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 15-1、15-3、17-4</p>
+</li>
+<li class="g-item" id="tls-termination">
+  <p class="g-term">TLS 終端 <span class="g-aliases">（TLS オフロード、SSL オフロード）</span></p>
+  <p class="g-short">暗号化された通信を元の中身に戻す（暗号を解く）役目を、どの機械が受け持つかのこと。自分のサーバで解く場合と、手前の中継役が代わりに解く場合があり、身分証を置く場所や更新の手間も変わる。</p>
+  <p class="g-defined">定義: <a href="m19-5.html">第 19 章 19-5</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="tls-certificate">
+  <p class="g-term">TLS 証明書 <span class="g-aliases">（サーバ証明書）</span></p>
+  <p class="g-short">Web サーバが名乗っているとおりの相手であることを、信頼できる第三者が保証する電子的な身分証。HTTPS で接続するときにブラウザが確かめる。</p>
+  <p class="g-defined">定義: <a href="m18-3.html">第 18 章 18-3</a></p>
+  <p class="g-refs">用語リンクのあるページ: 1-1、1-5</p>
+</li>
+<li class="g-item" id="tls-handshake">
+  <p class="g-term">TLS ハンドシェイク</p>
+  <p class="g-short">ブラウザと Web サーバが、暗号化した通信を始める前に行う、名乗り合いと鍵の準備の手順のこと。これが終わってから暗号化通信が始まる。</p>
+  <p class="g-defined">定義: <a href="m18-4.html">第 18 章 18-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="traceroute">
+  <p class="g-term">traceroute</p>
+  <p class="g-short">自分の機械から相手までの通信が、途中どの機械を経由しているかを順番に調べる、ターミナルのコマンドのこと。途中で止まっている機械を見つける手がかりになる。</p>
+  <p class="g-defined">定義: <a href="m27-2.html">第 27 章 27-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="transit-gateway">
+  <p class="g-term">Transit Gateway <span class="g-aliases">（AWS Transit Gateway）</span></p>
+  <p class="g-short">たくさんの VPC や社内ネットワークを 1 か所に集めてつなぎ、そこを経由してまとめて経路を制御する、クラウドの中継役の仕組みのこと。</p>
+  <p class="g-defined">定義: <a href="m25-2.html">第 25 章 25-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-U">U</h2>
+<ul class="glossary-list">
+<li class="g-item" id="udp">
+  <p class="g-term">UDP</p>
+  <p class="g-short">データが届いたかを確認せず、順番も気にせずに送りっぱなしにする通信の方法。抜けや乱れが起きても送り直さず、速さを重視する場面で使われる。</p>
+  <p class="g-defined">定義: <a href="m12-2.html">第 12 章 12-2</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="url">
+  <p class="g-term">URL</p>
+  <p class="g-short">Web ページなどの場所を指し示す文字列のこと。ブラウザのアドレス欄に入力すると、そのページが表示され、ドメイン名やページの場所がこの中に含まれている。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-V">V</h2>
+<ul class="glossary-list">
+<li class="g-item" id="vlan">
+  <p class="g-term">VLAN</p>
+  <p class="g-short">1 台のスイッチにつながる機械を、配線を変えずにいくつかのグループに分ける仕組みのこと。グループの外へは、直接データが届かない。</p>
+  <p class="g-defined">定義: <a href="m03-4.html">第 3 章 3-4</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="vpc">
+  <p class="g-term">VPC</p>
+  <p class="g-short">クラウドの中に用意する、自分専用の仕切られたネットワークの範囲のこと。この中にサーバなどを置いて構成を組んでいき、手順書に沿って作った経験がある人も多い。</p>
+  <p class="g-defined">定義: <a href="m24-1.html">第 24 章 24-1</a></p>
+  <p class="g-refs">用語リンクのあるページ: 10-4</p>
+</li>
+<li class="g-item" id="vpc-peering">
+  <p class="g-term">VPC ピアリング <span class="g-aliases">（VPC peering）</span></p>
+  <p class="g-short">2 つの VPC を 1 対 1 で直接つなぎ、互いのネットワークの範囲まで通信できるようにする仕組みのこと。つないだ VPC を経由して、さらに別の VPC へ届くことはない。</p>
+  <p class="g-defined">定義: <a href="m25-1.html">第 25 章 25-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="vpn">
+  <p class="g-term">VPN</p>
+  <p class="g-short">インターネット回線の上に、暗号化した専用の通り道（トンネル）を作り、クラウドの仕切られたネットワークと社内のネットワークを安全につなぐ仕組みのこと。</p>
+  <p class="g-defined">定義: <a href="m25-3.html">第 25 章 25-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+
+<h2 id="letter-W">W</h2>
+<ul class="glossary-list">
+<li class="g-item" id="web-server">
+  <p class="g-term">Web サーバ</p>
+  <p class="g-short">ブラウザからのリクエストを受け取り、ページなどのデータをレスポンスとして返す役目の機械のこと。1 台の機械が、複数の Web サーバを兼ねることもある。</p>
+  <p class="g-defined">定義: <a href="m01-1.html">第 1 章 1-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+<li class="g-item" id="wireshark">
+  <p class="g-term">Wireshark</p>
+  <p class="g-short">記録した通信データを、画面上で 1 件ずつ見やすく表示し、内容を確認できるアプリケーションのこと。記録したファイルを読み込んで、あとから見返すこともできる。</p>
+  <p class="g-defined">定義: <a href="m28-1.html">第 28 章 28-1</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
+</ul>
+</main>
+</body>
+</html>

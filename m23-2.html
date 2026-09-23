@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>どの 1 台に送るか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m23-2" data-chapter="m23" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 23-2</p>
+  <p class="chapter-label">第 23 章 ロードバランシング　23-2</p>
+  <h1>どの 1 台に送るか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>実際にどの 1 台に送るかを決める代表的な方式を、2 つ確認する。1 つは要求が来るたびに順番で割り当てる方式、もう 1 つは送信元と宛先の組み合わせから機械的に決める方式である。<strong>同じ利用者からの 2 回目の要求が、必ずしも同じ機械に届くとは限らない</strong>ことも確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、L4 と L7 で見る情報が違うって聞きましたけど、実際にどの機械に送るかは、何を基準に決めてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">代表的な方式が 2 つあります。1 つは、複数の振り分け先に、要求が来るたびに順番に割り当てていく方式です。前回どこに送ったかだけを見て、次はその次の 1 台に送っていきます。</p>
+    <p class="s" data-who="ひよこちゃん">順番に、ってことは、毎回違う機械に届くんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。この方式を<strong>ラウンドロビン</strong>と呼びます。AWS の L7 のロードバランサ(Application Load Balancer)では、初期設定がこの方式です。</p>
+    <p class="s" data-who="ひよこちゃん">L4 のロードバランサも同じ考え方ですか?</p>
+    <p class="t" data-who="ふくろう先生">違います。L4 のロードバランサには、送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決める、<strong>フローハッシュ</strong>という方式で決めるものがあります。</p>
+    <p class="s" data-who="ひよこちゃん">組み合わせをもとに、ってどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">第 12 章で見たソケット(IP アドレスとポート番号の組)を、送信元側・宛先側の両方について見た組み合わせ、と考えてください。同じ組み合わせが続く間は、同じ振り分け先が選ばれ続けます。</p>
+    <p class="s" data-who="ひよこちゃん">同じ組み合わせが続く、というのはどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ TCP 接続の間は、送信元と宛先の組み合わせは変わりません。だから、1 つの接続の間はずっと同じ振り分け先が使われ続けます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、ラウンドロビンとフローハッシュ、選び直す単位が違うってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。ラウンドロビンは新しい HTTP リクエストのたびに選び直せますが、フローハッシュは接続そのものを単位にしていて、接続の途中で振り分け先を変えることはありません。</p>
+    <p class="s" data-who="ひよこちゃん">なんで、そんな違いがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">L7 のロードバランサは HTTP リクエストの区切りが見えるので、リクエスト単位で選び直せます。L4 のロードバランサは接続の中身までは見ておらず、接続全体を 1 つの単位として扱うからです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、同じ人がもう一度接続をやり直したら、前と同じ機械に届くとは限らないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。接続をやり直すと、送信元のポート番号が変わり、組み合わせが変わるので、別の機械が選ばれることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">何で、接続をやり直すとポート番号が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">接続を始めるとき、送信元側は使っていない番号を一時的に選んで使います。第 12 章で見たエフェメラルポートです。接続をやり直すたびに、この番号が変わることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">同じ人からの 2 回目の要求が、別の機械に届くこともあるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。同じ利用者からの要求を毎回同じ機械に送りたい場合には、また別の工夫が要ります。次のページで見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>実際にどの 1 台に送るかを決める代表的な方式に、ラウンドロビンとフローハッシュがある。</li>
+      <li>ラウンドロビンは、複数の振り分け先に、要求が来るたびに順番で割り当てていく方式である。AWS の L7 のロードバランサでは、初期設定がこの方式である。</li>
+      <li>フローハッシュは、送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決める方式で、同じ組み合わせが続く間は同じ振り分け先が選ばれ続ける。</li>
+      <li>ラウンドロビンは新しい HTTP リクエストのたびに選び直せるが、フローハッシュは同じ TCP 接続の間、振り分け先を固定する。</li>
+      <li>接続をやり直すと送信元のポート番号が変わるため、同じ利用者からの 2 回目の要求が、別の機械に届くことがある。</li>
+      <li>接続をやり直すと送信元のポート番号(エフェメラルポート)が変わることがあり、フローハッシュの組み合わせも変わりうる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>実際にどの 1 台に送るかを決める方式には、代表的なものが 2 つある。1 つは、複数の振り分け先に、要求が来るたびに順番で割り当てていくラウンドロビンで、AWS の Application Load Balancer(L7 のロードバランサ)では初期設定がこの方式である(#25)。もう 1 つは、送信元と宛先の IP アドレス・ポート番号や、通信の種類(プロトコル)などの組み合わせをもとに振り分け先を決めるフローハッシュで、AWS の Network Load Balancer(L4 のロードバランサ)ではこの方式が使われる(#25)。同じ TCP 接続の間は、送信元と宛先の組み合わせが変わらないため、同じ振り分け先が選ばれ続ける。接続をやり直すと送信元のポート番号が変わり、組み合わせも変わるため、同じ利用者からの接続でも、別の振り分け先が選ばれることがある(#25)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="25">[#25] AWS「How Elastic Load Balancing works」 — <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" rel="noopener">原典</a>(92〜121 行目「Routing algorithm」の節。Application Load Balancer の既定は round robin、Network Load Balancer は送信元・宛先の IP アドレスとポート番号、プロトコル、TCP のシーケンス番号を使う flow hash algorithm という記述。「The TCP connections from a client have different source ports and sequence numbers, and can be routed to different targets.」という記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m23-2">
+    <div class="q" data-q="1">
+      <p class="q-text">L7 のロードバランサが新しい HTTP リクエストのたびに振り分け先を選び直せるのに対し、L4 のロードバランサは同じ TCP 接続の間、振り分け先を固定するのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">L4 のロードバランサの方が、処理する速度が遅いから</button></li>
+        <li><button type="button" data-correct="true">L7 は HTTP リクエストの区切りが見えるが、L4 は接続の中身までは見ておらず、接続全体を 1 つの単位として扱うから</button></li>
+        <li><button type="button" data-correct="false">L4 のロードバランサは、振り分け先の台数を 1 台に制限しているから</button></li>
+        <li><button type="button" data-correct="false">L7 のロードバランサは、暗号化された通信を扱えないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、L7 は HTTP リクエストの区切りが見えるが、L4 は接続の中身までは見ておらず、接続全体を 1 つの単位として扱うから、です。処理速度や台数の制限、暗号化とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ラウンドロビンの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">送信元と宛先の組み合わせをもとに、振り分け先を固定する方式</button></li>
+        <li><button type="button" data-correct="true">複数の振り分け先に、要求が来るたびに順番で割り当てていく方式</button></li>
+        <li><button type="button" data-correct="false">振り分け先の状態を定期的に確認する方式</button></li>
+        <li><button type="button" data-correct="false">同じ利用者からの要求を常に同じ機械に送り続ける方式</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、複数の振り分け先に、要求が来るたびに順番で割り当てていく方式、です。組み合わせによる固定はフローハッシュ、状態の確認や同じ機械への固定は、また別の仕組みです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">フローハッシュの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">要求が来るたびに、順番に振り分け先を変えていく方式</button></li>
+        <li><button type="button" data-correct="false">HTTP リクエストの URL だけを見て振り分け先を決める方式</button></li>
+        <li><button type="button" data-correct="true">送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決め、同じ組み合わせが続く間は同じ振り分け先が選ばれ続ける方式</button></li>
+        <li><button type="button" data-correct="false">振り分け先をランダムに毎回選び直す方式</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決め、同じ組み合わせが続く間は同じ振り分け先が選ばれ続ける方式、です。順番に変える方式はラウンドロビン、URL だけを見る方式やランダムに選ぶ方式とは異なります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m23-1.html">← 23-1 ロードバランサは何を分けるか</a>
+    <a class="up" href="m23.html">第 23 章の入口</a>
+    <a class="next" href="m23-3.html">23-3 止まった 1 台をどう外すか →</a>
+  </nav>
+</main>
+</body>
+</html>

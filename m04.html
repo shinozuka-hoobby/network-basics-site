@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m04" data-chapter="m04" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 4 章</p>
+  <p class="chapter-label">第 4 章</p>
+  <h1>家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>無線 LAN が、複数の機器で同じ電波を分け合う仕組みであり、台数が増えると 1 台あたりの通信量が減ることを説明できる。</li>
+      <li>家庭用ルータが、家の中の機器をつなぐ役目、無線の入り口となるアクセスポイントの役目、外との中継役、DHCP で番号を配る役目、番号を付け替える役目という、複数の役目を 1 台に集約していることを説明できる。</li>
+      <li>DHCP が「呼びかけ→提案→希望→確定」という 4 段階のやり取りで、機器に番号を自動で配ることを説明できる。</li>
+      <li>機器の台数が多い場所では、家庭用ルータが 1 台でこなしていた役目が、複数の機器や設定に分かれることがあることを説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 380" role="img" aria-label="家の中の有線機器と無線機器が家庭用ルータにつながり、家庭用ルータが ISP を通じてインターネットにつながる図。家庭用ルータの箱の中には、スイッチ・アクセスポイント・ルータ・DHCP・NAT という 5 つの役目が書かれている。下部には DHCP が機器に番号を配る様子が示されている。">
+      <defs>
+        <marker id="m04-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m04-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <!-- 左側: 有線・無線の機器 -->
+      <rect x="20" y="40" width="140" height="60" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="90" y="65" text-anchor="middle" font-size="13" fill="var(--fig-ink)">有線の機器</text>
+      <text x="90" y="83" text-anchor="middle" font-size="12" fill="var(--fig-muted)">(パソコンなど)</text>
+
+      <rect x="20" y="130" width="140" height="60" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="90" y="155" text-anchor="middle" font-size="13" fill="var(--fig-ink)">無線の機器</text>
+      <text x="90" y="173" text-anchor="middle" font-size="12" fill="var(--fig-muted)">(スマホなど)</text>
+
+      <!-- 中央: 家庭用ルータの箱(5つの役目) -->
+      <rect x="330" y="20" width="240" height="220" rx="8" fill="none" stroke="var(--fig-accent)" stroke-width="2"/>
+      <text x="450" y="45" text-anchor="middle" font-size="15" fill="var(--fig-ink)">家庭用ルータ</text>
+      <text x="450" y="75" text-anchor="middle" font-size="12" fill="var(--fig-ink)">スイッチ(有線をつなぐ)</text>
+      <text x="450" y="100" text-anchor="middle" font-size="12" fill="var(--fig-ink)">アクセスポイント(無線の入り口)</text>
+      <text x="450" y="125" text-anchor="middle" font-size="12" fill="var(--fig-ink)">ルータ(外との中継)</text>
+      <text x="450" y="150" text-anchor="middle" font-size="12" fill="var(--fig-ink)">DHCP(番号を配る)</text>
+      <text x="450" y="175" text-anchor="middle" font-size="12" fill="var(--fig-ink)">NAT(番号を付け替える)</text>
+      <text x="450" y="205" text-anchor="middle" font-size="11" fill="var(--fig-muted)">5 つの役目が</text>
+      <text x="450" y="222" text-anchor="middle" font-size="11" fill="var(--fig-muted)">1 台に集約されている</text>
+
+      <!-- 右側: ISP・インターネット -->
+      <rect x="740" y="90" width="140" height="60" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="810" y="115" text-anchor="middle" font-size="13" fill="var(--fig-ink)">ISP</text>
+      <text x="810" y="133" text-anchor="middle" font-size="12" fill="var(--fig-muted)">インターネットへ</text>
+
+      <!-- 矢印 -->
+      <line x1="160" y1="70" x2="330" y2="90" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m04-arrow-ink)"/>
+      <line x1="160" y1="160" x2="330" y2="120" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m04-arrow-ink)"/>
+      <line x1="570" y1="120" x2="740" y2="120" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m04-arrow-ink)"/>
+
+      <!-- 下部: DHCPが番号を配る様子 -->
+      <text x="450" y="270" text-anchor="middle" font-size="12" fill="var(--fig-ink)">DHCP が機器に番号を自動で配る(呼びかけ→提案→希望→確定)</text>
+      <line x1="90" y1="290" x2="90" y2="330" stroke="var(--fig-accent)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m04-arrow-accent)"/>
+      <line x1="450" y1="290" x2="450" y2="330" stroke="var(--fig-accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <line x1="90" y1="330" x2="450" y2="330" stroke="var(--fig-accent)" stroke-width="1.5" marker-start="url(#m04-arrow-accent)"/>
+      <text x="270" y="350" text-anchor="middle" font-size="11" fill="var(--fig-muted)">機器 ← 家庭用ルータ(DHCP)</text>
+    </svg>
+    <p class="fig-cap">家の中の有線の機器と無線の機器は、家庭用ルータにつながる。家庭用ルータは、家の中をつなぐ役目、無線の入り口となるアクセスポイントの役目、外のインターネットとの中継役、番号を配る役目、番号を付け替える役目を 1 台に集約しており、DHCP によって機器に番号が自動で配られる。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m04"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m03.html">← 第 3 章 イーサネットと MAC アドレス</a>
+    <a class="next" href="m05.html">第 5 章 IP アドレスとサブネット →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>データの量と回線の太さで、送り出す時間が決まる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m02-3" data-chapter="m02" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 2-3</p>
+  <p class="chapter-label">第 2 章 信号と回線　2-3</p>
+  <h1>データの量と回線の太さで、送り出す時間が決まる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>回線に送り出したいデータの量と、回線の太さによって決まる時間もある。<strong>回線を太くすれば、この時間は短くなる</strong>。ただし、遠い相手までの時間は、回線を太くしても縮まらない。このページでは、この 2 つの時間の違いを計算例で確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">じゃあ、回線を太くしても意味がないんですか。</p>
+    <p class="t" data-who="ふくろう先生">意味はあります。ただし効く場所が違います。</p>
+    <p class="s" data-who="ひよこちゃん">どういうことですか。</p>
+    <p class="t" data-who="ふくろう先生">送りたいデータを、回線に信号として送り出し終えるまでにも時間がかかります。これを<strong>シリアライズ遅延</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">それは回線が太いと短くなるんですか。</p>
+    <p class="t" data-who="ふくろう先生">短くなります。計算してみましょう。たとえば 800 万ビット(1 メガバイト相当)のデータを、10Mbps の回線で送り出すと、800 万 ÷ 1,000 万 = 0.8 秒かかります。</p>
+    <p class="s" data-who="ひよこちゃん">1Gbps の回線だとどうなるんですか。</p>
+    <p class="t" data-who="ふくろう先生">800 万 ÷ 10 億 = 0.008 秒、つまり 8 ミリ秒です。回線を 100 倍太くすると、送り出す時間も 100 分の 1 になります。</p>
+    <p class="s" data-who="ひよこちゃん">間の 100Mbps だとどうなるんですか。</p>
+    <p class="t" data-who="ふくろう先生">800 万 ÷ 1 億 = 0.08 秒です。10Mbps の 10 分の 1、1Gbps の 10 倍というように、帯域幅に比例して変わることが分かります。</p>
+    <p class="s" data-who="ひよこちゃん">ビデオ通話みたいに、データを送り続ける場合、シリアライズ遅延はどう関係するんですか。</p>
+    <p class="t" data-who="ふくろう先生">通話中は、映像や音声のデータが途切れなく送られてきます。回線の帯域幅が、送りたいデータの量に対して足りていないと、送り出しが追いつかず、遅れや乱れにつながることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">同じデータでも、回線が太いほど早く送り出せるんですね。でも、さっきの伝搬遅延は…</p>
+    <p class="t" data-who="ふくろう先生">伝搬遅延は距離で決まるので、回線を太くしても変わりません。太さが効くのはシリアライズ遅延の方です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、大きなファイルをアップロードするときも、回線を太くすれば速くなるってことですか。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。データの量が多いやり取りほど、回線を太くする効果を感じやすくなります。ただし、相手までの距離が長ければ、伝搬遅延の分はそのまま残ります。</p>
+    <p class="s" data-who="ひよこちゃん">帯域幅と遅延時間が別物だと言ってた理由、これで分かった気がします。</p>
+    <p class="t" data-who="ふくろう先生">良い言い直しです。届くまでの時間には、距離で決まる伝搬遅延と、データの量と回線の太さで決まるシリアライズ遅延の、2 つの部分があるんです。</p>
+    <p class="s" data-who="ひよこちゃん">実際の通信では、この 2 つの時間が両方とも足し算されるということですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。届くまでにかかる時間は、伝搬遅延とシリアライズ遅延を合わせたものになります。第 1 章で見た図の、1 本の線の中に、この 2 つが両方とも含まれています。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、線 1 本の中に、性質の違う 2 種類の時間が隠れてたんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、回線の種類によって何が変わるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>送りたいデータを回線に信号として送り出し終えるまでの時間をシリアライズ遅延と呼び、データの量が多いほど、また回線が細い(帯域幅が小さい)ほど長くなる。</li>
+      <li>800 万ビットのデータは、10Mbps の回線では 0.8 秒、100Mbps では 0.08 秒、1Gbps では 0.008 秒で送り出せる。帯域幅に比例してシリアライズ遅延は短くなる。</li>
+      <li>ビデオ通話のようにデータを送り続ける場合、帯域幅が送りたいデータの量に足りていないと、送り出しが追いつかず遅れや乱れにつながることがある。</li>
+      <li>伝搬遅延は距離と信号の速さで決まり、回線を太くしても変わらない。太さが効くのはシリアライズ遅延の方である。</li>
+      <li>実際に届くまでの遅延時間は、伝搬遅延とシリアライズ遅延を合わせたものになる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>シリアライズ遅延は、送りたいデータのすべてを回線に信号として送り出し終えるまでにかかる時間で、データの量を帯域幅で割った値になる。たとえば 800 万ビット(1 メガバイト相当)のデータを、10Mbps の回線で送り出すと、800 万 ÷ 1,000 万 = 0.8 秒かかる。同じデータを 100Mbps の回線で送ると 0.08 秒、1Gbps の回線で送ると 800 万 ÷ 10 億 = 0.008 秒、つまり 8 ミリ秒で済む(回線速度の例は #73)。回線を太くするほどシリアライズ遅延は短くなるが、伝搬遅延は距離と信号の速さだけで決まるため、回線を太くしても変わらない。ビデオ通話のように途切れなくデータを送り続ける場合も考え方は同じで、帯域幅が送りたいデータの量に足りていなければ、送り出しが追いつかなくなる。実際に届くまでの遅延時間は、伝搬遅延とシリアライズ遅延を合わせたものであり、太い回線でも遠い相手には時間がかかり、近い相手でも回線が細ければデータを送り出すのに時間がかかる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="73">[#73] 京都大学 OCW「基礎情報処理 第 9 回『コンピュータネットワーク』」 — <a href="https://ocw.kyoto-u.ac.jp/course/120/" rel="noopener">原典</a>(p.52 付近、イーサネットの通信速度が 10Mbps〜10Gbps の範囲にあるという記述。回線速度の例として 10Mbps・1Gbps を使う)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m02-3">
+    <div class="q" data-q="1">
+      <p class="q-text">同じデータ量を送る場合、回線を太くする(帯域幅を大きくする)と何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">伝搬遅延とシリアライズ遅延の両方が短くなる</button></li>
+        <li><button type="button" data-correct="true">シリアライズ遅延は短くなるが、伝搬遅延は変わらない</button></li>
+        <li><button type="button" data-correct="false">伝搬遅延は短くなるが、シリアライズ遅延は変わらない</button></li>
+        <li><button type="button" data-correct="false">伝搬遅延もシリアライズ遅延も変わらない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、シリアライズ遅延は短くなるが、伝搬遅延は変わらない、です。シリアライズ遅延はデータの量と回線の太さで決まりますが、伝搬遅延は距離と信号の速さだけで決まるため、回線を太くしても短くなりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">シリアライズ遅延の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間</button></li>
+        <li><button type="button" data-correct="false">送ってから、相手からの返事が戻ってくるまでの往復の時間</button></li>
+        <li><button type="button" data-correct="true">送りたいデータのすべてを、回線に信号として送り出し終えるまでにかかる時間</button></li>
+        <li><button type="button" data-correct="false">回線の設置にかかる工事の日数</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送りたいデータのすべてを、回線に信号として送り出し終えるまでにかかる時間、です。信号が届くまでの時間は伝搬遅延、往復の時間は RTT のことで、いずれもシリアライズ遅延とは別の時間です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">800 万ビットのデータを送るとき、回線が 10Mbps から 1Gbps になると、シリアライズ遅延はどうなるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">0.8 秒から 0.008 秒に短くなる</button></li>
+        <li><button type="button" data-correct="false">0.8 秒から 8 秒に長くなる</button></li>
+        <li><button type="button" data-correct="false">変わらず 0.8 秒のままである</button></li>
+        <li><button type="button" data-correct="false">データの量が分からないと計算できない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、0.8 秒から 0.008 秒に短くなる、です。シリアライズ遅延はデータの量を帯域幅で割った値なので、800 万ビットを 10Mbps で割ると 0.8 秒、1Gbps で割ると 0.008 秒になります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m02-2.html">← 2-2 遠い相手ほど、届くまでに時間がかかる</a>
+    <a class="up" href="m02.html">第 2 章の入口</a>
+    <a class="next" href="m02-4.html">2-4 銅線と光ファイバと無線、弱点が違う →</a>
+  </nav>
+</main>
+</body>
+</html>

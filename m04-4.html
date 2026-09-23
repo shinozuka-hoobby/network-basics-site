@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>人が増えると、1 台の箱では足りなくなる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m04-4" data-chapter="m04" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 4-4</p>
+  <p class="chapter-label">第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP　4-4</p>
+  <h1>人が増えると、1 台の箱では足りなくなる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>家庭用ルータが 1 台でこなしていた役目は、機器の台数が多い場所でも、そのまま通用するとは限らない。<strong>台数が増えると、これまで見た仕組みにも新しい問題が出てくることがある</strong>。このページでは、この章の内容を振り返りながら、その違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">これまでの家庭用ルータの役目、会社でも同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">機器の台数がずっと多い場所では、同じようにはいかないことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">具体的に、どれくらい台数が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">家庭なら数台から十数台程度ですが、会社では部署やフロアの人数分の機器がつながることもあります。</p>
+    <p class="s" data-who="ひよこちゃん">家庭用ルータって、台数に上限があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">家庭用ルータの設定画面では、一度に使える台数を絞ったり増やしたりできることがあります。ある演習では最大ユーザ数を 10 に設定した例があり、別の演習では 75 に変更した例もありました。</p>
+    <p class="s" data-who="ひよこちゃん">台数を絞るときって、具体的に何を設定するんですか?</p>
+    <p class="t" data-who="ふくろう先生">配り始めるアドレスの位置と、配る最大数をそれぞれ設定します。この 2 つを合わせて、使える番号の範囲が決まる仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">台数がもっと多い場所だと、それじゃ足りないこともありそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。機器の台数が多い場所では、この上限を超えてしまうことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば前のページの、DHCP サーバが 2 台あって番号が重なった話、あれも台数が多い場所で起きやすそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうですね。だから DHCP サーバをどれか 1 台に決めておく、といった管理が必要になることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">部署ごとに分けたりもするんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、第 3 章で見た VLAN のような仕組みで、範囲を分けて管理することがあります。</p>
+    <p class="s" data-who="ひよこちゃん">VLAN って、確か第 3 章で見た、1 台のスイッチにつながる機器をグループに分ける仕組みでしたよね?</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていましたね。部署ごとに分けたい範囲が変わるときに、配線を変えずにグループを分けられる、という点で役に立ちます。</p>
+    <p class="s" data-who="ひよこちゃん">VLAN を使うと、具体的に何が嬉しいんですか?</p>
+    <p class="t" data-who="ふくろう先生">配線をやり直さなくても、機器をグループごとに分けて管理できる点が嬉しいところです。第 3 章で見たブロードキャストドメインを分けることにもつながり、引っ越しや配置換えのたびに配線を変える必要もなくなります。</p>
+    <p class="s" data-who="ひよこちゃん">家庭用ルータの 5 つの役目も、そうやって分かれていくんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。台数が増えるほど、1 台に詰め込んでいた役目を、別々の機器や設定に分けて用意することがあります。</p>
+    <p class="s" data-who="ひよこちゃん">分けておくと、何が嬉しいんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つの機器の負担が減り、どこかにトラブルがあっても他の役目まで一度に止まりにくくなります。台数が多い場所ほど、そのメリットが大きくなります。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見た無線 LAN、家庭用ルータ、DHCP が、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。次の章では、機器につく番号(IP アドレス)そのものの仕組みを詳しく見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>家庭では数台から十数台程度だが、会社では部署やフロアの人数分の機器がつながることがあり、規模が大きく違う。</li>
+      <li>家庭用ルータの DHCP には、配り始めるアドレスの位置と配る最大数を設定することで、使える番号の範囲を絞ったり増やしたりできる(演習例: 10、75)。台数が多い場所ではこの上限を超えることがある。</li>
+      <li>DHCP サーバが複数あると番号が重なることがあるため、DHCP サーバをどれか 1 台に決めておく、といった管理が必要になることがある。</li>
+      <li>部署ごとに範囲を分けたいときは、第 3 章で見た VLAN のような仕組みが使われることがある。配線をやり直さなくても、機器をグループごとに分けて管理できる。</li>
+      <li>台数が増えるほど、家庭用ルータが 1 台に詰め込んでいた役目を、別々の機器や設定に分けて用意することがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>家庭では数台から十数台程度の機器がつながるのに対し、会社では部署やフロアの人数分の機器がつながることがあり、規模が大きく違う。家庭用ルータの DHCP には、配り始めるアドレスの位置と配る最大数を設定することで、使える番号の範囲を絞ったり増やしたりできる上限設定があり、機器の台数が多い場所ではこの上限を超えてしまうことがある。また、DHCP サーバが複数あると番号が重なることがあるため、DHCP サーバをどれか 1 台に決めておく、といった管理が必要になることがある。部署ごとに範囲を分けたいときは、VLAN のような仕組みで、配線を変えずにグループを分けて管理することがある。台数が増えるほど、家庭用ルータが 1 台に詰め込んでいた役目は、別々の機器や設定に分けて用意されることがある。分けておくことで、1 つの機器の負担が減り、トラブルが起きても他の役目まで一度に止まりにくくなる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 4.4.4「ワイヤレスルータとクライアントを設定する」の最大ユーザ数 10 の設定、演習 11.2.3「ワイヤレスルータで DHCP を設定する」の最大ユーザ数 75 への変更）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m04-4">
+    <div class="q" data-q="1">
+      <p class="q-text">機器の台数が多い場所で、家庭用ルータ 1 台がこなしていた役割をそのまま使うのが難しくなることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">家庭用ルータの DHCP に設定できる台数の上限を、必要な台数が超えてしまうことがあるから</button></li>
+        <li><button type="button" data-correct="false">家庭用ルータは、そもそもオフィスでは電源が入らない仕組みになっているから</button></li>
+        <li><button type="button" data-correct="false">オフィスでは無線 LAN の電波そのものが使えない決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">台数が増えると、DHCP の 4 段階のやり取りが自動的に 3 段階に短縮されるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、家庭用ルータの DHCP に設定できる台数の上限を、必要な台数が超えてしまうことがあるから、です。演習例のように、DHCP で配れる台数には上限を設定でき、台数が多い場所ではその上限を超えてしまうことがあります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">DHCP サーバが複数あるとき、管理として挙げられるものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">DHCP サーバをどれか 1 台に決めておく</button></li>
+        <li><button type="button" data-correct="false">DHCP の 4 段階のやり取りを省略する</button></li>
+        <li><button type="button" data-correct="false">つながる機器を全て同じ IP アドレスにする</button></li>
+        <li><button type="button" data-correct="false">DHCP サーバの台数は多いほど良いので、増やし続ける</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DHCP サーバをどれか 1 台に決めておく、です。DHCP サーバが複数あると番号が重なることがあるため、どれか 1 台に決めておくといった管理が必要になることがあります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">部署ごとにネットワークの範囲を分けたいとき、第 3 章で見たどの仕組みが使われることがあるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">VLAN</button></li>
+        <li><button type="button" data-correct="false">スイッチ</button></li>
+        <li><button type="button" data-correct="false">アクセスポイント</button></li>
+        <li><button type="button" data-correct="false">DHCP</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、VLAN です。VLAN は配線を変えずに機器をグループに分ける仕組みで、部署ごとに範囲を分けたいときに使われることがあります。スイッチ・アクセスポイント・DHCP はこの章で見た別の役目です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m04-3.html">← 4-3 つないだ瞬間に、番号は自動で配られる</a>
+    <a class="up" href="m04.html">第 4 章の入口</a>
+    <a class="next" href="m05.html">第 5 章 IP アドレスとサブネット →</a>
+  </nav>
+</main>
+</body>
+</html>

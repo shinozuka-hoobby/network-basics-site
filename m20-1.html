@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>リクエストとレスポンスは、決まった型で書かれている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m20-1" data-chapter="m20" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 20-1</p>
+  <p class="chapter-label">第 20 章 HTTP/1.1　20-1</p>
+  <h1>リクエストとレスポンスは、決まった型で書かれている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>名前解決・接続・暗号化が終わったあと、実際にやり取りされる HTTP のリクエストとレスポンスは、<strong>決まった型で書かれた文字の並び</strong>である。宛先や中身についての情報がまず並び、区切りをはさんで、実際の中身が続く。このページでは、この並び方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前の Part の最後で、次は Web を届ける仕組みを見ていくって言われてましたけど、今日から何が変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">名前解決・接続・暗号化は、もう終わったという前提で話を進めます。ここからは、実際に交わされる HTTP そのものの中身を見ていきます。</p>
+    <p class="s" data-who="ひよこちゃん">HTTP のリクエストって、決まった形があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。1 行目に、GET のような HTTP メソッドとパスを書いた行があり、これを要求行と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">要求行の後は、どうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">次に、宛先や中身に関する情報を書いた行が何行か続きます。これがヘッダです。</p>
+    <p class="s" data-who="ひよこちゃん">ヘッダの後は、すぐに本文が始まるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。ヘッダが終わったら、空の行を 1 つ挟んでから、本文が続きます。</p>
+    <p class="s" data-who="ひよこちゃん">レスポンスも同じ形なんですか?</p>
+    <p class="t" data-who="ふくろう先生">似た形です。1 行目が要求行の代わりに、200 のようなステータスコードを含む行になり、これを状態行と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">状態行の後は、リクエストと同じですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。状態行の後にヘッダ、空行、本文と続くのは同じです。</p>
+    <p class="s" data-who="ひよこちゃん">200 の後に OK ってついてますけど、あれは何なんですか?</p>
+    <p class="t" data-who="ふくろう先生">人が読むための短い説明です。200 OK は成功、404 Not Found は見つからなかった、という意味を、数字と合わせて表しています。</p>
+    <p class="s" data-who="ひよこちゃん">数字と短い説明のセットで、状態行ができているんですね。まるで決まった書式の手紙みたいです。</p>
+    <p class="t" data-who="ふくろう先生">近い見方です。宛先や差出人の情報を書く部分と、本文とが分かれている点は、確かに手紙の構造に似ています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、ヘッダの後の空行には意味があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">あります。この空行があるおかげで、ヘッダがどこで終わり本文がどこから始まるかが区別できます。</p>
+    <p class="s" data-who="ひよこちゃん">Web サーバは、どこでこのやり取りを受け付けてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">多くの場合、80 番か 443 番のポートで待ち受けています。第 12 章で見たとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">Web サーバの中では、どういう手順で処理されるんですか?</p>
+    <p class="t" data-who="ふくろう先生">接続を受け付け、要求行からパスを取り出し、状態行とヘッダを出力し、指定された中身を出力してから、また最初の状態に戻ります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、決まった手順の繰り返しなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。決まった手順を繰り返すからこそ、実際の通信でもこのとおりになっているか確かめてみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>HTTP のリクエストは、要求行(HTTP メソッドとパスを書いた行)・ヘッダ・空の行・本文の順に並ぶ。</li>
+      <li>HTTP のレスポンスは、状態行(200 OK のように、ステータスコードと人が読むための短い説明を含む行)・ヘッダ・空の行・本文の順に並び、リクエストと似た型になっている。</li>
+      <li>ヘッダの後の空の行は、ヘッダの範囲と本文の始まりを区別するためにある。</li>
+      <li>Web サーバは、多くの場合 TCP の 80 番(HTTP)か 443 番(HTTPS)のポートで待ち受けている。</li>
+      <li>Web サーバは、接続を受け付け、要求行を読み、状態行とヘッダと中身を返し、また最初の状態に戻るという手順を繰り返している。</li>
+      <li>要求行・状態行を手紙の宛先や差出人の書き方に、ヘッダをその下に添える送り状になぞらえると、リクエストとレスポンスの型の対応関係を覚えやすい。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP はクライアント・サーバ型のプロトコルで、Web サーバは多くの場合 TCP の 80 番(HTTP)・443 番(HTTPS)のポートで接続を受け付ける(#48)。リクエストは、HTTP メソッドとパスを書いた要求行、宛先や中身に関する情報を並べたヘッダ、空の行、本文という順に並ぶ(#71 p.47)。レスポンスは、要求行の代わりにステータスコードを含む状態行から始まり、その後はヘッダ、空行、本文と続く(#71 p.47)。状態行のステータスコードには、200 OK・404 Not Found のように、人が読むための短い説明が添えられている(#71 p.41)。Web サーバの基本的な動作は、接続を受け付け、要求行からパスを取り出し、状態行とヘッダを出力し、指定された中身を出力してから、また最初の状態に戻るという繰り返しである(#4 p.32)。ヘッダの後に空の行が入るのは、ヘッダの範囲がどこまでで、本文がどこから始まるかを区別するためである。比喩的に言えば、要求行や状態行は手紙の宛先・差出人の書き方にあたり、ヘッダはその下に添える送り状のような情報にあたる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>curl -sv --http1.1 https://example.com -o /dev/null</code></pre>
+    <p>見方: 出力の中で、&gt; で始まる行(自分が送った側)に要求行・ヘッダ・空行が、&lt; で始まる行(相手から受け取った側)に状態行・ヘッダが並んでいるのを見てください。ここで確認した型が、実際の通信でもそのとおりになっていることが分かります。</p>
+    <p class="try-note">出力は行数が多いですが、&gt; と &lt; で始まる行だけを追えば十分です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.34 HTTP Basics = クライアント・サーバ型、TCP ベース、ポート 80 で待ち受け、p.47 HTTP Conditional GET の例 = 要求行・ヘッダ／状態行・ヘッダの並びを示す実例）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.32 WWW サーバの基本動作 = 接続を受け付け、要求行を読み、状態行とヘッダと中身を返す手順）</li>
+    <li class="cite" data-src="48">[#48] Cisco TAC「Capture and Analyze Network Traffic with Wireshark for Diagnostics」 — <a href="https://www.cisco.com/c/en/us/support/docs/security/umbrella/225250-capture-and-analyze-network-traffic.html" rel="noopener">原典</a>（Basic Ports and Protocols の表 = TCP 80 番 = HTTP、TCP 443 番 = HTTPS）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m20-1">
+    <div class="q" data-q="1">
+      <p class="q-text">リクエストの要求行に対応する、レスポンス側の行はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ヘッダ</button></li>
+        <li><button type="button" data-correct="true">状態行</button></li>
+        <li><button type="button" data-correct="false">本文</button></li>
+        <li><button type="button" data-correct="false">空の行</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は状態行です。要求行はリクエストの 1 行目、状態行はレスポンスの 1 行目で、互いに対応する役割を持ちます。ヘッダ・本文・空の行は、リクエストとレスポンスの両方に共通して現れる部分で、1 行目としての対応関係ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HTTP のリクエストで、ヘッダの後にあるものは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">要求行</button></li>
+        <li><button type="button" data-correct="false">状態行</button></li>
+        <li><button type="button" data-correct="true">空の行</button></li>
+        <li><button type="button" data-correct="false">もう 1 つのヘッダ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は空の行です。要求行・ヘッダ・空の行・本文の順に並ぶのがリクエストの型で、ヘッダの直後には空の行が来ます。要求行は 1 行目、状態行はレスポンス側の 1 行目なので、この位置には現れません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">リクエストやレスポンスに、ヘッダの後の空の行が無いと何が困るか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ヘッダがどこで終わり本文がどこから始まるかが区別できなくなる</button></li>
+        <li><button type="button" data-correct="false">通信そのものが暗号化されなくなる</button></li>
+        <li><button type="button" data-correct="false">TCP 接続が確立できなくなる</button></li>
+        <li><button type="button" data-correct="false">ステータスコードが表示されなくなる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ヘッダがどこで終わり本文がどこから始まるかが区別できなくなる、です。空の行は区切りの役割を持ち、暗号化や TCP 接続の確立、ステータスコードの表示とは別の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m20.html">← 第 20 章の入口</a>
+    <a class="up" href="m20.html">第 20 章の入口</a>
+    <a class="next" href="m20-2.html">20-2 主要なヘッダ →</a>
+  </nav>
+</main>
+</body>
+</html>

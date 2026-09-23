@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>送らずに、届くかを確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m29-1" data-chapter="m29" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 29-1</p>
+  <p class="chapter-label">第 29 章 クラウド上の経路診断　29-1</p>
+  <h1>送らずに、届くかを確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>クラウドの中には、実際に通信を送らなくても、設定を読み取るだけで「届くはずか」を言い当てる仕組みがある。<strong>実際に送らない</strong>という点が、第 27 章で見た ping・traceroute との大きな違いである。このページでは、その仕組みの基本を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 27 章で ping や traceroute を見ましたけど、あれって実際に送ってみて確かめる道具でしたよね。クラウドの中の VPC でも、同じように確かめられるんですか?</p>
+    <p class="t" data-who="ふくろう先生">クラウドには別のやり方があります。実際には送らずに、設定を読み取って「届くはずか」を確かめる<strong>経路診断ツール</strong>という機能があります。</p>
+    <p class="s" data-who="ひよこちゃん">送らずに、どうやって分かるんですか?</p>
+    <p class="t" data-who="ふくろう先生">AWS の Reachability Analyzer を例にすると、送信元と宛先を指定すると、間にあるルートテーブルやセキュリティグループ、NACL といった設定を読み取ったモデルを作ります。そのモデルの上で、届くかどうかを判定するんです。</p>
+    <p class="s" data-who="ひよこちゃん">第 24 章で作ったルートテーブルやセキュリティグループが、まさにその判定材料になるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。届かないと判定された場合は、どの設定が止めているかも教えてくれます。</p>
+    <p class="s" data-who="ひよこちゃん">具体的には、送信元と宛先に何を指定できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">EC2 インスタンスやインターネットゲートウェイ、ネットワークインタフェースなど、いろいろな種類を指定できます。ポート番号やプロトコル(TCP かどうかなど)も一緒に指定します。</p>
+    <p class="s" data-who="ひよこちゃん">届く経路が複数ある場合はどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">複数の届く経路がある場合は、そのうち最短の経路を示してくれます。</p>
+    <p class="s" data-who="ひよこちゃん">他に届く経路が無いか、確かめる方法もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。特定の設定をあえて除外して分析し直すと、その設定を通らない別の経路が無いかどうかも確かめられます。</p>
+    <p class="s" data-who="ひよこちゃん">便利ですね。分析の結果は、AWS のアカウントにずっと残るんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、ずっとは残りません。分析の結果は、作成から 120 日たつと自動的に削除されます。</p>
+    <p class="s" data-who="ひよこちゃん">実際には送らないのに、そこまで分かるんですか。なんだか不思議です。</p>
+    <p class="t" data-who="ふくろう先生">設定はパケットが来る前から存在しているので、その中身を読めば、どこを通ってどこで止まるはずかが計算できるんです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、これさえあれば十分そうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうとも限りません。設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由までは分かりません。</p>
+    <p class="s" data-who="ひよこちゃん">え、それじゃあ判定が外れることもあるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。GCP の資料にも、設定の分析では「届くはず」と出たのに、実際には繋がらなかった、という報告が載っています。</p>
+    <p class="s" data-who="ひよこちゃん">そうなると、この診断機能だけに頼るのは危ないですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。次のページでは、AWS 以外の診断機能も見て、それぞれ何ができるかを比べてみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">経路診断ツールっていう名前、覚えておきます。</p>
+    <p class="t" data-who="ふくろう先生">はい。実際に送らずに設定から言い当てる、という点がこの経路診断ツールの一番のポイントです。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>経路診断ツールは、実際にパケットを送らず、ルートテーブルやセキュリティグループなどの設定を読み取って、通信が届くはずかを判定する機能である。</li>
+      <li>AWS の Reachability Analyzer は、設定を読み取ったモデルを作り、届かない場合はどの設定が止めているかを示す。</li>
+      <li>経路診断ツールの判定は設定をもとにした推論であり、機械自体の不調のような、設定の外側の理由までは分からない。</li>
+      <li>特定の設定を除外して分析し直すと、その設定を通らない別の経路が無いかも確かめられる。分析の結果は、作成から 120 日で自動的に削除される。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>経路診断ツールは、送信元と宛先を指定すると、間にあるルートテーブル・セキュリティグループ・NACL などの設定を読み取ったモデルを作り、そのモデルの上で通信が届くかどうかを判定する仕組みである(#27)。実際にパケットを送ったり、通信の実体を解析したりはしない(#27)。送信元・宛先には EC2 インスタンスやインターネットゲートウェイ、ネットワークインタフェースなど複数の種類を指定でき、ポート番号やプロトコルも合わせて指定する(#27)。届く経路が複数ある場合は、最短の経路が示される(#27)。特定の設定をあえて除外して分析し直すと、その設定を通らない別の経路が無いかどうかも確かめられる(#27)。届かないと判定された場合は、どの設定、またはどの設定の組み合わせが経路を止めているかを示す(#27)。この判定はあくまで設定をもとにした推論であり、対象の機械自体の状態のような、設定の外側の要因までは考慮されない(#27)。分析の結果は、作成から 120 日たつと自動的に削除される(#27)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="27">[#27] AWS「How Reachability Analyzer works」 — <a href="https://docs.aws.amazon.com/vpc/latest/reachability/what-is-reachability-analyzer.html" rel="noopener">原典</a>(3 行目「It does not send packets or analyze the data plane」、5 行目 送信元・宛先の種類とポート・プロトコルを指定する例、7 行目 複数の届く経路があるとき最短の経路を示し、設定を除外して別の経路を確かめられるという記述、9 行目 届かない場合にどの設定が止めているかを示すという記述、103 行目 対象の健全性を考慮しないという限界、117 行目 分析結果が作成から 120 日で自動削除されるという記述)</li>
+    <li class="cite" data-src="34">[#34] Google Cloud「Connectivity Tests troubleshooting」 — <a href="https://docs.cloud.google.com/network-intelligence-center/docs/connectivity-tests/support/troubleshooting" rel="noopener">原典</a>(60〜74 行目「My test shows a final configuration analysis state of Deliver, but connectivity is broken」)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m29-1">
+    <div class="q" data-q="1">
+      <p class="q-text">なぜ、AWS の Reachability Analyzer は、実際にパケットを送らなくても、届くかどうかを判定できるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ルートテーブルやセキュリティグループなどの設定を読み取り、その内容をもとにモデルを作って判定するから</button></li>
+        <li><button type="button" data-correct="false">宛先の機械に、必ず問い合わせを送っているから</button></li>
+        <li><button type="button" data-correct="false">過去に送ったパケットの記録を保存しているから</button></li>
+        <li><button type="button" data-correct="false">結果をランダムに選んでいるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ルートテーブルやセキュリティグループなどの設定を読み取り、その内容をもとにモデルを作って判定するから、です。宛先への問い合わせや過去の記録の保存、ランダムな判定ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">経路診断ツールが「届かない」と判定したとき、追加で分かることはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">どの設定が経路を止めているか</button></li>
+        <li><button type="button" data-correct="false">実際の通信量</button></li>
+        <li><button type="button" data-correct="false">サーバの CPU 使用率</button></li>
+        <li><button type="button" data-correct="false">クラウドの利用料金</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、どの設定が経路を止めているか、です。通信量や CPU 使用率、利用料金は分析の対象ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">経路診断ツールの判定に限界があるとすれば、どれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由までは分からない</button></li>
+        <li><button type="button" data-correct="false">設定を読み取ることが一切できない</button></li>
+        <li><button type="button" data-correct="false">常に実際にパケットを送ってしまう</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループの内容は読み取れない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由までは分からない、です。設定を読み取れないわけでも、常に送ってしまうわけでも、セキュリティグループを読み取れないわけでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m29.html">← 第 29 章の入口</a>
+    <a class="up" href="m29.html">第 29 章の入口</a>
+    <a class="next" href="m29-2.html">29-2 3 社の診断ツールを比べる →</a>
+  </nav>
+</main>
+</body>
+</html>

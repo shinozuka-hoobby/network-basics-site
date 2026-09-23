@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ネットワークセキュリティの基礎 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m26" data-chapter="m26" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 26 章</p>
+  <p class="chapter-label">第 26 章</p>
+  <h1>ネットワークセキュリティの基礎</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>決めた条件に合わない通信を、あらかじめ手前で止める仕組みと、その仕組みだけでは防ぎきれない場合があることを説明できる。</li>
+      <li>送信元の情報を偽る手口と、大量の通信を送りつけて相手を使えなくする攻撃の種類を説明できる。</li>
+      <li><strong>これまでの章で見てきた暗号化の仕組みが、それぞれ通信のどの部分を守っているか</strong>を整理して言える。</li>
+      <li>ネットワークの内側にいることを理由に信用しない、という考え方を説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <pre class="fig" aria-label="今までの考え方の図。送信元を偽った通信や大量の通信が外側から届き、境目にある仕組みを通ると、その先の内側では改めて確認されない。これからの考え方の図。内側にいる相手も外側にいる相手も区別なく、資源にアクセスするたびに確認を受ける。">
+  [今までの考え方]
+  外からの通信 -----> +--------+ -----> 内側
+  (送信元を偽った      |  境目の  |        (境目を越えると
+   通信や大量の        |  仕組み  |         それ以降は確認なし)
+   通信を含む)         +--------+
+
+  [これからの考え方]
+  内側の相手 --[毎回確認]--> +------+
+  外側の相手 --[毎回確認]--> | 資源 |
+                            +------+
+    </pre>
+    <p class="fig-cap">今までの考え方では、境目の仕組みを通り抜けると、その先は改めて確認されない。これからの考え方では、内側からでも外側からでも、資源にアクセスするたびに確認する。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m26"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m25.html">← 第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド</a>
+    <a class="next" href="m27.html">第 27 章 観測ツール入門 — ping・traceroute・dig・curl →</a>
+  </nav>
+</main>
+</body>
+</html>

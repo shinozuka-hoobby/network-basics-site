@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鍵を、ひとつではなく 2 つに分ける理由 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m18-2" data-chapter="m18" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 18-2</p>
+  <p class="chapter-label">第 18 章 TLS と PKI　18-2</p>
+  <h1>鍵を、ひとつではなく 2 つに分ける理由</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>暗号化に使う鍵をそのまま送り合うと、途中で盗まれたときに危険である。この問題を解決するために、鍵を<strong>暗号化専用と元に戻す専用の 2 つに分ける</strong>発想が生まれた。このページでは、この 2 種類の鍵の役割と、実際のやり取りで使われる鍵との関係を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">暗号化に使う鍵って、送り手と受け手でどうやって同じものを持つんですか? 送ったら途中で盗まれそうで怖いです。</p>
+    <p class="t" data-who="ふくろう先生">まさにそこが長年の課題でした。同じ鍵をそのまま送ってしまうと、途中で盗まれたらそこで終わりで、通信のたびに鍵を変えても、その受け渡し自体が弱点になります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、鍵を送らずに済ませる方法があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">発想を変えます。鍵を「暗号化専用」と「元に戻す専用」の 2 つに分けるんです。</p>
+    <p class="t" data-who="ふくろう先生">暗号化専用の鍵は誰に配ってもよく、元に戻す専用の鍵は自分だけが持って他人には渡しません。</p>
+    <p class="s" data-who="ひよこちゃん">誰に配ってもよい方を公開鍵、自分だけが持つ方を秘密鍵って呼ぶんですね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。公開鍵で暗号化した内容は、組になる秘密鍵を持つ本人しか元に戻せません。</p>
+    <p class="s" data-who="ひよこちゃん">公開鍵を盗み見られても、平気ってことですか?</p>
+    <p class="t" data-who="ふくろう先生">平気です。公開鍵だけでは元に戻せず、元に戻せるのは秘密鍵を持つ本人だけです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、実際のやり取りも全部この 2 つの鍵でやるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。実際のやり取りには、もっと単純な鍵の使い方(対称鍵)を使います。</p>
+    <p class="t" data-who="ふくろう先生">対称鍵は、暗号化するときと元に戻すときで、同じ 1 つの鍵を両側が使う方式です。</p>
+    <p class="s" data-who="ひよこちゃん">公開鍵と秘密鍵の組は、何のために使うんですか?</p>
+    <p class="t" data-who="ふくろう先生">この対称鍵を、両側が安全に決めるために使います。公開鍵と秘密鍵の組で鍵交換を行い、両側が同じ対称鍵を持てたら、以降のやり取りはその対称鍵で暗号化します。</p>
+    <p class="s" data-who="ひよこちゃん">なぜ最初から最後まで、公開鍵と秘密鍵の組だけでやらないんですか?</p>
+    <p class="t" data-who="ふくろう先生">役割が違うからです。対称鍵は両側が同じ 1 つの鍵を使う単純な方式で、公開鍵と秘密鍵の組は、その対称鍵を安全に手渡す手段として使います。</p>
+    <p class="s" data-who="ひよこちゃん">鍵を安全に渡すための鍵と、実際に使う鍵が、別になっているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この、両側が使う鍵をどう決めるかという手続き全体を鍵交換と呼び、同じような考え方は TLS 以外でも使われています。</p>
+    <p class="s" data-who="ひよこちゃん">たとえばどんな場面ですか?</p>
+    <p class="t" data-who="ふくろう先生">サーバに安全にログインする仕組み(SSH)でも、公開鍵と秘密鍵の組を使って鍵を安全にやり取りしてから、実際の通信を進めます。</p>
+    <p class="s" data-who="ひよこちゃん">SSH と TLS で、仕組みは全く同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">細かい手順までは同じではありませんが、公開鍵と秘密鍵の組で安全に鍵を渡し、そのあとは両側が同じ対称鍵に切り替えて通信する、という考え方は共通しています。</p>
+    <p class="s" data-who="ひよこちゃん">この公開鍵、そもそもどうやって信頼して受け取るんですか? 誰かになりすまされたりしませんか?</p>
+    <p class="t" data-who="ふくろう先生">良いところに気づきましたね。その疑問には、次のページで答えます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>鍵を「暗号化専用」の公開鍵と、「元に戻す専用」の秘密鍵の組に分けると、公開鍵は誰に配ってもよく、秘密鍵は自分だけが持てばよい。</li>
+      <li>公開鍵で暗号化した内容は、組になる秘密鍵を持つ本人しか元に戻せない。</li>
+      <li>実際のやり取りは、暗号化するときと元に戻すときで同じ 1 つの鍵を使う対称鍵で行う。</li>
+      <li>公開鍵と秘密鍵の組は、両側が安全に対称鍵を決める(鍵交換)ために使い、決まったあとの実際のやり取りは対称鍵で暗号化する。</li>
+      <li>対称鍵は両側が同じ 1 つの鍵を使う単純な方式であり、公開鍵と秘密鍵の組は、その対称鍵を安全に手渡す手段である。</li>
+      <li>両側が使う鍵をどう決めるかという手続き全体を鍵交換と呼ぶ。この考え方はサーバへの安全なログインの仕組み(SSH)にも見られ、細かい手順は異なっても、公開鍵と秘密鍵の組で鍵を渡してから対称鍵に切り替える流れは共通している。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>鍵を「暗号化専用」の公開鍵と「元に戻す専用」の秘密鍵の組に分けると、公開鍵は誰に配ってもよく、秘密鍵は自分だけが持てばよい。公開鍵で暗号化した内容は、組になる秘密鍵を持つ本人しか元に戻せないため、鍵そのものを相手に送らなくても、安全にやり取りができる。ただし、実際のやり取りをすべて公開鍵と秘密鍵の組で行うわけではない。送り手と受け手は、この組を使って、暗号化するときと元に戻すときで同じ 1 つの鍵を使う対称鍵を、両側が安全に決める。この手続き全体を鍵交換と呼ぶ。決まったあとの実際のやり取りは、その対称鍵で暗号化する。対称鍵は両側が同じ 1 つの鍵を使う単純な方式であり、公開鍵と秘密鍵の組は、その対称鍵を安全に手渡す手段として使われる、という役割分担になっている。鍵の受け渡しと実際の暗号化を分けることで、鍵そのものが漏れる場面を減らせる。同じような考え方は、サーバへの安全なログインの仕組み(SSH)にも見られ、細かい手順は異なるものの、公開鍵と秘密鍵の組で鍵を渡してから対称鍵に切り替えるという流れは共通している。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(公開鍵・秘密鍵によるハンドシェイク、その後 session keys を使った symmetric encryption に切り替わるという記述)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（`02-Security.txt` p.42〜58 単一の鍵方式の課題から、鍵を暗号化専用と復号専用に分ける発想に至る流れ。p.104〜105 SSH における公開鍵・秘密鍵とセッション鍵の考え方）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m18-2">
+    <div class="q" data-q="1">
+      <p class="q-text">公開鍵で暗号化した内容を元に戻せるのは誰か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">同じ公開鍵を持っている人なら誰でも</button></li>
+        <li><button type="button" data-correct="true">組になる秘密鍵を持つ本人だけ</button></li>
+        <li><button type="button" data-correct="false">最初に鍵を送った送り手だけ</button></li>
+        <li><button type="button" data-correct="false">ネットワークの管理者だけ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、組になる秘密鍵を持つ本人だけ、です。公開鍵は誰に配ってもよく、それだけでは元に戻せません。元に戻せるのは、組になる秘密鍵を持つ本人だけです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">実際のデータのやり取りで使われる鍵の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">公開鍵と秘密鍵の組を、毎回そのまま使う</button></li>
+        <li><button type="button" data-correct="true">暗号化するときと元に戻すときで、両側が同じ 1 つの鍵(対称鍵)を使う</button></li>
+        <li><button type="button" data-correct="false">秘密鍵だけを両側が共有して使う</button></li>
+        <li><button type="button" data-correct="false">鍵を使わずに、内容をそのまま送る</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、暗号化するときと元に戻すときで、両側が同じ 1 つの鍵(対称鍵)を使う、です。公開鍵と秘密鍵の組は、この対称鍵を安全に決めるために使われます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">公開鍵と秘密鍵の組と、対称鍵の役割の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">対称鍵が、公開鍵と秘密鍵の組を安全に受け渡すために使われる</button></li>
+        <li><button type="button" data-correct="true">公開鍵と秘密鍵の組が、対称鍵を安全に決めるために使われ、実際のやり取りは対称鍵で行う</button></li>
+        <li><button type="button" data-correct="false">どちらも同じ役割で、どちらを先に使ってもよい</button></li>
+        <li><button type="button" data-correct="false">対称鍵は使われず、公開鍵と秘密鍵の組だけで通信全体が行われる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、公開鍵と秘密鍵の組が、対称鍵を安全に決めるために使われ、実際のやり取りは対称鍵で行う、です。対称鍵は両側が同じ 1 つの鍵を使う単純な方式で、公開鍵と秘密鍵の組はそれを安全に手渡す手段です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m18-1.html">← 18-1 暗号化しても、隠れないものがある</a>
+    <a class="up" href="m18.html">第 18 章の入口</a>
+    <a class="next" href="m18-3.html">18-3 その身分証を、誰が本物だと保証しているのか →</a>
+  </nav>
+</main>
+</body>
+</html>

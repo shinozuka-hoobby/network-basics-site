@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IP アドレスは、4 つの数字の組でできている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m05-1" data-chapter="m05" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 5-1</p>
+  <p class="chapter-label">第 5 章 IP アドレスとサブネット　5-1</p>
+  <h1>IP アドレスは、4 つの数字の組でできている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>IP アドレスは「192.168.1.5」のように、4 つの数字をピリオドで区切って書く。<strong>この数字は、機械の中では 0 と 1 が並んだ、1 つの大きな数字として扱われている</strong>。このページでは、この 4 つの数字の並びの正体と、なぜこの書き方をするのかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">自分の Mac の IP アドレスを見たら「192.168.1.5」って、4 つの数字が並んでたんですけど、これって単純にただの 4 つの数字なんですか?</p>
+    <p class="t" data-who="ふくろう先生">見た目は 4 つに分かれていますが、機械の中では 0 と 1 が 32 個並んだ、1 つの数字として扱われています。0 か 1 のひと桁のことをビットと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、なんで 4 つに分けて、しかもこんな数字(0〜255)で書くんですか?</p>
+    <p class="t" data-who="ふくろう先生">32 個のビットをそのまま 0 と 1 で書くと人には読みにくいので、8 個ずつ 4 つのまとまりに分けて、それぞれを 10 進数にして書いています。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの組が 0〜255 の範囲になるのは、何か理由があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">8 個のビットの並びで表せる数の範囲が、ちょうど 0 から 255 までだからです。</p>
+    <p class="s" data-who="ひよこちゃん">255 になる理由を、具体的な数字で見せてもらえますか?</p>
+    <p class="t" data-who="ふくろう先生">8 個のビットにはそれぞれ桁の重み(128・64・32・16・8・4・2・1)があり、すべて 1 のときにこの 8 つを足すと 255 になります。</p>
+    <p class="s" data-who="ひよこちゃん">たとえば具体的な数字だと、どんな対応になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">10001010 というビットの並びは、10 進数の 138 にあたります。8 個のビットの組み合わせを、そのまま普通の数字に読み替えているだけです。</p>
+    <p class="s" data-who="ひよこちゃん">今の私たちが使っているこのアドレスの形式にも、名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。この形式を IPv4 と呼びます。今使われているほとんどの IP アドレスがこの形式です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、この IPv4 っていう名前は覚えておいた方がいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。この章の残りでも「IPv4 アドレス」という言い方を使っていきます。</p>
+    <p class="s" data-who="ひよこちゃん">この IPv4 アドレスって、全部で何通りぐらいあるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">32 個のビットの組み合わせなので、全部で約 43 億通りになります。多いように見えても、世界中の機械の数を考えると足りなくなってきています。</p>
+    <p class="s" data-who="ひよこちゃん">ちなみに、この 4 つの数字はどうしてピリオドで区切るんですか?</p>
+    <p class="t" data-who="ふくろう先生">4 つのまとまりを人が読み間違えないように区切るためです。機械の中で計算するときは、区切りを気にせず 32 個のビットとしてまとめて扱います。</p>
+    <p class="s" data-who="ひよこちゃん">見た目のための区切りで、中身の計算には関係ないってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページから、この 32 個のビットのどこまでが仲間の範囲を表すかという話に入っていきます。</p>
+    <p class="s" data-who="ひよこちゃん">32 個っていう数は、この先も変わらないんですか?</p>
+    <p class="t" data-who="ふくろう先生">IPv4 ではこの 32 個で固定です。次のページでは、この 32 個の中の前半分と後半分の境目をどう決めるかを見ていきます。</p>
+    <p class="s" data-who="ひよこちゃん">32 個、全部が同じ役目なんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は前半分と後半分で役目が違います。どこまでが前半でどこからが後半かは、次のページで詳しく見ましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP アドレスは、機械の中では 0 と 1(ビット)が 32 個並んだ、1 つの数字として扱われている。</li>
+      <li>人が読みやすいように、8 個ずつ 4 つの組に分け、それぞれを 10 進数(0〜255)にして、ピリオドで区切って書く。</li>
+      <li>1 つの組が 0〜255 に収まるのは、8 個のビットの並びで表せる数の範囲がちょうどそこまでだから。</li>
+      <li>32 個のビットの組み合わせは全部で約 43 億通りあり、この形式には IPv4 という名前が付いている。今のところ、私たちが使う IP アドレスのほとんどはこの形式である。</li>
+      <li>32 個のビットは、前半分と後半分で役目が違う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>IPv4 は、0 と 1 が 32 個並んだ数字で IP アドレスを表す、現在最も広く使われている形式である。人が読み書きしやすいように、32 個のビットを 8 個ずつ 4 つの組に分け、それぞれを 10 進数に直してピリオドで区切る。8 個のビットで表せる数は 0 から 255 までなので、1 つの組の値は必ずこの範囲に収まる。たとえば 10001010 という並びは、10 進数の 138 にあたる。32 個のビットの組み合わせは全部で約 43 億通りあり、区切りは表記上の工夫にすぎず、機械の内部では 32 個のビットがひと続きの数字として扱われる。たとえば身近な IP アドレス「192.168.1.5」も、192・168・1・5 という 4 つの 10 進数を、内部では 1 つながりの 32 個のビットとして扱っている。次のページでは、この 32 個のビットの前半分と後半分で役目が違うことを見ていく。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="45">[#45] Cisco「Configure IP Addresses and Unique Subnets」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html" rel="noopener">原典</a>(「Understand IP Addresses」の 2 進数→10 進数変換とドット区切り表記の説明)</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>(p.34 IP アドレスの構成、32 ビットの識別子という説明)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.15-16 IPv4 アドレスの 10 進数・2 進数表記の対応)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m05-1">
+    <div class="q" data-q="1">
+      <p class="q-text">IPv4 アドレスのドット区切り表記の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">32 個のビットを 8 個ずつ 4 つの組に分け、それぞれを 10 進数にしてピリオドで区切ったもの</button></li>
+        <li><button type="button" data-correct="false">32 個のビットを 4 個ずつ 8 つの組に分けたもの</button></li>
+        <li><button type="button" data-correct="false">IP アドレスを 16 進数に変換して書いたもの</button></li>
+        <li><button type="button" data-correct="false">IP アドレスをそのまま 2 進数で書いたもの</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、32 個のビットを 8 個ずつ 4 つの組に分け、それぞれを 10 進数にしてピリオドで区切ったもの、です。8 個のビットの組を 10 進数に直すことで、人が読みやすくしています。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">1 つの組の値が 0〜255 の範囲に収まるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">8 個のビットの並びで表せる数の範囲が、ちょうど 0 から 255 までだから</button></li>
+        <li><button type="button" data-correct="false">人が読みやすい桁数の上限がたまたま 255 だから</button></li>
+        <li><button type="button" data-correct="false">機械の設定で 255 までしか扱えないと決められているから</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの総数を減らすために、わざと 255 までに制限しているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、8 個のビットの並びで表せる数の範囲が、ちょうど 0 から 255 までだから、です。8 個のビットの組み合わせで表せる数は 0 から 255 までしかなく、それ以上は表せません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">IPv4 という名前について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">0 と 1 が 32 個並ぶ数字で IP アドレスを表す、今広く使われている形式の名前である</button></li>
+        <li><button type="button" data-correct="false">IP アドレスを暗号化する仕組みの名前である</button></li>
+        <li><button type="button" data-correct="false">IP アドレスを配布するサーバの名前である</button></li>
+        <li><button type="button" data-correct="false">IP アドレスの範囲を区切る境目の名前である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、0 と 1 が 32 個並ぶ数字で IP アドレスを表す、今広く使われている形式の名前である、です。IP アドレスを区切る境目の話は次のページ以降で扱います。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m05.html">← 第 5 章の入口</a>
+    <a class="up" href="m05.html">第 5 章の入口</a>
+    <a class="next" href="m05-2.html">5-2 IP アドレスの前半と後半で、役割が違う →</a>
+  </nav>
+</main>
+</body>
+</html>

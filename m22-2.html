@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>何を、いつまで控えるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m22-2" data-chapter="m22" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 22-2</p>
+  <p class="chapter-label">第 22 章 CDN とキャッシュ　22-2</p>
+  <h1>何を、いつまで控えるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>エッジサーバが控えを返してよいかどうかは、要求の内容を比べて判断される。<strong>その判断材料と、控えを使ってよい期限は、それぞれ別の役割を持つ</strong>。このページでは、その 2 つを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">エッジサーバに控えがあるかどうかって、どうやって決まるんですか? 同じ URL ならいつも同じ答えが返ってくるんですか?</p>
+    <p class="t" data-who="ふくろう先生">基本はそうです。同じ URL への、同じ種類の要求(GET など)かどうかを比べて、同じ控えを返してよいかを判断します。この判断材料の組み合わせを、<strong>キャッシュキー</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 20 章 20-5 で見た HTTP キャッシュと同じ話ですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。CDN の控えは、あの HTTP キャッシュの延長で、控える場所が利用者の近くの専用の機械になったものと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、控えはいつまでも使い続けていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。控えにも、この秒数の間は使ってよいという期限があります。これを<strong>キャッシュの TTL</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 16 章で見た DNS の TTL と、同じ名前ですね。</p>
+    <p class="t" data-who="ふくろう先生">名前は同じですが、DNS の TTL は名前解決の答えを覚えておいてよい秒数、キャッシュの TTL はコンテンツの控えを使ってよい秒数で、対象が違います。</p>
+    <p class="s" data-who="ひよこちゃん">この期限って、誰が決めるんですか?</p>
+    <p class="t" data-who="ふくろう先生">Web サーバの応答に添える指示で決まります。第 20 章 20-5 で見た Cache-Control が、その指示です。</p>
+    <p class="s" data-who="ひよこちゃん">Cache-Control って、20-5 でも出てきましたね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。あのページで見た「この秒数までは使ってよい」という指定が、CDN の控えにもそのまま関係してきます。</p>
+    <p class="s" data-who="ひよこちゃん">この TTL って、サイト全体で 1 つに決まってるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。TTL は控え 1 つ 1 つに付く期限なので、ページごとや画像ごとに違っていて構いません。</p>
+    <p class="s" data-who="ひよこちゃん">このキャッシュキーの考え方って、誰かが厳密に決めているんですか?</p>
+    <p class="t" data-who="ふくろう先生">細かい決め方はこの講座の範囲を超えますが、基本の考え方として、同じ要求先・同じ種類の要求かどうかで判断される、と覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">同じ URL への要求でも、聞くたびに答えが変わることってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">キャッシュキーが同じであれば、期限が来るまでは同じ控えが返り続けます。答えが変わるとしたら、期限が来て取り直したときです。</p>
+    <p class="s" data-who="ひよこちゃん">キャッシュキーと TTL、どちらも控えに関わるけど役割が違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。キャッシュキーは何が同じ答えの対象かを見分けるもの、TTL はいつまで使ってよいかを見分けるもの、という違いです。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>何が同じなら同じ控えを返してよいかを判断する材料の組み合わせを、キャッシュキーと呼ぶ。基本は、要求先の URL と、GET などの要求の種類で決まる。</li>
+      <li>控えを、この秒数の間は使ってよいとする期限を、キャッシュの TTL と呼ぶ。</li>
+      <li>キャッシュの TTL は、Web サーバの応答に添える指示(第 20 章の Cache-Control)で決まり、控え 1 つ 1 つに付く期限なので、ページごとや画像ごとに違っていてよい。</li>
+      <li>第 16 章で見た DNS の TTL とは、名前は同じでも、覚えておく対象(名前解決の答えか、コンテンツの控えか)が違う。</li>
+      <li>CDN の控えの仕組みは、第 20 章で見た HTTP キャッシュの延長で、控える場所が利用者の近くの専用の機械になったものである。</li>
+      <li>キャッシュキーが同じであれば、期限が来るまでは同じ控えが返り続け、答えが変わるのは期限が来て取り直したときである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>エッジサーバが、同じ要求に対して同じ控えを返してよいかどうかを見分けるために比べる材料の組み合わせを、キャッシュキーと呼ぶ。基本は、要求先の URL と、GET などの要求の種類で決まる。例えば、同じサイトの中でも、あるページの URL と別のページの URL は、それぞれ別のキャッシュキーとして扱われ、別々に控えが管理される。控えには、この秒数の間は使ってよいとする期限があり、これをキャッシュの TTL と呼ぶ(#63)。この期限は、第 20 章 20-5 で見たとおり、Web サーバが応答に添える Cache-Control という指示で決まる。TTL は控え 1 つ 1 つに付く期限であり、ページごとや画像ごとに違っていてよい(#63)。第 16 章 16-4 で見た DNS の TTL とは、名前は同じだが、DNS の TTL は名前解決の答えを覚えておいてよい秒数、キャッシュの TTL はコンテンツの控えを使ってよい秒数で、対象が異なる。CDN の控えの仕組みは、第 20 章で見た HTTP キャッシュの延長にあり、控える場所が利用者の近くの専用の機械になったものと言える。この 2 つの考え方(キャッシュキー、キャッシュの TTL)を理解しておくと、思いどおりに控えが更新されないときに、どちらが原因かを切り分けやすくなる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 応答の中の "age" という行の数字を見てください。この数字は、その控えが作られてからの経過秒数です。この秒数が、控えを使ってよい期限(キャッシュの TTL)に達すると、次の要求のときにはオリジンサーバへ取り直しに行きます。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="63">[#63] Fastly「Content delivery learning center」 — <a href="https://www.fastly.com/learning/cdn/what-is-time-to-live-ttl" rel="noopener">原典</a>(「What is time to live (TTL)?」の要約。TTL がオブジェクトを CDN の控えに残しておく時間であるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m22-2">
+    <div class="q" data-q="1">
+      <p class="q-text">キャッシュキーとキャッシュの TTL の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">キャッシュキーは何が同じ答えの対象かを見分けるもの、キャッシュの TTL はいつまで使ってよいかを見分けるものという違い</button></li>
+        <li><button type="button" data-correct="false">キャッシュキーはエッジサーバの数、キャッシュの TTL はオリジンサーバの数を表す違い</button></li>
+        <li><button type="button" data-correct="false">キャッシュキーは秒数を表し、キャッシュの TTL は URL を表すという違い</button></li>
+        <li><button type="button" data-correct="false">両方とも同じもので、呼び方が違うだけである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、キャッシュキーは何が同じ答えの対象かを見分けるもの、キャッシュの TTL はいつまで使ってよいかを見分けるものという違い、です。台数を表す値でも、呼び方だけの違いでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">キャッシュキーの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">控えを使ってよい期限を表す秒数のこと</button></li>
+        <li><button type="button" data-correct="true">同じ要求に対して同じ控えを返してよいかを見分けるために比べる材料の組み合わせのこと</button></li>
+        <li><button type="button" data-correct="false">エッジサーバとオリジンサーバの間の距離のこと</button></li>
+        <li><button type="button" data-correct="false">Web サーバが応答に添える暗号化の指示のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ要求に対して同じ控えを返してよいかを見分けるために比べる材料の組み合わせのこと、です。期限を表す秒数はキャッシュの TTL、距離や暗号化の指示とは別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 16 章で見た DNS の TTL と、この章で見たキャッシュの TTL の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">まったく同じ秒数を指しており、名前も意味も同じである</button></li>
+        <li><button type="button" data-correct="true">名前は同じ「TTL」だが、DNS の TTL は名前解決の答えを覚えておいてよい秒数、キャッシュの TTL はコンテンツの控えを使ってよい秒数を表し、対象が違う</button></li>
+        <li><button type="button" data-correct="false">キャッシュの TTL は、DNS の TTL が切れたときに発行される通知である</button></li>
+        <li><button type="button" data-correct="false">キャッシュの TTL のほうが古い仕組みで、DNS の TTL はその後継である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前は同じ「TTL」だが、DNS の TTL は名前解決の答えを覚えておいてよい秒数、キャッシュの TTL はコンテンツの控えを使ってよい秒数を表し、対象が違う、です。同じ略語が文脈によって別の意味で使われる例です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m22-1.html">← 22-1 近くに控えを置いておく</a>
+    <a class="up" href="m22.html">第 22 章の入口</a>
+    <a class="next" href="m22-3.html">22-3 控えを消す →</a>
+  </nav>
+</main>
+</body>
+</html>

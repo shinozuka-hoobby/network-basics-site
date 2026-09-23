@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 本の接続で、リクエストをいくつも同時に運ぶ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m21-1" data-chapter="m21" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 21-1</p>
+  <p class="chapter-label">第 21 章 HTTP/2 と HTTP/3　21-1</p>
+  <h1>1 本の接続で、リクエストをいくつも同時に運ぶ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前の章で見た、HTTP/1.1 が 1 本の接続の中で順番どおりにしかやり取りできない詰まりには、解決の仕組みがある。このページでは、<strong>1 本の接続の中に複数のやり取りを同時に持たせる</strong>ことで、この詰まりを解いた、HTTP の新しい版を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前の章で、HTTP/1.1 は 1 本の接続の中で、応答も要求した順番のとおりに返す決まりだから、追い越しができなくて詰まるって聞きました。あれ、もう解決されてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">解決されています。それがこれから見る HTTP/2 です。</p>
+    <p class="s" data-who="ひよこちゃん">どうやって解決したんですか?</p>
+    <p class="t" data-who="ふくろう先生">HTTP/2 は、1 本の接続の中に、独立した流れを複数持てるようにしました。</p>
+    <p class="s" data-who="ひよこちゃん">流れ、ですか? 具体的にはどういうものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">これをストリームと呼びます。第 15 章で見た、QUIC が持つ独立した流れと同じ考え方です。1 本の接続の中に、互いに独立してやり取りできる流れをいくつも持てます。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの流れが遅れても、他の流れには関係ないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。1 つの流れが遅れても、他の流れはそのまま進められます。</p>
+    <p class="s" data-who="ひよこちゃん">これって、第 12 章で見た多重化と同じ言葉ですか?</p>
+    <p class="t" data-who="ふくろう先生">近い言葉ですが、意味は少し違います。第 12 章の多重化は、1 つの IP アドレスの中で複数のプログラムに振り分ける話でした。ここでの多重化は、<strong>1 本の接続の中に複数のやり取りを同時に乗せること</strong>を指します。</p>
+    <p class="s" data-who="ひよこちゃん">この、1 本の接続の中に複数のやり取りを同時に乗せられる HTTP の版のことを、HTTP/2 と呼ぶんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、一覧ページに複数の画像を並べて表示していたら、1 枚の画像の読み込みが遅れただけで、その後ろの画像もなかなか表示されなかったことがあります。HTTP/2 に変えたら、そういうことが気にならなくなりました。</p>
+    <p class="t" data-who="ふくろう先生">まさに今の話のとおりです。HTTP/1.1 は 1 本の接続の中で応答を順番どおりに返す決まりのため、前のリクエストの応答が遅れると、後ろのリクエストも待たされます。</p>
+    <p class="s" data-who="ひよこちゃん">HTTP/2 だと、そこが違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。HTTP/2 は独立した流れを複数持てるため、1 つの流れが遅れても他の流れはそのまま進められます。だから、画像を並べて表示していても、1 枚の遅れが他に影響しなくなったんです。</p>
+    <p class="s" data-who="ひよこちゃん">ストリームを複数持つと言っても、接続自体は 1 本のままなんですよね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。接続は 1 本のまま、その中に複数の流れが同時に存在すると考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">1 本の接続のままにしておくと、何かいいことがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。第 20 章で見たとおり、接続を新しく作るには往復が必要です。1 本の接続を保ったまま複数のやり取りをこなせれば、そのたびに接続を作り直す必要がありません。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、詰まりを解消しつつ、接続を作る手間も増やさずに済むんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、もう一つの工夫(ヘッダの送り方)を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>HTTP/1.1 は 1 本の接続の中で応答を要求した順番のとおりに返す決まりのため、前が詰まると後ろも待たされる(第 20 章 20-4)。</li>
+      <li>HTTP/2 は、1 本の接続の中に、独立した複数の流れ(ストリーム)を持てる。第 15 章で見た QUIC のストリームと同じ考え方である。</li>
+      <li>1 つの流れが遅れても、他の流れはそのまま進められる。接続自体は 1 本のままである。</li>
+      <li>1 本の接続に複数のやり取りを同時に乗せることを多重化と呼ぶ。第 12 章で見たポート番号による多重化とは、対象が異なる。</li>
+      <li>個人開発で画像を並べて表示していたときの詰まりは、HTTP/2 の多重化によって気にならなくなる。</li>
+      <li>接続を 1 本に保ったまま複数のやり取りをこなせるため、そのたびに接続を作り直す往復は増えない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP/1.1 は、1 本の接続の中で応答を要求した順番のとおりに返す決まりのため、前のリクエストの応答が遅れると、後ろのリクエストも待たされる(第 20 章 20-4)。HTTP/2 は、この決まりを変え、1 本の接続の中に、互いに独立してやり取りできる複数の流れ(ストリーム)を持てるようにした、HTTP の版である(#56)。ストリームは、第 15 章で見た QUIC の独立した流れと同じ考え方である。1 つの流れでデータが遅れても、他の流れはそのまま進められるため、1 本の接続に複数のリクエストとレスポンスを同時に乗せられる(#56、#20)。この、1 本の接続の中に複数のやり取りを同時に乗せることを多重化と呼ぶ。第 12 章で見た、1 つの IP アドレスの中で複数のプログラムに振り分ける多重化とは対象が異なる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 応答の 1 行目に「HTTP/2 200」のように版が示されている。この 1 行だけで、その相手とは HTTP/2 で話していることが分かる。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="56">[#56] Cloudflare Learning Center「HTTP/2 vs. HTTP/1.1」 — <a href="https://www.cloudflare.com/learning/performance/http2-vs-http1.1/" rel="noopener">原典</a>(HTTP/1.1・HTTP/2 の定義、multiplexing の説明)</li>
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座:HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>(a.jpg・b.jpg を 1 本のコネクション上で並列にやり取りする例)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m21-1">
+    <div class="q" data-q="1">
+      <p class="q-text">HTTP/1.1 と HTTP/2 の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">HTTP/2 は 1 本の接続の中に、独立した複数の流れを持てるが、HTTP/1.1 は 1 本の接続の中で要求と応答を 1 つずつしかやり取りできない</button></li>
+        <li><button type="button" data-correct="false">HTTP/1.1 は独立した複数の流れを持てるが、HTTP/2 は 1 つずつしかやり取りできない</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 は、接続を複数開くことで複数のやり取りを並列に進める</button></li>
+        <li><button type="button" data-correct="false">HTTP/1.1 と HTTP/2 は、通信の決まりとしては全く同じである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、HTTP/2 は 1 本の接続の中に、独立した複数の流れを持てるが、HTTP/1.1 は 1 本の接続の中で要求と応答を 1 つずつしかやり取りできない、です。HTTP/2 は接続を複数開くのではなく、1 本の接続の中に複数の流れを持たせることで並列に処理します。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ストリームの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">1 本の接続の中に持てる、互いに独立してやり取りできる流れのこと</button></li>
+        <li><button type="button" data-correct="false">接続を新しく複数作ること</button></li>
+        <li><button type="button" data-correct="false">受け取ったデータを順番に並べ直すための番号のこと</button></li>
+        <li><button type="button" data-correct="false">1 つの IP アドレスの中で、プログラムを振り分ける仕組みのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 本の接続の中に持てる、互いに独立してやり取りできる流れのこと、です。ポート番号による多重化(第 12 章)とは対象が異なり、他の選択肢はいずれもストリームとは別の仕組みの説明です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">個人開発の画像一覧の例で、HTTP/2 にしたら詰まりが気にならなくなった理由として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">HTTP/2 は独立した流れを複数持てるため、1 つの画像の遅れが他の画像に影響しなくなったから</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 は画像を圧縮して送るから</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 はキャッシュを使って前回の画像をそのまま表示するから</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 は接続を毎回新しく作り直すから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、HTTP/2 は独立した流れを複数持てるため、1 つの画像の遅れが他の画像に影響しなくなったから、です。画像の圧縮やキャッシュ、接続の作り直しとは関係ありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m21.html">← 第 21 章の入口</a>
+    <a class="up" href="m21.html">第 21 章の入口</a>
+    <a class="next" href="m21-2.html">21-2 同じヘッダを、もう一度は送らない →</a>
+  </nav>
+</main>
+</body>
+</html>

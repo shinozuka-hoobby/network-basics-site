@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内部専用の区画も、外へ出る仕組みは同じ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m24-4" data-chapter="m24" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 24-4</p>
+  <p class="chapter-label">第 24 章 クラウドの仮想ネットワーク（VPC）　24-4</p>
+  <h1>内部専用の区画も、外へ出る仕組みは同じ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>外から直接アクセスできない区画のサーバも、外のインターネットへ出て行くことはできる。<strong>ただし、その役目を担う専用の部品は、別の区画に置かれている</strong>。このページでは、この部品の位置づけと、第 10 章で見た家庭用ルータとの共通点を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 10 章 10-4 で、クラウドにも NAT ゲートウェイっていう部品があるって聞きましたけど、具体的にどこに置くものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。NAT ゲートウェイ自身は、外から届く区画に置きます。</p>
+    <p class="s" data-who="ひよこちゃん">内部専用のサーバがある区画とは、別の場所に置くってことですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。内部専用のサーバは、外から直接アクセスできない区画に置いたままで構いません。</p>
+    <p class="s" data-who="ひよこちゃん">内部専用のサーバは、どうやって外に出るんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ VPC の中にある、外から届く区画の NAT ゲートウェイを経由します。サーバ自身は内側だけで使う番号のままです。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイ自身は、なんで外から届く区画に置かれてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">NAT ゲートウェイは、外のインターネットゲートウェイへの経路を持つ区画に置かれていないと機能しないからです。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、内部専用のはずのアプリケーションサーバの区画に、なぜか NAT ゲートウェイを置いちゃいけないって言われて、意味が分からなかったって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">NAT ゲートウェイをそちらに置いても、外のインターネットゲートウェイへの経路が無い区画では機能しません。だから、外から届く区画の方に置く必要があるんです。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイの代わりに、自分で NAT の役目をするサーバを立てることもできるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できますが、AWS は NAT ゲートウェイを使うことを勧めています。可用性や帯域の面で有利で、管理の手間も少ないからです。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイが 1 つだけだと、それが止まったら内部専用のサーバは全部外に出られなくなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうならないよう、複数の NAT ゲートウェイを用意しておくやり方があります。</p>
+    <p class="s" data-who="ひよこちゃん">IPv6 の場合も、同じように NAT ゲートウェイを使うんですか?</p>
+    <p class="t" data-who="ふくろう先生">IPv6 はグローバルアドレスが十分にあるので、番号の付け替えは不要です。代わりに、外への接続だけを許可し、外から中への接続は始められない専用のゲートウェイを使います。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイの中にも、変換表のようなものがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。中の番号と外の番号の対応を記録して、戻ってきた通信を正しく届けるという考え方は、家庭用ルータの NAPT と同じです。</p>
+    <p class="s" data-who="ひよこちゃん">これ、第 10 章で見た、家庭用ルータの中の機器がプライベートアドレスのままで、NAT・NAPT を経由して外に出るのと同じ話ですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。役目は同じで、クラウドではその役目だけを専用に担う部品が用意されています。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイを使うと、外から直接 NAT ゲートウェイ経由で内部専用の区画にアクセスすることはできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのままではできません。外からの通信を最初に始めることはできず、内側から始めた通信の戻りだけが届きます。</p>
+    <p class="s" data-who="ひよこちゃん">次のページでは、ここまで見てきた AWS の呼び方が、他のクラウドではどう呼ばれるかを整理するんですよね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページで整理しましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>NAT ゲートウェイは、外から届く区画(パブリックサブネット)に置かれ、内部専用の区画(プライベートサブネット)にあるサーバの代わりに外のインターネットへ出る役目を担う。</li>
+      <li>内部専用のサーバは、外から直接アクセスできない区画に置いたままでよく、外へ出るときだけ NAT ゲートウェイを経由する。</li>
+      <li>NAT ゲートウェイが外から届く区画に置かれているのは、外のインターネットゲートウェイへの経路を持つ区画でないと機能しないからである。</li>
+      <li>これは家庭用ルータの NAT・NAPT と同じ役目で、外から NAT ゲートウェイ経由で内部専用の区画へ直接アクセスすることはできない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>NAT ゲートウェイは、クラウドの仕切られたネットワークの中から外のインターネットへ出るときに、番号を付け替える役目の機械である(#22)。内部専用のアプリケーションは外から直接アクセスできない区画に置いたままでよいが、NAT ゲートウェイ自身は、外のインターネットゲートウェイへの経路を持つ区画に置く必要がある(#26 p.36)。AWS の文書では、インターネットゲートウェイへの経路を持つ外から届く区画をパブリックサブネット、持たない内部専用の区画をプライベートサブネットと呼ぶ(#22、#26 p.36)。内部専用の区画にあるサーバは、この区画にある NAT ゲートウェイを経由して外のインターネットへ出て行く。NAT ゲートウェイの中には、家庭用ルータの NAPT と同じように、内側の番号と外向けの番号の対応を記録した変換表があり、戻ってきた通信を正しく届ける。外から中へ、勝手に入ってくることはできない(#22)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（「Access the internet」の節: NAT device が Elastic IP アドレスを使って internet gateway 経由でインターネットに接続するという記述、外から中へ勝手に入ってくることはできないという記述）</li>
+    <li class="cite" data-src="26">[#26] AWS ホワイトペーパー「Building a Scalable and Secure Multi-VPC AWS Network Infrastructure」 — <a href="https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/building-scalable-secure-multi-vpc-network-infrastructure.pdf" rel="noopener">原典</a>（p.36「Internal applications reside in private subnets, while NAT Gateways and Amazon EC2 NAT instances reside in a public subnet」）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m24-4">
+    <div class="q" data-q="1">
+      <p class="q-text">内部専用のアプリケーションサーバがある区画に NAT ゲートウェイを置いても機能しないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">内部専用の区画では、機械の台数に上限があるから</button></li>
+        <li><button type="button" data-correct="true">NAT ゲートウェイは、外のインターネットゲートウェイへの経路を持つ区画でないと機能しないから</button></li>
+        <li><button type="button" data-correct="false">内部専用の区画では、CIDR 表記が使えないから</button></li>
+        <li><button type="button" data-correct="false">NAT ゲートウェイは 1 つの VPC に 1 つしか置けないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、NAT ゲートウェイは、外のインターネットゲートウェイへの経路を持つ区画でないと機能しないから、です。機械の台数上限や CIDR 表記、設置数の制限とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">NAT ゲートウェイの役目として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">外から内部専用の区画へ、自由にアクセスできるようにする</button></li>
+        <li><button type="button" data-correct="true">内部専用の区画のサーバの代わりに、外のインターネットへ出るときに番号を付け替える</button></li>
+        <li><button type="button" data-correct="false">サブネットどうしの通信を許可・拒否する</button></li>
+        <li><button type="button" data-correct="false">クラウドの利用料金を計算する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、内部専用の区画のサーバの代わりに、外のインターネットへ出るときに番号を付け替える、です。外からの自由なアクセスを許可するものでも、通信の許可・拒否や料金計算の役目でもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">家庭用ルータの NAT・NAPT と、クラウドの NAT ゲートウェイに共通する役目はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">内側のネットワークから外のインターネットへ出るときに、番号を付け替える</button></li>
+        <li><button type="button" data-correct="false">外から内側への通信を、無条件にすべて許可する</button></li>
+        <li><button type="button" data-correct="false">サブネットの範囲を自動的に計算し直す</button></li>
+        <li><button type="button" data-correct="false">サーバの処理速度を測定する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、内側のネットワークから外のインターネットへ出るときに、番号を付け替える、です。外からの通信を無条件に許可するものではなく、サブネットの計算やサーバの速度測定とも別の役目です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m24-3.html">← 24-3 許可を覚えているか、そのつど確かめるか</a>
+    <a class="up" href="m24.html">第 24 章の入口</a>
+    <a class="next" href="m24-5.html">24-5 3 社で、呼び方がこう変わる →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一度に運べる大きさには上限がある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m06-3" data-chapter="m06" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 6-3</p>
+  <p class="chapter-label">第 6 章 IP パケットと配送の仕組み　6-3</p>
+  <h1>一度に運べる大きさには上限がある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>通る回線によって、一度に送り出せるデータの大きさには上限がある。<strong>この上限を超えるデータは、送り出す前にいくつかの小さなかたまりに分けられる</strong>。このページでは、この上限と、超えたときにどう分けられるかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">回線によって速さが違うのは第 2 章で聞いたんですけど、一度に送れるデータの大きさにも上限ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。回線ごとに、一度に運べるデータの大きさの上限が決まっていて、これを<strong>MTU</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">イーサネットだとどれくらいの大きさなんですか?</p>
+    <p class="t" data-who="ふくろう先生">イーサネットの規格では、1,500 バイトと決まっています(#71)。</p>
+    <p class="s" data-who="ひよこちゃん">帯域幅(第 2 章で見た、1 秒あたりに送れる量)と何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">帯域幅は 1 秒あたりに送れる量、MTU は一度に送れるひとかたまりの大きさです。太さと、ひとかたまりの大きさという、別のものさしだと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、上限を超えるデータはどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り出す前に、いくつかの小さなかたまりに分けられます。これを<strong>フラグメンテーション</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">分けられたかたまりは、どうやって元に戻るんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ送信元・宛先を持つかたまりとして送られ、届いた先で元の形に組み立て直されます(#71)。</p>
+    <p class="s" data-who="ひよこちゃん">分けられたかたまりが、後から届いた別のデータと混ざったりしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">大丈夫です。同じ元のデータから分けられたかたまりには同じ識別番号が付けられ、それぞれが元のデータのどの位置からかを示すオフセットという番号も持っています(#3、#71)。受け取った機械は、この 2 つの番号を見て正しく組み立て直します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、大きなデータでも、分ければ必ず届くってことですね。</p>
+    <p class="t" data-who="ふくろう先生">実は、そうとも限りません。分割してはいけないという指定が付いているデータもあるんです。</p>
+    <p class="s" data-who="ひよこちゃん">分割禁止の指定って、何のためにあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">分割や組み立て直しには手間がかかるので、それを避けたい場合に付けられます。ただし、その指定付きのデータが上限を超えると、分割できないまま捨てられてしまいます。送り主がこの指定を選べる分、上限を超えたときの結果も送り主の判断次第になります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、小さなページは問題なく開けるのに、大きな添付ファイルだけアップロードに失敗したことがあるって聞いたことがあるんですけど、これと関係ありますか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例ですね。まさにその状態です。</p>
+    <p class="s" data-who="ひよこちゃん">なんで大きいものだけ失敗するんですか?</p>
+    <p class="t" data-who="ふくろう先生">その区間の回線が、送ろうとしたデータより小さい上限しか許しておらず、しかも分割してはいけない指定が付いていたためです。上限を超える大きなデータは、分割もできないまま途中で捨てられました。</p>
+    <p class="s" data-who="ひよこちゃん">小さいページは、そもそも上限を超えていなかったから平気だったんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。上限を超えないデータは、分割の必要がなくそのまま届きます。</p>
+    <p class="s" data-who="ひよこちゃん">大きさの上限、思ったより身近なところに関わってるんですね。</p>
+    <p class="t" data-who="ふくろう先生">次のページでは、こうした問題が起きたことを、機械どうしがどう知らせ合っているかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>回線ごとに、一度に運べるデータの大きさの上限があり、これを MTU と呼ぶ。イーサネットでは 1,500 バイトと決まっている。</li>
+      <li>MTU を超えるデータは、送り出す前にいくつかの小さなかたまりに分けられる。これをフラグメンテーションと呼ぶ。</li>
+      <li>分けられたかたまりには、同じ元のデータであることを示す識別番号と、元のデータのどの位置からかを示すオフセットが付けられており、届いた先ではこの 2 つの番号を見て元の形に組み立て直される。</li>
+      <li>分割してはいけないという指定付きのデータが上限を超えると、分割できないまま途中で捨てられることがある。</li>
+      <li>この分割禁止の指定は、IP ヘッダの中にある 3 ビットのフラグという項目に書き込まれている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>MTU は、通る回線ごとに決まっている、一度に運べるデータの大きさの上限である。イーサネットでは 1,500 バイトが標準であり、回線の種類によってはこれより大きい・小さい値になることもある(#71)。データが MTU を超えるとき、送り主はこれを複数の小さなかたまりに分ける(フラグメンテーション)。分けられたかたまりは、いずれも同じ送信元・宛先の情報を持ち、届いた先で元の順序に組み立て直される(#3)。組み立て直しには、同じ元のデータであることを示す識別番号と、元のデータの先頭からの位置をバイト単位で示すオフセット(13 ビットの数字)が使われる(#3、#71)。ただし、分割してはいけないという指定が付いたデータは、上限を超えても分割されず、そのまま途中で捨てられる。この指定は、IP ヘッダの中にある 3 ビットのフラグという項目の一部として書き込まれている(#71)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 出力の中にある「mtu 1500」のような表示を見る。これが、自分の機械が今使っている回線で一度に送り出せるデータの大きさの上限である。</p>
+    <p class="try-note">環境によって表示される数字は異なることがある。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.40-41 Fragmentation and reassembly の図。1,500 バイトは、この図中に示された MTU 値の例からの読み取り)</li>
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論「IP」」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>(p.31 Fragment の説明)</li>
+    <li class="cite" data-src="44">[#44] Cisco「TCP/IP Overview」 — <a href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13769-5.html" rel="noopener">原典</a>(IP が異なる最大データ単位のネットワーク間でフラグメンテーションと再構成を行うという説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m06-3">
+    <div class="q" data-q="1">
+      <p class="q-text">MTU の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">データを暗号化するときの鍵の長さ</button></li>
+        <li><button type="button" data-correct="true">回線ごとに決まっている、一度に運べるデータの大きさの上限</button></li>
+        <li><button type="button" data-correct="false">1 秒あたりに送れるデータの量</button></li>
+        <li><button type="button" data-correct="false">パケットの送信元を隠すための仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、回線ごとに決まっている、一度に運べるデータの大きさの上限、です。これを MTU と呼ぶ。暗号化の鍵の長さや、1 秒あたりに送れる量(帯域幅)、送信元を隠す仕組みは、いずれも別の話である。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">小さなページは問題なく開けるのに、大きな添付ファイルだけアップロードに失敗した理由として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">大きなファイルは自動的に暗号化されないから</button></li>
+        <li><button type="button" data-correct="true">経路の途中の MTU を超え、かつ分割してはいけない指定が付いていたため、分割できないまま捨てられたから</button></li>
+        <li><button type="button" data-correct="false">大きなファイルは送信元の IP アドレスが変わってしまうから</button></li>
+        <li><button type="button" data-correct="false">ページの表示と添付ファイルの送信では、使っている IP アドレスの種類が違うから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、経路の途中の MTU を超え、かつ分割してはいけない指定が付いていたため、分割できないまま捨てられたから、です。小さなページは MTU を超えないため、そのまま問題なく届く。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">MTU を超えるデータと、フラグメンテーションの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">MTU を超えるデータは、必ずすべて捨てられる</button></li>
+        <li><button type="button" data-correct="true">MTU を超えるデータは、分割禁止の指定が無ければ、フラグメンテーションによって小さなかたまりに分けられて送られる</button></li>
+        <li><button type="button" data-correct="false">フラグメンテーションは、MTU の値そのものを大きくする仕組みである</button></li>
+        <li><button type="button" data-correct="false">フラグメンテーションは、送信元の IP アドレスを分割する仕組みである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、MTU を超えるデータは、分割禁止の指定が無ければ、フラグメンテーションによって小さなかたまりに分けられて送られる、です。分けられたかたまりは、届いた先で元の形に組み立て直される。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m06-2.html">← 6-2 届く保証はないけれど、あきらめずに届けようとする</a>
+    <a class="up" href="m06.html">第 6 章の入口</a>
+    <a class="next" href="m06-4.html">6-4 途中で何が起きたかを教えてくれる仕組み →</a>
+  </nav>
+</main>
+</body>
+</html>

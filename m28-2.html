@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>見たいものだけを残す — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m28-2" data-chapter="m28" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 28-2</p>
+  <p class="chapter-label">第 28 章 パケットキャプチャ — tcpdump と Wireshark　28-2</p>
+  <h1>見たいものだけを残す</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>パケットキャプチャは、条件を付けずに実行すると、あらゆる通信が次々と記録される。<strong>記録する時点で、条件に合う通信だけに絞り込む</strong>仕組みがある。このページでは、その絞り込み方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">さっき試したら、Wi-Fi のいろんな通信が次々表示されて、見たいものが埋もれちゃいました。</p>
+    <p class="t" data-who="ふくろう先生">記録する時点で、条件に合う通信だけに絞り込めます。この仕組みをキャプチャフィルタと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">どんな条件が指定できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">相手のアドレスや、ポート番号などです。例えば port 53 と指定すると、第 16 章で見た名前解決の通信だけが残ります。</p>
+    <p class="s" data-who="ひよこちゃん">試してみます。別の窓で dig を実行すれば、問い合わせが記録されるはずですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。53 番のポートに関する通信、つまり DNS の問い合わせと応答だけが画面に表示されます。</p>
+    <p class="s" data-who="ひよこちゃん">-n も付けてるのを見ましたけど、これは何のためですか?</p>
+    <p class="t" data-who="ふくろう先生">-n を付けると、相手の名前ではなく IP アドレスの数字のまま表示されます。付けないと、アドレスを名前に変換しようとする分、表示までに時間がかかることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">port 以外にも、条件はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。host で相手のアドレスを指定できます。tcp や udp を port の前に付ければ、プロトコルの種類とポート番号を組み合わせて絞り込めます。</p>
+    <p class="s" data-who="ひよこちゃん">host はアドレスの数字を書くんですか? それとも第 16 章で見た名前でもいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">どちらでも書けます。ただし名前を書くと、第 16 章で見た名前解決の通信が余分に発生することがあるので、アドレスの数字で指定する方が確実です。</p>
+    <p class="s" data-who="ひよこちゃん">複数の条件を組み合わせることもできますか?</p>
+    <p class="t" data-who="ふくろう先生">できます。and でつなげば、両方の条件を満たす通信だけに絞り込めます。</p>
+    <p class="s" data-who="ひよこちゃん">例えば、特定の相手との DNS の通信だけ、みたいな絞り方もできるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。host と port を and でつなげば、その組み合わせに絞り込めます。</p>
+    <p class="s" data-who="ひよこちゃん">host の代わりに、相手のネットワークの範囲を指定することもできるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。net という条件で、指定したネットワークの範囲に含まれるかどうかで絞り込めます。パケットの大きさで絞り込む less・greater という条件もあります。</p>
+    <p class="s" data-who="ひよこちゃん">これは tcpdump だけの機能なんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。Wireshark で記録を始めるときにも、同じ考え方の条件を指定できます。書き方も、tcpdump とほぼ同じです。</p>
+    <p class="s" data-who="ひよこちゃん">絞り込めば、見たい通信だけに集中できますね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。記録する時点で絞り込む、キャプチャフィルタの考え方はここまでです。</p>
+    <p class="s" data-who="ひよこちゃん">記録したあとで、絞り込む条件を変えたくなったらどうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。次のページで、記録をファイルに保存する方法を見て、そのあとで条件を変えて見返す方法も確認しましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>キャプチャフィルタは、記録する時点で、条件に合う通信だけに絞り込む仕組みである。tcpdump にも Wireshark にも、同じ考え方のキャプチャフィルタがある。</li>
+      <li>host(相手のアドレス)、port(ポート番号)を指定でき、tcp や udp を port の前に付けるとプロトコルの種類も組み合わせて絞り込める。host はアドレスの数字でも名前でも書けるが、名前を書くと名前解決の通信が余分に発生することがある。</li>
+      <li>and でつなぐと、複数の条件をすべて満たす通信だけに絞り込める。host と port を and でつなげば、特定の相手との、特定のポートの通信だけに絞り込める。</li>
+      <li>-n を付けると、アドレスを名前に変換せず、数字のまま表示する。net(ネットワークの範囲)や less・greater(パケットの大きさ)といった条件もある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>キャプチャフィルタは、パケットを記録する時点で、条件に合う通信だけに絞り込む仕組みである。tcpdump では host(相手のアドレス)、port(ポート番号)などの条件を指定できる(#107、#112)。host はアドレスの数字でも名前でも指定できるが、名前を指定すると自身の名前解決の通信が余分に発生することがある(#112)。tcp や udp は port の前に付けることで、プロトコルの種類とポート番号を組み合わせて指定でき、条件は and でつなぐと両方を満たす通信だけに絞り込まれる(#112「tcp port 23 and host 10.0.0.5」の例)。この他にも、net で相手のネットワークの範囲を指定したり、less・greater でパケットの大きさを条件にしたりできる(#112)。-n を付けると、送信元・宛先のアドレスを名前に変換せず、そのまま数字で表示する(#107)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-needs-sudo="true">
+    <pre><code>sudo tcpdump -i en0 -n -c 5 port 53
+dig example.com</code></pre>
+    <p>見方: 1 行目を実行して待っている間に、2 行目を別の窓で実行してください。port 53 という条件により、DNS の問い合わせと応答だけが画面に表示されます。5 個受け取ると自動的に止まります。</p>
+    <p class="try-note">2 行目は 1 行目とは別のターミナルの窓で実行する。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="107">[#107] The Tcpdump Group（tcpdump.org）「TCPDUMP(1) man page」 — <a href="https://www.tcpdump.org/manpages/tcpdump.1.html" rel="noopener">原典</a>(EXAMPLES の節、783 行目付近「tcpdump -n 'src host 192.0.2.1 and port 53'」というフィルタ式の例、514 行目 -n の説明)</li>
+    <li class="cite" data-src="112">[#112] Wireshark Foundation「4.10. Filtering while capturing」 — <a href="https://www.wireshark.org/docs/wsug_html_chunked/ChCapCaptureFilterSection.html" rel="noopener">原典</a>(capture filter が libpcap filter language で書かれるという説明、「tcp port 23 and host 10.0.0.5」の例、host・port プリミティブの説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m28-2">
+    <div class="q" data-q="1">
+      <p class="q-text">同じ tcpdump のコマンドに port 53 という条件を付けると、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">53 番のポートに関する通信だけが記録・表示され、それ以外の通信は現れなくなる</button></li>
+        <li><button type="button" data-correct="false">tcpdump の実行速度が 53 倍速くなる</button></li>
+        <li><button type="button" data-correct="false">53 個のパケットを受け取ると自動的に止まる</button></li>
+        <li><button type="button" data-correct="false">Wi-Fi の電波の強さが変わる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、53 番のポートに関する通信だけが記録・表示され、それ以外の通信は現れなくなる、です。実行速度や電波の強さの話ではなく、個数を指定する -c とも別の仕組みです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">-n を付けて tcpdump を実行すると、何が変わるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">送信元・宛先のアドレスが、名前ではなく数字のまま表示される</button></li>
+        <li><button type="button" data-correct="false">記録する個数が減る</button></li>
+        <li><button type="button" data-correct="false">sudo が不要になる</button></li>
+        <li><button type="button" data-correct="false">記録した内容が自動的にファイルへ保存される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送信元・宛先のアドレスが、名前ではなく数字のまま表示される、です。記録する個数や sudo の要不要、ファイルへの保存とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">host 10.0.0.5 and port 53 という条件でキャプチャフィルタを書くと、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">10.0.0.5 との通信で、かつ 53 番のポートに関する通信だけに絞り込まれる</button></li>
+        <li><button type="button" data-correct="false">10.0.0.5 との通信、または 53 番のポートの通信のどちらかが表示される</button></li>
+        <li><button type="button" data-correct="false">10.0.0.5 以外のすべての通信が表示される</button></li>
+        <li><button type="button" data-correct="false">53 個の条件をまとめて指定したことになる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、10.0.0.5 との通信で、かつ 53 番のポートに関する通信だけに絞り込まれる、です。and は両方の条件を満たす通信に絞り込む働きで、どちらか一方が満たされればよいわけではなく、除外や個数の指定でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m28-1.html">← 28-1 パケットを「そのまま」見る</a>
+    <a class="up" href="m28.html">第 28 章の入口</a>
+    <a class="next" href="m28-3.html">28-3 保存して後で見る →</a>
+  </nav>
+</main>
+</body>
+</html>

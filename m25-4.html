@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相手のサービスだけを、内側から使う — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m25-4" data-chapter="m25" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 25-4</p>
+  <p class="chapter-label">第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド　25-4</p>
+  <h1>相手のサービスだけを、内側から使う</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>相手が用意した特定のサービスだけに、インターネットへ出ずに内側からアクセスできる仕組みがある。<strong>相手の VPC のネットワーク全体には届かない</strong>。このページでは、この仕組みと、これまでに見た経路との違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">VPC の外にある、特定のサービスだけを使いたいときって、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">相手が用意した特定のサービスだけに、内側からアクセスできる仕組みがあります。これを<strong>PrivateLink</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">内側から、っていうのがポイントなんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。こちらの VPC から相手のサービスへ、一方向でアクセスします。相手側から、こちらへ接続してくることはできません。</p>
+    <p class="s" data-who="ひよこちゃん">25-1 で見た VPC ピアリングだと、相手の VPC のネットワークの範囲まで丸ごと届くんでしたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。PrivateLink はそれとは違い、決められた 1 つのサービスへのアクセスだけを許します。相手の VPC の、その他のサーバへは届きません。</p>
+    <p class="s" data-who="ひよこちゃん">第 24 章で見た NAT ゲートウェイ経由でも、外のサービスにアクセスできましたよね。何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">NAT ゲートウェイ経由は、一旦インターネットゲートウェイを通って外のインターネットへ出ます。PrivateLink は、インターネットへ出ずに、相手のサービスまで内側の経路だけで届きます。</p>
+    <p class="s" data-who="ひよこちゃん">インターネットへ出ない分、範囲も限定されているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。特定のサービスだけを安全に使わせたいときに向いた仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、VPC ピアリングと同じ感覚で PrivateLink をつないだら、相手の VPC の他のサーバには全然アクセスできなくて驚いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">それは正しい挙動です。PrivateLink は、決められた 1 つのサービスだけへの一方向のアクセスを提供する仕組みなので、相手の VPC の他のサーバへは、もともと届かない設計になっています。</p>
+    <p class="s" data-who="ひよこちゃん">知らずに使うと、びっくりしますね。複数のサービスを使いたいときは、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">使いたいサービスの数だけ、それぞれ別に PrivateLink のつながりを用意します。VPC ピアリングや Transit Gateway と、PrivateLink は目的が違う、と覚えておくとよいです。</p>
+    <p class="s" data-who="ひよこちゃん">目的に応じて使い分けるってことですね。次のページでは、ここまでの話を 3 社で比べるんでしたっけ?</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページで、AWS・GCP・Azure の呼び方の対応を整理しましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>PrivateLink は、相手が用意した特定のサービスだけに、インターネットへ出ずに内側からアクセスできるようにする仕組みである。</li>
+      <li>PrivateLink は一方向のアクセスで、相手側からこちらへ接続してくることはできない。</li>
+      <li>VPC ピアリングは相手の VPC のネットワークの範囲まで丸ごと届くのに対し、PrivateLink は決められた 1 つのサービスへのアクセスだけを許す。</li>
+      <li>NAT ゲートウェイ経由は一旦インターネットゲートウェイを通って外のインターネットへ出るのに対し、PrivateLink はインターネットへ出ずに内側の経路だけで届く。</li>
+      <li>VPC ピアリングと同じ感覚で PrivateLink をつなぐと、相手の VPC の他のサーバにアクセスできず驚くことがあるが、これは PrivateLink が特定のサービスだけへの一方向のアクセスを提供する仕組みだからで、正しい挙動である。</li>
+      <li>VPC ピアリングや Transit Gateway と PrivateLink は、目的が違う仕組みである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>PrivateLink は、相手が用意した特定のサービスだけに、インターネットへ出ずに内側からアクセスできるようにする仕組みである(#23)。利用側の VPC が、提供側の VPC にある特定のサービスへ一方向でアクセスする形で、利用側でアクセス権のあるクライアントだけが接続を開始でき、提供側から利用側へ接続してくることはできない(#26)。この点で、相手の VPC のネットワークの範囲まで丸ごと届く 25-1 の VPC ピアリングとは異なる。24-4 の NAT ゲートウェイ経由は、一旦インターネットゲートウェイを通って外のインターネットへ出るのに対し、PrivateLink はインターネットへ出ずに、相手のサービスまで内側の経路だけで届く。VPC ピアリングと同じ感覚で PrivateLink をつなぐと、相手の VPC の他のサーバにはアクセスできず驚くことがあるが、これは PrivateLink が決められた 1 つのサービスだけへの一方向のアクセスを提供する仕組みだからであり、正しい挙動である。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="23">[#23] AWS「Amazon VPC Documentation」 — <a href="https://docs.aws.amazon.com/vpc/" rel="noopener">原典</a>(「AWS PrivateLink establishes private connectivity between VPCs and services hosted on AWS or on-premises, without exposing data to the internet」という紹介文)</li>
+    <li class="cite" data-src="26">[#26] AWS ホワイトペーパー「Building a Scalable and Secure Multi-VPC AWS Network Infrastructure」 — <a href="https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/building-scalable-secure-multi-vpc-network-infrastructure.pdf" rel="noopener">原典</a>(p.17「Use AWS PrivateLink when you have a client/server set up where you want to allow one or more consumer VPCs unidirectional access to a specific service or set of instances in the service provider VPC…Only the clients with access in the consumer VPC can initiate a connection to the service in the service provider VPC」という記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m25-4">
+    <div class="q" data-q="1">
+      <p class="q-text">PrivateLink を使ってつないだのに、相手の VPC の他のサーバへアクセスできなかったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">つなぎ方を間違えて、接続そのものが失敗していたから</button></li>
+        <li><button type="button" data-correct="true">PrivateLink は決められた 1 つのサービスだけへの一方向のアクセスを提供する仕組みだから</button></li>
+        <li><button type="button" data-correct="false">相手の VPC の IP アドレスの範囲が、こちらと重なっていたから</button></li>
+        <li><button type="button" data-correct="false">相手の VPC のルートテーブルに、経路が 1 つも無かったから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、PrivateLink は決められた 1 つのサービスだけへの一方向のアクセスを提供する仕組みだから、です。接続の失敗や、IP アドレスの範囲の重なり、経路の欠落が原因ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">PrivateLink の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">2 つの VPC のネットワークの範囲を、丸ごと双方向でつなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="true">相手が用意した特定のサービスだけに、インターネットへ出ずに内側から一方向でアクセスする仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">たくさんの VPC を 1 か所に集めてつなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">1 つの VPC を複数のチームで分担して使う仕組みのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、相手が用意した特定のサービスだけに、インターネットへ出ずに内側から一方向でアクセスする仕組みのこと、です。丸ごと双方向でつなぐ話や、まとめてつなぐ仕組み、分担して使う仕組みとは別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">PrivateLink と VPC ピアリングの違いは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">PrivateLink の方が、常に通信の速度が速い</button></li>
+        <li><button type="button" data-correct="true">VPC ピアリングは相手の VPC の範囲まで丸ごと届くが、PrivateLink は決められた 1 つのサービスだけに一方向で届く</button></li>
+        <li><button type="button" data-correct="false">PrivateLink は、IP アドレスの範囲が重なっていても使える点だけが違う</button></li>
+        <li><button type="button" data-correct="false">両者はまったく同じ仕組みで、呼び方が違うだけである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、VPC ピアリングは相手の VPC の範囲まで丸ごと届くが、PrivateLink は決められた 1 つのサービスだけに一方向で届く、です。速度の話でも、呼び方だけの違いでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m25-3.html">← 25-3 会社のネットワークとつなぐ</a>
+    <a class="up" href="m25.html">第 25 章の入口</a>
+    <a class="next" href="m25-5.html">25-5 3 社で、呼び方はこう変わる →</a>
+  </nav>
+</main>
+</body>
+</html>

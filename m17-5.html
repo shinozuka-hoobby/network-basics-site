@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クラウドの DNS は、何を単位に設定するか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m17-5" data-chapter="m17" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 17-5</p>
+  <p class="chapter-label">第 17 章 DNS の運用と障害　17-5</p>
+  <h1>クラウドの DNS は、何を単位に設定するか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>クラウドの DNS サービスを使うとき、何を単位に設定すればよいのか。第 16 章で見た<strong>ゾーンという考え方が、そのまま設定の単位になっている</strong>。このページでは、3 社の呼び名の違いと、レコードの置き方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">クラウドで DNS を使うとき、何を単位に設定すればいいんですか? 第 16 章で見たゾーンと関係あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まさにそのゾーンが、そのまま設定の単位になります。ただ、事業者ごとに呼び名が違います。</p>
+    <p class="s" data-who="ひよこちゃん">例えばどう違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">呼び名はバラバラですけど、指しているものは同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ考え方です。あるドメインとそのサブドメインの DNS レコードをまとめて入れる入れ物、という点はどの事業者でも共通しています。</p>
+    <p class="s" data-who="ひよこちゃん">レコードは、このゾーンの中に置くってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。DNS レコードを追加・変更するときは、このゾーンを指定して操作します。</p>
+    <p class="s" data-who="ひよこちゃん">ゾーンには、どんな種類のレコードでも置けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">置けます。第 16 章で見た A・AAAA・CNAME・NS・MX・TXT といった DNS レコードは、どれもこのゾーンの中に置かれます。</p>
+    <p class="s" data-who="ひよこちゃん">3 社を乗り換えるときも、この「ゾーン」という考え方は変わらないんですか?</p>
+    <p class="t" data-who="ふくろう先生">変わりません。呼び名は違っても、レコードをまとめて管理する入れ物という役割はどの事業者でも同じなので、考え方はそのまま持っていけます。</p>
+    <p class="s" data-who="ひよこちゃん">ゾーンさえ作れば、すぐに使えるようになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">もう一つ手順があります。ドメインを最初に登録したレジストラ(ドメインの登録先の会社)には、そのドメインを管理する権威サーバの名前を伝えておく必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">なんでレジストラにも伝える必要があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ドメインの登録情報には、そのドメインの権威サーバの名前も含まれています。ここが正しく設定されていないと、DNS リゾルバがそもそもどこに聞きに行けばいいか分かりません。</p>
+    <p class="s" data-who="ひよこちゃん">そこも第 16 章で見た、権威サーバの話とつながってるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">3 社の呼び名、ちゃんと覚えておいたほうがいいんですかね。</p>
+    <p class="t" data-who="ふくろう先生">覚えるというより、「呼び名が違っても、指しているものは同じ」という考え方を押さえておけば十分です。</p>
+    <p class="s" data-who="ひよこちゃん">これで、DNS の運用と障害について、一通り見てきましたね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。名前が無い場合、答えられない場合、伝わるまでの時間差、遅くなる原因、本物かどうかの確認、そしてクラウドでの設定の単位まで、一通り確認できました。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>クラウドの DNS サービスでは、第 16 章で見たゾーンがそのまま設定の単位になっている。</li>
+      <li>AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼ぶが、指している考え方は同じである。</li>
+      <li>DNS レコードは、このゾーンの中に置き、追加・変更もゾーンを指定して行う。</li>
+      <li>ドメインを最初に登録したレジストラには、そのゾーンを管理する権威サーバの名前を伝えておく必要がある。</li>
+      <li>呼び名は事業者ごとに違っても、「あるドメインとそのサブドメインのレコードをまとめて入れる入れ物」という考え方は共通している。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>クラウドの DNS サービスでは、第 16 章で見たゾーンという考え方が、そのまま設定の単位になっている。AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼ぶ(#24、#32、#41)。呼び名は違っても、あるドメインとそのサブドメインの DNS レコードをまとめて入れる入れ物という考え方は共通しており、DNS レコードの追加・変更は、このゾーンを指定して行う。また、ドメインを最初に登録したレジストラ(ドメインの登録先の会社)には、そのドメインを管理する権威サーバの名前を伝えておく必要がある。ドメインの登録情報に権威サーバの名前が含まれていないと、DNS リゾルバはどこに問い合わせればよいか分からない(#24)。</p>
+    <table>
+      <tr><th>会社</th><th>サービス</th><th>ゾーンの呼び名</th></tr>
+      <tr><td>AWS</td><td>Route 53</td><td>hosted zone</td></tr>
+      <tr><td>Google Cloud</td><td>Cloud DNS</td><td>managed zone</td></tr>
+      <tr><td>Azure</td><td>Azure DNS</td><td>DNS zone</td></tr>
+    </table>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="24">[#24] AWS「Amazon Route 53 concepts」 — <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/route-53-concepts.html" rel="noopener">原典</a>（「Domain registration concepts」の節。レジストラの定義と、レジストリの登録情報に権威サーバの名前が含まれるという記述。「hosted zone」の定義。あるドメインとそのサブドメインのレコードを入れる入れ物という記述）</li>
+    <li class="cite" data-src="32">[#32] Google Cloud「Cloud DNS overview」 — <a href="https://cloud.google.com/dns/docs/overview" rel="noopener">原典</a>（冒頭。Cloud DNS がゾーンとレコードを公開するサービスであるという記述、managed zone という呼び名）</li>
+    <li class="cite" data-src="41">[#41] Microsoft Azure「Azure DNS overview」 — <a href="https://learn.microsoft.com/en-us/azure/dns/dns-overview" rel="noopener">原典</a>（Azure Public DNS が DNS ドメインのホスティングサービスであるという記述、DNS zone という呼び名）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m17-5">
+    <div class="q" data-q="1">
+      <p class="q-text">3 社の呼び名は違っても、指しているものは同じかどうかとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">hosted zone、managed zone、DNS zone は、いずれも「あるドメインとそのサブドメインのレコードをまとめて入れる入れ物」という同じ考え方を指しており、呼び名が違うだけである</button></li>
+        <li><button type="button" data-correct="false">hosted zone だけが DNS レコードを保存でき、他の 2 つは別の目的で使われる</button></li>
+        <li><button type="button" data-correct="false">managed zone は無料で使えるが、hosted zone と DNS zone は有料である</button></li>
+        <li><button type="button" data-correct="false">DNS zone だけが第 16 章で見たゾーンと同じ考え方で、他の 2 つは別の仕組みである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、hosted zone、managed zone、DNS zone は、いずれも「あるドメインとそのサブドメインのレコードをまとめて入れる入れ物」という同じ考え方を指しており、呼び名が違うだけである、です。保存できる内容や料金、ゾーンとの対応関係で差はありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">クラウドの DNS サービスで、DNS レコードを追加・変更するときの単位として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ゾーン(hosted zone、managed zone、DNS zone など、事業者ごとの呼び名で管理される入れ物)</button></li>
+        <li><button type="button" data-correct="false">権威サーバ 1 台ごと</button></li>
+        <li><button type="button" data-correct="false">DNS リゾルバの設置場所ごと</button></li>
+        <li><button type="button" data-correct="false">ドメインを登録したレジストラの契約プランごと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ゾーン(hosted zone、managed zone、DNS zone など、事業者ごとの呼び名で管理される入れ物)、です。権威サーバの台数や DNS リゾルバの設置場所、契約プランが単位ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ドメインを最初に登録したレジストラに伝えておく必要があるものとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">そのドメインを管理する権威サーバの名前</button></li>
+        <li><button type="button" data-correct="false">DNS レコードの DNS の TTL の値</button></li>
+        <li><button type="button" data-correct="false">DNSSEC を使うかどうかの設定</button></li>
+        <li><button type="button" data-correct="false">DoT/DoH を使うかどうかの設定</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、そのドメインを管理する権威サーバの名前、です。DNS の TTL の値や DNSSEC・DoT/DoH の設定は、レジストラに伝える内容ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m17-4.html">← 17-4 答えが本物か、問い合わせが見られていないか</a>
+    <a class="up" href="m17.html">第 17 章の入口</a>
+    <a class="next" href="m18.html">第 18 章 TLS と PKI →</a>
+  </nav>
+</main>
+</body>
+</html>

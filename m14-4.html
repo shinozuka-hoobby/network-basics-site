@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>増やし方をゆるめ、届かなかったときは大きく減らす — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m14-4" data-chapter="m14" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 14-4</p>
+  <p class="chapter-label">第 14 章 TCP のフロー制御と輻輳制御　14-4</p>
+  <h1>増やし方をゆるめ、届かなかったときは大きく減らす</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>送り手が送る量の目安は、ある程度まで増えると<strong>増やし方が控えめになり、データが届かなかったときは大きく減らしてから慎重に増やし直す</strong>。このページでは、増やし方が変わる理由と、届かなかったときの反応を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、増やし方がある程度から変わるって話でしたけど、具体的にはどう変わるんですか? ずっと倍々のままではないんですよね。</p>
+    <p class="t" data-who="ふくろう先生">輻輳ウィンドウがある程度まで増えると、それまでの倍々に近いペースから、通信のたびに少しずつ足していくだけの、緩やかなペースに切り替わります。この段階を輻輳回避と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">なんで急に緩やかにするんですか?</p>
+    <p class="t" data-who="ふくろう先生">スロースタートの倍々のペースのまま増やし続けると、経路が実際に混み始めたときに一気に送りすぎてしまうからです。輻輳回避では、様子を見ながら慎重に増やしていきます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、実際に経路が混んで、データが届かなかったときはどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手はその「届かなかった」ことを、経路が混雑している合図として受け取ります。そして輻輳ウィンドウを大きく減らしてから、また慎重に増やし直します。</p>
+    <p class="s" data-who="ひよこちゃん">大きく減らすってことは、スロースタートの最初くらいまで戻るんですか?</p>
+    <p class="t" data-who="ふくろう先生">場合によります。最初の小さな値まで戻ってやり直すこともあれば、半分程度に減らして慎重に増やし直すこともあります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いた話なんですけど、スマホで一瞬電波が乱れただけなのに、しばらく速度が戻らなかったことがあるらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">それは、この反応が関係している可能性が高いです。送り手はデータが届かなかったことを経路の混雑の合図として受け取り、輻輳ウィンドウを大きく減らします。</p>
+    <p class="s" data-who="ひよこちゃん">でも、電波の乱れなんて一瞬ですよね。なんですぐ戻らないんですか?</p>
+    <p class="t" data-who="ふくろう先生">この反応は、経路が慢性的に混んでいる状況を想定したものです。電波の一時的な乱れのような短い損失にも同じように適用されるため、混雑がもう去っていても、輻輳ウィンドウはすぐには元の大きさに戻りません。</p>
+    <p class="s" data-who="ひよこちゃん">混雑と一時的な乱れを、区別してないってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。区別せずに同じ反応をしてしまうので、モバイル回線では速度が戻りにくく感じられることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、届かなかった原因が混雑なのか、一時的な乱れなのか、送り手には分からないんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、そこまでは見分けられません。届かなかったという事実だけを見て、大きく減らすという同じ反応をします。この見分け方を工夫した新しい方式については、次のページで触れます。</p>
+    <p class="s" data-who="ひよこちゃん">実際に、この減らして戻る様子を確認する方法ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">この Mac が過去に行った通信で、送り直しが起きた回数を確認できます。あとで試してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">この輻輳回避と、届かなかったときの反応をまとめると、増やし方はゆるやかになり、減らすときは大きく減らす、ということですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。輻輳ウィンドウは、増えるときは控えめに、減るときは大きく、という非対称な動き方をします。</p>
+    <p class="s" data-who="ひよこちゃん">この後は、遠くの相手とやり取りするときの話になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。次のページでは、往復にかかる時間が長い相手だと、なぜ速度が頭打ちになりやすいかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>輻輳ウィンドウがある程度まで増えると、倍々に近いペースから、通信のたびに少しずつ足していくだけの緩やかなペースに切り替わる。この段階を輻輳回避と呼ぶ。</li>
+      <li>データが届かなかったと分かると、送り手はそれを経路の混雑の合図として受け取り、輻輳ウィンドウを大きく減らしてから、また増やし直す。</li>
+      <li>この反応は経路が慢性的に混んでいる状況を想定したものだが、電波の一時的な乱れのような短い損失にも同じように適用される。</li>
+      <li>そのため、混雑がもう去っていても、輻輳ウィンドウはすぐには元の大きさに戻らないことがある。</li>
+      <li>輻輳ウィンドウは、増えるときは控えめ(輻輳回避)、減るときは大きく、という非対称な動き方をする。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>輻輳ウィンドウがある程度まで増えると、増やし方はそれまでの倍々に近いペースから、通信のたびに少しずつ足していくだけの緩やかなペースに切り替わる。この段階を輻輳回避と呼ぶ。急速に増やし続けると、経路が実際に混み始めたときに一気に送りすぎてしまうため、輻輳回避では様子を見ながら慎重に増やす。データが届かなかったと分かると、送り手はそれを経路の混雑の合図として受け取り、輻輳ウィンドウを大きく減らしてから、また増やし直す。この反応は経路が慢性的に混んでいる状況を想定したものだが、電波の一時的な乱れのような短い損失にも同じように適用されるため、混雑がもう去っていても、輻輳ウィンドウはすぐには元の大きさに戻らないことがある。増えるときと減るときで、勢いの違う非対称な動き方をする点が特徴である。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>netstat -s -p tcp | grep -E 'retransmitted$|retransmit timeouts?$'</code></pre>
+    <p>見方: 1 行目の数字は、送ったデータが届かず送り直された回数。2 行目の数字は、返事を待ちきれずに時間切れで送り直しが起きた回数です。この Mac が行ってきた TCP 通信のどこかで、送り直しが起きたことがある証拠として見てください。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.34〜36 損失を検知したときの量の減らし方）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.35〜37 増やし方の切り替え）</li>
+    <li class="cite" data-src="60">[#60] Cloudflare Blog「Mobile Web Performance: TCP Congestion Control」 — <a href="https://blog.cloudflare.com/mobile-web-performance-optimizing-tcp-congest/" rel="noopener">原典</a></li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m14-4">
+    <div class="q" data-q="1">
+      <p class="q-text">スマホで電波が一瞬乱れただけなのに、速度が戻るまで時間がかかったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">受信ウィンドウが 0 になったから</button></li>
+        <li><button type="button" data-correct="true">送り手が届かなかったことを経路の混雑の合図として受け取り、輻輳ウィンドウを大きく減らしてから慎重に戻すため、一時的な乱れでも同じ反応をしてしまうから</button></li>
+        <li><button type="button" data-correct="false">スマホの受け取る力が急に落ちたから</button></li>
+        <li><button type="button" data-correct="false">ACK の内容が変わったから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送り手が届かなかったことを経路の混雑の合図として受け取り、輻輳ウィンドウを大きく減らしてから慎重に戻すため、一時的な乱れでも同じ反応をしてしまうから、です。この反応は慢性的な混雑を想定したもので、一時的な損失と区別されません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">輻輳回避の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の最初に量を急速に倍々に増やす段階</button></li>
+        <li><button type="button" data-correct="true">輻輳ウィンドウがある程度まで増えたあと、少しずつ控えめに増やす段階</button></li>
+        <li><button type="button" data-correct="false">受け手の処理力に合わせて量を加減する仕組み</button></li>
+        <li><button type="button" data-correct="false">データが届いたことを ACK で知らせる仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、輻輳ウィンドウがある程度まで増えたあと、少しずつ控えめに増やす段階、です。急速に増やす段階はスロースタート、受け手の処理力に合わせるのはフロー制御で、輻輳回避とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">輻輳ウィンドウの増え方と減り方の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">増えるときも減るときも、同じ勢いで変化する</button></li>
+        <li><button type="button" data-correct="true">増えるときは控えめに、データが届かなかったときは大きく減る、非対称な動き方をする</button></li>
+        <li><button type="button" data-correct="false">減るときの方が増えるときよりゆっくりである</button></li>
+        <li><button type="button" data-correct="false">受信ウィンドウが変化しない限り、輻輳ウィンドウも変化しない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、増えるときは控えめに、データが届かなかったときは大きく減る、非対称な動き方をする、です。輻輳回避では少しずつ増やす一方、届かなかったときは大きく減らすため、増減の勢いが対称ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m14-3.html">← 14-3 はじめは少なく、様子を見ながら増やしていく</a>
+    <a class="up" href="m14.html">第 14 章の入口</a>
+    <a class="next" href="m14-5.html">14-5 遠い相手だと速度が頭打ちになる理由と、増やし方の 2 つの考え方 →</a>
+  </nav>
+</main>
+</body>
+</html>

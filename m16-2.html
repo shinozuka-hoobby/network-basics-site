@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>階層をたどって答えにたどり着く — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m16-2" data-chapter="m16" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 16-2</p>
+  <p class="chapter-label">第 16 章 DNS の仕組み　16-2</p>
+  <h1>階層をたどって答えにたどり着く</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>リゾルバは、権威サーバの居場所を最初から知っているわけではない。<strong>名前の階層を上から順にたどり、聞く相手を変えながら問い合わせを重ねて</strong>、答えにたどり着く。このページでは、その道筋を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">リゾルバは権威サーバに聞きに行くって言ってましたけど、権威サーバがどこにいるかって、最初から分かってるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、分かりません。まず、名前の階層の一番上にある<strong>ルートサーバ</strong>に聞きに行きます。</p>
+    <p class="s" data-who="ひよこちゃん">ルートサーバは、いきなり答えを教えてくれるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。ドメイン名の一番右側の部分、com や jp のような部分がどこで管理されているかを教えてくれます。この部分を<strong>TLD</strong> と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">example.com なら、次は com を管理しているサーバに聞きに行くってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。TLD のサーバに聞くと、今度は example.com を管理している権威サーバの居場所を教えてくれます。そこでようやく答えにたどり着きます。</p>
+    <p class="s" data-who="ひよこちゃん">ルートサーバ、TLD のサーバ、権威サーバの順に、階段を一段ずつ降りていくみたいですね。</p>
+    <p class="t" data-who="ふくろう先生">良い例えです。それぞれのサーバは、自分が管理している名前の範囲を持っていて、この範囲を<strong>ゾーン</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">com を管理しているサーバにも、example.com を管理しているサーバにも、それぞれのゾーンがあるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ルートサーバにも、ルートという名前のゾーンがあり、階層の一番上を受け持っています。</p>
+    <p class="s" data-who="ひよこちゃん">この階段を、リゾルバが毎回一段ずつ登っているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ルート、TLD、権威サーバの順に、聞く相手を変えながら 1 段ずつ進みます。</p>
+    <p class="s" data-who="ひよこちゃん">TLD って、com や jp だけじゃなくて、他にもたくさんあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">たくさんあります。org や net のような一般的な種類と、jp や us のような国や地域を表す種類があります。</p>
+    <p class="s" data-who="ひよこちゃん">途中の段を飛ばしたりはできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">できません。上の段のサーバが知っているのは、次にどこへ聞けばよいかという居場所だけで、最終的な答えそのものは、その段のサーバの手元には無いからです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、だから 1 段ずつ聞いていくしかないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この階層は com や jp のような TLD だけでなく、世界中の名前を分担できるように広がっています。</p>
+    <p class="s" data-who="ひよこちゃん">1 段ずつでも、答えにたどり着くまでそんなに時間がかからない気がするのはなぜなんですか?</p>
+    <p class="t" data-who="ふくろう先生">良いところに気づきましたね。それには前のページで少し触れた仕組みが関わっていて、この章の後半で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">楽しみにしておきます。今日のところは、ルート、TLD、権威サーバの順にたどる、ということを覚えておけばいいですか?</p>
+    <p class="t" data-who="ふくろう先生">それで十分です。次のページでは、こうしてたどり着いた権威サーバが、どんな種類の答えを返すのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>リゾルバは権威サーバの居場所を最初から知らず、名前の階層の一番上にあるルートサーバへの問い合わせから始める。</li>
+      <li>ルートサーバは、ドメイン名の一番右側の部分である TLD を管理するサーバの居場所を教える。</li>
+      <li>TLD のサーバに聞くと、その名前を管理する権威サーバの居場所が分かり、そこで答えにたどり着く。</li>
+      <li>それぞれのサーバが管理している名前の範囲をゾーンと呼び、ルート・TLD・権威サーバの順に、聞く相手を変えながら 1 段ずつ問い合わせが進む。</li>
+      <li>TLD には、org や net のような一般的な種類と、jp や us のような国や地域を表す種類がある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>リゾルバは、名前の階層の一番上にあるルートサーバへの問い合わせから始める(#19、#71 p.25〜26)。ルートサーバは最終的な答えを持たず、ドメイン名の一番右側の部分である TLD を管理するサーバの居場所だけを教える(#52)。TLD には、org や net のような一般的な種類と、jp や us のような国や地域を表す種類があり、数多くの TLD が存在する(#71 p.18〜19、#4 p.11)。次にリゾルバは、教えられた TLD のサーバに聞き、そこでその名前を管理する権威サーバの居場所を教えられる。最後に権威サーバへ聞いて、初めて答えにたどり着く(#19「www.example.jp を例にした、root → jp → example.jp」の反復的な問い合わせ)。それぞれのサーバが「ここは自分が管理している」と受け持つ名前の範囲をゾーンと呼ぶ(#71 p.23)。ルート・TLD・権威サーバは、上の段ほど広い範囲を、下の段ほど狭い範囲のゾーンを受け持つという関係にある。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig example.com NS</code></pre>
+    <p>見方: 答えの区画に並ぶ 2 つの名前が、example.com を管理している権威サーバの名前である。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="19">[#19] JPNIC「インターネット 10 分講座：DNS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No22/080.html" rel="noopener">原典</a>（「DNS のしくみ」の節、「DNS における問い合わせの流れ」の節）</li>
+    <li class="cite" data-src="52">[#52] Cloudflare Learning Center「What is DNS?」 — <a href="https://www.cloudflare.com/learning/dns/what-is-dns/" rel="noopener">原典</a>（「The 8 steps in a DNS lookup」の節）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.18〜19 DNS Name Space、generic domains／country domains の区別、p.23 Authoritative Name Servers と zone の関係、p.25〜26 resolution の流れ）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（`09_DNS_Mail.txt` p.11 TLD の一覧。generic domains／country domains の区別）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m16-2">
+    <div class="q" data-q="1">
+      <p class="q-text">リゾルバが、いきなり権威サーバに聞きに行かず、ルートサーバから順に階層をたどって聞いていくのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ルートサーバがすべてのドメイン名の最終的な答えを持っているから</button></li>
+        <li><button type="button" data-correct="true">権威サーバの居場所は階層をたどらないと分からず、上の段のサーバは次にどこへ聞けばよいかしか教えられないから</button></li>
+        <li><button type="button" data-correct="false">権威サーバが問い合わせを直接受け付けない決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">ルートサーバに聞くことが法律で義務づけられているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、権威サーバの居場所は階層をたどらないと分からず、上の段のサーバは次にどこへ聞けばよいかしか教えられないから、です。ルートサーバ自身は最終的な答えを持たず、TLD のサーバの居場所を教えるだけです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TLD の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ドメイン名の一番左側にある、機械の個別の名前</button></li>
+        <li><button type="button" data-correct="true">ドメイン名の一番右側にある部分（com や jp など）で、この部分ごとに管理するサーバが決まっている</button></li>
+        <li><button type="button" data-correct="false">権威サーバが持っている、答えそのものを表す数字</button></li>
+        <li><button type="button" data-correct="false">リゾルバが問い合わせを送る際に使う、機械の固有番号</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ドメイン名の一番右側にある部分（com や jp など）で、この部分ごとに管理するサーバが決まっている、です。TLD は階層の中で、ルートサーバのすぐ下に位置します。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">ゾーンの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">権威サーバが「ここは自分が答えられる」と管理している、名前の範囲のこと</button></li>
+        <li><button type="button" data-correct="false">リゾルバが答えを一時的に覚えておく場所のこと</button></li>
+        <li><button type="button" data-correct="false">世界を地理的に分けた、通信の距離の区分のこと</button></li>
+        <li><button type="button" data-correct="false">ブラウザが表示するページの、画面上の区画のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、権威サーバが「ここは自分が答えられる」と管理している、名前の範囲のこと、です。日常語の「地域」や画面の区画とは別の、名前解決に特有の意味です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m16-1.html">← 16-1 名前解決は誰に聞き、誰が答えを持っているか</a>
+    <a class="up" href="m16.html">第 16 章の入口</a>
+    <a class="next" href="m16-3.html">16-3 答えには、いくつかの種類がある →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>パケットを「そのまま」見る — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m28-1" data-chapter="m28" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 28-1</p>
+  <p class="chapter-label">第 28 章 パケットキャプチャ — tcpdump と Wireshark　28-1</p>
+  <h1>パケットを「そのまま」見る</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ネットワークを流れているパケットは、そのままの形で記録して中身を確かめることができる。<strong>記録を始めるには特別な権限が必要</strong>だが、止め方は難しくない。このページでは、記録の仕組みと、安全な始め方・止め方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 6 章で、パケットの中に送信元や宛先が書かれてるって見ましたけど、実際にいま流れているパケットの中身って、あとから確かめることってできるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。流れているパケットを、その場で記録して中身を確かめる操作を、パケットキャプチャと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">どうやって記録するんですか?</p>
+    <p class="t" data-who="ふくろう先生">ターミナルから tcpdump というコマンドで、その場で記録できます。もう 1 つ、Wireshark というアプリを使うと、記録した内容を画面で 1 件ずつ見やすく表示できます。</p>
+    <p class="s" data-who="ひよこちゃん">2 つも道具があるんですね。どう使い分けるんですか?</p>
+    <p class="t" data-who="ふくろう先生">tcpdump はターミナルだけで手早く記録・確認できます。Wireshark は画面上でじっくり確認したいときに向いています。この章では両方の考え方を見ていきます。</p>
+    <p class="s" data-who="ひよこちゃん">早速試してみたら、sudo を付けないと動きませんでした。なんでですか?</p>
+    <p class="t" data-who="ふくろう先生">ネットワークインターフェースから直接パケットを読み取る操作には、<strong>特別な権限が必要</strong>なんです。だから sudo を付けて、管理者としての実行を許可します。</p>
+    <p class="s" data-who="ひよこちゃん">インターフェースって、さっき言ってた Wi-Fi のことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。この Mac では、Wi-Fi のインターフェースは en0 という名前になっています。一覧は tcpdump -D というコマンドで確認できます。</p>
+    <p class="s" data-who="ひよこちゃん">-D の方は、sudo を付けなくても動きますか?</p>
+    <p class="t" data-who="ふくろう先生">いいところに気づきましたね。-D は一覧を表示するだけで、実際にパケットを読み取るわけではないので、sudo を付けなくても動きます。</p>
+    <p class="s" data-who="ひよこちゃん">さっきの -i en0 の -i は、何を指定しているんですか?</p>
+    <p class="t" data-who="ふくろう先生">-i はインターフェースを指定するオプションです。en0 と書けば、その Wi-Fi インターフェースを対象に記録します。指定を省くと、tcpdump が適当なインターフェースを 1 つ選びます。</p>
+    <p class="s" data-who="ひよこちゃん">動かしっぱなしにしても大丈夫なんですか? ずっと記録され続けたら怖いです。</p>
+    <p class="t" data-who="ふくろう先生">Ctrl+C でいつでも安全に止められます。あらかじめ個数を指定しておけば、その数に達した時点で自動的に止まります。</p>
+    <p class="s" data-who="ひよこちゃん">Ctrl+C 以外に、止める方法はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">別のターミナルの窓から終了を指示する方法もありますが、手元で少しだけ試すときは Ctrl+C で十分です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、まずは個数を決めて、少しだけ試してみようと思います。今から試すのは、自分のこの Mac の通信だけですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。手元の Mac の、自分の通信だけを対象にしましょう。</p>
+    <p class="s" data-who="ひよこちゃん">記録すると、画面には何が表示されるんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 行ごとに送信元と宛先が表示され、そのあとにパケットの種類や中身の要約が続きます。次のページでは、見たい通信だけに絞り込む方法を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>パケットキャプチャは、流れているパケットをその場で記録して中身を確かめる操作である。</li>
+      <li>tcpdump はターミナルからその場で記録できるコマンド、Wireshark は記録した内容を画面で見やすく表示するアプリである。</li>
+      <li>ネットワークインターフェースから直接パケットを読み取るには特別な権限が必要で、sudo を付けて実行する。-i でインターフェースを、-D でその一覧を確認できる。</li>
+      <li>Ctrl+C でいつでも止められる。個数(-c)を指定しておけば、その数に達すると自動的に止まる。</li>
+      <li>試してみようの対象は、手元の Mac の、自分の通信だけにする。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>パケットキャプチャは、ネットワークインターフェースを流れているパケットを、その場で記録して中身を確かめる操作である。tcpdump はターミナルから使うコマンドで、記録した内容をその場で画面に表示する(#107)。Wireshark はアプリケーションで、記録した内容を画面上に 1 件ずつ見やすく表示できる(#109)。ネットワークインターフェースから直接パケットを読み取る操作には特別な権限が必要なため、tcpdump を実行するときは sudo を付ける(#107)。対象のインターフェースは -i で指定し、指定しなければ tcpdump が動作中のインターフェースを 1 つ自動で選ぶ。一覧は -D で確認でき、この一覧の表示自体には特別な権限は要らない(#107)。個数を指定していない場合、tcpdump は Ctrl+C(SIGINT)で止めるまで記録を続ける。あらかじめ -c で個数を指定しておけば、その数に達した時点で自動的に止まる(#107)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-needs-sudo="true">
+    <pre><code>sudo tcpdump -i en0 -n -c 5</code></pre>
+    <p>見方: 5 行表示されると自動的に止まります。各行は送信元と宛先から始まり、そのあとにパケットの種類や中身の要約が続きます。パスワードを聞かれたら、この Mac の利用者本人のパスワードを入力してください。</p>
+    <p class="try-note">en0 はこの Mac の Wi-Fi インターフェースの例。一覧は tcpdump -D(sudo 不要)で見られる。途中で止めたいときは Ctrl+C。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="107">[#107] The Tcpdump Group（tcpdump.org）「TCPDUMP(1) man page」 — <a href="https://www.tcpdump.org/manpages/tcpdump.1.html" rel="noopener">原典</a>(DESCRIPTION の節。244〜248 行目「ネットワークインターフェースから直接パケットを読み取る操作には特別な権限が必要」という記述、181〜191 行目 SIGINT による停止、265 行目 -c、305 行目 -D)</li>
+    <li class="cite" data-src="109">[#109] Wireshark Foundation「Chapter 4. Capturing Live Network Data (Wireshark User's Guide)」 — <a href="https://www.wireshark.org/docs/wsug_html_chunked/ChapterCapture.html" rel="noopener">原典</a>(Overview の節。記録しながら画面に表示できるという機能の一覧)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m28-1">
+    <div class="q" data-q="1">
+      <p class="q-text">なぜ、Wi-Fi のインターフェースから流れているパケットをその場で記録するには sudo が必要なのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">tcpdump というコマンドが有料のソフトだから</button></li>
+        <li><button type="button" data-correct="true">ネットワークインターフェースから直接パケットを読み取る操作には、特別な権限が必要だから</button></li>
+        <li><button type="button" data-correct="false">Wi-Fi の電波を受信するには、いつも管理者の許可が要るから</button></li>
+        <li><button type="button" data-correct="false">en0 という名前のインターフェースだけ特別だから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ネットワークインターフェースから直接パケットを読み取る操作には、特別な権限が必要だから、です。tcpdump は無料で使え、Wi-Fi 特有の話でも en0 という名前特有の話でもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">tcpdump と Wireshark の役割の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">tcpdump はターミナルからその場で記録できるコマンドで、Wireshark は記録した内容を画面で見やすく表示するアプリである</button></li>
+        <li><button type="button" data-correct="false">tcpdump は画面表示専用で、Wireshark が記録を行う</button></li>
+        <li><button type="button" data-correct="false">どちらも同じ操作しかできず、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">tcpdump は Wireshark の中でしか使えない機能である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、tcpdump はターミナルからその場で記録できるコマンドで、Wireshark は記録した内容を画面で見やすく表示するアプリである、です。役割が逆であったり、同じもの、内蔵機能という説明はいずれも誤りです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">個数を指定せずに tcpdump を実行した場合、記録を安全に止める方法はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">Mac の電源ボタンを長押しする</button></li>
+        <li><button type="button" data-correct="true">Ctrl+C を押す</button></li>
+        <li><button type="button" data-correct="false">何もしなくても 5 秒で自動的に止まる</button></li>
+        <li><button type="button" data-correct="false">別のターミナルの窓を閉じる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、Ctrl+C を押す、です。電源ボタンや別の窓を閉じる操作ではなく、個数を指定していなければ時間経過で自動的に止まることもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m28.html">← 第 28 章の入口</a>
+    <a class="up" href="m28.html">第 28 章の入口</a>
+    <a class="next" href="m28-2.html">28-2 見たいものだけを残す →</a>
+  </nav>
+</main>
+</body>
+</html>

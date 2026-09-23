@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TCP・DNS・TLS のやり取りを、記録の中でたどる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m28-5" data-chapter="m28" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 28-5</p>
+  <p class="chapter-label">第 28 章 パケットキャプチャ — tcpdump と Wireshark　28-5</p>
+  <h1>TCP・DNS・TLS のやり取りを、記録の中でたどる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ここまでの章で見た名前解決・接続の確立・暗号化の始まりは、<strong>1 回の通信の記録を最初から最後までたどると、その順番どおりに並んでいる</strong>のが確認できる。このページは、この章のまとめとなる演習である。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ここまでキャプチャフィルタや表示フィルタを見てきましたけど、実際に 1 回の通信を最初から最後まで追ってみたいです。</p>
+    <p class="t" data-who="ふくろう先生">curl でアクセスしながら記録を取って、Wireshark でたどってみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">Wireshark って、どうやって手に入れるんですか?</p>
+    <p class="t" data-who="ふくろう先生">公式サイトからダウンロードしてインストールします。</p>
+    <p class="s" data-who="ひよこちゃん">インストールと、実際に記録する手順は、別々に考えていいですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。先にインストールを済ませておいて、それから記録・保存の手順に進む、と分けて考えると進めやすいです。</p>
+    <p class="s" data-who="ひよこちゃん">Wireshark で記録を始めるタイミングは、curl を打つ前ですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。先に記録を始めてから、curl を実行してください。あとから記録を始めると、最初の DNS の問い合わせを取り逃します。</p>
+    <p class="s" data-who="ひよこちゃん">まず何が記録されるんですか?</p>
+    <p class="t" data-who="ふくろう先生">最初に、第 16 章で見た DNS の問い合わせと応答が記録されます。相手の IP アドレスが分からないと、次に進めないからです。</p>
+    <p class="s" data-who="ひよこちゃん">次が、第 13 章で見た TCP ハンドシェイクですね。SYN・SYN/ACK・ACK の 3 回のやり取り。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。その次に、第 18 章で見た TLS ハンドシェイクが始まります。最初の Client hello には、相手の名前(SNI)がまだ見えます。</p>
+    <p class="s" data-who="ひよこちゃん">その後のやり取りは、もう中身が見えないんですよね?</p>
+    <p class="t" data-who="ふくろう先生">はい。TLS ハンドシェイクが終わると暗号化された通信になるので、記録を見ても中身は読めません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、HTTP の応答のヘッダとかも、記録からは見えないんですか?</p>
+    <p class="t" data-who="ふくろう先生">見えません。中身を確認したいときは、第 20 章で見た curl 自体の出力を見ることになります。この記録で分かるのは、あくまで DNS・TCP・TLS の手順が進んだこと自体です。</p>
+    <p class="s" data-who="ひよこちゃん">Wireshark だと、この一連の流れをどうやって追うんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 回分の通信に関連するやり取りをまとめて表示する機能があります。DNS・TCP・TLS の流れを、まとめて追いやすくなります。</p>
+    <p class="s" data-who="ひよこちゃん">保存はどうすればいいですか? 28-3 で見た pcap ファイルですよね。</p>
+    <p class="t" data-who="ふくろう先生">はい。記録が終わったら、そのままファイルに保存しておけば、あとで何度でも見返せます。</p>
+    <p class="s" data-who="ひよこちゃん">対象は、この Mac の自分の通信だけですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。他人の通信をのぞいたり、無線を傍受するような使い方はしません。</p>
+    <p class="s" data-who="ひよこちゃん">第 1 章で見た 4 段階が、こうして記録の中に順番どおり現れているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。名前解決、接続の確立、暗号化の開始という順序が、この章で見てきた道具を使えば、実際の記録の中で確認できます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>curl -sI https://example.com のような通信を記録すると、最初に DNS の問い合わせと応答、次に TCP ハンドシェイク(SYN・SYN/ACK・ACK)、その次に TLS ハンドシェイクの Client hello が、この順序で記録に現れる。</li>
+      <li>名前解決が終わらないと接続できず、接続が終わらないと暗号化の手続きに進めないため、この順序になる。</li>
+      <li>Client hello には相手の名前(SNI)がまだ見えるが、TLS ハンドシェイクが終わると暗号化された通信になり、記録を見ても中身は読めなくなる。</li>
+      <li>Wireshark で 1 回分の通信をまとめて表示する機能を使うと、関連するやり取りを追いやすい。記録した内容は pcap ファイルとして保存し、あとで何度でも見返せる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>curl -sI https://example.com のような通信を 1 回記録すると、まず第 16 章で見た DNS の問い合わせと応答が現れる。名前解決の答えが決まらなければ、相手に接続できないためである(#83)。次に、第 13 章で見た TCP ハンドシェイク、SYN・SYN/ACK・ACK の 3 回のやり取りが記録される(#71)。その次に、第 18 章で見た TLS ハンドシェイクが始まり、最初の Client hello には相手の名前(SNI)がまだ見える(#55)。TLS ハンドシェイクが終わると暗号化された通信になり、それ以降の中身は記録を見ても読めなくなる(#55)。Wireshark には、1 回分の通信に関連するやり取りをまとめて表示する機能があり、この一連の流れを追うのに使える(#48)。この記録から分かるのは DNS・TCP・TLS の手順が進んだことであり、暗号化された後の HTTP の中身までは分からない。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 先に記録を始めた状態で、このコマンドを実行してください。記録の中に、DNS の問い合わせと応答、TCP ハンドシェイク、TLS ハンドシェイクの Client hello が、この順番で並んでいるはずです。</p>
+    <p class="try-note">記録を先に始めてから curl を実行する。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="83">[#83] IETF「RFC 1035: Domain Names - Implementation and Specification」 — <a href="https://www.rfc-editor.org/rfc/rfc1035.html" rel="noopener">原典</a>(メッセージ形式の節。名前解決の問い合わせと応答が、決まった形式でやり取りされるという記述)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.7〜8 接続の確立、SYN・SYN/ACK・ACK の 3 回のやり取り)</li>
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(TLS handshake は TCP handshake のあとに起きるという記述、client hello・server hello・Finished という流れの記述)</li>
+    <li class="cite" data-src="48">[#48] Cisco TAC「Capture and Analyze Network Traffic with Wireshark for Diagnostics」 — <a href="https://www.cisco.com/c/en/us/support/docs/security/umbrella/225250-capture-and-analyze-network-traffic.html" rel="noopener">原典</a>(「Get Wireshark」の節。公式サイトからダウンロードするという記述、「Following a Data Stream」の節。関連するやり取りをまとめて確認する機能)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m28-5">
+    <div class="q" data-q="1">
+      <p class="q-text">記録の中で、TLS のやり取りより前に DNS の問い合わせが記録されているのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">名前解決で相手の IP アドレスが分からなければ、TCP 接続もその上の TLS ハンドシェイクも始められないから</button></li>
+        <li><button type="button" data-correct="false">DNS の通信の方が、TLS の通信より速く終わるから</button></li>
+        <li><button type="button" data-correct="false">Wireshark が DNS の行を常に先頭に並べ替えて表示するから</button></li>
+        <li><button type="button" data-correct="false">TLS ハンドシェイクは、DNS より後の章で習う内容だから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決で相手の IP アドレスが分からなければ、TCP 接続もその上の TLS ハンドシェイクも始められないから、です。速さの比較や並べ替え機能、章の学習順序の話ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TLS ハンドシェイクの Client hello で、相手の名前(SNI)が記録の中でまだ見えるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">Client hello は、暗号化が始まる前に送られる最初のやり取りだから</button></li>
+        <li><button type="button" data-correct="false">SNI だけは暗号化の対象外だと法律で決まっているから</button></li>
+        <li><button type="button" data-correct="false">Wireshark が自動的に暗号を解読しているから</button></li>
+        <li><button type="button" data-correct="false">SNI は TLS ハンドシェイクの一部ではないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、Client hello は、暗号化が始まる前に送られる最初のやり取りだから、です。法律の話でも自動解読の話でもなく、SNI は TLS ハンドシェイクの一部です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">curl -sI https://example.com の通信を記録してたどると、どんな順序で現れるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">DNS の問い合わせと応答 → TCP ハンドシェイク → TLS ハンドシェイクの順</button></li>
+        <li><button type="button" data-correct="false">TLS ハンドシェイク → TCP ハンドシェイク → DNS の問い合わせと応答の順</button></li>
+        <li><button type="button" data-correct="false">TCP ハンドシェイクだけが記録され、DNS や TLS は記録されない</button></li>
+        <li><button type="button" data-correct="false">DNS・TCP・TLS のすべてが、同時に 1 つのパケットとして記録される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DNS の問い合わせと応答 → TCP ハンドシェイク → TLS ハンドシェイクの順、です。順序が逆でも、一部だけしか記録されないのでも、同時に 1 つになるのでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m28-4.html">← 28-4 残したものから、さらに絞り込む</a>
+    <a class="up" href="m28.html">第 28 章の入口</a>
+    <a class="next" href="m29.html">第 29 章 クラウド上の経路診断 →</a>
+  </nav>
+</main>
+</body>
+</html>

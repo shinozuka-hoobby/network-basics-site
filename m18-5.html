@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同じ相手でも、名前ごとに身分証が違うことがある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m18-5" data-chapter="m18" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 18-5</p>
+  <p class="chapter-label">第 18 章 TLS と PKI　18-5</p>
+  <h1>同じ相手でも、名前ごとに身分証が違うことがある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>1 台のサーバが複数の名前を受け持っているとき、送り手は最初のやり取りで、どの名前につなぎたいかをサーバに伝える仕組みがある。このページでは、この仕組みの役割と、<strong>ブラウザに警告が出るよくある 2 つの典型</strong>(有効期間切れ、名前不一致)を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">1 台のサーバで、複数のサイトを動かしていることってありますよね。身分証はどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">良いところに気づきましたね。1 台のサーバが複数の名前を受け持っているとき、どの名前の身分証を返せばよいか、サーバ側は最初は分かりません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、どうやって決めているんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手は、身分証の確認と鍵の取り決めの最初のやり取りの中で、どの名前につなぎたいかを伝えます。これを SNI と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">この名前が正しく伝わっていれば、いつも同じ名前の身分証が返ってくるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのはずです。ただ、実際にはブラウザに警告が出る場面もあります。よくある 2 つの典型を紹介します。</p>
+    <p class="s" data-who="ひよこちゃん">1 つ目はどんな場面ですか?</p>
+    <p class="t" data-who="ふくろう先生">身分証の有効期間が過ぎている場合です。</p>
+    <p class="t" data-who="ふくろう先生">身分証には有効期間があり、1 年や 2 年であるケースが多いとされています。</p>
+    <p class="s" data-who="ひよこちゃん">切れたら、自動で新しくなったりしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">更新の手続きをしないまま有効期間が過ぎると、ブラウザはその身分証をもう有効だと確認できず、警告を出します。</p>
+    <p class="s" data-who="ひよこちゃん">なんでそんな短い期間で区切るんですか? ずっと有効なままでいい気もします。</p>
+    <p class="t" data-who="ふくろう先生">その理由や、実際の更新のやり方は運用の話になるので、第 19 章でまとめて扱います。</p>
+    <p class="s" data-who="ひよこちゃん">2 つ目の典型は何ですか?</p>
+    <p class="t" data-who="ふくろう先生">つなごうとした名前と違う名前の身分証が返ってきて、警告が出る場合です。名前不一致と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">さっきの SNI がうまく働けば、これは起きないんじゃないですか?</p>
+    <p class="t" data-who="ふくろう先生">2 つの理由で起きることがあります。1 つは、サーバがその名前用の身分証を持っておらず、別の名前の既定の身分証を返してしまう場合です。</p>
+    <p class="t" data-who="ふくろう先生">もう 1 つは、名前ではなく IP アドレスで直接つないだために、どの名前につなぎたいかがそもそも伝わらなかった場合です。</p>
+    <p class="s" data-who="ひよこちゃん">ブラウザは、何を見て名前が一致しているかどうかを判断しているんですか?</p>
+    <p class="t" data-who="ふくろう先生">つなごうとした名前と、身分証に書かれた名前を照合しています。一致していなければ、警告を出します。</p>
+    <p class="s" data-who="ひよこちゃん">この 2 つの典型、どちらも「身分証の中身と、つなごうとした相手が食い違っている」って点は共通してるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。有効期間切れは時間の食い違い、名前不一致は名前の食い違い、と考えると整理しやすいと思います。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた、暗号化の範囲、鍵の決め方、身分証、手続きの流れ、名前の伝え方が、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">良い振り返りです。身分証の取得や更新といった運用の話は、次の第 19 章で扱います。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>1 台のサーバが複数の名前を受け持っているとき、送り手は身分証の確認と鍵の取り決めの最初のやり取りで、どの名前につなぎたいかを伝える。これを SNI と呼ぶ。</li>
+      <li>ブラウザに警告が出るよくある典型の 1 つは、身分証の有効期間が過ぎている場合である。有効期間は 1 年や 2 年であるケースが多いとされる。</li>
+      <li>もう 1 つの典型は、つなごうとした名前と違う名前の身分証が返ってきて警告が出る、名前不一致である。</li>
+      <li>名前不一致は、サーバがその名前用の身分証を持たず別の名前の既定の身分証を返す場合と、名前ではなく IP アドレスで直接つないだために名前が伝わらなかった場合とで起きることがある。</li>
+      <li>ブラウザは、つなごうとした名前と身分証に書かれた名前を照合し、一致していなければ警告を出す。身分証の取得・更新の運用は第 19 章で扱う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>1 台のサーバが複数の名前を受け持っているとき、サーバ側は最初はどの名前の身分証を返せばよいか分からない。そこで送り手は、身分証の確認と鍵の取り決めの最初のやり取りの中で、どの名前につなぎたいかを伝える。これを SNI と呼ぶ。それでもブラウザに警告が出る場面があり、よくある典型が 2 つある。1 つは、身分証の有効期間が過ぎている場合で、有効期間は 1 年や 2 年であるケースが多いとされ、更新の手続きをしないまま過ぎると、ブラウザはその身分証をもう有効だと確認できず警告を出す。もう 1 つは、つなごうとした名前と違う名前の身分証が返ってきて警告が出る、名前不一致である。これは、サーバがその名前用の身分証を持たず別の名前の既定の身分証を返してしまう場合と、名前ではなく IP アドレスで直接つないだために、どの名前につなぎたいかがそもそも伝わらなかった場合とで起きることがある。ブラウザは、つなごうとした名前と身分証に書かれた名前を照合し、一致していなければ警告を出す。有効期間切れは時間の食い違い、名前不一致は名前の食い違いとして整理できる。身分証の取得・更新といった運用は第 19 章で扱う。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sv https://example.com -o /dev/null</code></pre>
+    <p>見方: 実行結果の subjectAltName の行を見てください。接続しようとしたホスト名と、サーバの身分証に書かれた名前が一致しているかどうかが分かります。一致していれば、これが名前不一致の警告が出ない側の正常な状態です。</p>
+    <p class="try-note">出力は長めですが、subjectAltName という語を含む行だけを追えば十分です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="54">[#54] Cloudflare Blog「DNS Encryption Explained」 — <a href="https://blog.cloudflare.com/dns-encryption-explained/" rel="noopener">原典</a>(SNI が送られないと証明書の名前が検証されないという記述)</li>
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(証明書の有効期限が 1 年や 2 年であるケースが多いという記述)</li>
+    <li class="cite" data-src="85">[#85] IETF「RFC 6066: Transport Layer Security (TLS) Extensions: Extension Definitions」 — <a href="https://www.rfc-editor.org/rfc/rfc6066.html" rel="noopener">原典</a>（TLS での SNI の仕組み）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m18-5">
+    <div class="q" data-q="1">
+      <p class="q-text">SNI の役割として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">身分証の有効期間を自動で延長する</button></li>
+        <li><button type="button" data-correct="true">1 台のサーバが複数の名前を受け持っているとき、送り手がどの名前につなぎたいかを最初のやり取りで伝える</button></li>
+        <li><button type="button" data-correct="false">認証局の代わりに身分証を発行する</button></li>
+        <li><button type="button" data-correct="false">対称鍵を暗号化して送る</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1 台のサーバが複数の名前を受け持っているとき、送り手がどの名前につなぎたいかを最初のやり取りで伝える、です。SNI は身分証の発行や鍵の暗号化そのものを行う仕組みではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">名前不一致の警告が起きる原因として、本文で説明されているものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">ブラウザのバージョンが古いこと</button></li>
+        <li><button type="button" data-correct="true">サーバがその名前用の身分証を持たず別の名前の既定の身分証を返す場合や、IP アドレスで直接つないで名前が伝わらなかった場合</button></li>
+        <li><button type="button" data-correct="false">対称鍵の長さが足りないこと</button></li>
+        <li><button type="button" data-correct="false">証明書チェーンが 1 段しかないこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、サーバがその名前用の身分証を持たず別の名前の既定の身分証を返す場合や、IP アドレスで直接つないで名前が伝わらなかった場合、です。ブラウザのバージョンや対称鍵の長さは、本文で説明した原因ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">身分証の有効期間切れと名前不一致の関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どちらも全く同じ原因で起きる、同一の現象である</button></li>
+        <li><button type="button" data-correct="true">どちらも、身分証の中身とつなごうとした相手の間に食い違いがあるという点では共通するが、食い違いの種類(時間か名前か)が異なる</button></li>
+        <li><button type="button" data-correct="false">有効期間切れは名前不一致が起きた結果として発生する</button></li>
+        <li><button type="button" data-correct="false">名前不一致は、有効期間が十分に残っているときにしか起きない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、どちらも、身分証の中身とつなごうとした相手の間に食い違いがあるという点では共通するが、食い違いの種類(時間か名前か)が異なる、です。有効期間切れは時間の食い違い、名前不一致は名前の食い違いです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m18-4.html">← 18-4 鍵を決めるまでに、何回のやり取りが必要か</a>
+    <a class="up" href="m18.html">第 18 章の入口</a>
+    <a class="next" href="m19.html">第 19 章 HTTPS を運用する →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>名前解決で遅くなる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m17-3" data-chapter="m17" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 17-3</p>
+  <p class="chapter-label">第 17 章 DNS の運用と障害　17-3</p>
+  <h1>名前解決で遅くなる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>名前解決は軽い処理だと言われるが、それでもページの表示を遅くする原因になることがある。問い合わせ先の DNS リゾルバが遠かったり、答えが DNS キャッシュに残っておらず問い合わせが何度も重なったりすると、待ち時間が積み重なる。このページでは、<strong>この遅れがどこから来るか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">名前解決自体は軽い処理だって聞いたことがあるんですけど、それでもページの表示が遅くなる原因になることってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。代表的なのは、問い合わせ先の DNS リゾルバが地理的に遠い場合です。</p>
+    <p class="s" data-who="ひよこちゃん">遠いと、そんなに違うものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 2 章で見た往復時間(RTT)のとおり、遠い相手ほど 1 回の問い合わせに時間がかかります。</p>
+    <p class="s" data-who="ひよこちゃん">1 回の問い合わせだけじゃなくて、何度も問い合わせすることもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。答えが DNS キャッシュに残っていなければ、第 16 章で見たとおり DNS リゾルバはルートサーバ→TLD のサーバ→権威サーバの順に何度も問い合わせを重ねます。1 回 1 回に往復の時間がかかる分、遠い DNS リゾルバではこの積み重ねがより大きくなります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、遠いこと自体と、何度も重なることの、両方が効いてくるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。よくある事例なんですが、利用者から遠い地域にある DNS リゾルバを使っていたために、名前解決のたびに余計な時間がかかっていた、という話があります。</p>
+    <p class="s" data-who="ひよこちゃん">なんで遠いとそんなに遅くなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">今話したとおり、DNS リゾルバとの往復に加えて、DNS キャッシュが無ければさらに何度も往復が重なるからです。</p>
+    <p class="s" data-who="ひよこちゃん">DNS キャッシュが残っていれば、この問題は起きないんですか?</p>
+    <p class="t" data-who="ふくろう先生">DNS キャッシュに答えが残っていれば、DNS リゾルバへの 1 回の問い合わせだけで済みます。それでも、その DNS リゾルバ自体が遠ければ、その 1 回の往復には時間がかかります。</p>
+    <p class="s" data-who="ひよこちゃん">逆に、DNS キャッシュがあれば、遠くても速いってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。DNS キャッシュに答えが残っている間は、DNS リゾルバへの問い合わせ自体が省略されるので、名前解決にかかる時間はほぼゼロになります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、いつも同じサイトを見ているだけなら、名前解決の遅さはあまり気にしなくていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。問題になりやすいのは、普段使わない DNS リゾルバに切り替えたときや、初めて名前解決する名前にアクセスしたときです。</p>
+    <p class="s" data-who="ひよこちゃん">これって、DNS レコードの設定の仕方を変えれば解決するものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、これは問い合わせ先の DNS リゾルバの位置や、DNS キャッシュの有無による問題なので、DNS レコードの設定とは別の話です。使う DNS リゾルバを選び直すことが対策になります。</p>
+    <p class="s" data-who="ひよこちゃん">実際にその時間、自分でも見れたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">見れます。次の試してみようで確認しましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>名前解決がページの表示を遅くする原因には、問い合わせ先の DNS リゾルバが地理的に遠い場合と、DNS キャッシュが無く問い合わせが何度も重なる場合がある。</li>
+      <li>第 2 章で見た往復時間(RTT)のとおり、遠い相手ほど 1 回の問い合わせに時間がかかる。</li>
+      <li>DNS キャッシュに答えが残っていなければ、DNS リゾルバはルートサーバ→TLD のサーバ→権威サーバの順に何度も問い合わせを重ね、遠い DNS リゾルバではこの積み重ねがより大きくなる。</li>
+      <li>利用者から遠い地域にある DNS リゾルバを使っていたために、名前解決のたびに余計な時間がかかっていた、という事例がある。</li>
+      <li>DNS キャッシュに答えが残っている間は問い合わせ自体が省略されるため、いつも同じ名前にアクセスしている場合は遅れが問題になりにくい。</li>
+      <li>この遅れは、問い合わせ結果の Query time の行から確認できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>名前解決による遅延の代表的な原因は、問い合わせ先の DNS リゾルバが地理的に遠いことである。第 2 章で見た往復時間(RTT)のとおり、遠い相手ほど 1 回の問い合わせに時間がかかる(#53「High latency」)。さらに、答えが DNS キャッシュに残っていない場合、DNS リゾルバは第 16 章で見たとおりルートサーバ→TLD のサーバ→権威サーバの順に何度も問い合わせを重ねる。1 回 1 回の往復に時間がかかる分、遠い DNS リゾルバを使っているときほど、この積み重ねは大きくなる。DNS キャッシュに答えが残っていれば、DNS リゾルバへの 1 回の問い合わせだけで済むが、その DNS リゾルバ自体が遠ければ、その 1 回の往復にも時間がかかる。名前解決にかかった時間は、問い合わせ結果の Query time の行から確認できる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig example.com</code></pre>
+    <p>見方: 結果の末尾近くにある Query time の行の数字(ミリ秒)が、この問い合わせにかかった時間である。この数字が大きいほど、問い合わせ先が遠かったり、途中で何度も問い合わせが重なったりしたことを示す。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="53">[#53] Cloudflare Learning Center「Common DNS issues and how to fix them」 — <a href="https://www.cloudflare.com/learning/dns/common-dns-issues/" rel="noopener">原典</a>（「High latency」の節。遠い DNS リゾルバを使っていると待ち時間が増えるという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m17-3">
+    <div class="q" data-q="1">
+      <p class="q-text">往復時間(RTT)が長い DNS リゾルバを使っていることと、名前解決が遅くなることの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">遠い DNS リゾルバほど 1 回の問い合わせの往復時間が長く、DNS キャッシュが無い場合は何度も重なるため、遅延が積み重なる</button></li>
+        <li><button type="button" data-correct="false">DNS リゾルバが遠いと、権威サーバの DNS レコードの内容が変わってしまうから</button></li>
+        <li><button type="button" data-correct="false">DNS リゾルバが遠いと、問い合わせは必ず SERVFAIL になるから</button></li>
+        <li><button type="button" data-correct="false">DNS リゾルバが遠くても、名前解決の速さには影響しない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、遠い DNS リゾルバほど 1 回の問い合わせの往復時間が長く、DNS キャッシュが無い場合は何度も重なるため、遅延が積み重なる、です。DNS レコードの内容や SERVFAIL とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">名前解決が遅くなる原因として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">問い合わせ先の DNS リゾルバが地理的に遠い場合</button></li>
+        <li><button type="button" data-correct="false">DNS レコードの型を AAAA にしている場合</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL の値を大きくしている場合</button></li>
+        <li><button type="button" data-correct="false">ブラウザのキャッシュを無効にしている場合</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、問い合わせ先の DNS リゾルバが地理的に遠い場合、です。レコードの型や TTL の値、ブラウザのキャッシュの有無が、このページで見た遅延の直接の原因ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">名前解決にかかった時間を確認する方法として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">問い合わせ結果の Query time の行を見る</button></li>
+        <li><button type="button" data-correct="false">権威サーバの台数を数える</button></li>
+        <li><button type="button" data-correct="false">DNS レコードの DNS の TTL の値を確認する</button></li>
+        <li><button type="button" data-correct="false">答えの型が A か AAAA かを確認する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、問い合わせ結果の Query time の行を見る、です。権威サーバの台数や TTL の値、答えの型からは、かかった時間は分かりません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m17-2.html">← 17-2 変更が「伝わる」の正体</a>
+    <a class="up" href="m17.html">第 17 章の入口</a>
+    <a class="next" href="m17-4.html">17-4 答えが本物か、問い合わせが見られていないか →</a>
+  </nav>
+</main>
+</body>
+</html>

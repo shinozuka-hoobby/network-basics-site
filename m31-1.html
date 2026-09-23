@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>「つながらない」を、段階に分けて確かめる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m31-1" data-chapter="m31" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 31-1</p>
+  <p class="chapter-label">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける　31-1</p>
+  <h1>「つながらない」を、段階に分けて確かめる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ここまでの章で見てきた内容を、「つながらない」を切り分けるための<strong>5 つの段階</strong>として組み立て直す。新しい仕組みは登場せず、それぞれの段階に、これまで見てきた道具を対応づける。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 1 章 1-1 で、実際の障害対応でも 4 段階を 1 つずつ確認していくって教わりましたよね。「具体的なやり方は道具を扱う章でまとめて練習します」って言われてたのに、まだ教わってない気がするんですけど。</p>
+    <p class="t" data-who="ふくろう先生">そうでしたね。第 27 章 27-4 でも、道具をどの順で使うかは第 31 章でまとめて扱うと約束していました。今日はその約束を果たします。</p>
+    <p class="s" data-who="ひよこちゃん">4 段階って、名前解決・接続・暗号化・要求と応答でしたよね。けっこう前に習った内容なので、正直うろ覚えです。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ただ、このうち「接続」のところは、実はもう少し細かく分けられます。</p>
+    <p class="s" data-who="ひよこちゃん">細かく分けるって、どういうことですか。</p>
+    <p class="t" data-who="ふくろう先生">相手まで届くか、入口が開いているか、TCP と TLS の握手が成立するか、という<strong>3 つ</strong>に分けて確かめると、原因を絞り込みやすくなります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ全部で 5 段階ってことですね。名前解決、到達性、入口、握手、応答。</p>
+    <p class="t" data-who="ふくろう先生">そうです。第 1 章の「接続」を 3 つに分けたと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">「入口」っていうのは、具体的には何を指すんですか。</p>
+    <p class="t" data-who="ふくろう先生">ポート番号の話と、第 24 章で見たセキュリティグループや NACL のような、通信を許可・拒否する設定のことです。相手までは届いていても、この設定で止められていることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、届くこととは別に確かめる必要があるんですね。この 5 つ、確かめる順番って決まってるんですか。</p>
+    <p class="t" data-who="ふくろう先生">決まった手順があるわけではありません。ただ、例えば名前が解けるかを先に確かめると、その後の切り分けが楽になります。</p>
+    <p class="s" data-who="ひよこちゃん">なんでですか。順番を変えても、最終的には同じ結論にたどり着く気がするんですけど。</p>
+    <p class="t" data-who="ふくろう先生">名前が解けなければ、それより後の段階を確かめても<strong>手がかりにならない</strong>からです。相手の IP アドレスすら分からないのに、TLS の証明書を疑っても仕方がありません。</p>
+    <p class="s" data-who="ひよこちゃん">確かに、そうですね。じゃあ名前が解けたら、次は届くかを確かめるんですか。</p>
+    <p class="t" data-who="ふくろう先生">その順で確かめると見通しがよくなります。届いていれば次は入口、その次は握手、というように、手前の段階から確かめていきます。</p>
+    <p class="s" data-who="ひよこちゃん">それぞれの段階で、使う道具は決まってるんですか。それとも自由に選んでいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">決まっています。名前解決は dig、到達性は ping と traceroute、入口はポートの到達性を確かめる道具、握手は openssl s_client、応答は curl です。</p>
+    <p class="s" data-who="ひよこちゃん">全部、これまでの章で見てきた道具ですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。新しい道具は何も出てきません。</p>
+    <p class="s" data-who="ひよこちゃん">試してみようとか、実際に手を動かす場面はあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">次のページからのケースごとに、実際に確かめる場面があります。ここでは道具と段階の対応だけ、まず頭に入れておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ今日のところは、この 5 段階と対応する道具さえ覚えておけばいいんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページから、実際の 3 つのケースで練習していきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>「つながらない」は、名前解決・到達性・入口・握手・応答という 5 つの段階に分けて確かめられる。</li>
+      <li>「入口」は、ポート番号と、セキュリティグループや NACL のような許可・拒否の設定を指す。</li>
+      <li>名前が解けるかを先に確かめると、それより後の段階を疑う必要があるかどうかが早く分かる。</li>
+      <li>各段階に対応する道具は、名前解決が dig、到達性が ping と traceroute、入口がポートの到達性を確かめる道具、握手が openssl s_client、応答が curl である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>「つながらない」という症状は、第 1 章 1-1 で見た名前解決・接続・暗号化・要求と応答という 4 段階のうち、「接続」を到達性・入口・握手の 3 つに分け直すと、次の 5 段階になる(第 27 章 27-4 の申し送りをここで回収する)。この分け方自体は収集資料に直接の記述があるわけではなく、これまでの章で確立した「分かること」を組み合わせた考え方である。確かめる順番も決まった手順ではなく、名前解決から順に確かめると絞り込みが楽になる、という理由つきの提案である。</p>
+    <table>
+      <tr><th>段階</th><th>確かめる内容</th><th>道具</th></tr>
+      <tr><td>名前解決</td><td>名前が IP アドレスに変わるか</td><td>dig</td></tr>
+      <tr><td>到達性</td><td>相手に届くか</td><td>ping・traceroute</td></tr>
+      <tr><td>入口</td><td>ポートが開いているか</td><td>ポート到達性の道具</td></tr>
+      <tr><td>握手</td><td>TCP・TLS が成立するか</td><td>openssl s_client</td></tr>
+      <tr><td>応答</td><td>HTTP の応答が返るか</td><td>curl</td></tr>
+    </table>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（第 1 章 1-1 で確立。名前解決・接続・暗号化・要求と応答という 4 段階の枠組み）</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>（第 1 章 1-1 で確立。4 段階の枠組み）</li>
+    <li class="cite" data-src="46">[#46] Cisco「Understand Ping and Traceroute」 — <a href="https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/12778-ping-traceroute.html" rel="noopener">原典</a>（第 27 章 27-1・27-2 で確立。ping・traceroute で分かること）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（第 16 章 16-5 で確立した dig、第 12 章 12-1 で確立したポート番号によるサービスの多重化）</li>
+    <li class="cite" data-src="80">[#80] IETF「RFC 6335: IANA Procedures for the Management of the Service Name and Transport Protocol Port Number Registry」 — <a href="https://www.rfc-editor.org/rfc/rfc6335.html" rel="noopener">原典</a>（第 12 章 12-1 で確立。ポート番号の区分）</li>
+    <li class="cite" data-src="106">[#106] curl project（curl.se）「curl.1 the man page」 — <a href="https://curl.se/docs/manpage.html" rel="noopener">原典</a>（第 27 章 27-4 で確立。curl -v の記号の読み方）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m31-1">
+    <div class="q" data-q="1">
+      <p class="q-text">名前が解けるかを確かめずに、いきなり TLS の証明書を疑うことが勧められないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">証明書の確認には、特別な資格が必要だから</button></li>
+        <li><button type="button" data-correct="true">名前が解けなければ相手の IP アドレスすら分からず、それより後の段階を確かめても手がかりにならないから</button></li>
+        <li><button type="button" data-correct="false">TLS の手続きは、名前解決より先に行われる仕組みだから</button></li>
+        <li><button type="button" data-correct="false">証明書は、名前解決の結果とは一切関係が無いから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前が解けなければ相手の IP アドレスすら分からず、それより後の段階を確かめても手がかりにならないから、です。証明書の確認に特別な資格は要らず、TLS は名前解決より後の段階で、証明書と名前解決は無関係でもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">「セキュリティグループで通信を許可したのに応答が返らない」という症状は、5 段階のうちどの段階に当たるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前解決</button></li>
+        <li><button type="button" data-correct="false">到達性</button></li>
+        <li><button type="button" data-correct="true">入口</button></li>
+        <li><button type="button" data-correct="false">握手</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、入口です。セキュリティグループや NACL のような通信の許可・拒否の設定は、入口の段階で確かめる対象です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">5 段階と、それぞれで使う道具の組み合わせとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">名前解決は dig、到達性は ping・traceroute、入口はポートの到達性を確かめる道具、握手は openssl s_client、応答は curl</button></li>
+        <li><button type="button" data-correct="false">名前解決は curl、到達性は dig、入口は ping、握手は traceroute、応答は openssl s_client</button></li>
+        <li><button type="button" data-correct="false">すべての段階で curl だけを使う</button></li>
+        <li><button type="button" data-correct="false">この 5 段階では道具を使わず、目視だけで確認する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決は dig、到達性は ping・traceroute、入口はポートの到達性を確かめる道具、握手は openssl s_client、応答は curl、です。組み合わせが入れ替わっているものや、道具を使わないという説明は誤りです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m31.html">← 第 31 章の入口</a>
+    <a class="up" href="m31.html">第 31 章の入口</a>
+    <a class="next" href="m31-2.html">31-2 名前が解けているかを、まず確かめる →</a>
+  </nav>
+</main>
+</body>
+</html>

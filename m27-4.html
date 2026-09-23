@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>送った内容と、受け取った内容を、記号で見分ける — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m27-4" data-chapter="m27" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 27-4</p>
+  <p class="chapter-label">第 27 章 観測ツール入門 — ping・traceroute・dig・curl　27-4</p>
+  <h1>送った内容と、受け取った内容を、記号で見分ける</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>curl でリクエストを送れることはすでに知っているだろうが、付け足すオプションによって見える範囲が変わる。<strong>送受信の経過をまとめて表示するオプションを使うと、行の先頭の記号で内容を見分けられる</strong>。このページでは、これまでの章で使ってきたオプションと、その記号の読み方を整理する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">curl -sI はこれまで何度も使ってきましたけど、curl -sv の方は正直、行が多すぎて何を見ればいいか分からなかったです。</p>
+    <p class="t" data-who="ふくろう先生">-v を付けると、送った内容と受け取った内容が、接続の経過も含めて表示されます。行の先頭の記号を見分けると読みやすくなります。</p>
+    <p class="s" data-who="ひよこちゃん">記号って、どんな種類があるんですか。</p>
+    <p class="t" data-who="ふくろう先生">&gt; が自分が送った内容、&lt; が相手から受け取った内容、* が接続や暗号化の経過などの補足情報です。</p>
+    <p class="s" data-who="ひよこちゃん">第 18 章で見た Client hello とか Server hello は、どの記号に入るんですか。</p>
+    <p class="t" data-who="ふくろう先生">* の行に入ります。TLS のハンドシェイクの経過も、この補足情報として表示されているんです。</p>
+    <p class="s" data-who="ひよこちゃん">第 20 章や第 21 章で見た HTTP/2 200 とか content-type: みたいな行は、どの記号ですか。</p>
+    <p class="t" data-who="ふくろう先生">&lt; の行に入ります。相手から受け取った応答の中身だからです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、自分が送った要求の中身を見たいときは、&gt; の行を探せばいいんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ほかに { と } という記号もあり、それぞれ受け取ったデータの中身、送ったデータの中身を表します。量が多いので、実際の中身ではなくバイト数だけが表示されることもあります。</p>
+    <p class="s" data-who="ひよこちゃん">-I だけだと、これは分からないんですか。</p>
+    <p class="t" data-who="ふくろう先生">-I は相手から返ってきたヘッダだけを見る方法で、自分が送った内容や、接続・暗号化の経過は表示されません。-v を使えば、そのすべてを記号で見分けながら確認できます。</p>
+    <p class="s" data-who="ひよこちゃん">-s は何のためのオプションだったんですか。</p>
+    <p class="t" data-who="ふくろう先生">進捗の表示などを消して、結果だけを見やすくするためのオプションです。今まで使ってきた -sI や -sv の s の部分がそれです。</p>
+    <p class="s" data-who="ひよこちゃん">-o /dev/null をよく付けてましたけど、あれは何のためだったんですか。</p>
+    <p class="t" data-who="ふくろう先生">応答の中身の保存先を指定するオプションで、/dev/null を指定すると、中身を捨てて画面には出さないようにできます。</p>
+    <p class="s" data-who="ひよこちゃん">--http1.1 を付けたこともありましたよね。</p>
+    <p class="t" data-who="ふくろう先生">使う HTTP のバージョンを指定するオプションです。既定のバージョンと違う版で試したいときに使います。</p>
+    <p class="s" data-who="ひよこちゃん">これで 4 つの道具の出力が読めるようになりましたけど、実際に問題を切り分けるときは、どの順で使えばいいんですか。</p>
+    <p class="t" data-who="ふくろう先生">それは第 31 章でまとめて扱います。今日のところは、それぞれの道具で何が分かり、何が分からないかを押さえておいてください。次の章では、これらの道具よりもさらに細かく、実際にやり取りされている中身そのものを覗く方法を見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>curl -v を付けると、送った内容と受け取った内容が、接続の経過も含めて表示される。</li>
+      <li>行の先頭の記号で見分ける。&gt; は自分が送った内容、&lt; は相手から受け取った内容、* は接続や暗号化の経過などの補足情報である。</li>
+      <li>第 18 章で見た TLS ハンドシェイクの経過は * の行、第 20・21 章で見た応答のステータス行やヘッダは &lt; の行に入る。</li>
+      <li>-I は相手から返ってきたヘッダだけを見る方法で、送った内容や接続の経過までは表示されない。</li>
+      <li>-s は進捗などの表示を消すオプション、-o は応答の保存先を指定するオプション、--http1.1 は使う HTTP のバージョンを指定するオプションである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>curl に -v を付けると、送受信の経過が記号付きで表示される。行頭の &gt; は自分が送った内容、&lt; は相手から受け取った内容、* は接続や暗号化の経過などの補足情報を表す(#106 -v, --verbose の節)。ほかに、{ は受け取ったデータの中身、} は送ったデータの中身を表す記号として用意されている(#106 -v, --verbose の節)。第 18 章で見た TLS ハンドシェイクの Client hello や Server hello は * の行に、第 20・21 章で見た応答のステータス行(例えば HTTP/2 200)やヘッダ(content-type: など)は &lt; の行に、それぞれ含まれる。-I(#106 -I, --head の節)は相手から返ってきたヘッダだけを取得する方法で、自分が送った内容や接続の経過までは表示されない。-s(#106 -s, --silent の節)は進捗などの表示を消し、-o は応答の保存先を指定する。--http1.1(#106 --http1.1 の節)は、使う HTTP のバージョンを指定する。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sv https://example.com -o /dev/null</code></pre>
+    <p>見方: 各行の先頭の記号に注目する。&gt; は自分が送った内容、&lt; は相手から受け取った内容、* は接続や暗号化の経過などの補足情報である。</p>
+    <p class="try-note">出力は長いが、行頭の記号だけを追えば十分。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="106">[#106] curl project（curl.se）「curl.1 the man page」 — <a href="https://curl.se/docs/manpage.html" rel="noopener">原典</a>(line 5153「-v, --verbose」の節: 出力の各行が line 5157「&gt;」(header sent by curl)・line 5161「&lt;」(header received by curl)・line 5165「}」(data sent by curl)・line 5169「{」(data received by curl)・line 5173「*」(additional info provided by curl)のいずれかで始まるという説明。line 1635「-I, --head」、line 4157「-s, --silent」、line 1778「--http1.1」の各節)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m27-4">
+    <div class="q" data-q="1">
+      <p class="q-text">curl -sI だけでは分からず、curl -sv で初めて確認できることは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">応答のステータスコード</button></li>
+        <li><button type="button" data-correct="false">応答のヘッダの内容</button></li>
+        <li><button type="button" data-correct="true">自分が送った要求の中身や、接続・暗号化の経過</button></li>
+        <li><button type="button" data-correct="false">応答本文があるかどうか</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、自分が送った要求の中身や、接続・暗号化の経過、です。応答のステータスコードやヘッダの内容は -sI でも確認できます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">curl -sv の出力で、&lt; から始まる行が示すものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">自分が送った内容</button></li>
+        <li><button type="button" data-correct="true">相手から受け取った内容</button></li>
+        <li><button type="button" data-correct="false">接続や暗号化の経過を示す補足情報</button></li>
+        <li><button type="button" data-correct="false">応答の保存先の指定</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、相手から受け取った内容、です。自分が送った内容は &gt; の行、補足情報は * の行に表示され、保存先の指定はオプションとしてコマンドの中で指定するもので、行の先頭記号とは別の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">--http1.1 の役割はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">進捗の表示を消す</button></li>
+        <li><button type="button" data-correct="false">応答の保存先を指定する</button></li>
+        <li><button type="button" data-correct="false">応答のヘッダだけを取得する</button></li>
+        <li><button type="button" data-correct="true">使う HTTP のバージョンを指定する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、使う HTTP のバージョンを指定する、です。進捗の表示を消すのは -s、保存先の指定は -o、ヘッダだけの取得は -I の役割です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m27-3.html">← 27-3 これまで見てきた答えを、まとめて読み解く</a>
+    <a class="up" href="m27.html">第 27 章の入口</a>
+    <a class="next" href="m28.html">第 28 章 パケットキャプチャ — tcpdump と Wireshark →</a>
+  </nav>
+</main>
+</body>
+</html>

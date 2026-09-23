@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>太い回線でも、頭打ちになることがある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m30-2" data-chapter="m30" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 30-2</p>
+  <p class="chapter-label">第 30 章 性能の考え方 — レイテンシ・帯域・RTT　30-2</p>
+  <h1>太い回線でも、頭打ちになることがある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>運ぶ量が多い場面では、待ち時間の決まり方が変わる。回線の太さと、送ってから返事が戻るまでの時間を掛け合わせた量より、送り出せる量が少ないと、<strong>回線が太くても実際に出る速度は頭打ちになる</strong>。このページでは、この関係と、通信の最初に速度が上がりきらない理由を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページは小さいやり取りの話でしたけど、大きいファイルを送るときも、往復の回数が効くんですか。</p>
+    <p class="t" data-who="ふくろう先生">いいえ、量が多いときは事情が違います。第 14 章で見た、回線の太さと往復時間を掛け合わせた量を思い出してください。</p>
+    <p class="s" data-who="ひよこちゃん">帯域遅延積のことですよね。送り出せる量がそれより少ないと、頭打ちになるっていう話でした。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。送り出せる量の上限をウィンドウと呼び、これが小さいと、回線がどれだけ太くても、<strong>実際に出る速度はウィンドウの大きさ÷往復時間で頭打ちになります</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">具体的な数字の例ってあるんですか。</p>
+    <p class="t" data-who="ふくろう先生">あります。ある資料には、送り出せる量の上限を 4 メガバイトとしたとき、往復時間が 100 ミリ秒の相手だと、それだけで速度が秒間 40 メガバイトに頭打ちになる、という例が載っています。</p>
+    <p class="s" data-who="ひよこちゃん">回線がもっと太くても、この上限までしか出ないってことですか。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この上限を超えるには、送り出せる量の上限そのものを大きくする必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、通信を始めた瞬間から、この上限いっぱいまで出るんですか。</p>
+    <p class="t" data-who="ふくろう先生">いいえ、そこにも仕組みがあります。第 14 章で見たスロースタートを覚えていますか。通信の最初は送り出せる量がごく小さく、様子を見ながら急速に増やしていくんでした。</p>
+    <p class="s" data-who="ひよこちゃん">はい、ACK が順調に返るたびに倍々に近い勢いで増えていくっていう話でしたよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。だから、通信の最初は、たとえ回線もウィンドウも十分大きくても、送り出せる量がまだ小さく、速度が上がりきっていません。</p>
+    <p class="s" data-who="ひよこちゃん">よくある話として、大きなファイルの転送が、最初は遅くて途中から速くなることがあるって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">まさにその現象です。最初は<strong>スロースタート</strong>で送り出せる量が小さく、ACK が順調に返るにつれて量が増えていくので、時間が経つほど速度が上がって見えるんです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、最初から遅い回線だと思って諦める必要は無いんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ACK が順調に返り続ければ、上限に近づいていきます。ただし、電波の状態のような一時的な乱れで損失が起きると、話は別です。</p>
+    <p class="s" data-who="ひよこちゃん">一時的な乱れでも、送り出せる量が急に縮んでしまうんですか。</p>
+    <p class="t" data-who="ふくろう先生">縮み方は方式によります。第 14 章で見た CUBIC は損失の兆候で量を急速に縮め、緩やかに戻す考え方でした。BBR は損失を待たず、実測した帯域と往復時間で量を決めるので、一時的な乱れに振り回されにくいとされています。</p>
+    <p class="s" data-who="ひよこちゃん">往復時間が長い相手ほど、この頭打ちが起きやすいっていうのも、前のページで見た話とつながりますね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。往復時間が長いほど必要な量は大きくなるのに、送り出せる量の上限は変わらないので、頭打ちが起きやすくなります。次のページでは、これまでの高速化の工夫が、往復の回数を減らすのか、それとも同時に運べる量を増やすのか、整理してみましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>運ぶ量が多い場面では、回線の太さと往復時間を掛け合わせた量より、送り出せる量(ウィンドウ)が少ないと、回線が太くても実際に出る速度が頭打ちになる。</li>
+      <li>ある資料の例では、送り出せる量の上限が 4 メガバイト、往復時間が 100 ミリ秒のとき、速度は秒間 40 メガバイトに頭打ちになった。</li>
+      <li>通信の最初はスロースタートによって送り出せる量がまだ小さく、ACK が順調に返るにつれて量が増えていくため、速度は徐々に上がる。大きなファイルの転送が最初は遅くて途中から速くなるのは、この効果である。</li>
+      <li>損失が起きたときの量の減らし方は方式によって違う。CUBIC は損失の兆候で急速に縮めて緩やかに戻し、BBR は実測した帯域と往復時間で量を決める。</li>
+      <li>往復時間が長い相手ほど、必要な量が大きくなるが送り出せる量の上限は変わらないため、頭打ちが起きやすい。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>運ぶ量が多い場面では、回線の太さ(帯域幅)と往復時間を掛け合わせた量より、送り出せる量(ウィンドウ)が少ないと、回線が太くても実際に出る速度はウィンドウの大きさ÷往復時間で頭打ちになる。ある資料の例では、送り出せる量の上限を 4 メガバイトとしたとき、往復時間が 100 ミリ秒の相手では、それだけで速度が秒間 40 メガバイトに頭打ちになる(#35)。通信の最初はスロースタートによって送り出せる量がまだ小さく、ACK が順調に返るたびに倍々に近い勢いで増えていくため、速度は時間とともに上がっていく。損失の兆候で送り出せる量を急速に縮め、緩やかに戻すという考え方(CUBIC)もあれば、電波の状態のような一時的な要因による損失に振り回されにくいという考え方(BBR)もある(#60)。往復時間が長い相手ほど必要な量が大きくなるが、送り出せる量の上限は変わらないため、頭打ちが起きやすい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="35">[#35] Google Cloud「TCP optimization for network performance」 — <a href="https://docs.cloud.google.com/compute/docs/networking/tcp-optimization-for-network-performance-in-gcp-and-hybrid" rel="noopener">原典</a>(「Understanding the Throughput Limit」の節。17 行目のスループットの上限の式、159〜164 行目の帯域遅延積の定義、202 行目、100 ミリ秒の RTT のとき、この設定ではスループットが 40 MB/s に制限されるという具体例)</li>
+    <li class="cite" data-src="60">[#60] Cloudflare Blog「Mobile Web Performance: TCP Congestion Control」 — <a href="https://blog.cloudflare.com/mobile-web-performance-optimizing-tcp-congest/" rel="noopener">原典</a>(9 行目、損失の兆候で送り出せる量を急速に縮め、緩やかに戻すという記述。13 行目、電波の状態のような一時的な要因でも損失が起きうるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m30-2">
+    <div class="q" data-q="1">
+      <p class="q-text">同じ帯域幅の回線でも、往復時間(RTT)が長い相手ほど、実際に出る速度が頭打ちになりやすいのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">往復時間が長いと、回線の帯域幅そのものが自動的に小さくなるから</button></li>
+        <li><button type="button" data-correct="true">往復時間が長いほど必要な量(帯域幅×往復時間)が大きくなるが、送り出せる量の上限は変わらないため、実際に出る速度が頭打ちになるから</button></li>
+        <li><button type="button" data-correct="false">往復時間が長い相手とは、スロースタートが行われないから</button></li>
+        <li><button type="button" data-correct="false">往復時間が長いと、損失が発生しなくなるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、往復時間が長いほど必要な量(帯域幅×往復時間)が大きくなるが、送り出せる量の上限は変わらないため、実際に出る速度が頭打ちになるから、です。帯域幅そのものやスロースタートの有無、損失の発生とは別の理由です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ある資料の例で、送り出せる量の上限が 4 メガバイト、往復時間が 100 ミリ秒のとき、速度はどれくらいに頭打ちになったか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">秒間 4 メガバイト</button></li>
+        <li><button type="button" data-correct="true">秒間 40 メガバイト</button></li>
+        <li><button type="button" data-correct="false">秒間 400 メガバイト</button></li>
+        <li><button type="button" data-correct="false">上限は無い</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は秒間 40 メガバイトです。送り出せる量の上限(4 メガバイト)を往復時間(0.1 秒)で割ると、この値になります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">大きなファイルの転送が、最初は遅く、途中から速くなることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">サーバが最初にファイルを圧縮する時間が必要だから</button></li>
+        <li><button type="button" data-correct="true">スロースタートにより最初は送り出せる量が小さく、ACK が順調に返るにつれて量が増えていくから</button></li>
+        <li><button type="button" data-correct="false">最初は回線そのものの帯域幅が狭く設定されているから</button></li>
+        <li><button type="button" data-correct="false">最初は名前解決をやり直し続けているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、スロースタートにより最初は送り出せる量が小さく、ACK が順調に返るにつれて量が増えていくから、です。圧縮や帯域幅の設定、名前解決のやり直しとは関係ありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m30-1.html">← 30-1 往復の回数が、待ち時間を決める場面</a>
+    <a class="up" href="m30.html">第 30 章の入口</a>
+    <a class="next" href="m30-3.html">30-3 何を減らすと、速くなるのか →</a>
+  </nav>
+</main>
+</body>
+</html>

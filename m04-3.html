@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>つないだ瞬間に、番号は自動で配られる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m04-3" data-chapter="m04" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 4-3</p>
+  <p class="chapter-label">第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP　4-3</p>
+  <h1>つないだ瞬間に、番号は自動で配られる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>機器をネットワークにつなぐと、何も設定しなくてもすぐにインターネットが使えるようになる。<strong>これは、使ってよい番号を自動で配る仕組みが、機器との間で 4 段階のやり取りをしているからである</strong>。このページでは、その 4 段階を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで出てきた、番号を自動で配る役目って、具体的にはどういうやり取りなんですか?</p>
+    <p class="t" data-who="ふくろう先生">4 段階のやり取りがあります。まず機器が「誰か番号をくれませんか」と、周りに向けて呼びかけます。</p>
+    <p class="s" data-who="ひよこちゃん">呼びかけられた方はどう答えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">DHCP サーバが「このアドレスを使ってください」と 1 つ提案します。これが 2 段階目です。</p>
+    <p class="s" data-who="ひよこちゃん">提案されたら、そのまま使い始めるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いえ、機器はその提案を受けて「そのアドレスを使わせてください」と希望を伝えます。これが 3 段階目です。</p>
+    <p class="s" data-who="ひよこちゃん">それで確定するんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。DHCP サーバが「では、それで確定です」と応答して、ここで初めて正式に使えるようになります。呼びかけ→提案→希望→確定という、4 段階の流れです。</p>
+    <p class="s" data-who="ひよこちゃん">呼びかけから確定まで、4 段階もあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうなんです。それぞれの段階には正式な合図の名前もついていて、しくみの話で表にまとめます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で起きたことなんですけど、家に古い機器を無線の中継用に置いていたら、それも DHCP サーバとして動き出していて、同じ番号が 2 台の機器に配られてしまって、両方ネットにつながらなくなったことがあるんです。</p>
+    <p class="t" data-who="ふくろう先生">複数の DHCP サーバが同じネットワークにいること自体は、珍しいことではありません。呼びかけには、その場にいる DHCP サーバがどれでも応じられます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、なんで同じ番号が重複しちゃったんですか?</p>
+    <p class="t" data-who="ふくろう先生">2 台の DHCP サーバが、それぞれ別々に番号の範囲を管理していて、しかも範囲が重なっていたためです。別々のタイミングで、同じ番号を別の機器に配ってしまうことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">もらえるのは番号だけですか?</p>
+    <p class="t" data-who="ふくろう先生">いえ、他にも 2 つ渡されることが多いです。1 つは、外へ出るときの出口となる機器のアドレスです。</p>
+    <p class="s" data-who="ひよこちゃん">もう 1 つは何ですか?</p>
+    <p class="t" data-who="ふくろう先生">名前を IP アドレスに変える仕組みを担当するサーバのアドレスです。<a class="term" href="glossary.html#dns" data-term="dns">DNS</a> と呼ばれる仕組みで、詳しくは第 16 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">今の番号のもらい方は、新しいバージョンの IP アドレスでも同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">似たような、自動で番号を配る仕組みが<a class="term" href="glossary.html#ipv6" data-term="ipv6">IPv6</a> にもあります。違いは、IPv6 を扱う章でまとめて説明します。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、つないだ瞬間に、いろんな番号が自動でそろうんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次はその家庭用ルータが、オフィスのような場所でも同じように使えるのか、規模を変えて見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>DHCP は、機器に使ってよい番号を自動で配る仕組みで、呼びかけ→提案→希望→確定という 4 段階のやり取りを経て番号が正式に使えるようになる。</li>
+      <li>呼びかけと提案、希望はそれぞれ機器と DHCP サーバの間で 1 往復ずつ行われ、確定でようやく番号が使えるようになる。</li>
+      <li>複数の DHCP サーバが同じネットワークにいること自体は珍しくないが、番号の範囲が重なっていると、別々のタイミングで同じ番号を別の機器に配ってしまうことがある。</li>
+      <li>DHCP は番号のほかに、外へ出るときの出口となる機器のアドレスや、名前を IP アドレスに変える仕組み(DNS)を担当するサーバのアドレスなども一緒に配ることが多い。</li>
+      <li>IPv6 にも、DHCP と同じように自動で番号を配る仕組みがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DHCP は、機器がネットワークにつながるとき、使ってよい番号を自動で配る仕組みである。機器が周りに呼びかけ、DHCP サーバが 1 つ提案し、機器がその提案を選んで希望を伝え、DHCP サーバが確定を返す、という 4 段階のやり取りを経て番号が使えるようになる。それぞれの段階には正式な合図の名前が付いている。複数の DHCP サーバが同じネットワークにいること自体は珍しくないが、番号の範囲が重なっていると、別々のタイミングで同じ番号を別の機器に配ってしまうことがある。DHCP は番号のほかに、外へ出るときの出口となる機器のアドレスや、名前を IP アドレスに変える仕組みを担当するサーバのアドレスなども一緒に配ることが多い。</p>
+    <table>
+      <tr><th>段階</th><th>正式な名前</th><th>何が起きるか</th></tr>
+      <tr><td>① 呼びかけ</td><td>DHCPDISCOVER</td><td>機器が周りに「番号をください」と呼びかける</td></tr>
+      <tr><td>② 提案</td><td>DHCPOFFER</td><td>DHCP サーバが「このアドレスはどうですか」と提案する</td></tr>
+      <tr><td>③ 希望</td><td>DHCPREQUEST</td><td>機器が提案の中から 1 つを選んで希望を伝える</td></tr>
+      <tr><td>④ 確定</td><td>DHCPACK</td><td>選ばれた DHCP サーバが確定を応答する</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 実行結果の「en0」の項目にある「inet」の行の数字が、DHCP によって自動で配られた、今使っている IP アドレスです。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="73">[#73] 京都大学 OCW「基礎情報処理 第 9 回(コンピュータネットワーク)」 — <a href="https://ocw.kyoto-u.ac.jp/course/120/" rel="noopener">原典</a>（p.49「DHCP での IP アドレスのリース」の図。DHCP サーバ 2 台とクライアント 1 台の構成で、呼びかけ→提案→希望→確定の 4 段階を示す）</li>
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論(IP)」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（p.57、DHCP の割り当て方式と、貸し出し期間があること）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 11.2.3「ワイヤレスルータで DHCP を設定する」、DHCP のアドレスの範囲と台数の上限を設定する場面）</li>
+    <li class="cite" data-src="16">[#16] WIDE Project「IPv6 Only Network 設計・実験報告」 — <a href="https://www.wide.ad.jp/About/report/pdf2011/part02.pdf" rel="noopener">原典</a>（IP アドレスの自動割り当てに DHCP4 と DHCP6 の両方を用いたという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m04-3">
+    <div class="q" data-q="1">
+      <p class="q-text">同じネットワークに DHCP サーバが 2 台あると、なぜアドレスの重複が起きることがあるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">呼びかけには複数の DHCP サーバが応じられ、それぞれが別々に管理する番号の範囲が重なっていることがあるから</button></li>
+        <li><button type="button" data-correct="false">DHCP サーバは同じネットワークに 1 台までしか置けない決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">4 段階のやり取りのうち、確定の段階は省略されることが多いから</button></li>
+        <li><button type="button" data-correct="false">機器の方が、複数の DHCP サーバに同時に番号を要求してしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、呼びかけには複数の DHCP サーバが応じられ、それぞれが別々に管理する番号の範囲が重なっていることがあるから、です。複数の DHCP サーバが同じネットワークにいること自体は珍しくありませんが、範囲の管理が別々だと同じ番号を別の機器に配ってしまうことがあります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">DHCP で番号がもらえるまでの 4 段階の順番として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">呼びかけ→提案→希望→確定</button></li>
+        <li><button type="button" data-correct="false">提案→呼びかけ→確定→希望</button></li>
+        <li><button type="button" data-correct="false">希望→確定→呼びかけ→提案</button></li>
+        <li><button type="button" data-correct="false">確定→希望→提案→呼びかけ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、呼びかけ→提案→希望→確定、です。機器が呼びかけ、DHCP サーバが提案し、機器が希望を伝え、DHCP サーバが確定して初めて番号が使えるようになります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">DHCP が番号と一緒に配ることがあるものの組み合わせとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">外へ出るときの出口となる機器のアドレスと、名前を IP アドレスに変える仕組みを担当するサーバのアドレス</button></li>
+        <li><button type="button" data-correct="false">家の中と外で番号を付け替える箱の設定内容そのもの</button></li>
+        <li><button type="button" data-correct="false">無線 LAN の電波の強さの設定</button></li>
+        <li><button type="button" data-correct="false">有線の配線の長さの情報</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、外へ出るときの出口となる機器のアドレスと、名前を IP アドレスに変える仕組みを担当するサーバのアドレス、です。DHCP は番号だけでなく、こうした関連するアドレスも一緒に配ることが多いです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m04-2.html">← 4-2 1 台に、いくつもの役目が詰め込まれている</a>
+    <a class="up" href="m04.html">第 4 章の入口</a>
+    <a class="next" href="m04-4.html">4-4 人が増えると、1 台の箱では足りなくなる →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TCP の接続と信頼性 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m13" data-chapter="m13" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 13 章</p>
+  <p class="chapter-label">第 13 章</p>
+  <h1>TCP の接続と信頼性</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>データを送る前に、送り手と受け手が 3 回の合図(SYN・SYN/ACK・ACK)をやり取りして TCP 接続(会話できる状態)を作ること(TCP ハンドシェイク、3 ウェイハンドシェイク)を説明できる。</li>
+      <li>送り手が送るデータの一つ一つに番号(シーケンス番号)を付け、受け手がその番号をもとに「ここまで届いた」という ACK を返すことで、抜け落ちや順序の乱れに気づけることを説明できる。</li>
+      <li>ACK が一定時間戻ってこないとき、送り手がデータを送り直す(再送)ことを説明できる。</li>
+      <li>接続を終えるときは通常 FIN で段階的に終えるが、RST で強制的に打ち切ることもあることを説明できる。</li>
+      <li>接続が今どの段階(TCP の状態遷移。待ち受け中・会話中・閉じた直後など)にあるかを、自分の Mac で観察できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 360" role="img" aria-label="送り手と受け手が並ぶ図。上段は接続を作る 3 回のやり取り(送り手の SYN、受け手の SYN/ACK、送り手の ACK)。中段は番号を付けて送り、届いたことを ACK で確かめるやり取りで、届かなければ送り直す矢印が添えられている。下段は接続を終えるやり取り(送り手の FIN、受け手の ACK と FIN、送り手の ACK)で、その右に接続の状態(待ち受け中・会話中・閉じた直後)を示す 3 つの箱が並ぶ。">
+      <defs>
+        <marker id="m13-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m13-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <text x="60" y="24" font-size="13" fill="var(--fig-ink)">送り手</text>
+      <text x="780" y="24" font-size="13" fill="var(--fig-ink)">受け手</text>
+      <line x1="90" y1="16" x2="90" y2="330" stroke="var(--fig-muted)" stroke-width="1" stroke-dasharray="2 3"/>
+      <line x1="810" y1="16" x2="810" y2="330" stroke="var(--fig-muted)" stroke-width="1" stroke-dasharray="2 3"/>
+
+      <!-- 1: 接続を作る -->
+      <text x="20" y="55" font-size="12" fill="var(--fig-muted)">1. 接続を作る(13-1)</text>
+      <line x1="90" y1="68" x2="810" y2="68" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m13-arrow-accent)"/>
+      <text x="450" y="62" text-anchor="middle" font-size="11" fill="var(--fig-accent)">SYN</text>
+      <line x1="810" y1="84" x2="90" y2="84" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m13-arrow-ink)"/>
+      <text x="450" y="80" text-anchor="middle" font-size="11" fill="var(--fig-ink)">SYN/ACK</text>
+      <line x1="90" y1="100" x2="810" y2="100" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m13-arrow-accent)"/>
+      <text x="450" y="96" text-anchor="middle" font-size="11" fill="var(--fig-accent)">ACK</text>
+
+      <!-- 2: 番号を付けて確かめる、届かなければ送り直す -->
+      <text x="20" y="140" font-size="12" fill="var(--fig-muted)">2. 番号を付けて送り、届いたことを確かめる(13-2)</text>
+      <line x1="90" y1="153" x2="810" y2="153" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m13-arrow-accent)"/>
+      <text x="450" y="149" text-anchor="middle" font-size="11" fill="var(--fig-accent)">番号付きのデータ</text>
+      <line x1="810" y1="169" x2="90" y2="169" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m13-arrow-ink)"/>
+      <text x="450" y="165" text-anchor="middle" font-size="11" fill="var(--fig-ink)">ACK(ここまで届いた)</text>
+      <text x="20" y="196" font-size="12" fill="var(--fig-muted)">届かなければ送り直す(13-3)</text>
+      <line x1="90" y1="209" x2="450" y2="209" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m13-arrow-ink)"/>
+      <text x="270" y="205" text-anchor="middle" font-size="11" fill="var(--fig-muted)">もう一度、同じデータ</text>
+
+      <!-- 3: 終える -->
+      <text x="20" y="245" font-size="12" fill="var(--fig-muted)">3. 接続を終える(13-4)</text>
+      <line x1="90" y1="258" x2="810" y2="258" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m13-arrow-accent)"/>
+      <text x="450" y="254" text-anchor="middle" font-size="11" fill="var(--fig-accent)">FIN</text>
+      <line x1="810" y1="274" x2="90" y2="274" stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m13-arrow-ink)"/>
+      <text x="450" y="270" text-anchor="middle" font-size="11" fill="var(--fig-ink)">ACK、そして FIN</text>
+      <line x1="90" y1="290" x2="810" y2="290" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m13-arrow-accent)"/>
+      <text x="450" y="286" text-anchor="middle" font-size="11" fill="var(--fig-accent)">ACK</text>
+
+      <!-- 4: 状態を見る -->
+      <text x="20" y="322" font-size="12" fill="var(--fig-muted)">4. 今どの段階か(13-5)</text>
+      <rect x="220" y="308" width="130" height="34" rx="5" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="285" y="330" text-anchor="middle" font-size="11" fill="var(--fig-ink)">待ち受け中</text>
+      <rect x="390" y="308" width="130" height="34" rx="5" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="455" y="330" text-anchor="middle" font-size="11" fill="var(--fig-ink)">会話中</text>
+      <rect x="560" y="308" width="130" height="34" rx="5" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+      <text x="625" y="330" text-anchor="middle" font-size="11" fill="var(--fig-ink)">閉じた直後</text>
+    </svg>
+    <p class="fig-cap">送り手と受け手は、まず 3 回の合図(SYN・SYN/ACK・ACK)で接続を作り、次に番号を付けたデータと ACK で届いたことを確かめ合い、届かなければ送り直す。最後は FIN と ACK のやり取りで接続を終える。接続は、待ち受け中・会話中・閉じた直後など、いくつかの段階のどれかにある。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m13"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m12.html">← 第 12 章 ポートと UDP</a>
+    <a class="next" href="m14.html">第 14 章 TCP のフロー制御と輻輳制御 →</a>
+  </nav>
+</main>
+</body>
+</html>

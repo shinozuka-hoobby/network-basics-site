@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>今、この接続はどの段階にいるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m13-5" data-chapter="m13" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 13-5</p>
+  <p class="chapter-label">第 13 章 TCP の接続と信頼性　13-5</p>
+  <h1>今、この接続はどの段階にいるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>TCP の接続は、待ち受け中・会話中・閉じた直後など、<strong>いくつかの段階のどれかにあり</strong>、段階によって機械の振る舞いが変わる。このページでは、この段階の区分と、片側が接続を閉じたあともしばらく「閉じた直後」の段階が残ることを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ここまでで、あいさつが終わる前、会話中、終わりの合図を送った直後、といういろんな場面が出てきましたね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。これらは全部、接続が今どの段階にあるかを表す区分の一部で、<strong>TCP の状態遷移</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">1 章から今日まで、ずっとこの状態遷移の中を進んできたってことなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。会話できる状態を作る前、作った後、終えた後、それぞれ別の段階として扱われています。</p>
+    <p class="s" data-who="ひよこちゃん">具体的にはどんな段階があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">代表的なものとして、まだ申し出を待っている段階(LISTEN、待ち受け中)、実際に会話できている段階(ESTABLISHED、会話中)、閉じた直後の段階(TIME_WAIT、閉じた直後)があります。他にも、あいさつの途中などいくつか細かい段階があります。</p>
+    <p class="s" data-who="ひよこちゃん">待ち受け中と会話中は、何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">待ち受け中は、まだ相手からの申し出(SYN)を待っているだけの段階です。会話中は、あいさつが終わり、実際にデータをやり取りできる段階です。</p>
+    <p class="s" data-who="ひよこちゃん">段階によって、機械の振る舞いって具体的にどう変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、待ち受け中の段階でデータそのものが届いても、機械はまだそれを受け取る準備ができていません。段階ごとに、受け付けられる合図の種類が決まっています。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、サーバを再起動した直後に、同じポートで待ち受けを始められなかったって聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">よくある事例です。接続を能動的に閉じた側は、閉じた直後もしばらくの間、閉じた直後の段階を保ち続けます。</p>
+    <p class="s" data-who="ひよこちゃん">なんで、閉じたのにすぐ次の待ち受けを始められないんですか?</p>
+    <p class="t" data-who="ふくろう先生">その段階が残っている間は、同じ組み合わせでの接続にすぐには使いにくいためです。前の接続の後始末が、まだ完全には終わっていないと考えてください。</p>
+    <p class="s" data-who="ひよこちゃん">この段階って、どれくらいの間残るんですか?</p>
+    <p class="t" data-who="ふくろう先生">一定の時間だけ残り、それが過ぎると消えます。具体的な仕組みはここでは立ち入りませんが、決して無限に残り続けるわけではありません。</p>
+    <p class="s" data-who="ひよこちゃん">再起動してすぐ待ち受けを始めたい場合、どうすればいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">少し時間を空けて待つのが基本です。設定で回避する方法もありますが、それも含めて細かい対処はここでは扱いません。</p>
+    <p class="s" data-who="ひよこちゃん">自分の Mac でも、今どんな段階の接続があるか見れたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">見れます。会話中・閉じた直後・待ち受け中、それぞれの段階にある接続の数を、あとで試してみましょう。普段は意識しない数字が、実は結構な数になっていることに驚くかもしれません。</p>
+    <p class="s" data-who="ひよこちゃん">これで、会話できる状態を作って、番号を付けて届いたことを確かめて、届かなければ送り直して、終わるときは手順を踏む、という TCP の基本が一通り揃いましたね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次の章では、この接続の上でデータをやり取りするとき、確認を待たずにどんどん送ってよいのか、送れるとしたらどれだけの量か、という話を見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>接続は、待ち受け中(LISTEN)・会話中(ESTABLISHED)・閉じた直後(TIME_WAIT)など、いくつかの段階(TCP の状態遷移)のどれかにあり、段階ごとに受け付けられる合図の種類が決まっている。</li>
+      <li>待ち受け中はまだ相手からの申し出を待っている段階、会話中は実際にデータをやり取りできる段階である。</li>
+      <li>接続を能動的に閉じた側は、閉じた直後もしばらくの間、閉じた直後の段階(TIME_WAIT)を保ち続ける。</li>
+      <li>閉じた直後の段階が残っている間は、同じ組み合わせでの接続にすぐには使いにくい。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TCP の接続は、待ち受け中(LISTEN)、あいさつの途中、実際に会話できる会話中(ESTABLISHED)、そして接続を閉じた直後(TIME_WAIT)など、いくつかの段階のどれかにあり、この区分を TCP の状態遷移(コネクションの状態)と呼ぶ(#4 p.15、p.18〜19)。段階が変わるきっかけは、SYN・ACK・FIN といった合図の送受信であり、同じ合図でも今どの段階にいるかによって機械の振る舞いが変わる(#4 p.18〜19)。接続を能動的に閉じた側は、閉じた直後も一定の時間、閉じた直後の段階を保ち続ける(#4 p.15)。これは、古い接続の遅れて届いたデータを、あとから同じ組み合わせで作られる新しい接続と混同しないためである。この段階が残っている間は同じ組み合わせでの接続にすぐには使いにくいため、サーバを再起動した直後に同じポート番号で待ち受けを始めようとして、うまく始められないことがある。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>netstat -an -p tcp | grep -c ESTABLISHED
+netstat -an -p tcp | grep -c TIME_WAIT
+netstat -an -p tcp | grep -c LISTEN</code></pre>
+    <p>見方: 3 つの数字は、今この Mac にある接続のうち、会話中・閉じた直後・待ち受け中の段階にあるものが、それぞれいくつあるかを示す。TIME_WAIT の行の数字が 0 でなければ、それがこのページで説明した「閉じた直後の段階がしばらく残る」ことの実例である。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.15、p.18〜19 接続の状態遷移図と状態名）</li>
+    <li class="cite" data-src="81">[#81] IETF「RFC 9293: Transmission Control Protocol (TCP)」 — <a href="https://www.rfc-editor.org/rfc/rfc9293.html" rel="noopener">原典</a>（TIME_WAIT の理由）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m13-5">
+    <div class="q" data-q="1">
+      <p class="q-text">待ち受け中(LISTEN)と会話中(ESTABLISHED)の段階の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">待ち受け中はまだ相手からの申し出を待っている段階、会話中は実際にデータをやり取りできる段階である</button></li>
+        <li><button type="button" data-correct="false">待ち受け中は接続が壊れている段階、会話中は正常な段階である</button></li>
+        <li><button type="button" data-correct="false">待ち受け中と会話中はまったく同じ段階で、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">待ち受け中はデータを送る側、会話中はデータを受け取る側の段階である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、待ち受け中はまだ相手からの申し出を待っている段階、会話中は実際にデータをやり取りできる段階である、です。待ち受け中はまだ相手からの SYN を待っているだけで、あいさつが終わって初めて会話中になります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">接続を閉じた直後の段階(TIME_WAIT)が残っている間、なぜ同じ組み合わせでの接続をすぐには始めにくいのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">相手が新しい IP アドレスを割り当てられるまで待つ必要があるから</button></li>
+        <li><button type="button" data-correct="true">前の接続がまだ完全には後片付けされておらず、その段階が残っているから</button></li>
+        <li><button type="button" data-correct="false">同じポート番号は二度と使えない決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">閉じた直後の段階では、シーケンス番号が無限に増え続けるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、前の接続がまだ完全には後片付けされておらず、その段階が残っているから、です。接続を能動的に閉じた側は、しばらくの間、閉じた直後の段階を保ち続けるため、その間は同じ組み合わせでの接続にすぐには使いにくくなります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">TCP の状態遷移とは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">送ったデータに付ける通し番号のこと</button></li>
+        <li><button type="button" data-correct="true">接続が今どの段階にあるかを表す区分のこと</button></li>
+        <li><button type="button" data-correct="false">送り手と受け手の間で交わされる暗号化の手順のこと</button></li>
+        <li><button type="button" data-correct="false">IP アドレスとポート番号の組み合わせのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、接続が今どの段階にあるかを表す区分のこと、です。待ち受け中・会話中・閉じた直後など、接続はいくつかの段階のどれかにあり、段階によって機械の振る舞いが変わります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m13-4.html">← 13-4 きちんと終わる接続と、いきなり切れる接続</a>
+    <a class="up" href="m13.html">第 13 章の入口</a>
+    <a class="next" href="m14.html">第 14 章 TCP のフロー制御と輻輳制御 →</a>
+  </nav>
+</main>
+</body>
+</html>

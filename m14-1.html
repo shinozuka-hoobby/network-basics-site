@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>送りすぎると何が起きるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m14-1" data-chapter="m14" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 14-1</p>
+  <p class="chapter-label">第 14 章 TCP のフロー制御と輻輳制御　14-1</p>
+  <h1>送りすぎると何が起きるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>サーバとやり取りを始めたあと、送り手は次々とデータを送り出せるが、無制限に送ってよいわけではない。<strong>量を減らす理由には、相手の処理が追いつかないという理由と、途中の道が混んでいるという理由の、性質の異なる 2 つがある</strong>。このページでは、この 2 つの理由を整理する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">先輩から、TCP 接続の上では ACK を待たずにデータを送り続けていいのか聞かれたんですが、うまく答えられませんでした。1 つずつ確認を待っていたら遅そうだとは思うんですけど。</p>
+    <p class="t" data-who="ふくろう先生">確認が返っていないデータをいくつか並行して送ることはできます。ただし、際限なく送ってよいわけではありません。</p>
+    <p class="s" data-who="ひよこちゃん">え、そうなんですか。てっきり 1 つ送っては返事を待って、を繰り返してるのかと思ってました。</p>
+    <p class="t" data-who="ふくろう先生">そのやり方だと、通信のたびに待ち時間が積み重なって遅くなります。だから複数まとめて送りますが、無制限というわけにはいきません。</p>
+    <p class="s" data-who="ひよこちゃん">たくさん送りすぎると、具体的に何が起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">相手が処理しきれない分は、置いておく場所からあふれて扱いきれなくなります。あるいは、途中の道が混みすぎて、データが目的地まで届かずに失われることもあります。原因によって、起きることも対処も違います。</p>
+    <p class="s" data-who="ひよこちゃん">原因は 1 つじゃないんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、理由は大きく 2 つあります。それぞれに名前が付いていて、この章のタイトルにも入っています。</p>
+    <p class="s" data-who="ひよこちゃん">その 2 つ、それぞれ何なんですか? 名前だけ聞いてもピンとこないです。</p>
+    <p class="t" data-who="ふくろう先生">1 つ目は、さっき言った「相手が処理しきれない」量の話です。受け取る側が処理しきれずに置いておける量には限りがあり、それを超えないよう送り手が送る量を加減します。<a class="term" href="glossary.html#flow-control" data-term="flow-control">フロー制御</a>と呼ばれる仕組みで、詳しくは 14-2 で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">もう 1 つは、経路の話なんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。途中の回線や機器が運べる量には限りがあり、それを超えて送ると混み合います。送り手が経路の混み具合を見ながら送る量を加減する仕組みを<a class="term" href="glossary.html#congestion-control" data-term="congestion-control">輻輳制御</a>と呼び、詳しくは 14-3 で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">相手の処理力の都合と、経路の混雑の都合は、別の話なんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。原因も、送り手が見ている相手も違います。片方が原因なら、もう片方をいくら疑っても解決しません。</p>
+    <p class="s" data-who="ひよこちゃん">たとえば、受け取る側の処理が遅いだけなら、経路は空いてるかもしれないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。逆に受け取る側に余裕があっても、途中の回線が混んでいることもあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、どちらの理由で量を減らしているか、送り手はちゃんと区別してるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、別々の仕組みとして扱われています。片方だけ手当てしても、もう片方の理由で遅いままということもあります。</p>
+    <p class="s" data-who="ひよこちゃん">実務でトラブルが起きたときも、この 2 つを区別して考えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。速度が出ない原因を切り分けるとき、まず「相手の受け取りが遅いのか」「経路が混んでいるのか」を分けて考えます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、原因の切り分けにも役立つんですね。まずはフロー制御から見ていきたいです。</p>
+    <p class="t" data-who="ふくろう先生">では次のページで、受け取る側が自分の限界をどうやって送り手に伝えるかを見ていきましょう。そのあとで、経路側の理由も順番に見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>送り手は ACK を待たずに複数のデータを並行して送れるため、1 つずつ確認を待つより効率よく送れるが、無制限に送ってよいわけではない。</li>
+      <li>送りすぎると、受け取る側が処理できずにあふれるか、途中の道が混みすぎてデータが失われるかのどちらかが起きる。</li>
+      <li>量を減らす理由には、受け取る側の処理力の限界(フロー制御)と、途中の経路の混み具合の限界(輻輳制御)という、性質の異なる 2 つがある。</li>
+      <li>フロー制御は受け取る側の事情、輻輳制御は経路の事情であり、原因も送り手が見ている相手も異なる。</li>
+      <li>次のページ以降、まず受け取る側の事情であるフロー制御(14-2)を見たあと、経路の事情である輻輳制御(14-3〜14-5)を順番に見ていく。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TCP 接続の上でデータを送るとき、送り手は ACK を待たずに、まだ確認が返っていないデータをいくつも並行して送り出せる。ただし無制限に送ってよいわけではなく、量を加減しなければならない理由が 2 つある。1 つはフロー制御で、受け取る側が処理しきれずに置いておける量には限りがあり、それを超えて送ると、相手はあふれた分を扱いきれなくなる。もう 1 つは輻輳制御で、途中の回線や機器が運べる量には限りがあり、それを超えて大量のデータが一度に通ろうとすると混み合い、途中でデータが失われることもある。フロー制御は受け取る側の事情、輻輳制御は経路の事情であり、原因も対処も別のものとして扱われる。どちらの理由で量が減らされているかによって、疑うべき原因も変わってくるため、この 2 つを区別しておくことが後のページの理解にもつながる。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.3、p.28「Flow control and congestion control: Competition and Arbitration of Network Resource」）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m14-1">
+    <div class="q" data-q="1">
+      <p class="q-text">受け取る側の処理力に問題がある場合と、途中の経路が混んでいる場合の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">どちらも同じ原因なので、送り手は区別する必要がない</button></li>
+        <li><button type="button" data-correct="true">受け取る側の処理力の限界はフロー制御、経路の混雑の限界は輻輳制御という、別々の仕組みで扱われる</button></li>
+        <li><button type="button" data-correct="false">経路が混んでいるときだけ、送り手は送る量を減らす</button></li>
+        <li><button type="button" data-correct="false">受け取る側の処理力の限界も、輻輳制御という仕組みで扱われる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、受け取る側の処理力の限界はフロー制御、経路の混雑の限界は輻輳制御という、別々の仕組みで扱われる、です。原因も送り手が見ている相手も異なるため、片方の仕組みだけを見ても、もう片方の理由による遅さは説明できません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TCP 接続の上で、送り手が ACK を待たずにデータを送ることについて正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">1 つ送るごとに必ず ACK を待つ必要があり、複数を並行して送ることはできない</button></li>
+        <li><button type="button" data-correct="true">確認が返っていないデータを複数並行して送れるが、無制限に送ってよいわけではない</button></li>
+        <li><button type="button" data-correct="false">ACK を待たずに送れる量に上限はない</button></li>
+        <li><button type="button" data-correct="false">フロー制御と輻輳制御は、原因が同じ 1 つの仕組みである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、確認が返っていないデータを複数並行して送れるが、無制限に送ってよいわけではない、です。1 つずつ確認を待つと待ち時間が積み重なって遅くなるため複数まとめて送りますが、受け取る側の処理力や経路の混み具合という 2 つの理由から、送る量には加減が必要です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">フロー制御の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">途中の経路の混み具合を見ながら、送り手が送る量を加減する仕組み</button></li>
+        <li><button type="button" data-correct="true">受け取る側が処理できる量に合わせて、送り手が送る量を加減する仕組み</button></li>
+        <li><button type="button" data-correct="false">送ったデータが届いたことを確認応答で知らせる仕組み</button></li>
+        <li><button type="button" data-correct="false">通信を始める前に行う、決まった手順のあいさつ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、受け取る側が処理できる量に合わせて、送り手が送る量を加減する仕組み、です。途中の経路の混み具合を見て量を加減するのは輻輳制御で、受け取る側の事情に合わせるフロー制御とは原因も対処も異なります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m14.html">← 第 14 章の入口</a>
+    <a class="up" href="m14.html">第 14 章の入口</a>
+    <a class="next" href="m14-2.html">14-2 相手が受け取れる量に、送る量を合わせる →</a>
+  </nav>
+</main>
+</body>
+</html>

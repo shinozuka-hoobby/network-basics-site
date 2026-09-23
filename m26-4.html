@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>暗号化は、どこからどこまでを守っているか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m26-4" data-chapter="m26" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 26-4</p>
+  <p class="chapter-label">第 26 章 ネットワークセキュリティの基礎　26-4</p>
+  <h1>暗号化は、どこからどこまでを守っているか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ここまでの章で、暗号化の仕組みをいくつか見てきた。<strong>それぞれ、通信のどの部分を守っているかが違う</strong>。このページでは、これまでの内容を振り返りながら、その範囲を整理する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ここまでで、TLS・DNS の暗号化・VPN と、色々な暗号化の仕組みを見てきましたけど、それぞれ何を守ってるのか、こんがらがってきました。</p>
+    <p class="t" data-who="ふくろう先生">良い機会なので整理しましょう。第 18 章で見た TLS は、大きく 3 つのことを守っていましたね。中身が読めなくなること、相手の確認、改ざんの検知です。</p>
+    <p class="s" data-who="ひよこちゃん">あ、思い出しました。Web サーバとのやり取りの中身を守ってくれるんですよね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ただ、TLS でも守れないものがある、と第 18 章で確認しましたね。</p>
+    <p class="s" data-who="ひよこちゃん">はい、名前解決は TLS の保護の外側で行われるから、っていう話でした。</p>
+    <p class="t" data-who="ふくろう先生">そうです。名前解決の問い合わせは、従来ほとんどの場合暗号化されていません。同じネットワークにいる人には、どのホスト名に問い合わせているかが見えてしまうことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">それって、第 18 章 18-1 で聞いた、会社の共有 Wi-Fi だと誰がどのサイトを見ているか分かる、っていう話と同じことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。あの話は、まさに名前解決が暗号化されていないことが原因でした。</p>
+    <p class="s" data-who="ひよこちゃん">それを守るのが、第 17 章で見た DoT や DoH ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。DoT・DoH が守るのは、名前解決の問い合わせと答えの範囲です。その後の Web サイトとのやり取り自体は、別に TLS で守る必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、第 25 章で見た VPN はどうなんですか?</p>
+    <p class="t" data-who="ふくろう先生">VPN は、送りたい元のデータ全体を、新しい宛先の情報で包み直してから送ります。</p>
+    <p class="s" data-who="ひよこちゃん">VPN の「拠点間」って、具体的にはどことどこをつなぐ話でしたっけ?</p>
+    <p class="t" data-who="ふくろう先生">第 25 章 25-3 で見た、クラウドの仕切られたネットワークと社内のネットワークをつなぐ話です。インターネット回線の上に、暗号化した専用の通り道を作ります。</p>
+    <p class="s" data-who="ひよこちゃん">TLS とは、守り方が違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。TLS が Web のやり取りの中身だけを暗号化するのに対して、<strong>VPN は元の宛先の情報も含めて、通信全体を包み直します</strong>。</p>
+    <p class="s" data-who="ひよこちゃん">VPN なら、何でも安心して守ってくれるんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 25 章 25-3 で見たとおり、VPN は公衆のインターネット回線の上を通るため、インターネットそのものの混雑の影響を受けることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">守れる範囲と、守れない範囲、それぞれにあるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。どこからどこまでを守っているかを知っておくことが大事です。</p>
+    <p class="s" data-who="ひよこちゃん">整理すると、TLS は Web のやり取りの中身、DoT・DoH は名前解決の問い合わせ、VPN は拠点間の通信全体、ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">良い整理です。次のページでは、この「信頼する範囲」という考え方そのものを見直す動きを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>TLS は、Web サーバとのやり取りの中身を守るが、名前解決のようにその前の段階には保護が及ばない。</li>
+      <li>DoT・DoH は、名前解決の問い合わせと答えを暗号化するが、その後の Web サイトとのやり取り自体は別に TLS で守る必要がある。</li>
+      <li>会社の共有 Wi-Fi で誰がどのサイトを見ているか分かってしまう(第 18 章 18-1)のは、名前解決の問い合わせが暗号化されていないことが原因である。</li>
+      <li>VPN は、送りたい元のデータ全体を新しい宛先の情報で包み直して送るため通信全体を守れるが、インターネット回線そのものの混雑の影響を受けることがある。</li>
+      <li>それぞれの暗号化がどこからどこまでを守っているかを知っておくことが大切である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TLS・DNS の暗号化(DoT・DoH)・VPN は、それぞれ通信の異なる範囲を守っている。TLS は、Web サーバとのやり取りの中身(アプリケーションのデータ)を暗号化するが、その手前で行われる名前解決には保護が及ばない。DoT・DoH は、名前解決の問い合わせと答えだけを暗号化する。名前解決の問い合わせが暗号化されていないと、同じネットワークにいる人にどのホスト名に問い合わせているかが見えてしまうことがあり、これが会社の共有 Wi-Fi の例(第 18 章 18-1)の背景である。VPN は、クラウドの仕切られたネットワークと社内のネットワークのように、拠点間をつなぐ通信について、送りたい元のデータ全体を、新しい宛先の情報で包み直して送るため、TLS より広い範囲(通信全体)を守る。ただし VPN も、公衆のインターネット回線の上を通るという制約からは逃れられない。</p>
+    <table>
+      <tr><th>何を暗号化するか</th><th>守る範囲</th></tr>
+      <tr><td>TLS(第 18 章)</td><td>Web サーバとのやり取りの中身</td></tr>
+      <tr><td>DNS の暗号化(DoT・DoH、第 17 章)</td><td>名前解決の問い合わせと答え</td></tr>
+      <tr><td>VPN(第 25 章)</td><td>拠点間の通信全体(元のデータをまるごと包み直す)</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sv https://example.com -o /dev/null</code></pre>
+    <p>見方: 「* Connected to … (IP)」の行の後に、TLS の握手の行(「TLSv1.3 (IN)」「SSL connection using」など)が来ます。接続先の IP を得る名前解決と、その後の接続は、TLS で守られる範囲の外で、その前に行われています。</p>
+    <p class="try-note">command not found と出たら、この回は読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(TLS が、やり取りの中身の暗号化・相手の認証・改ざんの検知を行うという記述。第 18 章 18-1 で参照済みの内容をここで振り返る)</li>
+    <li class="cite" data-src="54">[#54] Cloudflare Blog「DNS Encryption Explained」 — <a href="https://blog.cloudflare.com/dns-encryption-explained/" rel="noopener">原典</a>(21 行目。DNS の問い合わせは 1987 年の作成以来ほとんど暗号化されておらず、経路上の誰にでも見られてしまうという記述。第 18 章 18-1 で参照済みの内容をここで振り返る)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室(wide.ad.jp)「ネットワーク工学概論(教員公開版・現行)」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>(`02-Security.txt` p.119 付近。拠点間の通信で、元のパケットを新しい宛先情報で包み直す方式(IPsec のトンネルモード)を示した図)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m26-4">
+    <div class="q" data-q="1">
+      <p class="q-text">DoT や DoH で名前解決を暗号化しても、その後の Web サイトとのやり取りの中身まで守られるわけではない。なぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">DoT・DoH は暗号化の方式として認められていないから</button></li>
+        <li><button type="button" data-correct="true">DoT・DoH が守るのは名前解決の問い合わせと答えの範囲であり、その後のやり取りは別の仕組みで守る必要があるから</button></li>
+        <li><button type="button" data-correct="false">DoT・DoH を使うと、通信の速度が必ず遅くなるから</button></li>
+        <li><button type="button" data-correct="false">DoT・DoH は VPN の一部の機能だから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「DoT・DoH が守るのは名前解決の問い合わせと答えの範囲であり、その後のやり取りは別の仕組みで守る必要があるから」です。DoT・DoH は正式な暗号化の方式であり、VPN の機能でもありません。速度についても本文では述べていません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TLS が守る範囲について、正しいのはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前解決を含めて、通信のすべての段階を守る</button></li>
+        <li><button type="button" data-correct="false">通信を行っているという事実そのものを隠す</button></li>
+        <li><button type="button" data-correct="true">Web サーバとのやり取りの中身を守るが、その手前で行われる名前解決には保護が及ばない</button></li>
+        <li><button type="button" data-correct="false">拠点間の通信全体を、まるごと包み直して守る</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「Web サーバとのやり取りの中身を守るが、その手前で行われる名前解決には保護が及ばない」です。名前解決を含めた全段階の保護や、通信の存在そのものを隠すこと、拠点間の通信全体を包み直すことは、TLS ではなく別の仕組みの話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">VPN が TLS より広い範囲を守れるのは、なぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">VPN は TLS より新しい暗号技術を使っているから</button></li>
+        <li><button type="button" data-correct="false">VPN は名前解決を行わないから</button></li>
+        <li><button type="button" data-correct="false">VPN はインターネット回線を使わないから</button></li>
+        <li><button type="button" data-correct="true">送りたい元のデータ全体を、新しい宛先の情報で包み直して送るから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「送りたい元のデータ全体を、新しい宛先の情報で包み直して送るから」です。VPN は公衆のインターネット回線の上を通り、新しい暗号技術を使っているという話でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m26-3.html">← 26-3 一斉に押し寄せる通信をどう防ぐか</a>
+    <a class="up" href="m26.html">第 26 章の入口</a>
+    <a class="next" href="m26-5.html">26-5 社内にいることを、理由にしない →</a>
+  </nav>
+</main>
+</body>
+</html>

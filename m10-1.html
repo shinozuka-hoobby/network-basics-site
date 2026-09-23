@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家の中の番号は、そのままでは外に出られない — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m10-1" data-chapter="m10" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 10-1</p>
+  <p class="chapter-label">第 10 章 NAT とプライベートネットワーク　10-1</p>
+  <h1>家の中の番号は、そのままでは外に出られない</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>プライベートアドレスの機器は、そのままでは外のインターネットに直接データを送り出せない。<strong>家庭用ルータが、送信元のアドレスを家の中の番号から外向けの番号へ付け替えている</strong>おかげで、外のサーバとやり取りできている。このページでは、その付け替えの仕組みの中身を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 4 章で、家庭用ルータには番号を付け替える役目もあるけど、中身は第 10 章で、って言われてたのを覚えてます。今日がその回ですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。第 5 章 5-4 でも、プライベートアドレスの機械が外と通信できるのはこの仕組みのおかげだと少し触れましたが、今日はその中身を詳しく見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">そもそも、なぜプライベートアドレスのままだと駄目なんですか?</p>
+    <p class="t" data-who="ふくろう先生"><strong>プライベートアドレスは、それぞれのネットワークの中だけで通用する番号</strong>です。よそのネットワークにいる機械が、その番号を宛先として指定することはできません。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、外のサーバにお願いを送っても、返事が戻ってこないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのままだと戻ってきません。だから家庭用ルータが、外に送り出すときにプライベートアドレスをグローバルアドレスへ付け替えます。これが NAT という仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">本当にそんな風に番号が変わるところ、確認できたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。ネットワークの練習教材に、無線ルータの中と外でアドレスがどう見えるかを比べる演習があります。家の中の機器にはプライベートアドレスが配られ、ルータのインターネット側のポートには別の番号が割り当てられています。</p>
+    <p class="s" data-who="ひよこちゃん">その演習、具体的にはどういう手順で確認するんですか?</p>
+    <p class="t" data-who="ふくろう先生">家庭用ルータの管理画面にログインして、ステータスのページを見ます。「インターネット接続オプション」の欄に表示される番号が ISP から割り当てられたグローバルアドレス、「ローカルネットワーク」の欄に表示される番号が家の中で配られるプライベートアドレスの範囲です。</p>
+    <p class="s" data-who="ひよこちゃん">1 台のルータの中に、外向けの番号と中向けの番号が両方あるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。家庭用ルータのインターネット側のポートにはグローバルアドレスが、家の中に向けたポートにはプライベートアドレスが、それぞれ割り当てられています。この中向けのアドレスは、第 7 章で見たデフォルトゲートウェイの番号でもあります。</p>
+    <p class="s" data-who="ひよこちゃん">その 2 つの番号を比べると、どう違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">演習では、パソコンから外の Web サーバへ向かうデータのヘッダーを、ルータを通る前と後で見比べます。送信元の IP アドレスが、ルータを境に書き換わっている様子が確認できます。</p>
+    <p class="s" data-who="ひよこちゃん">へえ、途中で本当に数字が変わるんですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。プライベートアドレスのままでは外に届かないデータが、NAT によって送信元アドレスを書き換えられることで、インターネットの先まで届くようになります。</p>
+    <p class="s" data-who="ひよこちゃん">付け替えるだけで、ちゃんと自分のところに返事が戻ってくるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いい質問です。1 台だけならそれで済みますが、家の中に機器が複数あると、<strong>戻ってきた返事をどの機器に届けるか</strong>という新しい問題が出てきます。</p>
+    <p class="s" data-who="ひよこちゃん">見分ける方法があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。次のページで、その見分け方を詳しく見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">なんだか、家の中と外で番号を使い分ける、みたいなイメージですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、その使い分けを支える表の中身を見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>プライベートアドレスは自分のネットワークの中だけで通用する番号で、インターネットの外からは直接の宛先にできない。</li>
+      <li>NAT は、家庭用ルータなどが、家の中のプライベートアドレスを外向けのグローバルアドレスに付け替える仕組みである。</li>
+      <li>無線ルータの動作を調べる練習教材でも、ルータを通る前と後で送信元 IP アドレスが書き換わっている様子を確認できる。</li>
+      <li>家の中に機器が複数あると、戻ってきた返事をどの機器に届けるかという新しい問題が生まれる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>プライベートアドレスは、それぞれのネットワークの中だけで通用する番号として決められており、インターネットの外からその番号を直接の宛先として指定することはできない。そのため、プライベートアドレスの機械が外のサーバへデータを送っても、そのままでは返事の宛先として使えない。NAT(Network Address Translation)は、家庭用ルータなどがこの送信元アドレスを、外へ出て行くときにグローバルアドレスへ書き換える仕組みである。無線ルータの動作を調べる演習でも、パソコンから外の Web サーバへ送られたデータのヘッダーを、ルータを通る前と後で見比べると、送信元 IP アドレスがプライベートアドレスからグローバルアドレスへ書き換わっている様子が確認できる。ただし、家の中の機器が複数になると、1 つのグローバルアドレスをどう共有し、戻ってきた返事をどの機器に届けるかという新しい問題が生じる。この問題への対処は次のページで扱う。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 12.2.2「Examine NAT on a Wireless Router」、内部ネットワークの構成を調べる手順の注記「プライベートアドレスはインターネットを越えることができないため、NAT 変換を実行する必要があります」、および着信/発信 PDU の詳細タブで送信元 IP アドレスの変化を確認する手順）</li>
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（"Access the internet" の節、"NAT maps multiple private IPv4 addresses to a single public IPv4 address" という記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m10-1">
+    <div class="q" data-q="1">
+      <p class="q-text">NAT の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">家の中で使うプライベートアドレスを、外に出ていくときにグローバルアドレスへ付け替える仕組み</button></li>
+        <li><button type="button" data-correct="false">プライベートアドレスをそのまま外部に公開する仕組み</button></li>
+        <li><button type="button" data-correct="false">グローバルアドレスをプライベートアドレスの範囲に書き換える仕組み</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクを計算し直す仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、家の中で使うプライベートアドレスを、外に出ていくときにグローバルアドレスへ付け替える仕組み、です。プライベートアドレスをそのまま公開しても外からの宛先にはならず、グローバルアドレスをプライベートアドレスへ書き換えるのは向きが逆です。サブネットマスクの計算とは別の仕組みです。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">プライベートアドレスの機器が外のサーバに直接データを送っても、そのままでは返事を受け取れないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">プライベートアドレスは自分のネットワークの中だけで通用する番号で、インターネットの外からは宛先として指定できないから</button></li>
+        <li><button type="button" data-correct="false">プライベートアドレスの機器は送信しかできない仕組みになっているから</button></li>
+        <li><button type="button" data-correct="false">グローバルアドレスの機器しかインターネットに接続できない決まりだから</button></li>
+        <li><button type="button" data-correct="false">プライベートアドレスにはサブネットマスクが設定されていないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、プライベートアドレスは自分のネットワークの中だけで通用する番号で、インターネットの外からは宛先として指定できないから、です。送信自体はでき、グローバルアドレスの機器しか接続できないという決まりでもなく、サブネットマスクの有無とも関係ありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">無線ルータの NAT を調べる演習で、パソコンから外の Web サーバへ送ったデータのヘッダーをルータの前後で見比べると、何が変わっているか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">送信元の IP アドレス</button></li>
+        <li><button type="button" data-correct="false">宛先の IP アドレス</button></li>
+        <li><button type="button" data-correct="false">宛先のポート番号</button></li>
+        <li><button type="button" data-correct="false">データの中身(本文)</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送信元の IP アドレス、です。ルータを境に、プライベートアドレスからグローバルアドレスへ書き換わります。宛先の IP アドレスやポート番号、データの中身は書き換えの対象ではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m10.html">← 第 10 章の入口</a>
+    <a class="up" href="m10.html">第 10 章の入口</a>
+    <a class="next" href="m10-2.html">10-2 1 つの番号を、みんなで使うための工夫 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>利用者は、ロードバランサにどうたどり着くか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m23-5" data-chapter="m23" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 23-5</p>
+  <p class="chapter-label">第 23 章 ロードバランシング　23-5</p>
+  <h1>利用者は、ロードバランサにどうたどり着くか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>利用者が振り分ける機械自体のアドレスをどうやって知るかを確認する。<strong>名前解決の答えそのものを使い分けて振り分けを行う方式</strong>もあることと、クラウド 3 社での呼び方の対応を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">ロードバランサって、いろんな機械が裏で動いてるんですよね? 利用者は、最初にどうやってそこにたどり着くんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 16 章で見た名前解決と同じです。利用者は、まず名前解決でロードバランサの IP アドレスを受け取ります。</p>
+    <p class="s" data-who="ひよこちゃん">そのアドレス宛てに送れば、あとは前のページまでの仕組み(ラウンドロビンやフローハッシュ)にお任せ、ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。この名前解決の答えにも、第 16 章で見た TTL が付いています。ロードバランサでは、この秒数を<strong>短めに設定する</strong>ことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">短くすると、何がいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">通信量の変化に応じて構成を変えたときに、利用者側の古い答えが早く入れ替わり、新しい IP アドレスにすぐ切り替えられます。</p>
+    <p class="s" data-who="ひよこちゃん">振り分けって、ロードバランサという機械だけがやるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は、名前解決の答えそのものを使い分けて、振り分けを行う方式もあります。第 22 章 22-4 で見た、近くのエッジサーバのアドレスを答える方式を覚えていますか?</p>
+    <p class="s" data-who="ひよこちゃん">はい、近くの配信先を教えてくれる方式でしたよね。</p>
+    <p class="t" data-who="ふくろう先生">同じ考え方が、自社の複数サーバへの振り分けにも使われることがあります。AWS の Amazon Route 53 には、応答する比率を決めて答えを使い分けたり、応答の速さに応じて答えを変えたりする設定があります。</p>
+    <p class="s" data-who="ひよこちゃん">DNS の応答自体で振り分けるってことですね。使えなくなった答えを外すような仕組みもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。健康な答えだけを複数返したり、使えなくなったら別の答えに切り替えたりする設定もあります。ここにも、前のページで見たヘルスチェックに近い考え方が使われています。</p>
+    <p class="s" data-who="ひよこちゃん">GCP のロードバランサも、DNS の答えを工夫するタイプなんですか?</p>
+    <p class="t" data-who="ふくろう先生">違います。GCP のロードバランサは、1 つの Anycast の IP アドレスを窓口にする方式です。第 22 章で見た Anycast の考え方が、ここでも使われています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、DNS の答えを使い分ける方式と、Anycast の方式と、両方あるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。目的は同じでも、実現の仕方は事業者によって異なります。</p>
+    <p class="s" data-who="ひよこちゃん">呼び方は 3 社で違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。Azure には、Traffic Manager という、DNS の応答を使って負荷分散を行うサービスがあります。</p>
+    <p class="s" data-who="ひよこちゃん">ロードバランサ自体の種類の呼び方も、3 社で違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、名前も違います。表で確認しましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>利用者は、名前解決でロードバランサの IP アドレスを受け取ってから、そのアドレス宛てに要求を送る。</li>
+      <li>ロードバランサの DNS の答えにも TTL が付いており、AWS ではこの秒数を短めに設定することで、構成の変更に応じて素早く IP アドレスを切り替えられる。</li>
+      <li>名前解決の答えそのものを使い分けて振り分けを行う方式もある。AWS の Amazon Route 53 には、比率や応答の速さに応じて答えを変える設定、健康な答えを複数返す設定、使えなくなったら別の答えに切り替える設定がある。</li>
+      <li>Azure には、DNS の応答を使って負荷分散を行う Traffic Manager というサービスがある。</li>
+      <li>GCP のロードバランサは、DNS の答えを使い分けるのではなく、1 つの Anycast の IP アドレスを窓口にする方式であり、第 22 章で見た Anycast の考え方の応用である。</li>
+      <li>クラウド 3 社は、ロードバランサ自体の種類の呼び方も異なる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>利用者は、名前解決でロードバランサの IP アドレスを受け取ってから、そのアドレス宛てに要求を送る(#25)。この DNS の答えにも TTL が付いており、AWS は 60 秒という短い値を使う。通信量の変化に応じて構成を変えたときに、利用者側の古い答えを早く入れ替え、新しい IP アドレスへ素早く付け替えるためである(#25)。振り分けは、ロードバランサという機械だけでなく、名前解決の答えそのものを使い分けることでも行える。AWS の Amazon Route 53 には、応答する比率を決めて答えを使い分ける設定、応答の速さに応じて答えを変える設定、使えなくなったら別の答えに切り替える設定、健康な答えを複数返す設定がある(#24)。Azure には、DNS の応答を使って負荷分散を行う Traffic Manager というサービスがある(#41)。クラウド 3 社のロードバランサの種類は、次の表のとおり対応する。</p>
+    <table>
+      <tr><th>区分</th><th>AWS</th><th>GCP</th><th>Azure</th></tr>
+      <tr><td>L7</td><td>Application Load Balancer</td><td>Application Load Balancer</td><td>別サービス(Application Gateway)</td></tr>
+      <tr><td>L4</td><td>Network Load Balancer</td><td>Network Load Balancer</td><td>Load Balancer</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>dig &lt;あなたのサイト&gt;</code></pre>
+    <p>見方: ANSWER SECTION に並ぶ A レコードの行数を見てください。複数あれば、同じ名前に複数の宛先アドレスが対応しており、その中にロードバランサの複数の振り分け役(ノード)のアドレスが含まれていることがあります。</p>
+    <p class="try-note">1 行しか無くても異常ではない(単一のアドレスの先で振り分けが行われている場合や、Anycast の方式が使われている場合がある)。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="25">[#25] AWS「How Elastic Load Balancing works」 — <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html" rel="noopener">原典</a>(77〜88 行目。利用者はまず名前解決でロードバランサの IP アドレスを受け取るという記述。DNS エントリの TTL は 60 秒だと明記され、通信量の変化に応じて構成を変えたときに IP アドレスを素早く付け替えるためだという記述)</li>
+    <li class="cite" data-src="24">[#24] AWS「Amazon Route 53 concepts」 — <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/route-53-concepts.html" rel="noopener">原典</a>(69〜88 行目「routing policy」の定義。比率を指定して複数の答えを返す Weighted routing policy、応答の速さで答えを選ぶ Latency routing policy、能動系と待機系を切り替える Failover routing policy、健康な記録を複数返す Multivalue answer routing policy という記述。122〜135 行目「Health checking concepts」の節。ヘルスチェックの結果に基づいて経路を切り替えるという記述)</li>
+    <li class="cite" data-src="41">[#41] Microsoft「Azure DNS overview」 — <a href="https://learn.microsoft.com/en-us/azure/dns/dns-overview" rel="noopener">原典</a>(16 行目「Azure Traffic Manager is a DNS-based traffic load balancer.」という記述)</li>
+    <li class="cite" data-src="31">[#31] Google Cloud「Cloud Load Balancing overview」 — <a href="https://docs.cloud.google.com/load-balancing/docs/load-balancing-overview" rel="noopener">原典</a>(3 行目。単一の Anycast IP アドレスを窓口にするという記述。76〜91 行目。Application Load Balancer は Layer 7、Network Load Balancer は Layer 4 という記述)</li>
+    <li class="cite" data-src="40">[#40] Microsoft「Azure Load Balancer overview」 — <a href="https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview" rel="noopener">原典</a>(17 行目。Layer 4 の TCP・UDP トラフィックを分散するという記述。26 行目「Other services in this category include Azure Front Door and Azure Application Gateway.」という記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m23-5">
+    <div class="q" data-q="1">
+      <p class="q-text">なぜ AWS はロードバランサの DNS エントリの TTL を 60 秒という短い値にしているのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">セキュリティ上の理由で、頻繁に暗号鍵を更新するため</button></li>
+        <li><button type="button" data-correct="true">通信量の変化に応じて構成を変えたときに、利用者側の古い答えを早く入れ替えて、新しい IP アドレスに素早く付け替えられるようにするため</button></li>
+        <li><button type="button" data-correct="false">利用者の端末の処理負荷を減らすため</button></li>
+        <li><button type="button" data-correct="false">DNS サーバの台数を減らせるため</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、通信量の変化に応じて構成を変えたときに、利用者側の古い答えを早く入れ替えて、新しい IP アドレスに素早く付け替えられるようにするため、です。暗号鍵の更新や端末の負荷、DNS サーバの台数とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">名前解決の答えそのものを使い分けて振り分けを行う方式の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">TCP 接続の宛先や送信元の組み合わせをもとに、振り分け先を決める方式</button></li>
+        <li><button type="button" data-correct="false">要求が来るたびに、順番に振り分け先を変えていく方式</button></li>
+        <li><button type="button" data-correct="false">同じ利用者からの要求を、必ず同じ機械に送り続ける方式</button></li>
+        <li><button type="button" data-correct="true">名前解決の答えを、比率や応答の速さ、健康状態などに応じて使い分けることで、振り分けを行う方式</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決の答えを、比率や応答の速さ、健康状態などに応じて使い分けることで、振り分けを行う方式、です。TCP 接続の組み合わせによる決定はフローハッシュ、順番の割り当てはラウンドロビンで、セッションアフィニティも「必ず」同じ機械に届くとは限りません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">クラウド 3 社のロードバランサの種類の対応として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">AWS・GCP・Azure は、いずれも同じ名前の製品を使っている</button></li>
+        <li><button type="button" data-correct="true">AWS・GCP には、L7 の Application Load Balancer と L4 の Network Load Balancer がある</button></li>
+        <li><button type="button" data-correct="false">Azure の Load Balancer は、L7 の振り分けを行う</button></li>
+        <li><button type="button" data-correct="false">GCP には、L4 のロードバランサが存在しない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、AWS・GCP には、L7 の Application Load Balancer と L4 の Network Load Balancer がある、です。3 社の名前は同じではなく、Azure の Load Balancer は L4 のみで、GCP にも L4 のロードバランサはあります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m23-4.html">← 23-4 同じ人を同じサーバに送る</a>
+    <a class="up" href="m23.html">第 23 章の入口</a>
+    <a class="next" href="m24.html">第 24 章 クラウドの仮想ネットワーク（VPC） →</a>
+  </nav>
+</main>
+</body>
+</html>

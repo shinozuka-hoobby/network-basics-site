@@ -1,0 +1,2153 @@
+[
+  {
+    "id": "dns",
+    "term": "DNS",
+    "aliases": [],
+    "short": "ブラウザが URL の中のドメイン名を IP アドレスに変換するとき、実際にその変換を行っている裏側の仕組み全体のこと。世界中の機械が手分けして答えている。",
+    "defined_in": "m16-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で確定（2026-09-22）",
+    "reading": "dns"
+  },
+  {
+    "id": "dns-resolver",
+    "term": "DNS リゾルバ",
+    "aliases": [
+      "リゾルバ"
+    ],
+    "short": "ブラウザの代わりに、ドメイン名に対応する IP アドレスを探しに行く役目の機械。途中の変換作業をこの機械が引き受けており、探した答えをブラウザに返す。",
+    "defined_in": "m16-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で確定（2026-09-22）",
+    "reading": "dnsりぞるば"
+  },
+  {
+    "id": "dns-authoritative",
+    "term": "権威サーバ",
+    "aliases": [
+      "権威 DNS サーバ"
+    ],
+    "short": "あるドメイン名について、正しい IP アドレスを最終的に答えられる、そのドメインの管理者側の機械。答えの出どころにあたり、他の機械はここへ問い合わせに行く。",
+    "defined_in": "m16-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で確定（2026-09-22）",
+    "reading": "けんいさあば"
+  },
+  {
+    "id": "dns-record",
+    "term": "DNS レコード",
+    "aliases": [
+      "リソースレコード"
+    ],
+    "short": "ドメイン名について IP アドレスなどの情報を 1 件記録したもの。何の情報かによって種類が分かれる(IP アドレス用、別名用など)。",
+    "defined_in": "m16-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で確定（2026-09-22）",
+    "reading": "dnsれこおど"
+  },
+  {
+    "id": "dns-cache",
+    "term": "DNS キャッシュ",
+    "aliases": [],
+    "short": "一度調べたドメイン名と IP アドレスの対応を、しばらくの間手元に覚えておく仕組み。毎回調べ直さずに済み、答えが返ってくるまでの時間を短くできる。",
+    "defined_in": "m16-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で確定（2026-09-22）",
+    "reading": "dnsきゃっしゅ"
+  },
+  {
+    "id": "ttl-dns",
+    "term": "DNS の TTL",
+    "aliases": [],
+    "short": "ドメイン名と IP アドレスの対応を、覚えておいてよい秒数のこと。この秒数を過ぎたら、機械は古い答えを捨てて、もう一度調べ直しに行く。",
+    "defined_in": "m16-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で確定（2026-09-22）",
+    "reading": "dnsttl"
+  },
+  {
+    "id": "ttl-ip",
+    "term": "IP の TTL",
+    "aliases": [],
+    "short": "IP アドレスを使ったやり取りで送られるデータに付く数字で、機械をあと何回経由できるかを表す。0 になると途中で捨てられる。",
+    "defined_in": "m06-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ipttl"
+  },
+  {
+    "id": "ip-address",
+    "term": "IP アドレス",
+    "aliases": [],
+    "short": "機械につく番号で、インターネット上で通信の相手を指定するときに使う。ドメイン名は、この番号に変換されてから使われる。番号が分かれば、どの機械かを特定できる。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "ipあどれす"
+  },
+  {
+    "id": "ip-packet",
+    "term": "IP パケット",
+    "aliases": [],
+    "short": "IP アドレスを使った通信で、実際にやり取りされる、宛先と中身をひとまとめにした一つの塊のこと。この塊を機械から機械へ次々に送って届ける。",
+    "defined_in": "m06-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ipぱけっと"
+  },
+  {
+    "id": "tcp",
+    "term": "TCP",
+    "aliases": [],
+    "short": "ブラウザと Web サーバがやり取りするデータを、送った順番のとおりに、抜け落ちなく届くように管理する通信の方法。届いたことの確認も行う。",
+    "defined_in": "m13-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 13 章の章計画で確定（2026-09-22）",
+    "reading": "tcp"
+  },
+  {
+    "id": "tcp-connection",
+    "term": "TCP 接続",
+    "aliases": [],
+    "short": "ブラウザと Web サーバが、データのやり取りを始める前に結ぶ、通信のための道筋のこと。HTTP のやり取りは、この道筋の上で行われる。",
+    "defined_in": "m13-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 13 章の章計画で確定（2026-09-22）",
+    "reading": "tcpせつぞく"
+  },
+  {
+    "id": "tcp-handshake",
+    "term": "TCP ハンドシェイク",
+    "aliases": [
+      "3 ウェイハンドシェイク"
+    ],
+    "short": "ブラウザと Web サーバが通信を始める前に行う、決まった手順のあいさつのこと。これが終わってから、データのやり取りが実際に始まる。",
+    "defined_in": "m13-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 13 章の章計画で確定（2026-09-22）",
+    "reading": "tcpはんどしぇいく"
+  },
+  {
+    "id": "udp",
+    "term": "UDP",
+    "aliases": [],
+    "short": "データが届いたかを確認せず、順番も気にせずに送りっぱなしにする通信の方法。抜けや乱れが起きても送り直さず、速さを重視する場面で使われる。",
+    "defined_in": "m12-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 12 章の章計画で m12-2 に確定（2026-09-22）",
+    "reading": "udp"
+  },
+  {
+    "id": "port",
+    "term": "ポート番号",
+    "aliases": [],
+    "short": "サービスごとに割り当てられる、入り口を示す番号のこと。同じ機械の中でも、番号ごとに別のサービスに届く(例: 80 番は http)。",
+    "defined_in": "m12-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "ぽおとばんごう"
+  },
+  {
+    "id": "tls",
+    "term": "TLS",
+    "aliases": [],
+    "short": "ブラウザと Web サーバの間の通信を暗号化する仕組みのこと。HTTPS は、HTTP の通信をこの仕組みで暗号化したものにあたる。",
+    "defined_in": "m18-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "tls"
+  },
+  {
+    "id": "tls-certificate",
+    "term": "TLS 証明書",
+    "aliases": [
+      "サーバ証明書"
+    ],
+    "short": "Web サーバが名乗っているとおりの相手であることを、信頼できる第三者が保証する電子的な身分証。HTTPS で接続するときにブラウザが確かめる。",
+    "defined_in": "m18-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "tlsしょうめいしょ"
+  },
+  {
+    "id": "tls-handshake",
+    "term": "TLS ハンドシェイク",
+    "aliases": [],
+    "short": "ブラウザと Web サーバが、暗号化した通信を始める前に行う、名乗り合いと鍵の準備の手順のこと。これが終わってから暗号化通信が始まる。",
+    "defined_in": "m18-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "tlsはんどしぇいく"
+  },
+  {
+    "id": "https",
+    "term": "HTTPS",
+    "aliases": [],
+    "short": "暗号化された HTTP のこと。URL が https://で始まるとき、ブラウザと Web サーバのやり取りは途中で読み取られないように暗号化されている。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "https"
+  },
+  {
+    "id": "http",
+    "term": "HTTP",
+    "aliases": [],
+    "short": "ブラウザと Web サーバが、リクエストとレスポンスをやり取りするときの共通の約束事のこと。GET や POST という指定も、この約束事の一部にあたる。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "http"
+  },
+  {
+    "id": "http-header",
+    "term": "HTTP ヘッダ",
+    "aliases": [],
+    "short": "HTTP のリクエストやレスポンスに添えられる、本文とは別の付加情報のこと。宛先のホスト名やデータの種類などが、ここに書かれている。",
+    "defined_in": "m20-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 20 章の章計画で確定（2026-09-23）",
+    "reading": "httpへっだ"
+  },
+  {
+    "id": "router",
+    "term": "ルータ",
+    "aliases": [],
+    "short": "送られてきたデータの宛先を見て、次にどの機械に送ればよいかを判断し、遠くの宛先まで中継していく機械のこと。同じ場所にある機械どうしのやり取りには、通常使われない。",
+    "defined_in": "m08-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "るうた"
+  },
+  {
+    "id": "switch",
+    "term": "スイッチ",
+    "aliases": [],
+    "short": "同じ場所にある機械どうしをつなぎ、送られてきたデータを、送り先の機械にだけ振り分けて届ける機械のこと。遠くの宛先への中継は、この機械の役目ではない。",
+    "defined_in": "m03-2",
+    "known": false,
+    "match": "manual",
+    "note": "「スイッチ」は電源等の日常語と重なるため manual",
+    "reading": "すいっち"
+  },
+  {
+    "id": "home-router",
+    "term": "家庭用ルータ",
+    "aliases": [],
+    "short": "家庭に置かれ、無線 LAN のアクセスポイントや、機器へのアドレス配布・変換など複数の役目をまとめて持つ機械のこと。パソコンやスマホをインターネットにつなぐ役目もあり、1 台で何役もこなす。",
+    "defined_in": "m04-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "かていようるうた"
+  },
+  {
+    "id": "isp",
+    "term": "ISP",
+    "aliases": [
+      "プロバイダ",
+      "インターネットプロバイダ",
+      "インターネットサービスプロバイダ"
+    ],
+    "short": "家庭や会社を回線でインターネットにつなぐ、契約先の通信事業者のこと。ブラウザからの通信は、まずこの会社を通ってインターネットに出ていく。",
+    "defined_in": "m01-3",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "isp"
+  },
+  {
+    "id": "load-balancer",
+    "term": "ロードバランサ",
+    "aliases": [],
+    "short": "同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械のこと。1 台のサーバに負荷が集中しないようにし、特定の 1 台だけが混雑することを防ぐ。",
+    "defined_in": "m23-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ろおどばらんさ"
+  },
+  {
+    "id": "cdn",
+    "term": "CDN",
+    "aliases": [
+      "コンテンツデリバリネットワーク"
+    ],
+    "short": "画像やページなどのコピーを、利用者の近くに置かれた複数の機械にあらかじめ置いておき、近い場所から届ける仕組みのこと。利用者にとっては、表示がより速くなる。",
+    "defined_in": "m22-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で m22-1 に確定（2026-09-23）",
+    "reading": "cdn"
+  },
+  {
+    "id": "nat",
+    "term": "NAT",
+    "aliases": [],
+    "short": "家庭内などで使う番号を、インターネット向けの番号に付け替える仕組みのこと。複数の機械が 1 つの番号を共有して通信でき、外からは 1 つの番号に見える。",
+    "defined_in": "m10-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "nat"
+  },
+  {
+    "id": "dhcp",
+    "term": "DHCP",
+    "aliases": [],
+    "short": "家庭やオフィスの機械に、使ってよい番号を自動で配る仕組みのこと。手作業で番号を設定しなくても、機械はすぐに通信を始められる。",
+    "defined_in": "m04-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "dhcp"
+  },
+  {
+    "id": "mac-address",
+    "term": "MAC アドレス",
+    "aliases": [],
+    "short": "機械のネットワーク部品ごとに付いている番号で、同じ場所にある機械どうしが送り先を区別するために使う。IP アドレスとは別の番号で、場所を変えても基本的には変わらない。",
+    "defined_in": "m03-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "macあどれす"
+  },
+  {
+    "id": "ethernet",
+    "term": "イーサネット",
+    "aliases": [],
+    "short": "有線でつないだ機械どうしがデータをやり取りするときの、配線とデータの形式についての共通の約束事のこと。家庭やオフィスの有線 LAN の多くが、これに沿っている。",
+    "defined_in": "m03-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "いいさねっと"
+  },
+  {
+    "id": "frame",
+    "term": "フレーム",
+    "aliases": [],
+    "short": "同じ場所にある機械どうしでデータをやり取りするときの、送り先の番号などを添えたひとまとまりの単位のこと。この単位の中に、送り先の機械の番号が書かれている。",
+    "defined_in": "m03-1",
+    "known": false,
+    "match": "manual",
+    "note": "日常語(写真立て等)と重なるため manual",
+    "reading": "ふれえむ"
+  },
+  {
+    "id": "packet",
+    "term": "パケット",
+    "aliases": [],
+    "short": "通信するデータを、宛先などの情報を添えて分割した、ひとまとまりの単位のこと。ネットワークの上を、この単位で運ばれていく。",
+    "defined_in": "m01-4",
+    "known": false,
+    "match": "manual",
+    "note": "日常語化しており誤検出しやすいため manual",
+    "reading": "ぱけっと"
+  },
+  {
+    "id": "header",
+    "term": "ヘッダ",
+    "aliases": [],
+    "short": "データの本体の前に添えられる、宛先や種類などの付加情報のこと。郵便物の宛名のように、運ぶために必要な情報をまとめて持つ。",
+    "defined_in": "m01-4",
+    "known": false,
+    "match": "manual",
+    "note": "「見出し」等の日常語と重なるため manual",
+    "reading": "へっだ"
+  },
+  {
+    "id": "encapsulation",
+    "term": "カプセル化",
+    "aliases": [],
+    "short": "送りたいデータに、各層でそれぞれ宛先などの情報を付け加えながら包んでいくことを指す。何重にも封筒に包むのに似ており、実際の中身は一番内側にある。",
+    "defined_in": "m01-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "かぷせるか"
+  },
+  {
+    "id": "tcp-ip-model",
+    "term": "TCP/IP モデル",
+    "aliases": [
+      "4 層モデル"
+    ],
+    "short": "通信の役目を 4 つの層に分けて考える整理の仕方のこと。層ごとに、宛先の書き方や担当する仕事があらかじめ決まっており、上の層ほど利用者に近い役目を担う。",
+    "defined_in": "m01-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "tcpipもでる"
+  },
+  {
+    "id": "osi-model",
+    "term": "OSI 参照モデル",
+    "aliases": [
+      "OSI 7 層モデル"
+    ],
+    "short": "通信の役目を 7 つの層に分けて考える、もう一つの整理の仕方のこと。4 つの層に分ける考え方より細かく役目を分けており、名前と対応関係がよく比較される。",
+    "defined_in": "m01-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "osiさんしょうもでる"
+  },
+  {
+    "id": "l4-l7",
+    "term": "L4/L7",
+    "aliases": [
+      "レイヤー 4 とレイヤー 7"
+    ],
+    "short": "通信の役目を分けた層のうち、4 番目(データの届け方)と 7 番目(サービスの内容)を指す呼び方。振り分け方の違いを表すときに使う。",
+    "defined_in": "m23-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "l4l7"
+  },
+  {
+    "id": "protocol",
+    "term": "プロトコル",
+    "aliases": [],
+    "short": "機械どうしが通信するときに、あらかじめ決めておく共通の約束事のこと。HTTP のやり取りも、この約束事の一つに従っている。",
+    "defined_in": "m01-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぷろとこる"
+  },
+  {
+    "id": "subnet",
+    "term": "サブネット",
+    "aliases": [],
+    "short": "大きな通信の集まりを、管理しやすい単位に区切った、小さな集まりの一つのこと。IP アドレスの範囲を使って区切られ、部署ごとに分けて管理する場合などに使われる。",
+    "defined_in": "m05-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "さぶねっと"
+  },
+  {
+    "id": "cidr",
+    "term": "CIDR",
+    "aliases": [
+      "CIDR 表記"
+    ],
+    "short": "IP アドレスの範囲を、先頭何桁が共通かという数字を添えて表す書き方のこと。範囲の大きさを一目で表すことができ、番号の後ろにこの数字を書き添える。",
+    "defined_in": "m05-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "cidr"
+  },
+  {
+    "id": "default-gateway",
+    "term": "デフォルトゲートウェイ",
+    "aliases": [],
+    "short": "同じ場所にいない相手あての通信を、とりあえず送っておく先として決められた機械のこと。そこから先の中継を任せる相手にあたる。",
+    "defined_in": "m07-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "でふぉるとげえとうぇい"
+  },
+  {
+    "id": "routing-table",
+    "term": "ルーティングテーブル",
+    "aliases": [],
+    "short": "ある宛先への通信を次にどの機械へ送ればよいかを一覧にした、機械の中にある表のこと。中継する機械は、この表を見て送り先を判断する。",
+    "defined_in": "m08-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "るうてぃんぐてえぶる"
+  },
+  {
+    "id": "bgp",
+    "term": "BGP",
+    "aliases": [],
+    "short": "インターネットを構成する大きな組織どうしが、どの経路を通ればどこに届くかを教え合う仕組みのこと。経路は、この仕組みで決まっていく。",
+    "defined_in": "m09-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "bgp"
+  },
+  {
+    "id": "autonomous-system",
+    "term": "自律システム",
+    "aliases": [
+      "AS 番号",
+      "AS"
+    ],
+    "short": "インターネットの中で、自分の判断で経路を決められる組織の単位のこと。世界で重複しない番号が、組織ごとに 1 つ割り当てられる。",
+    "defined_in": "m09-1",
+    "known": false,
+    "match": "manual",
+    "note": "略称「AS」は 2 文字で登録不可(単独一般語)のため、本文で使われても自動リンクされない場合がある",
+    "reading": "じりつしすてむ"
+  },
+  {
+    "id": "icmp",
+    "term": "ICMP",
+    "aliases": [],
+    "short": "通信がうまく届いたかどうかや、途中で何が起きたかを機械どうしで知らせ合うための、短いお知らせの仕組みのこと。ping コマンドも、この仕組みを利用している。",
+    "defined_in": "m06-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "icmp"
+  },
+  {
+    "id": "mtu",
+    "term": "MTU",
+    "aliases": [],
+    "short": "一度に送れるデータのかたまりの大きさの上限のこと。これを超えるデータは、送る側か途中の機械で小さく分けてから送られ、届いた先でもう一度つなぎ合わされる。",
+    "defined_in": "m06-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "mtu"
+  },
+  {
+    "id": "arp",
+    "term": "ARP",
+    "aliases": [],
+    "short": "同じ場所にある機械どうしが通信するとき、相手の IP アドレスから、対応する機械の番号を調べる仕組みのこと。通信を始める前に必要になる、事前の作業にあたる。",
+    "defined_in": "m07-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "arp"
+  },
+  {
+    "id": "vlan",
+    "term": "VLAN",
+    "aliases": [],
+    "short": "1 台のスイッチにつながる機械を、配線を変えずにいくつかのグループに分ける仕組みのこと。グループの外へは、直接データが届かない。",
+    "defined_in": "m03-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "vlan"
+  },
+  {
+    "id": "anycast",
+    "term": "Anycast",
+    "aliases": [
+      "エニーキャスト"
+    ],
+    "short": "同じ番号を持つ複数の機械のうち、利用者から一番近い 1 台に、通信が自動で届くようにする仕組みのこと。利用者の場所が変わっても、都度近い機械が選ばれる。",
+    "defined_in": "m22-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で m22-4 に確定。表記を CURRICULUM.md に合わせ Anycast にし、エニーキャストを別表記へ（2026-09-23）",
+    "reading": "anycast"
+  },
+  {
+    "id": "edge-server",
+    "term": "エッジサーバ",
+    "aliases": [],
+    "short": "利用者の近くに置かれ、ページや画像のコピーを代わりに届ける機械のこと。CDN の中で利用者に一番近い係を務め、もとの Web サーバまで行かなくて済む分、応答が速くなる。",
+    "defined_in": "m22-1",
+    "known": false,
+    "match": "manual",
+    "note": "「エッジ」は日常語・他分野の語と重なりやすいため manual。第 22 章の章計画で m22-1 に確定（2026-09-23）",
+    "reading": "えっじさあば"
+  },
+  {
+    "id": "origin-server",
+    "term": "オリジンサーバ",
+    "aliases": [],
+    "short": "ページや画像などの、もとになるデータを持っている本来の Web サーバのこと。近くの機械にコピーが無いとき、ここまで取りに行く。",
+    "defined_in": "m22-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で m22-1 に確定（2026-09-23）",
+    "reading": "おりじんさあば"
+  },
+  {
+    "id": "ping",
+    "term": "ping",
+    "aliases": [],
+    "short": "相手の機械まで通信が届くかどうかと、届くまでのおおよその時間を確かめる、ターミナルのコマンドのこと。回数を指定して、何回か続けて確かめることが多い。",
+    "defined_in": "m27-1",
+    "known": false,
+    "match": "manual",
+    "note": "日常語(「ピンを送る」等)と紛れやすいため manual",
+    "reading": "ping"
+  },
+  {
+    "id": "traceroute",
+    "term": "traceroute",
+    "aliases": [],
+    "short": "自分の機械から相手までの通信が、途中どの機械を経由しているかを順番に調べる、ターミナルのコマンドのこと。途中で止まっている機械を見つける手がかりになる。",
+    "defined_in": "m27-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "traceroute"
+  },
+  {
+    "id": "dig",
+    "term": "dig",
+    "aliases": [],
+    "short": "ドメイン名に対応する IP アドレスなどを、名前を管理する仕組みに直接問い合わせて調べる、ターミナルのコマンドのこと。何が返ってきたかを細かく確認したいときに使う。",
+    "defined_in": "m16-5",
+    "known": false,
+    "match": "manual",
+    "note": "英単語としての意味と紛れやすいため manual。第 16 章の章計画で確定（2026-09-22）",
+    "reading": "dig"
+  },
+  {
+    "id": "tcpdump",
+    "term": "tcpdump",
+    "aliases": [],
+    "short": "機械が実際にやり取りしているデータを、その場で記録して中身を確認できる、ターミナルのコマンドのこと。あとで見返せるように、記録を保存することもできる。",
+    "defined_in": "m28-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "tcpdump"
+  },
+  {
+    "id": "wireshark",
+    "term": "Wireshark",
+    "aliases": [],
+    "short": "記録した通信データを、画面上で 1 件ずつ見やすく表示し、内容を確認できるアプリケーションのこと。記録したファイルを読み込んで、あとから見返すこともできる。",
+    "defined_in": "m28-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "wireshark"
+  },
+  {
+    "id": "vpc",
+    "term": "VPC",
+    "aliases": [],
+    "short": "クラウドの中に用意する、自分専用の仕切られたネットワークの範囲のこと。この中にサーバなどを置いて構成を組んでいき、手順書に沿って作った経験がある人も多い。",
+    "defined_in": "m24-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "vpc"
+  },
+  {
+    "id": "security-group",
+    "term": "セキュリティグループ",
+    "aliases": [],
+    "short": "クラウドのサーバに対して、どの通信を許してよいかを決める仕組みのこと。許可した通信への返り値は自動的に通り、サーバごとに別々の設定を割り当てることもできる。",
+    "defined_in": "m24-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "せきゅりてぃぐるうぷ"
+  },
+  {
+    "id": "route-table-cloud",
+    "term": "ルートテーブル",
+    "aliases": [],
+    "short": "クラウドの仕切られたネットワークの中で、どの通信をどこへ送るかをまとめて決めている設定の一覧のこと。一般的な機械の中にある表と、役目は同じ考え方にあたる。",
+    "defined_in": "m24-2",
+    "known": false,
+    "match": "manual",
+    "note": "一般の「ルーティングテーブル」と混同されやすいため manual",
+    "reading": "るうとてえぶる"
+  },
+  {
+    "id": "nacl",
+    "term": "NACL",
+    "aliases": [
+      "ネットワーク ACL"
+    ],
+    "short": "クラウドの仕切りの境目で通信を許可・拒否する設定のこと。許可した内容を覚えないため、行きと帰りの両方に設定を書く必要がある。",
+    "defined_in": "m24-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "nacl"
+  },
+  {
+    "id": "nat-gateway",
+    "term": "NAT ゲートウェイ",
+    "aliases": [],
+    "short": "クラウドの仕切られたネットワークの中から外のインターネットへ出るときに、番号を付け替える役目の機械のこと。外から中へ、勝手に入ってくることはできない。",
+    "defined_in": "m24-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "natげえとうぇい"
+  },
+  {
+    "id": "internet-gateway",
+    "term": "インターネットゲートウェイ",
+    "aliases": [],
+    "short": "クラウドの仕切られたネットワークを、外のインターネットへつなぐ出入り口となる設定のこと。ここを通って外と通信し、この設定が無ければ外との通信はできない。",
+    "defined_in": "m24-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "いんたあねっとげえとうぇい"
+  },
+  {
+    "id": "sni",
+    "term": "SNI",
+    "aliases": [],
+    "short": "暗号化された通信を始めるとき、ブラウザが「どの名前の相手につなぎたいか」を、最初に相手へ伝える仕組みのこと。1 台の機械が複数の名前を持つ場合に必要になる。",
+    "defined_in": "m18-5",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "sni"
+  },
+  {
+    "id": "certificate-authority",
+    "term": "認証局",
+    "aliases": [
+      "CA"
+    ],
+    "short": "Web サーバの持ち主を審査し、正しければ保証の印を付けた電子的な身分証を発行する、信頼できる機関のこと。ブラウザはこの印を確かめてから、相手を本物と判断する。",
+    "defined_in": "m18-3",
+    "known": false,
+    "match": "manual",
+    "note": "略称「CA」は 2 文字で登録不可(単独一般語)。他分野の略語(客室乗務員等)とも紛れやすいため本文中は manual で目視。第 18 章の章計画承認で short を既知語だけに書き直し（2026-09-22）",
+    "reading": "にんしょうきょく"
+  },
+  {
+    "id": "public-key",
+    "term": "公開鍵",
+    "aliases": [],
+    "short": "2 つで 1 組になる鍵のうち、誰に配ってもよい方のこと。この鍵で暗号化した内容は、組になるもう片方の鍵を持つ本人しか元に戻せないので、相手に安全に秘密を送るのに使える。",
+    "defined_in": "m18-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 18 章の章計画承認で short を既知語だけに書き直し（2026-09-22）",
+    "reading": "こうかいかぎ"
+  },
+  {
+    "id": "quic",
+    "term": "QUIC",
+    "aliases": [],
+    "short": "ブラウザと Web サーバの間で、つながる手続きと暗号化の手続きをまとめて行い、データの取りこぼしが他のやり取りを止めないように新しく設計された、データの運び方のこと。",
+    "defined_in": "m15-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 15 章の章計画で m15-1 に確定（2026-09-22）",
+    "reading": "quic"
+  },
+  {
+    "id": "http2",
+    "term": "HTTP/2",
+    "aliases": [
+      "HTTP2"
+    ],
+    "short": "1 つの通信の道筋の上で、複数のリクエストとレスポンスを同時に運べるようにした、HTTP の新しい版のこと。画面の表示が、以前より速くなることが多い。",
+    "defined_in": "m21-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 21 章の章計画で m21-1 に確定（2026-09-23）",
+    "reading": "http2"
+  },
+  {
+    "id": "http3",
+    "term": "HTTP/3",
+    "aliases": [
+      "HTTP3"
+    ],
+    "short": "従来と違う新しいデータの運び方を土台にして作られた、HTTP のさらに新しい版のこと。速さと安定性を高めており、主要なブラウザはすべて対応し、サーバ側の対応も広がっている。",
+    "defined_in": "m21-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 21 章の章計画で m21-3 に確定し short を出典の強さに合わせた（2026-09-23）",
+    "reading": "http3"
+  },
+  {
+    "id": "keep-alive",
+    "term": "Keep-Alive",
+    "aliases": [
+      "キープアライブ"
+    ],
+    "short": "一度結んだ通信の道筋を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組みのこと。毎回つなぎ直す手間が省け、表示が速くなる。",
+    "defined_in": "m20-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 20 章の章計画で確定（2026-09-23）",
+    "reading": "keepalive"
+  },
+  {
+    "id": "congestion-control",
+    "term": "輻輳制御",
+    "aliases": [],
+    "short": "送り手が、ネットワークの混み具合を見ながら、送るデータの量を調整する仕組みのこと。混んでいれば量を減らし、受け手の事情ではなく途中の混雑を見て判断する。",
+    "defined_in": "m14-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふくそうせいぎょ"
+  },
+  {
+    "id": "flow-control",
+    "term": "フロー制御",
+    "aliases": [],
+    "short": "送り手が、受け取る側の処理できる量を超えないように、送るデータの量を調整する仕組みのこと。受け手の事情に合わせる点が、他の調整の仕組みと異なる。",
+    "defined_in": "m14-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふろおせいぎょ"
+  },
+  {
+    "id": "receive-window",
+    "term": "受信ウィンドウ",
+    "aliases": [],
+    "short": "受け取る側が、まだ処理できずに置いておける量を、あらかじめ送り手に伝えておく数字のこと。この数字は、やり取りの途中でも状況に応じて変わる。",
+    "defined_in": "m14-2",
+    "known": false,
+    "match": "manual",
+    "note": "「ウィンドウ」は日常語(画面の窓)と重なるため manual",
+    "reading": "じゅしんうぃんどう"
+  },
+  {
+    "id": "congestion-window",
+    "term": "輻輳ウィンドウ",
+    "aliases": [],
+    "short": "送り手が、ネットワークの混み具合を見ながら、一度に送ってよい量として自分の中で決めている数字のこと。様子を見ながら、少しずつ増減させていく。",
+    "defined_in": "m14-3",
+    "known": false,
+    "match": "manual",
+    "note": "「ウィンドウ」は日常語(画面の窓)と重なるため manual",
+    "reading": "ふくそううぃんどう"
+  },
+  {
+    "id": "url",
+    "term": "URL",
+    "aliases": [],
+    "short": "Web ページなどの場所を指し示す文字列のこと。ブラウザのアドレス欄に入力すると、そのページが表示され、ドメイン名やページの場所がこの中に含まれている。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "url"
+  },
+  {
+    "id": "web-server",
+    "term": "Web サーバ",
+    "aliases": [],
+    "short": "ブラウザからのリクエストを受け取り、ページなどのデータをレスポンスとして返す役目の機械のこと。1 台の機械が、複数の Web サーバを兼ねることもある。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "webさあば"
+  },
+  {
+    "id": "browser",
+    "term": "ブラウザ",
+    "aliases": [],
+    "short": "URL を入力して Web サーバにリクエストを送り、返ってきたレスポンスをページとして表示するアプリケーションのこと。パソコンやスマホに、あらかじめ入っている。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "ぶらうざ"
+  },
+  {
+    "id": "json",
+    "term": "JSON",
+    "aliases": [],
+    "short": "データを文字列として表すときの、よく使われる書き方の一つのこと。API のレスポンスなどでよく使われ、波かっこと角かっこを使ってデータの形を表す。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "provisional",
+    "reading": "json"
+  },
+  {
+    "id": "api",
+    "term": "API",
+    "aliases": [],
+    "short": "あるプログラムが持っている機能を、他のプログラムから呼び出せるようにした窓口のこと。リクエストを送って結果を受け取り、URL と GET/POST の指定を組み合わせて呼び出す。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "provisional",
+    "reading": "api"
+  },
+  {
+    "id": "http-method",
+    "term": "HTTP メソッド",
+    "aliases": [
+      "GET/POST"
+    ],
+    "short": "HTTP のリクエストで、「何をしたいか」を表す指定のこと。GET は取得、POST は送信の指定としてよく使われ、この指定によって Web サーバ側の処理が変わる。",
+    "defined_in": "m20-1",
+    "known": true,
+    "match": "auto",
+    "note": "第 20 章の章計画で確定（2026-09-23）",
+    "reading": "httpめそっど"
+  },
+  {
+    "id": "status-code",
+    "term": "ステータスコード",
+    "aliases": [],
+    "short": "HTTP のレスポンスに付く番号のことで、リクエストの結果を表す。200 番台は成功、400 番台はエラーを意味し、3 桁の数字で結果が一目で分かるようにしている。",
+    "defined_in": "m20-1",
+    "known": true,
+    "match": "auto",
+    "note": "第 20 章の章計画で確定（2026-09-23）",
+    "reading": "すてえたすこおど"
+  },
+  {
+    "id": "network-tab",
+    "term": "Network タブ",
+    "aliases": [],
+    "short": "ブラウザの開発者ツールの中にある画面のことで、送ったリクエストと返ってきたレスポンスの一覧を確認できる。通信がうまくいかないときの手がかりを探すのに使う。",
+    "defined_in": "m01-1",
+    "known": true,
+    "match": "auto",
+    "note": "provisional",
+    "reading": "networkたぶ"
+  },
+  {
+    "id": "curl",
+    "term": "curl",
+    "aliases": [],
+    "short": "ターミナルからリクエストを送り、レスポンスを確認できるコマンドのこと。ブラウザを開かなくても通信を試すことができ、API の動作確認にもよく使われる。",
+    "defined_in": "m27-4",
+    "known": true,
+    "match": "auto",
+    "note": "",
+    "reading": "curl"
+  },
+  {
+    "id": "syn-ack",
+    "term": "SYN/ACK",
+    "aliases": [],
+    "short": "通信を始めるあいさつの手順の中で、機械どうしがやり取りする、決まった意味を持つ短い合図のこと。あいさつが正しく終わると、データのやり取りが始められる。",
+    "defined_in": "m13-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 13 章の章計画で確定（2026-09-22）",
+    "reading": "synack"
+  },
+  {
+    "id": "sequence-number",
+    "term": "シーケンス番号",
+    "aliases": [],
+    "short": "送ったデータの一つ一つに順番として付ける番号のこと。受け取る側は、この番号を見て抜けや順序の乱れに気づき、正しい順番に組み立て直せる。",
+    "defined_in": "m13-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 13 章の章計画で確定（2026-09-22）",
+    "reading": "しいけんすばんごう"
+  },
+  {
+    "id": "private-key",
+    "term": "秘密鍵",
+    "aliases": [],
+    "short": "2 つで 1 組になる鍵のうち、自分だけが持って他人に渡さない方のこと。組になるもう片方の鍵で暗号化された内容を元に戻せるのは、この鍵を持つ本人だけである。",
+    "defined_in": "m18-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 18 章の章計画承認で short を既知語だけに書き直し（2026-09-22）",
+    "reading": "ひみつかぎ"
+  },
+  {
+    "id": "certificate-chain",
+    "term": "証明書チェーン",
+    "aliases": [],
+    "short": "1 枚の身分証が本物であることを別の身分証が保証し、それをさらに別の身分証が保証するという、保証のつながりのこと。たどると、最後はブラウザや OS があらかじめ信頼している身分証に行き着く。",
+    "defined_in": "m18-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 18 章の章計画承認で short を既知語だけに書き直し（2026-09-22）",
+    "reading": "しょうめいしょちぇえん"
+  },
+  {
+    "id": "subnet-mask",
+    "term": "サブネットマスク",
+    "aliases": [],
+    "short": "IP アドレスのうち、どこまでが集まりを表す部分かを示す数字のこと。この数字を使って集まりの範囲を計算し、宛先がどの集まりかを判断する。",
+    "defined_in": "m05-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "さぶねっとますく"
+  },
+  {
+    "id": "network-address",
+    "term": "ネットワークアドレス",
+    "aliases": [],
+    "short": "IP アドレスの集まりのうち、個々の機械ではなく、その集まり全体を指すために使われる、先頭の 1 つの番号のこと。この番号自体は、機械には割り当てられない。",
+    "defined_in": "m05-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ねっとわあくあどれす"
+  },
+  {
+    "id": "broadcast-domain",
+    "term": "ブロードキャストドメイン",
+    "aliases": [],
+    "short": "1 つの合図を出したとき、その合図が届く範囲にある機械全体のまとまりのこと。スイッチでつながる範囲がこれにあたり、この範囲を越えて合図が直接届くことはない。",
+    "defined_in": "m03-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぶろおどきゃすとどめいん"
+  },
+  {
+    "id": "broadcast-address",
+    "term": "ブロードキャストアドレス",
+    "aliases": [],
+    "short": "IP アドレスの集まりの中で、そこに属する機械全体に一斉に呼びかけるために使われる、末尾の 1 つの番号のこと。特定の 1 台を指すためには使われない。",
+    "defined_in": "m05-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぶろおどきゃすとあどれす"
+  },
+  {
+    "id": "bandwidth",
+    "term": "帯域幅",
+    "aliases": [],
+    "short": "一定の時間に送れるデータの量の上限のこと。道路にたとえると、車線の数にあたる、太さを表す値であり、太いほど同じ時間でより多くのデータを送れる。",
+    "defined_in": "m02-1",
+    "known": false,
+    "match": "manual",
+    "note": "無線LANの周波数帯の意味と紛れやすいため manual。本文の「帯域」(2 文字)は単独一般語のため登録不可",
+    "reading": "たいいきはば"
+  },
+  {
+    "id": "latency",
+    "term": "遅延時間",
+    "aliases": [
+      "レイテンシ"
+    ],
+    "short": "データを送ってから相手に届くまでにかかる時間のこと。道路にたとえると、車が走るのにかかる時間にあたり、短いほど反応が速く感じられる。",
+    "defined_in": "m02-1",
+    "known": false,
+    "match": "manual",
+    "note": "「処理が遅延する」等の日常語と重なるため manual。本文の「遅延」(2 文字)は単独一般語のため登録不可",
+    "reading": "ちえんじかん"
+  },
+  {
+    "id": "ipv6",
+    "term": "IPv6",
+    "aliases": [],
+    "short": "今使われている IP アドレスの形式を置き換える、より多くの番号を用意できる新しい形式のこと。使える番号が足りなくなる問題への対策として作られた。",
+    "defined_in": "m11-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ipv6"
+  },
+  {
+    "id": "peering",
+    "term": "ピアリング",
+    "aliases": [],
+    "short": "インターネットを構成する組織どうしが、対等な立場でお互いのネットワークを直接つなぎ合う関係のこと。多くの場合、お互いにお金を払わない関係で結ばれる。",
+    "defined_in": "m09-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぴありんぐ"
+  },
+  {
+    "id": "transit",
+    "term": "トランジット",
+    "aliases": [],
+    "short": "ある組織が、より大きな別の組織に、多くの場合お金を払って、インターネット全体につながる経路を分けてもらう関係のこと。自分だけでは持てない、遠くの経路を分けてもらう。",
+    "defined_in": "m09-2",
+    "known": false,
+    "match": "manual",
+    "note": "空港の乗り継ぎ等の日常語と重なるため manual",
+    "reading": "とらんじっと"
+  },
+  {
+    "id": "default-route",
+    "term": "デフォルトルート",
+    "aliases": [],
+    "short": "宛先に合う行き先が表の中に見つからないとき、とりあえずここへ送るとあらかじめ決めておく、表の中の行き先のこと。細かい行き先を一つずつ書かなくて済む。",
+    "defined_in": "m08-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "でふぉるとるうと"
+  },
+  {
+    "id": "tcp-state",
+    "term": "TCP の状態遷移",
+    "aliases": [
+      "コネクションの状態"
+    ],
+    "short": "通信の道筋が、今どの段階(結ばれている最中、やり取り中、切れている最中など)にあるかを表す区分のこと。段階によって、機械の振る舞いが変わる。",
+    "defined_in": "m13-5",
+    "known": false,
+    "match": "auto",
+    "note": "第 13 章の章計画で確定（2026-09-22）",
+    "reading": "tcpのじょうたいせんい"
+  },
+  {
+    "id": "dnssec",
+    "term": "DNSSEC",
+    "aliases": [],
+    "short": "DNS の答えが本物で、途中で書き換えられていないことを、印のようなもので確かめられるようにする仕組みのこと。中身を隠す暗号化とは別のしくみである。",
+    "defined_in": "m17-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 17 章の章計画で m17-4 に確定し short を書き直し（2026-09-22）。「署名」は第 18 章で扱わないため「印」で言い換え",
+    "reading": "dnssec"
+  },
+  {
+    "id": "firewall",
+    "term": "ファイアウォール",
+    "aliases": [],
+    "short": "決めた条件に合わない通信を、機械やネットワークの手前で止める仕組みのこと。許可した通信だけを先に通し、何を許可するかはあらかじめ条件として設定しておく。",
+    "defined_in": "m26-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふぁいあうぉおる"
+  },
+  {
+    "id": "zero-trust",
+    "term": "ゼロトラスト",
+    "aliases": [],
+    "short": "社内のネットワークにいるからといって信用せず、誰からの通信も毎回確かめてから許可するという考え方のこと。社内にいることを理由に、確認を省略しない。",
+    "defined_in": "m26-5",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぜろとらすと"
+  },
+  {
+    "id": "private-address",
+    "term": "プライベートアドレス",
+    "aliases": [],
+    "short": "組織や家庭の中だけで使われ、インターネットには直接出て行かない、IP アドレスの一群のこと。同じ番号が、別の家庭や組織で使われていてもかまわない。",
+    "defined_in": "m05-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぷらいべえとあどれす"
+  },
+  {
+    "id": "rtt",
+    "term": "RTT",
+    "aliases": [
+      "往復時間",
+      "ラウンドトリップタイム"
+    ],
+    "short": "データを送ってから、相手からの返事が手元に戻ってくるまでの往復の時間のこと。相手が遠いほど長くなり、ページが表示されるまでの待ち時間を左右する。",
+    "defined_in": "m02-2",
+    "known": false,
+    "match": "auto",
+    "note": "2026-09-16 確定（2-2 で伝搬遅延と一緒に定義。ping の観察もここ）",
+    "reading": "rtt"
+  },
+  {
+    "id": "ack",
+    "term": "ACK",
+    "aliases": [
+      "確認応答"
+    ],
+    "short": "受け取る側が「ここまで届いた」と送り手に知らせる短い返事のこと。送り手はこの返事を見て、次のデータを送ったり、届かなかった分を送り直したりする。",
+    "defined_in": "m13-2",
+    "known": false,
+    "match": "auto",
+    "note": "SYN/ACK は最長一致で別 id。第 13 章の章計画で m13-2 に確定（2026-09-22）",
+    "reading": "ack"
+  },
+  {
+    "id": "slow-start",
+    "term": "スロースタート",
+    "aliases": [],
+    "short": "通信を始めた直後は一度に送る量を少なくし、返事が戻ってくるたびに送る量を倍々に増やしていく、TCP の送り出し方のこと。混み具合が分からないうちに送りすぎるのを防ぐ。",
+    "defined_in": "m14-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "すろおすたあと"
+  },
+  {
+    "id": "congestion-avoidance",
+    "term": "輻輳回避",
+    "aliases": [],
+    "short": "送る量がある目安を超えたあとは、倍々ではなく少しずつ増やし、途中でデータが失われたら大きく減らす、TCP の送り出し方のこと。混雑を起こさない範囲で出せる速度を探る。",
+    "defined_in": "m14-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふくそうかいひ"
+  },
+  {
+    "id": "bandwidth-delay-product",
+    "term": "帯域遅延積",
+    "aliases": [],
+    "short": "回線の太さ（1 秒に送れる量）と往復の時間を掛けた値のこと。返事を待たずに送り続けるために必要なデータの量を表し、一度に送れる量がこれより少ないと、回線が太くても速度が出ない。",
+    "defined_in": "m14-5",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "たいいきちえんせき"
+  },
+  {
+    "id": "cubic",
+    "term": "CUBIC",
+    "aliases": [],
+    "short": "多くの OS で標準になっている、TCP が送る量を決めるやり方のこと。途中でデータが失われたことを混雑の合図とみなして送る量を減らし、失われなければ再び増やしていく。",
+    "defined_in": "m14-5",
+    "known": false,
+    "match": "auto",
+    "note": "収集資料には #35 に名前だけ。考え方の裏付けは RFC 9438",
+    "reading": "cubic"
+  },
+  {
+    "id": "bbr",
+    "term": "BBR",
+    "aliases": [],
+    "short": "Google が設計した、TCP が送る量を決めるやり方のこと。データが失われるのを待つのではなく、回線の太さと往復の時間を測り、その回線に見合った量とペースで送る。",
+    "defined_in": "m14-5",
+    "known": false,
+    "match": "auto",
+    "note": "収集資料に記述なし。裏付けは IETF の BBR ドラフト（draft-ietf-ccwg-bbr）",
+    "reading": "bbr"
+  },
+  {
+    "id": "mac-address-table",
+    "term": "MAC アドレステーブル",
+    "aliases": [
+      "MAC アドレス表"
+    ],
+    "short": "スイッチが、送られてきたフレームの送信元 MAC アドレスから、どの機械がどの差し込み口につながっているかを覚えておく表のこと。次に届いたフレームは、この表を見て送り先の差し込み口を決める。",
+    "defined_in": "m03-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "macあどれすてえぶる"
+  },
+  {
+    "id": "broadcast",
+    "term": "ブロードキャスト",
+    "aliases": [],
+    "short": "宛先を 1 台に絞らず、同じ範囲にいる機械の全部に一斉に送ることのこと。宛先がまだ分からない相手を探すときや、全員に知らせたいときに使われる。",
+    "defined_in": "m03-3",
+    "known": false,
+    "match": "manual",
+    "note": "「ブロードキャストドメイン」「ブロードキャストアドレス」と部分文字列を共有するため manual（最長一致で区別はされる）",
+    "reading": "ぶろおどきゃすと"
+  },
+  {
+    "id": "wireless-lan",
+    "term": "無線 LAN",
+    "aliases": [
+      "Wi-Fi",
+      "無線LAN"
+    ],
+    "short": "ケーブルの代わりに電波を使って、複数の機器をネットワークにつなぐ仕組みのこと。同じ電波を機器どうしで順番に使うため、同時に使う台数が増えると 1 台あたりに使える通信量が減る。",
+    "defined_in": "m04-1",
+    "known": false,
+    "match": "auto",
+    "note": "Wi-Fi は商標名のため別表記として登録。本文の代表表記は「無線 LAN」",
+    "reading": "むせんlan"
+  },
+  {
+    "id": "access-point",
+    "term": "アクセスポイント",
+    "aliases": [
+      "無線 LAN のアクセスポイント"
+    ],
+    "short": "無線 LAN で、電波を出して機器からの接続を受け付ける機械の役目のこと。家庭では、家庭用ルータがこの役目を兼ねていることが多い。",
+    "defined_in": "m04-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "あくせすぽいんと"
+  },
+  {
+    "id": "propagation-delay",
+    "term": "伝搬遅延",
+    "aliases": [
+      "伝搬遅延時間"
+    ],
+    "short": "信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間のこと。距離が長いほど、また信号の伝わる速さが遅い回線ほど、この時間は長くなる。",
+    "defined_in": "m02-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "でんぱんちえん"
+  },
+  {
+    "id": "serialization-delay",
+    "term": "シリアライズ遅延",
+    "aliases": [
+      "送出遅延",
+      "シリアライゼーション遅延"
+    ],
+    "short": "送りたいデータのすべてを、回線に信号として送り出し終えるまでにかかる時間のこと。データの量が多いほど、また回線が細い（帯域幅が小さい）ほど長くなる。",
+    "defined_in": "m02-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "しりあらいずちえん"
+  },
+  {
+    "id": "ipv4",
+    "term": "IPv4",
+    "aliases": [
+      "IPv4 アドレス"
+    ],
+    "short": "今インターネットで最も広く使われている IP アドレスの形式のこと。0 と 1 が 32 個並ぶ数字でできており、8 個ずつのまとまり 4 つに分けて、それぞれを 10 進数にして表す。",
+    "defined_in": "m05-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ipv4"
+  },
+  {
+    "id": "global-address",
+    "term": "グローバルアドレス",
+    "aliases": [
+      "グローバル IP アドレス",
+      "グローバルユニキャストアドレス"
+    ],
+    "short": "インターネット上で、世界中で重複しないただ一つの番号として使われる IP アドレスのこと。プライベートアドレスとは違い、直接インターネットに公開して使う。",
+    "defined_in": "m05-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぐろおばるあどれす"
+  },
+  {
+    "id": "next-hop",
+    "term": "ネクストホップ",
+    "aliases": [],
+    "short": "ある宛先へ通信を送るとき、次にどの機械へ渡せばよいかを示す、表の中に書かれた情報のこと。渡された機械も、また自分の表を見て次の送り先を決める。",
+    "defined_in": "m08-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ねくすとほっぷ"
+  },
+  {
+    "id": "static-route",
+    "term": "静的経路",
+    "aliases": [
+      "スタティックルート"
+    ],
+    "short": "管理者があらかじめ手で書いておく、変更のない経路のこと。回線がつながらなくなっても、書き直すまでは表の中にそのまま残り続ける。",
+    "defined_in": "m08-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "せいてきけいろ"
+  },
+  {
+    "id": "dynamic-routing",
+    "term": "動的経路",
+    "aliases": [
+      "ダイナミックルーティング",
+      "動的ルーティング"
+    ],
+    "short": "近くのルータどうしが経路の情報を教え合い、表の中身を自動的に作ったり更新したりする仕組みのこと。回線の状態が変わると、表も自動で書き換わる。",
+    "defined_in": "m08-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "どうてきけいろ"
+  },
+  {
+    "id": "ospf",
+    "term": "OSPF",
+    "aliases": [],
+    "short": "隣り合うルータどうしが経路の情報を交換し合い、その内容をもとに表を自動的に作っていく仕組みの代表例のひとつ。多くのネットワークで使われている。",
+    "defined_in": "m08-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ospf"
+  },
+  {
+    "id": "arp-cache",
+    "term": "ARP キャッシュ",
+    "aliases": [
+      "ARP テーブル"
+    ],
+    "short": "IP アドレスと MAC アドレスの対応を、一度調べたあとしばらく覚えておく、機械の中の表のこと。同じ相手に続けて送るときは、この表を見るだけで済み、毎回調べ直さずに済む。",
+    "defined_in": "m07-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "arpきゃっしゅ"
+  },
+  {
+    "id": "best-effort",
+    "term": "ベストエフォート",
+    "aliases": [],
+    "short": "データを送るとき、必ず届くと保証はせず、できる範囲で精一杯を尽くして届けようとするという、IP の考え方のこと。届いたかどうかの確認までは、この仕組み自体では行わない。",
+    "defined_in": "m06-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "べすとえふぉおと"
+  },
+  {
+    "id": "fragmentation",
+    "term": "フラグメンテーション",
+    "aliases": [
+      "フラグメント化",
+      "IP フラグメンテーション"
+    ],
+    "short": "送りたいデータが一度に運べる大きさの上限を超えるとき、いくつかの小さなかたまりに分けて送り出し、届いた先で元の形に組み立て直す処理のこと。",
+    "defined_in": "m06-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふらぐめんてえしょん"
+  },
+  {
+    "id": "bit",
+    "term": "ビット",
+    "aliases": [],
+    "short": "0 か 1 のどちらかで表す、情報の最小の単位のこと。8 個まとめて 1 バイトと数える。回線の速さは、1 秒間に送れるビットの数（bps）で表す。",
+    "defined_in": "m02-1",
+    "known": true,
+    "match": "auto",
+    "note": "一般の計算機用語。初出で 1 文添える運用（HANDOFF §5）。known: true なので先取り検査の対象外",
+    "reading": "びっと"
+  },
+  {
+    "id": "route-hijack",
+    "term": "経路ハイジャック",
+    "aliases": [
+      "BGP ハイジャック"
+    ],
+    "short": "本来その宛先を担当していない組織が、誤って、あるいは意図的にその宛先への経路を広く知らせてしまい、通信が誤った相手に届いてしまう出来事のこと。",
+    "defined_in": "m09-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "けいろはいじゃっく"
+  },
+  {
+    "id": "rpki",
+    "term": "RPKI",
+    "aliases": [],
+    "short": "広く知らされた経路の情報が、その宛先を実際に持っている組織からのものかどうかを確かめるための仕組みのこと。間違った経路が広まるのを防ぐ目的がある。",
+    "defined_in": "m09-4",
+    "known": false,
+    "match": "auto",
+    "note": "収集資料には #69 の統計だけ。定義は RFC 6480 に依拠",
+    "reading": "rpki"
+  },
+  {
+    "id": "napt",
+    "term": "NAPT",
+    "aliases": [],
+    "short": "複数の機器が、外に出るときに使うインターネット向けの IP アドレスを 1 つだけ共有できるように、IP アドレスだけでなくポート番号の組も使って番号を付け替える仕組みのこと。",
+    "defined_in": "m10-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "napt"
+  },
+  {
+    "id": "nat-table",
+    "term": "変換表",
+    "aliases": [
+      "NAT 変換表",
+      "NAT の変換表"
+    ],
+    "short": "番号を付け替える機器が、家の中の番号（IP アドレスとポート番号の組）と外向けの番号の対応を記録しておく表のこと。戻ってきた返事を、元の機器へ正しく届けるために使う。",
+    "defined_in": "m10-2",
+    "known": false,
+    "match": "manual",
+    "note": "「変換表」は一般語と紛れるため manual",
+    "reading": "へんかんひょう"
+  },
+  {
+    "id": "port-forwarding",
+    "term": "ポートフォワード",
+    "aliases": [
+      "ポート転送",
+      "ポートフォワーディング"
+    ],
+    "short": "外から来た、特定のポート番号あての通信を、家庭用ルータがあらかじめ指定しておいた家の中の機器へ転送するように設定しておく仕組みのこと。",
+    "defined_in": "m10-3",
+    "known": false,
+    "match": "auto",
+    "note": "収集資料に説明が無く RFC 3022 の静的な対応付けに依拠",
+    "reading": "ぽおとふぉわあど"
+  },
+  {
+    "id": "neighbor-discovery",
+    "term": "近隣探索",
+    "aliases": [
+      "NDP",
+      "近隣探索プロトコル"
+    ],
+    "short": "同じネットワークにある機械どうしが、相手の MAC アドレスを調べるために使う IPv6 の仕組みのこと。全員に一斉に呼びかけるのではなく、絞った相手にだけ届く呼びかけ方を使う。",
+    "defined_in": "m11-2",
+    "known": false,
+    "match": "auto",
+    "note": "略称 ND は 2 文字のため未登録",
+    "reading": "きんりんたんさく"
+  },
+  {
+    "id": "slaac",
+    "term": "SLAAC",
+    "aliases": [],
+    "short": "IPv6 で、機械が自分自身で IP アドレスを組み立てて、サーバに頼らずに使い始めることができる仕組みのこと。ネットワーク側から届く情報と、機械自身の情報を組み合わせて作る。",
+    "defined_in": "m11-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "slaac"
+  },
+  {
+    "id": "dhcpv6",
+    "term": "DHCPv6",
+    "aliases": [
+      "DHCP6"
+    ],
+    "short": "IPv6 のアドレスを、サーバが機械に自動で配る仕組みのこと。アドレスに加えて、名前を IP アドレスに変換する仕組みの問い合わせ先のような追加の情報を配る場面でもよく使われる。",
+    "defined_in": "m11-3",
+    "known": false,
+    "match": "auto",
+    "note": "「DHCP」と最長一致で区別",
+    "reading": "dhcpv6"
+  },
+  {
+    "id": "link-local-address",
+    "term": "リンクローカルアドレス",
+    "aliases": [],
+    "short": "同じネットワークの中だけで通じる、IPv6 アドレスの一種のこと。機械は電源を入れると、通信相手がいなくてもこの番号を自分で作る。",
+    "defined_in": "m11-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "りんくろおかるあどれす"
+  },
+  {
+    "id": "dual-stack",
+    "term": "デュアルスタック",
+    "aliases": [],
+    "short": "1 台の機械に、今までの形式の IP アドレスと新しい形式の IP アドレスの両方を持たせ、どちらの形式でも通信できるようにする方式のこと。",
+    "defined_in": "m11-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "でゅあるすたっく"
+  },
+  {
+    "id": "nat64",
+    "term": "NAT64",
+    "aliases": [
+      "DNS64",
+      "NAT64/DNS64"
+    ],
+    "short": "新しい形式の IP アドレスしか持たない機械が、今までの形式のアドレスしか無い相手とも通信できるようにする変換の仕組みのこと。名前を IP アドレスに変換する仕組みと組み合わせて働く。",
+    "defined_in": "m11-4",
+    "known": false,
+    "match": "auto",
+    "note": "DNS64 は別実装だが本文では常に組で扱うため同じ id",
+    "reading": "nat64"
+  },
+  {
+    "id": "well-known-port",
+    "term": "ウェルノウンポート",
+    "aliases": [],
+    "short": "0 番から 1023 番までの、特定のサービス用にあらかじめ決められているポート番号のこと。80 番は HTTP、443 番は HTTPS というように、番号を見ればおおよその用途が分かる。",
+    "defined_in": "m12-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 12 章の章計画で登録（2026-09-22）",
+    "reading": "うぇるのうんぽおと"
+  },
+  {
+    "id": "ephemeral-port",
+    "term": "エフェメラルポート",
+    "aliases": [
+      "一時ポート",
+      "動的ポート"
+    ],
+    "short": "通信を始める側が、送信元の番号として一時的に使う、あらかじめ決まっていないポート番号のこと。通信のたびに別の番号が選ばれ、終われば使われなくなる。",
+    "defined_in": "m12-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 12 章の章計画で登録（2026-09-22）。呼称は収集資料に無く IANA/RFC 6335 依拠（#4 p.10 は Dynamic and/or Private Ports）",
+    "reading": "えふぇめらるぽおと"
+  },
+  {
+    "id": "socket",
+    "term": "ソケット",
+    "aliases": [],
+    "short": "通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報のこと。プログラムはこの組を手がかりに、どの相手とのどのやり取りかを区別している。",
+    "defined_in": "m12-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 12 章の章計画で登録（2026-09-22）",
+    "reading": "そけっと"
+  },
+  {
+    "id": "head-of-line-blocking",
+    "term": "HOL ブロッキング",
+    "aliases": [
+      "ヘッドオブラインブロッキング"
+    ],
+    "short": "1 本の接続の中で複数のやり取りをまとめて運んでいるとき、順番が先のデータが届かないと、それより後ろの、実際にはもう届いているデータも渡せず待たされてしまうこと。",
+    "defined_in": "m15-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 15 章の章計画で登録（2026-09-22）。第 20・21 章（HTTP/1.1・HTTP/2）でも同じ語を使う",
+    "reading": "holぶろっきんぐ"
+  },
+  {
+    "id": "quic-stream",
+    "term": "ストリーム",
+    "aliases": [],
+    "short": "QUIC の 1 本の接続の中に複数持てる、互いに独立してデータをやり取りできる小さな流れのこと。1 つの流れでデータが失われても、他の流れの処理には影響しない。",
+    "defined_in": "m15-2",
+    "known": false,
+    "match": "manual",
+    "note": "第 15 章の章計画で登録（2026-09-22）。「ストリーム」は動画配信などの日常語と重なるため manual",
+    "reading": "すとりいむ"
+  },
+  {
+    "id": "zero-rtt",
+    "term": "0-RTT",
+    "aliases": [],
+    "short": "以前に接続したことがある相手となら、次に接続するとき、最初のやり取りからアプリケーションのデータを送り始められる仕組みのこと。初めて接続する相手には使えない。",
+    "defined_in": "m15-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 15 章の章計画で登録（2026-09-22）",
+    "reading": "0rtt"
+  },
+  {
+    "id": "connection-id",
+    "term": "コネクション ID",
+    "aliases": [],
+    "short": "QUIC の接続 1 本 1 本に付けられる番号のこと。接続を IP アドレスとポート番号の組ではなくこの番号で見分けるので、番号が同じなら IP アドレスやポート番号が変わっても同じ接続として扱われる。",
+    "defined_in": "m15-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 15 章の章計画で登録（2026-09-22）",
+    "reading": "こねくしょんid"
+  },
+  {
+    "id": "connection-migration",
+    "term": "コネクション移行",
+    "aliases": [
+      "コネクションマイグレーション"
+    ],
+    "short": "利用者がネットワークを切り替えたり、途中でポート番号が付け替えられたりして IP アドレスやポート番号が変わっても、同じ接続だと分かる番号のおかげで、接続を作り直さずに続けられること。",
+    "defined_in": "m15-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 15 章の章計画で登録（2026-09-22）",
+    "reading": "こねくしょんいこう"
+  },
+  {
+    "id": "root-server",
+    "term": "ルートサーバ",
+    "aliases": [],
+    "short": "名前の階層の一番上にあって、com や jp のような一番右側の部分を受け持つサーバのありかを教えてくれる、名前解決の問い合わせの出発点となるサーバのこと。",
+    "defined_in": "m16-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で登録（2026-09-22）",
+    "reading": "るうとさあば"
+  },
+  {
+    "id": "tld",
+    "term": "TLD",
+    "aliases": [
+      "トップレベルドメイン"
+    ],
+    "short": "ドメイン名の一番右側にある部分（com や jp など）のこと。この部分ごとに、どのサーバが受け持つかがあらかじめ決められている。",
+    "defined_in": "m16-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 16 章の章計画で登録（2026-09-22）",
+    "reading": "tld"
+  },
+  {
+    "id": "dns-zone",
+    "term": "ゾーン",
+    "aliases": [],
+    "short": "名前を管理するサーバが「ここは自分が答えられる」と受け持っている、ドメイン名の範囲のこと。日常語の「地域」とは別の、名前解決に特有の意味で使う。",
+    "defined_in": "m16-2",
+    "known": false,
+    "match": "manual",
+    "note": "第 16 章の章計画で登録（2026-09-22）。日常語と紛れるため manual。第 17 章のクラウド DNS の設計単位（hosted zone など）の土台",
+    "reading": "ぞおん"
+  },
+  {
+    "id": "symmetric-key",
+    "term": "対称鍵",
+    "aliases": [
+      "共通鍵"
+    ],
+    "short": "暗号化するときの鍵と元に戻すときの鍵が同じである、鍵の使い方のこと。HTTPS では、通信を始めるときの手続きで両側が同じ鍵を決めたあと、実際のやり取りをこの鍵で暗号化する。",
+    "defined_in": "m18-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 18 章の章計画で登録（2026-09-22）",
+    "reading": "たいしょうかぎ"
+  },
+  {
+    "id": "pki",
+    "term": "PKI",
+    "aliases": [
+      "公開鍵基盤"
+    ],
+    "short": "電子的な身分証と、それを保証する機関、身分証に入っている鍵を組み合わせて、通信の相手が本当に名乗っている相手かどうかを確かめられるようにする、仕組み全体のこと。",
+    "defined_in": "m18-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 18 章の章計画で登録（2026-09-22）。章タイトル「TLS と PKI」の語。RPKI（m09-4）は別 id で最長一致",
+    "reading": "pki"
+  },
+  {
+    "id": "nxdomain",
+    "term": "NXDOMAIN",
+    "aliases": [],
+    "short": "DNS への問い合わせに対して、指定した名前がそもそも存在しないと分かったときに返ってくる答えのこと。答えを出せない失敗とは違い、これも確定した返事の一つである。",
+    "defined_in": "m17-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 17 章の章計画で登録（2026-09-22）。定義は RFC 1035 依拠",
+    "reading": "nxdomain"
+  },
+  {
+    "id": "servfail",
+    "term": "SERVFAIL",
+    "aliases": [],
+    "short": "DNS への問い合わせに対して、サーバ側の処理がうまくいかず、答えそのものを返せなかったことを示す失敗のこと。例えば、権威サーバに届かなかったり、時間内に答えが得られなかったりすると起こる。",
+    "defined_in": "m17-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 17 章の章計画で登録（2026-09-22）。定義は RFC 1035 依拠",
+    "reading": "servfail"
+  },
+  {
+    "id": "dns-over-tls",
+    "term": "DoT",
+    "aliases": [
+      "DNS over TLS"
+    ],
+    "short": "DNS の問い合わせと答えを、通信の中身を守る暗号化の手続きで包んで届ける方式のこと。途中の誰かに中身を見られたり、書き換えられたりしにくくなる。",
+    "defined_in": "m17-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 17 章の章計画で登録（2026-09-22）",
+    "reading": "dot"
+  },
+  {
+    "id": "dns-over-https",
+    "term": "DoH",
+    "aliases": [
+      "DNS over HTTPS"
+    ],
+    "short": "DNS の問い合わせと答えを、暗号化された HTTPS の通信の中に含めて届ける方式のこと。ブラウザなどが元々使っている仕組みをそのまま使える。",
+    "defined_in": "m17-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 17 章の章計画で登録（2026-09-22）",
+    "reading": "doh"
+  },
+  {
+    "id": "certificate-revocation",
+    "term": "証明書の失効",
+    "aliases": [],
+    "short": "有効期間の途中でも身分証を無効にする仕組みのこと。発行した機関が持つ無効になった身分証の一覧や、その都度確認する問い合わせによって、無効かどうかを見分けられる。",
+    "defined_in": "m19-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 19 章の章計画で登録（2026-09-23）。CRL・OCSP・OCSP Stapling は id を作らず定義文中で言い換え",
+    "reading": "しょうめいしょのしっこう"
+  },
+  {
+    "id": "hsts",
+    "term": "HSTS",
+    "aliases": [],
+    "short": "ブラウザに「次からは必ず HTTPS で接続してほしい」という指示を、Web サーバが応答に含めておく仕組みのこと。最初の HTTP でのアクセスまでは守れない。",
+    "defined_in": "m19-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 19 章の章計画で登録（2026-09-23）。収集資料に無く RFC 6797 依拠",
+    "reading": "hsts"
+  },
+  {
+    "id": "mixed-content",
+    "term": "混在コンテンツ",
+    "aliases": [],
+    "short": "HTTPS のページの中で、画像やスクリプトなどの部品が HTTP のまま呼び出されている状態のこと。その部品だけ暗号化されずに送られ、ブラウザが警告を出したり読み込みを止めたりする。",
+    "defined_in": "m19-4",
+    "known": false,
+    "match": "auto",
+    "note": "第 19 章の章計画で登録（2026-09-23）。収集資料に無く W3C Mixed Content 依拠",
+    "reading": "こんざいこんてんつ"
+  },
+  {
+    "id": "tls-termination",
+    "term": "TLS 終端",
+    "aliases": [
+      "TLS オフロード",
+      "SSL オフロード"
+    ],
+    "short": "暗号化された通信を元の中身に戻す（暗号を解く）役目を、どの機械が受け持つかのこと。自分のサーバで解く場合と、手前の中継役が代わりに解く場合があり、身分証を置く場所や更新の手間も変わる。",
+    "defined_in": "m19-5",
+    "known": false,
+    "match": "auto",
+    "note": "第 19 章の章計画で登録（2026-09-23）",
+    "reading": "tlsしゅうたん"
+  },
+  {
+    "id": "cache-control",
+    "term": "Cache-Control",
+    "aliases": [
+      "キャッシュ制御ヘッダ"
+    ],
+    "short": "Web サーバが応答に添えて、この内容をどれくらいの間、控えとして使ってよいかなどを指示する項目のこと。この指示に従い、ブラウザや途中のサーバが控えを保存・再利用する。",
+    "defined_in": "m20-5",
+    "known": false,
+    "match": "auto",
+    "note": "第 20 章の章計画で登録（2026-09-23）。指定方法の細部は RFC 9111 依拠",
+    "reading": "cachecontrol"
+  },
+  {
+    "id": "http-cache",
+    "term": "HTTP キャッシュ",
+    "aliases": [],
+    "short": "ブラウザや途中のサーバが、一度受け取った応答の控えを保存しておき、同じ要求への答えとして再利用する仕組みのこと。控えが使えれば、毎回 Web サーバまで問い合わせずに済む。",
+    "defined_in": "m20-5",
+    "known": false,
+    "match": "auto",
+    "note": "第 20 章の章計画で登録（2026-09-23）。第 22 章の CDN のキャッシュはこの延長",
+    "reading": "httpきゃっしゅ"
+  },
+  {
+    "id": "hpack",
+    "term": "HPACK",
+    "aliases": [],
+    "short": "HTTP/2 で使われるヘッダ圧縮の仕組みのこと。一度送ったヘッダの内容を送り手と受け手の双方が覚えておき、次回以降は番号などで済ませることで、同じ内容を毎回送り直す無駄を減らす。",
+    "defined_in": "m21-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 21 章の章計画で登録（2026-09-23）",
+    "reading": "hpack"
+  },
+  {
+    "id": "cache-hit",
+    "term": "キャッシュヒット",
+    "aliases": [],
+    "short": "問い合わせに対して、控えが見つかり、それをそのまま返せた状態のこと。控えが無ければ、もとのサーバまで取りに行くことになる。",
+    "defined_in": "m22-1",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で登録（2026-09-23）。ミスは言い換え",
+    "reading": "きゃっしゅひっと"
+  },
+  {
+    "id": "cache-key",
+    "term": "キャッシュキー",
+    "aliases": [],
+    "short": "同じ要求に対して、同じ控えを返してよいかどうかを見分けるために比べる材料の組み合わせのこと。基本は、要求先の URL と、GET などの要求の種類で決まる。",
+    "defined_in": "m22-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で登録（2026-09-23）。収集資料に無く RFC 9111 依拠",
+    "reading": "きゃっしゅきい"
+  },
+  {
+    "id": "ttl-cache",
+    "term": "キャッシュの TTL",
+    "aliases": [],
+    "short": "コンテンツの控えを、この秒数の間は使ってよいとする期限のこと。Web サーバの応答に含まれる指示や、配信事業者側の設定で決まる。",
+    "defined_in": "m22-2",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で登録（2026-09-23）。ttl-dns・ttl-ip と別 id",
+    "reading": "きゃっしゅのttl"
+  },
+  {
+    "id": "purge",
+    "term": "パージ",
+    "aliases": [
+      "キャッシュのパージ"
+    ],
+    "short": "期限が来る前に、コンテンツの控えを強制的に消させる操作のこと。中身が古くなったり間違っていたりしたときや、急ぎの更新があったときに使われる。",
+    "defined_in": "m22-3",
+    "known": false,
+    "match": "auto",
+    "note": "第 22 章の章計画で登録（2026-09-23）",
+    "reading": "ぱあじ"
+  },
+  {
+    "id": "round-robin",
+    "term": "ラウンドロビン",
+    "aliases": [],
+    "short": "複数の振り分け先に、届いた要求を順番どおりに 1 つずつ割り当てていく振り分け方のこと。前回どこに送ったかだけを見て次を決めるので、特定の 1 台に偏りにくい。",
+    "defined_in": "m23-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "らうんどろびん"
+  },
+  {
+    "id": "flow-hash",
+    "term": "フローハッシュ",
+    "aliases": [],
+    "short": "送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに、振り分け先を決める方式のこと。同じ組み合わせが続く間は、同じ振り分け先が選ばれ続ける。",
+    "defined_in": "m23-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふろおはっしゅ"
+  },
+  {
+    "id": "health-check",
+    "term": "ヘルスチェック",
+    "aliases": [],
+    "short": "複数の同じ役目の機械のうち、それぞれが正常に応答しているかどうかを定期的に確かめる仕組みのこと。応答が無い機械には、しばらく通信を送らないようにする。",
+    "defined_in": "m23-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "へるすちぇっく"
+  },
+  {
+    "id": "failover",
+    "term": "フェイルオーバー",
+    "aliases": [],
+    "short": "動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替える仕組みのこと。障害が起きた場所を自動的に迂回させる考え方でもある。",
+    "defined_in": "m23-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふぇいるおおばあ"
+  },
+  {
+    "id": "session-affinity",
+    "term": "セッションアフィニティ",
+    "aliases": [
+      "スティッキーセッション",
+      "セッション維持"
+    ],
+    "short": "同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組みのこと。状況によっては、必ず同じ機械に届くとは限らない。",
+    "defined_in": "m23-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "せっしょんあふぃにてぃ"
+  },
+  {
+    "id": "vpc-peering",
+    "term": "VPC ピアリング",
+    "aliases": [
+      "VPC peering"
+    ],
+    "short": "2 つの VPC を 1 対 1 で直接つなぎ、互いのネットワークの範囲まで通信できるようにする仕組みのこと。つないだ VPC を経由して、さらに別の VPC へ届くことはない。",
+    "defined_in": "m25-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "vpcぴありんぐ"
+  },
+  {
+    "id": "transit-gateway",
+    "term": "Transit Gateway",
+    "aliases": [
+      "AWS Transit Gateway"
+    ],
+    "short": "たくさんの VPC や社内ネットワークを 1 か所に集めてつなぎ、そこを経由してまとめて経路を制御する、クラウドの中継役の仕組みのこと。",
+    "defined_in": "m25-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "transitgateway"
+  },
+  {
+    "id": "shared-vpc",
+    "term": "共有 VPC",
+    "aliases": [
+      "シェアード VPC",
+      "VPC sharing",
+      "Shared VPC"
+    ],
+    "short": "1 つの VPC を、複数のチームやアカウント・プロジェクトで分担して使えるようにする仕組みのこと。VPC を管理する側と、実際に使う側の役割を分けられる。",
+    "defined_in": "m25-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "きょうゆうvpc"
+  },
+  {
+    "id": "vpn",
+    "term": "VPN",
+    "aliases": [],
+    "short": "インターネット回線の上に、暗号化した専用の通り道（トンネル）を作り、クラウドの仕切られたネットワークと社内のネットワークを安全につなぐ仕組みのこと。",
+    "defined_in": "m25-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "vpn"
+  },
+  {
+    "id": "direct-connect",
+    "term": "専用線",
+    "aliases": [
+      "Direct Connect"
+    ],
+    "short": "インターネットを経由せず、契約した回線業者の物理的な専用の回線で、クラウドの仕切られたネットワークと社内のネットワークを直接つなぐ仕組みのこと。",
+    "defined_in": "m25-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "せんようせん"
+  },
+  {
+    "id": "private-link",
+    "term": "PrivateLink",
+    "aliases": [
+      "Private Link"
+    ],
+    "short": "相手が用意した特定のサービスだけに、インターネットへ出ずに内側からアクセスできるようにする仕組みのこと。相手のネットワーク全体には届かない。",
+    "defined_in": "m25-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "privatelink"
+  },
+  {
+    "id": "ip-spoofing",
+    "term": "IP スプーフィング",
+    "aliases": [
+      "IP アドレスの詐称"
+    ],
+    "short": "パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口のこと。送り主を偽ったり、応答を別の相手に向けさせたりするために使われる。",
+    "defined_in": "m26-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ipすぷうふぃんぐ"
+  },
+  {
+    "id": "ddos",
+    "term": "DDoS",
+    "aliases": [
+      "DDoS 攻撃"
+    ],
+    "short": "乗っ取った複数の機械から大量の通信を送りつけ、対象のサーバやネットワークを使えなくしてしまう攻撃のこと。正規の利用者からの通信も届きにくくなる。",
+    "defined_in": "m26-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ddos"
+  },
+  {
+    "id": "botnet",
+    "term": "ボットネット",
+    "aliases": [],
+    "short": "攻撃者が遠隔で操作できるように乗っ取った、複数の機械の集まりのこと。DDoS などの攻撃で、まとめて指示を送られて使われる。",
+    "defined_in": "m26-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぼっとねっと"
+  },
+  {
+    "id": "packet-capture",
+    "term": "パケットキャプチャ",
+    "aliases": [],
+    "short": "ネットワークを流れているパケットを、その場で記録して中身を確かめる操作のこと。専用のツールで記録し、あとから 1 つずつ読み解くことができる。",
+    "defined_in": "m28-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ぱけっときゃぷちゃ"
+  },
+  {
+    "id": "capture-filter",
+    "term": "キャプチャフィルタ",
+    "aliases": [],
+    "short": "パケットを記録する時点で、条件に合う通信だけに絞り込む仕組みのこと。相手のアドレスやポート番号などを指定して、記録する量を減らす。",
+    "defined_in": "m28-2",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "きゃぷちゃふぃるた"
+  },
+  {
+    "id": "pcap-file",
+    "term": "pcap ファイル",
+    "aliases": [
+      "pcap 形式"
+    ],
+    "short": "記録した通信の内容を、あとで見返せるように保存しておくファイルの形式のこと。記録する側と読み解く側で同じ形式を使うので、別のツールでも開ける。",
+    "defined_in": "m28-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "pcapふぁいる"
+  },
+  {
+    "id": "display-filter",
+    "term": "表示フィルタ",
+    "aliases": [],
+    "short": "すでに記録済みのパケットの中から、条件に合うものだけを画面に表示させる仕組みのこと。記録し終えたあとでも、絞り込む条件を変えられる。",
+    "defined_in": "m28-4",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ひょうじふぃるた"
+  },
+  {
+    "id": "reachability-tool",
+    "term": "経路診断ツール",
+    "aliases": [],
+    "short": "クラウドの中の設定を読み取り、通信が実際に届くはずかどうかや、途中のどこで止まるはずかを、送らずに確かめる、クラウド事業者の診断機能のこと。",
+    "defined_in": "m29-1",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "けいろしんだんつうる"
+  },
+  {
+    "id": "flow-log",
+    "term": "フローログ",
+    "aliases": [],
+    "short": "ネットワークを実際に通過した通信を、送信元・宛先・ポート番号や、許可か拒否かといった記録として蓄積しておく仕組みのこと。あとから実際に何が起きたかを確認できる。",
+    "defined_in": "m29-3",
+    "known": false,
+    "match": "auto",
+    "note": "",
+    "reading": "ふろおろぐ"
+  }
+]

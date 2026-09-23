@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内側だけで通じる番号と、外まで届く番号 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m05-4" data-chapter="m05" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 5-4</p>
+  <p class="chapter-label">第 5 章 IP アドレスとサブネット　5-4</p>
+  <h1>内側だけで通じる番号と、外まで届く番号</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>IP アドレスには、家庭や会社の中だけで使う番号と、インターネット上で世界に 1 つだけの番号の、2 種類がある。<strong>外から直接アクセスしてほしい機械には、世界に 1 つだけの番号が必要である</strong>。このページでは、この 2 つの違いと使い分けを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">自分の Mac の IP アドレス、192.168 から始まってたんですけど、これって世界に 1 つだけの番号なんですか?</p>
+    <p class="t" data-who="ふくろう先生">実はそうとは限りません。IP アドレスには、家庭や会社の中だけで使う番号と、インターネット全体で 1 つだけの番号の、2 種類があります。</p>
+    <p class="s" data-who="ひよこちゃん">中だけで使う番号にも、名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。プライベートアドレスと呼びます。10.0.0.0 から 10.255.255.255、172.16.0.0 から 172.31.255.255、192.168.0.0 から 192.168.255.255 の 3 つの範囲が決められています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その番号がよそのお宅や会社と被っても大丈夫なんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。この番号は自分のネットワークの中だけで通じればよく、インターネットの外からは直接見えないので、被っても問題ありません。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発でサーバを借りるときも、この区別は関係あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">関係あります。外部に公開するサーバには、世界に 1 つだけの番号が割り当てられます。開発中に手元だけで動かす環境なら、プライベートアドレスで十分です。</p>
+    <p class="s" data-who="ひよこちゃん">もう 1 つの、世界に 1 つだけの番号にも名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。グローバルアドレスと呼びます。プライベートアドレスとは違い、直接インターネットに公開して使う番号です。</p>
+    <p class="s" data-who="ひよこちゃん">プライベートアドレスの機械が、普通にインターネットを見れているのはなぜですか?</p>
+    <p class="t" data-who="ふくろう先生">家の中の番号と外の番号を付け替える箱があるからです。この付け替えの仕組みを<a class="term" href="glossary.html#nat" data-term="nat">NAT</a>と呼びます。第 4 章で役割だけ見た仕組みで、詳しくは第 10 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いたんですけど、自宅で小さな Web サーバを公開しようとして、外部からアクセスできるようにする欄にプライベートアドレスを書いてしまって、いつまでもアクセスできなかったことがあるらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">プライベートアドレスは、それぞれのネットワークの中だけで通用する番号として決められています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その番号をインターネット側に書いても、意味が無いってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。インターネットの外からその番号を直接の宛先として指定することはできません。外から直接アクセスしてほしい機械には、グローバルアドレスを使う必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、中だけで使うか、外からも直接見えるようにするかで、番号の種類を選ぶんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。自分の Mac のアドレスが今どちらなのか、あとで確認してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた、IPv4、サブネットマスク、CIDR 表記、ネットワークアドレス、ブロードキャストアドレス、プライベートアドレスとグローバルアドレス、全部つながった気がします。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。IP アドレスとサブネットマスクさえ分かれば、この章の内容は自分で計算し直せます。</p>
+    <p class="s" data-who="ひよこちゃん">次の章では、この番号を使って何をするんですか?</p>
+    <p class="t" data-who="ふくろう先生">次の章では、この番号を使って実際にデータがどう運ばれていくかを見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>IP アドレスには、家庭や会社の中だけで使うプライベートアドレスと、インターネット上で 1 つだけのグローバルアドレスの 2 種類がある。</li>
+      <li>プライベートアドレスは 10.0.0.0〜10.255.255.255、172.16.0.0〜172.31.255.255、192.168.0.0〜192.168.255.255 の 3 つの範囲が決められており、別の家庭や組織と重複してもかまわない。</li>
+      <li>家庭用ルータなどが、内側の番号と外側の番号を付け替える仕組み(NAT)を使うことで、プライベートアドレスの機械もインターネットへ出て行ける。</li>
+      <li>外から直接アクセスしてほしい機械には、世界に 1 つだけのグローバルアドレスが必要である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>プライベートアドレスは、10.0.0.0 から 10.255.255.255、172.16.0.0 から 172.31.255.255、192.168.0.0 から 192.168.255.255 の 3 つの範囲が決められており、組織や家庭の中だけで使われる。この範囲の番号は、インターネットの外から直接の宛先として指定することができないため、別の家庭や組織で同じ番号が使われていても問題にならない。一方グローバルアドレスは、インターネット上で世界中に 1 つだけ存在する番号で、外から直接アクセスしてほしい機械にはこちらを使う必要がある。家庭用ルータなどが内側と外側の番号を付け替えることで、プライベートアドレスの機械も外のインターネットへ出て行くことができる。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 「en0」の「inet」の値を、このページで見た 3 つの範囲(10.0.0.0〜10.255.255.255、172.16.0.0〜172.31.255.255、192.168.0.0〜192.168.255.255)と見比べてほしい。多くの場合、この Mac のアドレスはこのどれかに当てはまり、プライベートアドレスの範囲にいることが確認できる。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>(p.44「グローバル IP とプライベート IP」)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(p.18 RFC 1918 のプライベートアドレスの範囲)</li>
+    <li class="cite" data-src="50">[#50] Cloudflare Learning Center「What is the Internet Protocol?」 — <a href="https://www.cloudflare.com/learning/network-layer/internet-protocol/" rel="noopener">原典</a>(インターネットに接続するすべての機械に IP アドレスが割り当てられるという説明)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m05-4">
+    <div class="q" data-q="1">
+      <p class="q-text">プライベートアドレスの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">組織や家庭の中だけで使われ、インターネットには直接出て行かない IP アドレスの一群</button></li>
+        <li><button type="button" data-correct="false">世界中で重複しない、たった 1 つの IP アドレス</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクの別の呼び方</button></li>
+        <li><button type="button" data-correct="false">IP アドレスを暗号化したもの</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、組織や家庭の中だけで使われ、インターネットには直接出て行かない IP アドレスの一群、です。10.0.0.0〜10.255.255.255 など、3 つの範囲が決められています。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">次のうち、プライベートアドレスの範囲に含まれないものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">8.8.8.8</button></li>
+        <li><button type="button" data-correct="false">10.1.2.3</button></li>
+        <li><button type="button" data-correct="false">172.20.5.9</button></li>
+        <li><button type="button" data-correct="false">192.168.100.1</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、8.8.8.8、です。10.1.2.3 は 10.0.0.0〜10.255.255.255、172.20.5.9 は 172.16.0.0〜172.31.255.255、192.168.100.1 は 192.168.0.0〜192.168.255.255 の範囲に、それぞれ含まれます。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">自宅と会社で同じプライベートアドレス(例: 192.168.1.1)が使われていても問題にならないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">プライベートアドレスはそれぞれのネットワークの中だけで通用する番号で、インターネットの外からは直接見えないから</button></li>
+        <li><button type="button" data-correct="false">たまたま同じ番号を使う家庭や会社が存在しないから</button></li>
+        <li><button type="button" data-correct="false">プライベートアドレスは自動的に世界で 1 つだけの番号に変換されるから</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクが異なれば同じ番号でも別の意味になるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、プライベートアドレスはそれぞれのネットワークの中だけで通用する番号で、インターネットの外からは直接見えないから、です。インターネットの外から見ると、この番号は宛先として指定できません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m05-3.html">← 5-3 グループ全体を指す番号と、全員に呼びかける番号</a>
+    <a class="up" href="m05.html">第 5 章の入口</a>
+    <a class="next" href="m06.html">第 6 章 IP パケットと配送の仕組み →</a>
+  </nav>
+</main>
+</body>
+</html>

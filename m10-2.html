@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 つの番号を、みんなで使うための工夫 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m10-2" data-chapter="m10" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 10-2</p>
+  <p class="chapter-label">第 10 章 NAT とプライベートネットワーク　10-2</p>
+  <h1>1 つの番号を、みんなで使うための工夫</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>家の中の複数の機器は、外に出るとき普通 1 つのグローバルアドレスを共有している。<strong>家庭用ルータは、IP アドレスだけでなくポート番号の組も使って、誰のどのやり取りかを見分けている</strong>。このページでは、その見分け方の中身を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">さっき、家の中の番号を外向けの番号に付け替えるって話でしたけど、家の中に機器が何台もあったらどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いい質問です。実は、家の中の機器は普通、1 つのグローバルアドレスを共有しています。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの番号を共有してて、返事が混ざったりしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">混ざりません。家庭用ルータは、送信元のアドレスだけでなく、<strong>ポート番号の組み合わせも変換に使って</strong>います。これが NAPT(Network Address and Port Translation)と呼ばれる仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">ポート番号って、サービスの入り口の番号のことですよね。それが変換にも使われるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。ここでは送信元側のポート番号を、外向けの別の番号に付け替えるのに使います。実際の例を見てみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">例、というと?</p>
+    <p class="t" data-who="ふくろう先生">ネットワーク工学の講義資料に、家の中の機器の IP アドレスとポート番号が、NAT ルータを通ると別の IP アドレスとポート番号に変わるという具体例があります。外から戻ってくるデータも、その IP アドレスとポート番号を見て、内側の機器へ振り分けられます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、家の中に何台も機器があっても、それぞれ別のポート番号が割り当たるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。下の表を見てください。同じ家の中の 2 台の機器が、同じ Web サーバとやり取りしていても、外向けのポート番号はそれぞれ別になります。</p>
+    <p class="s" data-who="ひよこちゃん">表を見ると、同じ 192.168.1.10 でも、2 回目のやり取りでは違うポート番号になってますね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。この対応を記録した表を変換表と呼びます。戻ってきた返事は、この表を見て、どの機器のどのやり取りに対する返事かを判断します。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど。中の番号と外の番号の組が、表にひとつずつ書かれているイメージですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。相手(Web サーバ)側の番号は変わらず、変わるのは家の中の番号と外向けの番号だけです。</p>
+    <p class="s" data-who="ひよこちゃん">たまたま 2 台の機器が、家の中で同じポート番号を使っていたらどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのときは、家庭用ルータが外向けのポート番号を、重ならない別の番号に割り当てます。変換表に記録されるのは外から見えるポート番号なので、家の中で番号が重なっていても困りません。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、家の中と外とで見える番号が違うから、家の中で番号が重なっても困らないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、この表に無い番号あてに外から急にデータが来たら、届け先が分からないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。それが次のページのテーマにつながります。</p>
+    <p class="s" data-who="ひよこちゃん">1 つの番号を、みんなでうまく使い分けてるんですね。</p>
+    <p class="t" data-who="ふくろう先生">はい。次は、この表があるからこそ起きる、外から中へつなぐときの話をしましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>家の中の複数の機器は、外に出るとき普通 1 つのグローバルアドレスを共有している。</li>
+      <li>NAPT は、IP アドレスだけでなくポート番号の組も使って変換する、NAT の仕組みである。</li>
+      <li>変換表は、家の中の番号(IP アドレスとポート番号の組)と外向けの番号の対応を記録した表で、戻ってきた返事の届け先を判断するのに使われる。</li>
+      <li>変換表に対応が無い、外から来た通信は、どの機器に届ければよいか判断できない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>NAPT(Network Address and Port Translation)は、家庭用ルータなどが送信元の IP アドレスに加えてポート番号も付け替える、NAT の実現方式である。家の中の複数の機器が 1 つのグローバルアドレスを共有するとき、IP アドレスだけでは誰のやり取りか区別できないため、ポート番号の組も合わせて変換に使う。この対応は変換表と呼ばれる表に記録される。下の表は、2 台の機器(192.168.1.10 と 192.168.1.11)が同じ Web サーバとやり取りしている例である。相手(Web サーバ)側の番号は変わらないが、家の中の番号と外向けの番号は、やり取りごとに異なる組が割り当てられる。外から戻ってきたデータは、宛先の IP アドレスとポート番号をこの表と照合し、どの機器の、どのやり取りに対する返事かを判断してから内側へ転送される。</p>
+    <table>
+      <tr><th>家の中の番号</th><th>外向けの番号(共有)</th><th>相手の番号(Web サーバ)</th></tr>
+      <tr><td>192.168.1.10:51000</td><td>203.0.113.5:40001</td><td>203.0.113.80:443</td></tr>
+      <tr><td>192.168.1.11:52000</td><td>203.0.113.5:40002</td><td>203.0.113.80:443</td></tr>
+      <tr><td>192.168.1.10:53000</td><td>203.0.113.5:40003</td><td>203.0.113.80:443</td></tr>
+    </table>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（`07_TCP.txt` p.64「Traditional NAT」: アドレスだけを変換する Basic NAT と、ポート番号も変換する方式の対比。p.65「NAPT (Network Address and Port Translation)」: 内部の送信元 172.20.6.1:1234 が外向けの送信元 157.82.240.115:54321 に変換され、外から来る応答は宛先の IP アドレスとポート番号の両方を見て内部に戻されるという例）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m10-2">
+    <div class="q" data-q="1">
+      <p class="q-text">NAPT の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">複数の機器が 1 つのグローバルアドレスを共有できるように、IP アドレスだけでなくポート番号の組も使って変換する仕組み</button></li>
+        <li><button type="button" data-correct="false">グローバルアドレスを複数の機器にそれぞれ割り当てる仕組み</button></li>
+        <li><button type="button" data-correct="false">ポート番号だけを付け替え、IP アドレスは変えない仕組み</button></li>
+        <li><button type="button" data-correct="false">家の中の機器どうしの通信を中継する仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、複数の機器が 1 つのグローバルアドレスを共有できるように、IP アドレスだけでなくポート番号の組も使って変換する仕組み、です。グローバルアドレスをそれぞれの機器に割り当てるわけではなく、ポート番号だけでなく IP アドレスも変換の対象です。家の中どうしの中継とも異なります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">家の中の 2 台の機器が同時に外の同じ Web サーバと通信していても、それぞれの返事を正しい機器に届けられるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">それぞれのやり取りに外向けの別々のポート番号が割り当てられ、変換表に記録されているから</button></li>
+        <li><button type="button" data-correct="false">2 台の機器が交互に通信するよう順番が決まっているから</button></li>
+        <li><button type="button" data-correct="false">Web サーバ側が送信元を記憶しているから</button></li>
+        <li><button type="button" data-correct="false">家の中の機器にはそれぞれ別のグローバルアドレスが割り当てられるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、それぞれのやり取りに外向けの別々のポート番号が割り当てられ、変換表に記録されているから、です。交互に通信する決まりや、Web サーバ側の記憶によるものではなく、家の中の機器が別々のグローバルアドレスを持つわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">変換表に記録される対応として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">家の中の番号(IP アドレスとポート番号の組)と、外向けの番号(IP アドレスとポート番号の組)の対応</button></li>
+        <li><button type="button" data-correct="false">家の中の機器の MAC アドレスと、IP アドレスの対応</button></li>
+        <li><button type="button" data-correct="false">宛先のドメイン名と、IP アドレスの対応</button></li>
+        <li><button type="button" data-correct="false">サブネットマスクと、ネットワークアドレスの対応</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、家の中の番号(IP アドレスとポート番号の組)と、外向けの番号(IP アドレスとポート番号の組)の対応、です。MAC アドレスとの対応は ARP キャッシュ、ドメイン名との対応は別の仕組みの役目で、サブネットマスクとネットワークアドレスの対応でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m10-1.html">← 10-1 家の中の番号は、そのままでは外に出られない</a>
+    <a class="up" href="m10.html">第 10 章の入口</a>
+    <a class="next" href="m10-3.html">10-3 外から声をかけても、届かないことがある →</a>
+  </nav>
+</main>
+</body>
+</html>

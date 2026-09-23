@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 台に、いくつもの役目が詰め込まれている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m04-2" data-chapter="m04" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 4-2</p>
+  <p class="chapter-label">第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP　4-2</p>
+  <h1>1 台に、いくつもの役目が詰め込まれている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>家に 1 台置くだけでインターネットにつながる、あの箱には、いくつもの役目が詰め込まれている。<strong>家の中の機器をつなぐ役目、無線の入り口の役目、外のインターネットと中継する役目、番号を配る役目、番号を付け替える役目が、1 台にまとまっている</strong>。このページでは、その役目を 1 つずつ確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、家庭用ルータが無線の入り口の役目を持ってるって話がありましたけど、他にもいろいろこなしてるんですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうなんです。家庭用ルータには、家の中の機器をつなぐ役目、無線の入り口の役目、外のインターネットと中継する役目、番号を自動で配る役目、番号を付け替える役目と、複数の役目が 1 台に詰め込まれています。今日はこれを 1 つずつ見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">家の中の機器をつなぐ役目って、スイッチのことですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。家の中にある有線の機器どうしをつなぐ、スイッチの役目を持っています。テレビやパソコンをケーブルでつなぐポートが、そのための入り口です。</p>
+    <p class="s" data-who="ひよこちゃん">そのポートって、何個くらいあるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">機種にもよりますが、有線用のポートが数個ある製品が一般的です。ある演習でも、2 台のパソコンをそれぞれ別のポートにケーブルでつないでいました。</p>
+    <p class="s" data-who="ひよこちゃん">無線の入り口は、前のページで見たアクセスポイントですよね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。無線 LAN の機器は、家庭用ルータが兼ねているアクセスポイントを通じてつながります。</p>
+    <p class="s" data-who="ひよこちゃん">外のインターネットとは、具体的にはどうつながってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ケーブルモデムなどを、家庭用ルータのインターネット用のポートにつなぎます。そこから先が、ISP との窓口になります。</p>
+    <p class="s" data-who="ひよこちゃん">そこから先で、行き先を選んで転送する役目も出てくるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。行き先に応じて次の転送先を選ぶ、<a class="term" href="glossary.html#router" data-term="router">ルータ</a>としての役目も持っています。経路の先にある専用のルータと、同じ役目をここで果たしています。</p>
+    <p class="s" data-who="ひよこちゃん">機器につながる番号は、誰が決めてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">使ってよい番号を自動で配る役目もあります。<a class="term" href="glossary.html#dhcp" data-term="dhcp">DHCP</a>と呼ばれる仕組みで、どうやって配るかは次のページで詳しく見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">番号を配るのと、番号を付け替えるのは違うことなんですか?</p>
+    <p class="t" data-who="ふくろう先生">別のことです。家の中で使っている番号と、インターネットに出ていくときの番号は別物で、家庭用ルータには、この 2 種類の番号を付け替える<a class="term" href="glossary.html#nat" data-term="nat">NAT</a>という箱としての役目もあります。中身は第 10 章で詳しく扱います。</p>
+    <p class="s" data-who="ひよこちゃん">1 台にそんなに詰め込んで、大丈夫なんですか?</p>
+    <p class="t" data-who="ふくろう先生">気になりますよね。1 つの機械にトラブルが起きると、複数の役目が同時に影響を受けることはあります。ただ、家庭くらいの規模なら、これで十分間に合いますし、設定もシンプルで済みます。</p>
+    <p class="s" data-who="ひよこちゃん">台数がもっと多い場所だと、また違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。台数がもっと多い場所だとどうなるかは、この章の最後で見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、家庭用ルータって、スイッチ・アクセスポイント・ルータ・DHCP・NAT の 5 つの役目を持ってるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次はその中の DHCP を、どうやって番号を配っているのか詳しく見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>家庭用ルータは、家の中の機器をつなぐ役目(スイッチ)、無線の入り口の役目(アクセスポイント)、外のインターネットと中継する役目(ルータ)、番号を自動で配る役目(DHCP)、番号を付け替える役目(NAT)を 1 台に集約した機械である。</li>
+      <li>有線の機器はスイッチの役目でつながり、無線の機器はアクセスポイントの役目でつながる。</li>
+      <li>外のインターネットとは、ケーブルモデムなどを経由し、ルータとしての役目で中継される。</li>
+      <li>機器に番号を配る役目(DHCP)と、家の中と外で番号を付け替える役目(NAT)は、どちらも番号に関わるが対象が異なる別の役目である。</li>
+      <li>家庭くらいの台数ならこの集約で十分だが、台数が多い場所でどうなるかは章の最後で扱う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>家庭用ルータは、複数の役目を 1 台にまとめた機械である。家の中の有線機器をつなぐスイッチの役目、無線の機器を受け入れるアクセスポイントの役目、外のインターネットと中継するルータの役目、機器に使ってよい番号を自動で配る DHCP の役目、家の中と外で番号を付け替える NAT の役目を持つ。経路の先にある専用の機器がそれぞれ 1 つの役目に特化しているのに対し、家庭用ルータは 1 台でこれらをまかなっている。1 つの機械に役目が集まる分、扱いは簡単になるが、トラブルが起きたときの影響範囲も広くなりやすい。</p>
+    <table>
+      <tr><th>役目</th><th>一言</th><th>詳しく扱う章</th></tr>
+      <tr><td>スイッチ</td><td>家の中の有線機器をつなぐ</td><td>第 3 章</td></tr>
+      <tr><td>アクセスポイント</td><td>無線の機器を受け入れる</td><td>前のページ</td></tr>
+      <tr><td>ルータ</td><td>外のインターネットと中継する</td><td>第 8 章</td></tr>
+      <tr><td>DHCP</td><td>番号を自動で配る</td><td>次のページ</td></tr>
+      <tr><td>NAT</td><td>家の中と外で番号を付け替える</td><td>第 10 章</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>netstat -rn</code></pre>
+    <p>見方: 実行結果の「default」で始まる行の右側にある IP アドレスが、外部と通信するときにまず送り出される先、つまりこのページで見た家庭用ルータ自身のアドレスです。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 4.4.4「ワイヤレスルータとクライアントを設定する」、ケーブルモデムをインターネットポートに接続し、有線ポート・無線タブ・DHCP 設定が 1 つの機器にまとまっている場面）</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.11、クライアントは手動または DHCP によって IP アドレスと、外へ出るときの出口となる機器のアドレスを割り当てられること）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m04-2">
+    <div class="q" data-q="1">
+      <p class="q-text">家庭用ルータの「番号を配る役目(DHCP)」と「番号を付け替える役目(NAT)」は、どちらも番号に関わる役目だが、なぜ別の役目なのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">配る相手は家の中の機器、付け替えるのは家の中と外の番号どうし、というように対象が違うから</button></li>
+        <li><button type="button" data-correct="false">DHCP は無線の機器だけ、NAT は有線の機器だけを対象にしているから</button></li>
+        <li><button type="button" data-correct="false">NAT が先に動き、DHCP はその後にしか動かない決まりだから</button></li>
+        <li><button type="button" data-correct="false">どちらも同じ番号を同じ相手に渡しているだけだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、配る相手は家の中の機器、付け替えるのは家の中と外の番号どうし、というように対象が違うから、です。DHCP は家の中の機器に番号を配る役目、NAT は家の中と外で番号を付け替える役目で、どちらも番号に関わりますが対象が異なります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">家庭用ルータの役目の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">無線の入り口の役目は持たず、有線の機器だけをつなぐ</button></li>
+        <li><button type="button" data-correct="true">家の中の機器をつなぐ役目、無線の入り口の役目、外との中継役、番号を配る役目、番号を付け替える役目を 1 台に集約している</button></li>
+        <li><button type="button" data-correct="false">外のインターネットとの中継は行わず、家の中だけの通信を扱う</button></li>
+        <li><button type="button" data-correct="false">番号を付け替える役目の中身(変換の仕組み)も、この章で全て説明する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、家の中の機器をつなぐ役目、無線の入り口の役目、外との中継役、番号を配る役目、番号を付け替える役目を 1 台に集約している、です。番号を付け替える役目の中身は第 10 章で扱うため、この章では役目の紹介にとどめています。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">スイッチとアクセスポイントの役目の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">スイッチは有線の機器をつなぐ役目、アクセスポイントは無線の機器を受け入れる役目で、どちらも家の中の機器を対象にする</button></li>
+        <li><button type="button" data-correct="false">スイッチは無線、アクセスポイントは有線の機器をつなぐ役目である</button></li>
+        <li><button type="button" data-correct="false">スイッチは外のインターネットとの中継を行う役目である</button></li>
+        <li><button type="button" data-correct="false">アクセスポイントは番号を自動で配る役目である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、スイッチは有線の機器をつなぐ役目、アクセスポイントは無線の機器を受け入れる役目で、どちらも家の中の機器を対象にする、です。外との中継はルータの役目、番号を配るのは DHCP の役目です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m04-1.html">← 4-1 同じ電波を、みんなで使っている</a>
+    <a class="up" href="m04.html">第 4 章の入口</a>
+    <a class="next" href="m04-3.html">4-3 つないだ瞬間に、番号は自動で配られる →</a>
+  </nav>
+</main>
+</body>
+</html>

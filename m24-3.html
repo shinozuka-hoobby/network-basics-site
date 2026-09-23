@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>許可を覚えているか、そのつど確かめるか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m24-3" data-chapter="m24" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 24-3</p>
+  <p class="chapter-label">第 24 章 クラウドの仮想ネットワーク（VPC）　24-3</p>
+  <h1>許可を覚えているか、そのつど確かめるか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>クラウドのサーバへの通信を許可・拒否する設定には、サーバ 1 台ずつにかけるものと、区画の境目にかけるものの、2 種類がある。<strong>この 2 つは、対象にする範囲だけでなく、戻りの通信の扱いも違う</strong>。このページでは、その違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">VPC の中のサーバに、通信を許可する設定をしたことがあるんですけど、あれは何をしてたんですか?</p>
+    <p class="t" data-who="ふくろう先生">それがセキュリティグループです。サーバ 1 台ずつに対して、どの通信を許してよいかを決める仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">サーバの外側、サブネットの境目にも、似たような設定ってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。NACL(ネットワーク ACL)と呼ばれ、サブネットの境目で通信を許可・拒否します。</p>
+    <p class="s" data-who="ひよこちゃん">セキュリティグループと NACL、対象にする範囲が違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。セキュリティグループはサーバ 1 台ずつ、NACL はサブネットの境目全体にかかります。</p>
+    <p class="s" data-who="ひよこちゃん">範囲以外にも、違いってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。戻りの通信の扱いも違います。</p>
+    <p class="s" data-who="ひよこちゃん">戻りの通信、というと?</p>
+    <p class="t" data-who="ふくろう先生">セキュリティグループは、一度許可した通信の戻りを自動で通します。これをステートフルと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">NACL は違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。NACL は、以前に送った・受け取った通信の情報を覚えていないため、行きと帰りをそれぞれ許可しないと通りません。これをステートレスと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から聞いたんですけど、NACL で外から来る 443 番宛ての通信を許可したのに、外から要求は届くのに応答が返らなかったことがあるらしいです。</p>
+    <p class="t" data-who="ふくろう先生">NACL はステートレスなので、行きの通信を許可しても、戻りの通信は別に許可しないと通りません。応答が返らなかったのは、戻りの通信を許可するルールが無かったからだと思います。</p>
+    <p class="s" data-who="ひよこちゃん">戻りの通信って、具体的にはどのポート宛てになるんですか?</p>
+    <p class="t" data-who="ふくろう先生">サーバからの応答は、要求を送ってきた側の一時的なポート宛てになります。第 12 章で見た、通信のたびに割り当てられる番号です。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、セキュリティグループだったら、これは自動で通っちゃうってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。だから、セキュリティグループだけで運用していると、この違いに気づきにくいのです。</p>
+    <p class="s" data-who="ひよこちゃん">ルールの調べ方も、セキュリティグループと NACL で違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。セキュリティグループは、すべてのルールを確認してから通信を許可するかどうかを決めます。NACL は、番号の小さい順にルールを確認していき、最初に一致したルールをそのまま適用します。</p>
+    <p class="s" data-who="ひよこちゃん">セキュリティグループも NACL も、決めた条件に合わない通信を止める、っていう意味では同じ種類の仕組みってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。どちらも、決めた条件に合わない通信を、機械やネットワークの手前で止める仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">その仕組み全体にも、呼び方があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。<a class="term" href="glossary.html#firewall" data-term="firewall">ファイアウォール</a>と呼びます。詳しくは第 26 章で扱います。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>セキュリティグループは、サーバ 1 台ずつに対して、どの通信を許可するかを決める仕組みである。</li>
+      <li>NACL は、サブネットの境目で通信を許可・拒否する設定である。セキュリティグループとは、対象にする範囲(サーバ 1 台ずつか、境目全体か)が違う。</li>
+      <li>セキュリティグループは、一度許可した通信の戻りを自動的に通す(ステートフル)。NACL は、戻りの通信も別に許可する必要がある(ステートレス)。</li>
+      <li>セキュリティグループも NACL も、決めた条件に合わない通信を止める仕組みという意味で、ファイアウォールの一種である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>セキュリティグループは、クラウドのサーバに対して、どの通信を許してよいかを決める仕組みで、サーバ(インスタンス)単位に適用される(#97)。NACL(ネットワーク ACL)は、サブネットの境目で通信を許可・拒否する設定で、そのサブネットに属するすべてのサーバに一律に適用される(#96、#97)。両者は戻りの通信の扱いも異なる。セキュリティグループは、一度許可した通信の戻りを自動的に許可する(ステートフル)(#95)。NACL は、以前に送った・受け取った通信の情報を保存しないため、行きの通信を許可しても戻りの通信は別に許可しなければならない(ステートレス)(#96)。この対象範囲と戻りの通信の扱いの違いから、セキュリティグループを主な手段として使い、必要に応じて NACL を追加の防御層として使うという使い分けができる(#97)。ルールの調べ方にも違いがあり、セキュリティグループはすべてのルールを確認してから許可するかどうかを決めるのに対し、NACL は 1 から 32766 までの番号を持つルールを小さい順に確認し、最初に一致したルールをそのまま適用する(#96)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="95">[#95] AWS「Control traffic to your AWS resources using security groups」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html" rel="noopener">原典</a>（セキュリティグループの定義、"Security groups are stateful. …the response traffic for that request is allowed to reach the instance regardless of the inbound security group rules" という記述）</li>
+    <li class="cite" data-src="96">[#96] AWS「Control subnet traffic with network access control lists」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html" rel="noopener">原典</a>（NACL がサブネットレベルで通信を許可・拒否するという定義、"NACLs are stateless, which means that information about previously sent or received traffic is not saved" という記述）</li>
+    <li class="cite" data-src="97">[#97] AWS「Infrastructure security in Amazon VPC」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/infrastructure-security.html" rel="noopener">原典</a>（「Compare security groups and network ACLs」の比較表: Level of operation(Instance level / Subnet level)、Return traffic(Automatically allowed=stateful / Must be explicitly allowed=stateless)の行、security groups を主な手段とし NACL を追加の防御層とする推奨）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m24-3">
+    <div class="q" data-q="1">
+      <p class="q-text">セキュリティグループと NACL の対象範囲の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">セキュリティグループはサーバ 1 台ずつにかかり、NACL はサブネットの境目全体にかかる</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループはサブネットの境目全体にかかり、NACL はサーバ 1 台ずつにかかる</button></li>
+        <li><button type="button" data-correct="false">どちらも VPC 全体に一括でかかり、区別は無い</button></li>
+        <li><button type="button" data-correct="false">どちらもリージョン全体にかかり、VPC をまたいで適用される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、セキュリティグループはサーバ 1 台ずつにかかり、NACL はサブネットの境目全体にかかる、です。範囲が逆でも、両方が同じ範囲にかかるわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">先輩から聞いた、NACL で外から来る 443 番宛ての通信を許可したのに、外から要求は届くのに応答が返らなかった、という話の原因はどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">外から来る通信を許可するルールの番号の順序が間違っていたから</button></li>
+        <li><button type="button" data-correct="true">NACL はステートレスで、戻りの通信を許可するルールを別に書いていなかったから</button></li>
+        <li><button type="button" data-correct="false">セキュリティグループの設定と重複していたから</button></li>
+        <li><button type="button" data-correct="false">サーバの IP アドレスが変わってしまったから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、NACL はステートレスで、戻りの通信を許可するルールを別に書いていなかったから、です。ルールの番号の順序や重複、IP アドレスの変化とは別の原因です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">セキュリティグループの、戻りの通信の扱いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">戻りの通信も、行きとは別に許可するルールを書く必要がある</button></li>
+        <li><button type="button" data-correct="true">一度許可した通信の戻りは、自動的に許可される</button></li>
+        <li><button type="button" data-correct="false">戻りの通信は、常にすべて拒否される</button></li>
+        <li><button type="button" data-correct="false">戻りの通信の扱いは、NACL と完全に同じである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、一度許可した通信の戻りは、自動的に許可される、です。戻りを別に許可する必要があるのは NACL の方で、セキュリティグループがすべて拒否するわけでもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m24-2.html">← 24-2 クラウドにも、あの表と出入り口がある</a>
+    <a class="up" href="m24.html">第 24 章の入口</a>
+    <a class="next" href="m24-4.html">24-4 内部専用の区画も、外へ出る仕組みは同じ →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IP アドレスとサブネット — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m05" data-chapter="m05" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 5 章</p>
+  <p class="chapter-label">第 5 章</p>
+  <h1>IP アドレスとサブネット</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>IPv4 アドレスが 32 個のビットでできていて、前半分(ネットワークを表す部分)と後半分(機械を表す部分)に分かれることを説明できる。</li>
+      <li>サブネットマスクと CIDR 表記(「/24」のような書き方)を使って、この 2 つの部分の境目を読み書きできる。</li>
+      <li>IP アドレスとサブネットマスクから、ネットワークアドレス・ブロードキャストアドレス・使えるホスト数を計算できる。</li>
+      <li>家庭や会社の中だけで使うプライベートアドレスと、インターネット上で 1 つだけのグローバルアドレスの使い分けを言える。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 860 260" role="img" aria-label="IPv4 アドレス 192.168.1.x を 4 つの組に分けた図。先頭 3 つの組(192・168・1)がネットワークを表す部分、最後の 1 つの組がその中の機械を表す部分になっている。機械を表す部分をすべて 0 にすると 192.168.1.0 でネットワークアドレス、すべて 1 にすると 192.168.1.255 でブロードキャストアドレスになる。">
+      <rect x="30" y="55" width="150" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="105" y="92" text-anchor="middle" font-size="16" fill="var(--fig-ink)">192</text>
+      <rect x="190" y="55" width="150" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="265" y="92" text-anchor="middle" font-size="16" fill="var(--fig-ink)">168</text>
+      <rect x="350" y="55" width="150" height="60" rx="6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+      <text x="425" y="92" text-anchor="middle" font-size="16" fill="var(--fig-ink)">1</text>
+      <rect x="510" y="55" width="150" height="60" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="585" y="92" text-anchor="middle" font-size="16" fill="var(--fig-ink)">0〜255</text>
+
+      <text x="265" y="35" text-anchor="middle" font-size="13" fill="var(--fig-accent)">ネットワークを表す部分(前半)</text>
+      <text x="585" y="35" text-anchor="middle" font-size="13" fill="var(--fig-muted)">機械を表す部分(後半)</text>
+
+      <text x="335" y="140" text-anchor="middle" font-size="12" fill="var(--fig-ink)">/24 の場合、前半 3 組(24 ビット)がネットワークを表す部分になる</text>
+
+      <text x="150" y="195" text-anchor="middle" font-size="14" fill="var(--fig-ink)">192.168.1.0</text>
+      <text x="150" y="215" text-anchor="middle" font-size="12" fill="var(--fig-accent)">ネットワークアドレス(後半がすべて 0)</text>
+
+      <text x="610" y="195" text-anchor="middle" font-size="14" fill="var(--fig-ink)">192.168.1.255</text>
+      <text x="610" y="215" text-anchor="middle" font-size="12" fill="var(--fig-accent)">ブロードキャストアドレス(後半がすべて 1)</text>
+    </svg>
+    <p class="fig-cap">IPv4 アドレス(例: 192.168.1.x)を 4 つの組に分けると、前半 3 組がネットワークを表す部分、最後の 1 組がその中の機械を表す部分になる。機械を表す部分をすべて 0 にするとネットワークアドレス、すべて 1 にするとブロードキャストアドレスになる。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m05"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m04.html">← 第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP</a>
+    <a class="next" href="m06.html">第 6 章 IP パケットと配送の仕組み →</a>
+  </nav>
+</main>
+</body>
+</html>

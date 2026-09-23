@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>身分証を手に入れて、更新し続ける — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m19-1" data-chapter="m19" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 19-1</p>
+  <p class="chapter-label">第 19 章 HTTPS を運用する　19-1</p>
+  <h1>身分証を手に入れて、更新し続ける</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>身分証(TLS 証明書)は、サイトの持ち主が認証局に申請して発行してもらうものである。<strong>身分証には有効期間があり、期限が来る前に更新し続ける必要がある</strong>。このページでは、身分証を手に入れる手続きと、更新の仕組みを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前の章の最後で、身分証の取得や更新の話は次の章でって言われましたけど、そもそもどうやって手に入れるんですか?</p>
+    <p class="t" data-who="ふくろう先生">サイトの持ち主が、認証局に発行を申請します。</p>
+    <p class="s" data-who="ひよこちゃん">申請すれば、誰でももらえるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。認証局は、申請した人がそのドメインの持ち主であることを確認したうえで発行します。</p>
+    <p class="s" data-who="ひよこちゃん">どうやって確認するんですか? ドメインを持っているかどうかなんて。</p>
+    <p class="t" data-who="ふくろう先生">いくつかの確認方法がありますが、細かい手順はここでは扱いません。大事なのは、確認が取れて初めて発行される、という順番です。</p>
+    <p class="s" data-who="ひよこちゃん">認証局って、どこも同じ 1 つの機関なんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。認証局にはいくつもの会社や団体があります。ただ、どこの認証局から発行された身分証でも、ブラウザがあらかじめ信頼していれば、同じように使えます。</p>
+    <p class="s" data-who="ひよこちゃん">発行してもらえたら、それでずっと使えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、身分証には<strong>有効期間</strong>があります。期限が来る前に、取り直す必要があります。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、更新を忘れて期限が切れて、サイトに警告が出たって話を聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">よくある話です。2015 年の資料では、身分証の有効期間は 1 年や 2 年であるケースが多いとされていました。更新をしないまま期限が過ぎると、前の章で見たとおり、ブラウザは警告を出します。</p>
+    <p class="s" data-who="ひよこちゃん">今は、もっと短くなったりしてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実際に確かめてみると、もっと短い期間のものもあります。あとで試してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">有効期間を短くすると、何かいいことがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">短くしておけば、万が一の漏洩や設定ミスがあっても、影響が残る期間を短くできます。ただし、その分だけ更新の回数は増えます。</p>
+    <p class="s" data-who="ひよこちゃん">毎回手作業で更新するのは、忘れそうで怖いです。</p>
+    <p class="t" data-who="ふくろう先生">人手を介さず、期限が近づくと自動で取り直す仕組みもあります。</p>
+    <p class="s" data-who="ひよこちゃん">自動化していれば、もう何も気にしなくていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。自動化の設定自体がきちんと動いているかは、時々確認しておいた方が安心です。</p>
+    <p class="s" data-who="ひよこちゃん">自動化しても、身分証を置く場所自体は変わらないんですか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。実は、身分証をどこに置くかには、また別の選択肢があります。詳しくは、この章の最後のページで扱います。</p>
+    <p class="s" data-who="ひよこちゃん">申請して、発行してもらって、使って、期限が来たら更新する…身分証には一生付き合っていくものなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、期限より前に無効にしなければならない場面を見ていきます。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>身分証は、サイトの持ち主が認証局に申請し、ドメインの持ち主であることを確認してもらったうえで発行される。</li>
+      <li>認証局にはいくつもの会社や団体があるが、ブラウザがあらかじめ信頼していれば、どこの認証局から発行された身分証でも同じように使える。</li>
+      <li>身分証には有効期間があり、期限が来る前に更新し続ける必要がある。</li>
+      <li>更新をしないまま有効期間が過ぎると、前の章で見た警告(有効期間切れ)につながる。</li>
+      <li>2015 年の資料では有効期間は 1 年や 2 年であるケースが多かったが、実際に確かめると、もっと短い期間のものもある。有効期間を短くすると、漏洩や設定ミスの影響が残る期間を短くできる一方、更新の回数は増える。</li>
+      <li>人手を介さず、期限が近づくと自動で取り直す仕組みもあるが、正しく動いているかは時々確認しておいた方が安心である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>身分証(TLS 証明書)は、サイトの持ち主が認証局に発行を申請し、申請した人がそのドメインの持ち主であることを確認してもらったうえで発行される。身分証には有効期間があり、2015 年の資料では 1 年や 2 年であるケースが多いとされていた(#21)。有効期間が来る前に更新の手続きをしないままだと、前の章で見たとおり、ブラウザはその身分証をもう有効だと確認できず、警告を出す。更新は人手で行うこともできるが、期限が近づくと人手を介さず自動で取り直す仕組みも使われている。認証局にはいくつもの会社や団体があるが、ブラウザや OS があらかじめ信頼している認証局であれば、どこが発行した身分証でも同じように扱われる。有効期間を短く設定するほど、万が一の鍵の漏洩や設定ミスがあったときに影響が残る期間を短くできる一方、更新の作業は増える。この確認は認証局によって手順が異なることがあるが、いずれも申請者とドメインの結び付きを確かめる点は共通している。更新の作業を自動化していても、その設定が正しく動いているかどうかの最終的な責任は、サイトの持ち主にある。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>openssl s_client -connect example.com:443 -servername example.com &lt;/dev/null</code></pre>
+    <p>見方: 実行結果の Certificate chain の中に、NotBefore と NotAfter が並ぶ行があります。この 2 つの日時の間が、その身分証の有効期間です。</p>
+    <p class="try-note">出力は長めですが、NotBefore と NotAfter を含む行だけを追えば十分です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(証明書の有効期限が 1 年や 2 年であるケースが多いという記述)</li>
+    <li class="cite" data-src="87">[#87] IETF「RFC 8555: Automatic Certificate Management Environment (ACME)」 — <a href="https://www.rfc-editor.org/rfc/rfc8555.html" rel="noopener">原典</a>(証明書の自動取得・更新を定める記述)</li>
+    <li class="cite" data-src="90">[#90] Cloudflare Learning Center「What is an SSL certificate?」 — <a href="https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/" rel="noopener">原典</a>(認証局への申請と発行、有効期限がある記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m19-1">
+    <div class="q" data-q="1">
+      <p class="q-text">身分証の有効期間が過ぎるまで更新をしないまま放置すると、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">認証局が自動的に新しい身分証を発行してくれる</button></li>
+        <li><button type="button" data-correct="true">ブラウザがその身分証をもう有効だと確認できず、警告を出す</button></li>
+        <li><button type="button" data-correct="false">サーバへの接続そのものができなくなり、名前解決が失敗する</button></li>
+        <li><button type="button" data-correct="false">身分証の内容が自動的に書き換わり、別のドメイン用になる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ブラウザがその身分証をもう有効だと確認できず、警告を出す、です。認証局が自動的に更新してくれるわけではなく、名前解決とは別の話で、身分証の内容が勝手に書き換わることもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">認証局が身分証を発行する前に確認することとして、本文で説明されているものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">申請した人が、そのドメインの持ち主であること</button></li>
+        <li><button type="button" data-correct="false">申請した人の支払い能力</button></li>
+        <li><button type="button" data-correct="false">サーバの秘密鍵の強さ</button></li>
+        <li><button type="button" data-correct="false">サイトへのアクセス数</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、申請した人が、そのドメインの持ち主であること、です。認証局はこれを確認したうえで発行しており、支払い能力や秘密鍵の強さ、アクセス数は発行の条件として本文では説明していません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">身分証の更新について、本文の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">更新は必ず手作業で行わなければならない</button></li>
+        <li><button type="button" data-correct="true">人手を介さず、期限が近づくと自動で取り直す仕組みもある</button></li>
+        <li><button type="button" data-correct="false">更新すると、有効期間は無期限になる</button></li>
+        <li><button type="button" data-correct="false">更新のたびに、発行する認証局を変えなければならない</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、人手を介さず、期限が近づくと自動で取り直す仕組みもある、です。更新は手作業に限らず、有効期間が無期限になることも、認証局を毎回変える必要もありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m19.html">← 第 19 章の入口</a>
+    <a class="up" href="m19.html">第 19 章の入口</a>
+    <a class="next" href="m19-2.html">19-2 身分証を取り消す →</a>
+  </nav>
+</main>
+</body>
+</html>

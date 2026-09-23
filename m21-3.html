@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>接続の土台を変えて、残った詰まりを無くす — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m21-3" data-chapter="m21" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 21-3</p>
+  <p class="chapter-label">第 21 章 HTTP/2 と HTTP/3　21-3</p>
+  <h1>接続の土台を変えて、残った詰まりを無くす</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前の 2 ページで見た工夫があっても、まだ残っていた詰まりがある。このページでは、<strong>接続の土台を TCP から別のものに変える</strong>ことで、この残った詰まりを解決した、HTTP のさらに新しい版を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">HTTP/2 で複数の流れを持てるようになったのに、まだ詰まりが起きることってあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。HTTP/2 は 1 本の接続の中に複数のストリームを持てますが、その接続自体は TCP の上にあります。</p>
+    <p class="s" data-who="ひよこちゃん">TCP は、第 13 章で見た、順番どおりに届ける決まりですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。TCP は 1 本の接続の中で、パケットを順番どおりに届ける決まりを持っています。</p>
+    <p class="s" data-who="ひよこちゃん">それだと、何が困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つのパケットが失われると、その接続を使っている全部のストリームが、失われたパケットが再送されるまで止まってしまいます。ストリームを分けても、土台の TCP が 1 本である以上、この詰まりは避けられません。</p>
+    <p class="s" data-who="ひよこちゃん">それって、第 15 章で見た HOL ブロッキングと同じ話ですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ考え方です。TCP の 1 本の接続の中で起きる HOL ブロッキングが、HTTP/2 にもそのまま残っていた、ということです。</p>
+    <p class="s" data-who="ひよこちゃん">先輩が、電波の悪い場所で HTTP/2 のサイトを見ていたら、1 つのパケットが届かなかっただけで、画面の表示が全部一斉に止まったと言っていました。</p>
+    <p class="t" data-who="ふくろう先生">まさに、今の話のとおりです。電波の悪い場所はパケットが失われやすく、この影響を受けやすいんです。</p>
+    <p class="s" data-who="ひよこちゃん">第 15 章では、この詰まりを QUIC で解決していましたよね?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。HTTP/3 は、TCP の代わりに、第 15 章で見た QUIC の上で HTTP を運ぶことで、この詰まりを解決した HTTP の版です。</p>
+    <p class="s" data-who="ひよこちゃん">QUIC にも、ストリームのような仕組みはあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。第 15 章 15-2 で見た、QUIC の独立した流れです。実は、HTTP/2 で先に導入されたこのストリームの仕組みを、HTTP/3 では QUIC の層がそのまま提供しています。</p>
+    <p class="s" data-who="ひよこちゃん">ヘッダを圧縮する仕組み(HPACK)は、HTTP/3 でも使われるんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ役目を、HTTP/3 では QPACK と呼ばれる仕組みが担います。名前だけ覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">TCP 自体を直せばよかったのでは?</p>
+    <p class="t" data-who="ふくろう先生">第 15 章で見たとおり、TCP は OS の中核部分に組み込まれているので、直したい機能があっても、実装されて広く行き渡るまでに時間がかかります。だから QUIC は、TCP を直接直すのではなく、UDP の上に新しく作り直されました。</p>
+    <p class="s" data-who="ひよこちゃん">土台を変えるだけで、多重化やヘッダの圧縮はそのまま引き継げるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。HTTP/2 で培った工夫を活かしながら、土台の TCP を QUIC に置き換えることで、残っていた詰まりを解決したのが HTTP/3 です。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>HTTP/2 は 1 本の接続の中に複数のストリームを持てるが、その接続自体は TCP の上にある。</li>
+      <li>TCP は 1 本の接続の中でパケットを順番どおりに届ける決まりのため、1 つのパケットが失われると、その接続を使う全部のストリームが止まる(TCP 層の HOL ブロッキング)。</li>
+      <li>電波の悪い場所はパケットが失われやすく、この影響を受けやすい。</li>
+      <li>HTTP/3 は、TCP の代わりに第 15 章で見た QUIC の上で HTTP を運ぶことで、この詰まりを解決した、HTTP のさらに新しい版である。</li>
+      <li>HTTP/2 で先に導入されたストリームの仕組みは、HTTP/3 では QUIC の層がそのまま提供する。ヘッダの圧縮も、HTTP/3 では QPACK という仕組みが同じ役目を担う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP/2 は 1 本の接続の中に複数のストリームを持てるが、その接続自体は TCP の上にある。TCP は 1 本の接続の中でパケットを順番どおりに届ける決まりのため、1 つのパケットが失われると、そのパケットが再送されるまで、同じ接続を使う全部のストリームが止まってしまう(#57、#64、#20)。電波の悪い場所のように、パケットが失われやすいネットワークほど、この影響を受けやすい(#64)。HTTP/3 は、TCP の代わりに、第 15 章で見た QUIC の上で HTTP を運ぶことで、この詰まりを解決した、HTTP のさらに新しい版である。HTTP/2 で導入されたストリームの機能は、HTTP/3 では QUIC の層が提供するものをそのまま使う(#20)。ヘッダの圧縮も、HTTP/2 の HPACK に代わり、HTTP/3 では QPACK と呼ばれる仕組みが同じ役目を担う(#20)。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="57">[#57] Cloudflare Learning Center「What is HTTP/3?」 — <a href="https://www.cloudflare.com/learning/performance/what-is-http3/" rel="noopener">原典</a>(QUIC が HOL ブロッキングを緩和するという記述)</li>
+    <li class="cite" data-src="64">[#64] Fastly「What is HTTP/3?」 — <a href="https://www.fastly.com/learning/what-is-http-3" rel="noopener">原典</a>(TCP でのパケットロスが接続全体を遅らせるという記述、モバイルネットワークでのパケットロスの多さ)</li>
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座:HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>(HTTP/2 の HoLB のメカニズム、HTTP/2 のストリーム機能を HTTP/3 では QUIC レイヤが提供するという記述、ヘッダ圧縮が QPACK に置き換わるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m21-3">
+    <div class="q" data-q="1">
+      <p class="q-text">HTTP/2 がストリームを複数持てても、TCP 層の詰まりを避けられない理由として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ストリームは HTTP の層の工夫であり、それを運ぶ土台の TCP 自体は 1 本の接続の中で順番を守る決まりを変えていないから</button></li>
+        <li><button type="button" data-correct="false">ストリームを複数持つと、接続そのものが不安定になるから</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 はヘッダを圧縮する分、パケットが壊れやすいから</button></li>
+        <li><button type="button" data-correct="false">ストリームは 1 本の接続につき 1 つしか使えないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ストリームは HTTP の層の工夫であり、それを運ぶ土台の TCP 自体は 1 本の接続の中で順番を守る決まりを変えていないから、です。接続の不安定さやヘッダ圧縮とは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HTTP/3 の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">TCP の代わりに、QUIC の上で HTTP を運ぶことで、TCP 層の詰まりを解決した版</button></li>
+        <li><button type="button" data-correct="false">TCP をそのまま使いながら、ヘッダの圧縮だけをやめた版</button></li>
+        <li><button type="button" data-correct="false">HTTP/2 のストリームの仕組みを廃止した版</button></li>
+        <li><button type="button" data-correct="false">1 本の接続の中で、要求と応答を 1 つずつやり取りする版</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TCP の代わりに、QUIC の上で HTTP を運ぶことで、TCP 層の詰まりを解決した版、です。HTTP/3 はストリームの仕組みを廃止せず、QUIC の層がそのまま提供します。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">電波の悪い場所で、HTTP/2 のサイトの表示が全部一斉に止まったことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">パケットが失われやすく、失われた 1 つのパケットのせいで、同じ接続を使う全部のストリームが止まってしまうから</button></li>
+        <li><button type="button" data-correct="false">電波が悪いと、ヘッダの圧縮ができなくなるから</button></li>
+        <li><button type="button" data-correct="false">電波が悪いと、接続そのものが暗号化されなくなるから</button></li>
+        <li><button type="button" data-correct="false">電波が悪いと、ストリームの数が自動的に減らされるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、パケットが失われやすく、失われた 1 つのパケットのせいで、同じ接続を使う全部のストリームが止まってしまうから、です。ヘッダの圧縮や暗号化、ストリーム数の自動調整とは関係ありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m21-2.html">← 21-2 同じヘッダを、もう一度は送らない</a>
+    <a class="up" href="m21.html">第 21 章の入口</a>
+    <a class="next" href="m21-4.html">21-4 使えるかどうかは、何で決まるか →</a>
+  </nav>
+</main>
+</body>
+</html>

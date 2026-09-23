@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>答えが本物か、問い合わせが見られていないか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m17-4" data-chapter="m17" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 17-4</p>
+  <p class="chapter-label">第 17 章 DNS の運用と障害　17-4</p>
+  <h1>答えが本物か、問い合わせが見られていないか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>DNS への問い合わせと答えには、2 種類の別々の心配ごとがある。答えが本物かどうかと、問い合わせの中身を誰かに見られていないかである。このページでは、<strong>この 2 つを別々に守る仕組み</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">これまで NXDOMAIN や SERVFAIL みたいな答えの種類や、遅くなる原因を見てきましたけど、答えの中身自体が信用できるかどうかって、確かめられるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は、今までの DNS には、受け取った答えが本物かどうかを確かめる仕組みが元々ありませんでした。</p>
+    <p class="s" data-who="ひよこちゃん">え、確かめられないんですか? じゃあ偽の答えが返ってきても気づけないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。これを補うのが DNSSEC です。答えを暗号化するのではなく、<strong>答えに本物だと示す印を付けて</strong>、受け取った側が確かめられるようにする仕組みです。</p>
+    <p class="s" data-who="ひよこちゃん">暗号化とは違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">違います。DNSSEC は中身を隠すのではなく、本物かどうかを確かめるためのものです。中身を隠すほうは、また別の仕組みで対応します。</p>
+    <p class="s" data-who="ひよこちゃん">そういえば、先輩から、偽の答えを返されて、別のサーバに誘導されたっていう話を聞いたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">DNSSEC を使っていない、あるいは確かめていない環境では、DNS リゾルバは受け取った答えが本物かどうかを確かめる手段がありません。攻撃者が細工した偽の答えを DNS キャッシュに混入させる攻撃をキャッシュポイズニングと呼びますが、これに成功すると、利用者は気づかないまま別のサーバへ誘導されてしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">怖いですね…対策は DNSSEC を使うことなんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。DNSSEC で確かめていれば、こうした偽の答えを見分けやすくなります。</p>
+    <p class="s" data-who="ひよこちゃん">答えが本物かどうかは分かるようになったとして、問い合わせの中身自体を誰かに見られたりはしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">良い質問です。今までの DNS の問い合わせは暗号化されておらず、途中の誰かに中身を見られることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">見られると、何が困るんですか?</p>
+    <p class="t" data-who="ふくろう先生">どんな名前を調べているか、つまりどんなサイトを見ようとしているかが、途中の誰かに分かってしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">それを防ぐ方法もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。問い合わせと答えを、<a class="term" href="glossary.html#tls" data-term="tls">TLS</a>(相手が本物かどうかを確かめながら、この先の通信を守る鍵を取り決める手続き。詳しくは第 18 章で)で包んで届ける方式を DoT と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">HTTPS みたいに包むってことですか?</p>
+    <p class="t" data-who="ふくろう先生">近いです。もう一つ、HTTPS の通信の中に問い合わせと答えをそのまま含めて運ぶ方式もあり、これを DoH と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">TLS で包むのが DoT で、HTTPS の中に入れるのが DoH ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、クラウドの DNS サービスを使うとき、何を単位に設定するかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>今までの DNS には、受け取った答えが本物かどうかを確かめる仕組みが元々無い。</li>
+      <li>DNSSEC は、答えに本物だと示す印を付けて確かめられるようにする仕組みで、中身を隠す暗号化とは別である。</li>
+      <li>DNSSEC を使っていない環境では、偽の答えを DNS キャッシュに混入させる攻撃(キャッシュポイズニング)を見分けられず、別のサーバへ誘導されることがある。</li>
+      <li>今までの DNS の問い合わせと答えは暗号化されておらず、途中の誰かに中身(どんな名前を調べているか)を見られることがある。</li>
+      <li>問い合わせを TLS で包む DoT と、HTTPS の中に含めて運ぶ DoH は、この中身を隠すための仕組みである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DNSSEC は、DNS の答えが本物で、途中で書き換えられていないことを、答えに付けられた印によって確かめられるようにする仕組みである。中身を隠す暗号化とは別のしくみであり、答えが本物かどうかを確かめる目的に特化している(#32「DNSSEC provides strong authentication (but not encryption) of domain lookups」)。DNSSEC を使っていない、あるいは確かめていない環境では、DNS リゾルバは受け取った答えが本物かどうかを確かめる手段が無く、偽の答えを DNS キャッシュに混入させる攻撃(キャッシュポイズニング)を受けると、利用者は気づかないまま別のサーバへ誘導されることがある(#53「DNS cache poisoning」、#32「protecting your domains from spoofing and cache poisoning attacks」)。一方、DNS への問い合わせと答えそのものは、これまで暗号化されておらず、途中の誰かに中身を見られることがある(#54「Unencrypted DNS」)。これを防ぐため、問い合わせを TLS で包んで届ける方式を DoT、暗号化された HTTPS の通信の中に含めて運ぶ方式を DoH と呼ぶ(#54)。</p>
+    <details class="more">
+      <summary>もっと知りたい人へ</summary>
+      <p>DoT は専用の窓口(ポート 853)を使うため、そのポートをふさぐネットワークでは止められやすい。DoH は HTTPS と同じ窓口(ポート 443)を使うため、見分けにくく、止められにくいという性質がある(#54)。</p>
+    </details>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="32">[#32] Google Cloud「Cloud DNS overview」 — <a href="https://cloud.google.com/dns/docs/overview" rel="noopener">原典</a>（「DNSSEC」の節。DNSSEC が本物かどうかの強い認証を提供するが暗号化ではないという記述、なりすましやキャッシュポイズニングから守るという記述）</li>
+    <li class="cite" data-src="53">[#53] Cloudflare Learning Center「Common DNS issues and how to fix them」 — <a href="https://www.cloudflare.com/learning/dns/common-dns-issues/" rel="noopener">原典</a>（「DNS cache poisoning」の節。偽の IP アドレスをキャッシュに混入させる攻撃の説明）</li>
+    <li class="cite" data-src="54">[#54] Cloudflare Blog「DNS Encryption Explained」 — <a href="https://blog.cloudflare.com/dns-encryption-explained/" rel="noopener">原典</a>（「Unencrypted DNS」の節。問い合わせが暗号化されておらず途中で見えるという記述、「Encrypting DNS」の節。DoT が TLS で DNS メッセージを包むという記述とポート 853、「DoH」の節。HTTPS の通信の中に問い合わせを含めて運ぶという記述とポート 443、DoT が DoH より止められやすいという記述）</li>
+    <li class="cite" data-src="19">[#19] JPNIC「インターネット 10 分講座：DNS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No22/080.html" rel="noopener">原典</a>（「DNS の今後」の節。DNSSEC のような新しい技術が今後の課題として挙げられているという言及）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m17-4">
+    <div class="q" data-q="1">
+      <p class="q-text">DNSSEC と DoT/DoH の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">DNSSEC は答えが本物かを確かめる仕組みで暗号化ではなく、DoT/DoH は問い合わせそのものを暗号化して運ぶ仕組みである</button></li>
+        <li><button type="button" data-correct="false">DNSSEC は問い合わせを暗号化する仕組みで、DoT/DoH は答えが本物かを確かめる仕組みである</button></li>
+        <li><button type="button" data-correct="false">DNSSEC と DoT/DoH はどちらも同じ仕組みで、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">DNSSEC も DoT/DoH も、権威サーバの負荷を減らすための仕組みである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DNSSEC は答えが本物かを確かめる仕組みで暗号化ではなく、DoT/DoH は問い合わせそのものを暗号化して運ぶ仕組みである、です。役割が逆でも同じでもなく、権威サーバの負荷とも関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">偽の答えを返されて別のサーバに誘導される攻撃について、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">DNSSEC のように答えが本物かを確かめる仕組みを使っていない環境では、こうした攻撃を見分けにくい</button></li>
+        <li><button type="button" data-correct="false">DNS の TTL を長くすることで防げる</button></li>
+        <li><button type="button" data-correct="false">権威サーバの台数を増やすことで防げる</button></li>
+        <li><button type="button" data-correct="false">この攻撃は DNS キャッシュを使わない場合にのみ起きる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DNSSEC のように答えが本物かを確かめる仕組みを使っていない環境では、こうした攻撃を見分けにくい、です。DNS の TTL の長さや権威サーバの台数は対策になりません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">DoT と DoH の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">DoT は TLS で問い合わせ全体を包み、DoH は HTTPS の通信の中に問い合わせを含めて運ぶ</button></li>
+        <li><button type="button" data-correct="false">DoT は答えが本物かを確かめる仕組みで、DoH は暗号化しない通常の問い合わせである</button></li>
+        <li><button type="button" data-correct="false">DoT と DoH は、どちらも DNS レコードの新しい型である</button></li>
+        <li><button type="button" data-correct="false">DoT と DoH は、権威サーバと DNS リゾルバの間の通信にのみ使われる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、DoT は TLS で問い合わせ全体を包み、DoH は HTTPS の通信の中に問い合わせを含めて運ぶ、です。答えの真正性の確認や DNS レコードの型とは別の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m17-3.html">← 17-3 名前解決で遅くなる</a>
+    <a class="up" href="m17.html">第 17 章の入口</a>
+    <a class="next" href="m17-5.html">17-5 クラウドの DNS は、何を単位に設定するか →</a>
+  </nav>
+</main>
+</body>
+</html>

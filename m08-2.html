@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>その表の中から、どの行を選ぶか — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m08-2" data-chapter="m08" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 8-2</p>
+  <p class="chapter-label">第 8 章 ルーティングの基本　8-2</p>
+  <h1>その表の中から、どの行を選ぶか</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>中継役の機械が持つ表の 1 行 1 行には、宛先のネットワークと、次に渡す機械についての情報が書かれている。宛先が複数の行に当てはまることもあり、そのときは<strong>決まったルールでどの行を使うかが選ばれる</strong>。このページでは、表の実例を使ってこの読み方を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">実際にどんな表なのか、具体的に見てみたいです。</p>
+    <p class="t" data-who="ふくろう先生">たとえば、192.168.1.0/24 宛てなら直接、203.0.113.0/24 宛てなら 192.168.1.2 という機械に送る、という具合に書かれています。</p>
+    <p class="s" data-who="ひよこちゃん">192.168.1.2 って書いてあるのは何ですか?</p>
+    <p class="t" data-who="ふくろう先生">次にデータを渡す相手の機械のことで、ネクストホップと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">宛先が複数の行に当てはまることってないんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。そのときは、いちばん細かく一致する行が選ばれ、これを最長一致と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">細かい方が優先されるのは、なぜですか?</p>
+    <p class="t" data-who="ふくろう先生">狭い範囲宛ての行のほうが、その宛先について詳しい情報を持っていると考えられるからです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、203.0.113.0/24 宛てのデータが来たとき、192.168.1.0/24 の行と 203.0.113.0/24 の行、どちらにも当てはまりそうな気がするんですけど。</p>
+    <p class="t" data-who="ふくろう先生">実は当てはまりません。192.168.1.0/24 の行は、192.168.1 で始まる宛先にしか一致しません。203.0.113.0/24 宛てのデータに一致するのは、203.0.113.0/24 の行だけです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、範囲が全然重なってないから、単純にその行が選ばれるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。範囲が重なる行が複数あるときに、最長一致のルールが本領を発揮します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、よく見る 0.0.0.0/0 っていう行があったら、それは何ですか?</p>
+    <p class="t" data-who="ふくろう先生">他のどの行にも当てはまらなかったときに使う、特別な行です。<a class="term" href="glossary.html#default-route" data-term="default-route">デフォルトルート</a>と呼び、詳しくは 8-3 で説明します。</p>
+    <p class="s" data-who="ひよこちゃん">最長一致の話でいうと、0.0.0.0/0 は一番範囲が広いから、他に当てはまる行があればそっちが優先されるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。</p>
+    <p class="s" data-who="ひよこちゃん">直結の行だけ、次の機械の欄が「直接」になっていますけど、これは何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">直結の範囲は、途中に別の機械を挟まずに届くので、次に渡す相手という考え方自体が要らないんです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど。自分の Mac にも、こういう表があったりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。家庭のネットワークにつながっているだけの Mac なら、行数はごくわずかで済みます。</p>
+    <p class="s" data-who="ひよこちゃん">数行くらいなら、自分でも読めそうな気がしてきました。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。あとで実際に見てみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">分かりました。表を読むコツは、宛先の行を探して、当てはまる行の中で一番細かいものを選ぶ、ということですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この一番下の特別な行を詳しく見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ルーティングテーブルの各行には、宛先のネットワークと、次に渡す機械(ネクストホップ)が書かれている。</li>
+      <li>宛先が複数の行に当てはまるときは、最も細かく一致する行(最長一致)が使われる。</li>
+      <li>0.0.0.0/0 のように、他のどの行にも当てはまらないときに使う特別な行(デフォルトルート)もある。詳しくは次のページで見る。</li>
+      <li>直結の範囲への行は、次に渡す相手を挟まずに届くため、ネクストホップの欄が「直接」になる。</li>
+      <li>宛先の範囲が重ならない行どうしでは迷わずその行が選ばれ、範囲が重なる行が複数あるときに最長一致のルールが働く。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ルーティングテーブルの各行は、宛先のネットワークと、次にデータを渡す機械(ネクストホップ)の組で書かれる(#65)。下の例では、192.168.1.0/24 は直結の範囲なので次に渡す相手を挟まず届き、203.0.113.0/24 宛てのデータは 192.168.1.2 というネクストホップに渡される(#3)。宛先が複数の行に当てはまる場合は、いちばん細かく一致する行、つまり最長一致の行が選ばれる(#65、#71)。たとえば宛先の先頭の数字がどこまで表の行と一致するかを比べ、より長く一致する行を選ぶという考え方で、範囲がまったく重ならない行どうしであれば、そもそも一方にしか一致しないため迷いは生じない(#65)。0.0.0.0/0 の行は、他のどの行にも当てはまらないデータの受け皿になる特別な行で、範囲としては最も広いため、他に当てはまる行があれば必ずそちらが優先される(#71)。家庭で使う機器のように行数が少ない表であれば、この探し方は難しくない。</p>
+    <table>
+      <tr><th>宛先のネットワーク</th><th>ネクストホップ</th></tr>
+      <tr><td>192.168.1.0/24(直結)</td><td>直接</td></tr>
+      <tr><td>203.0.113.0/24</td><td>192.168.1.2</td></tr>
+      <tr><td>0.0.0.0/0</td><td>192.168.1.1</td></tr>
+    </table>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>netstat -rn</code></pre>
+    <p>見方: 出力の中から、default という宛先の行と、自分が今いるネットワークに対応する行の 2 行だけを見る。default の行の隣に書かれた IP アドレスが、このページで説明したネクストホップにあたる。</p>
+    <p>自分のネットワークの行は直結の範囲なので、次の機械を経由せず直接届く。</p>
+    <p class="try-note">表示のされ方は環境によって多少違うことがある。読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（p.17 ネクストホップの説明、p.23〜24 最長一致とその 2 進数での判定例）</li>
+    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論(IP)」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（p.40、ベストマッチ検索と Next Hop という語)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-04-routing.txt p.57、Longest prefix match と、0.0.0.0/0 が検索の最後に一致するという整理）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m08-2">
+    <div class="q" data-q="1">
+      <p class="q-text">ある宛先が複数の行に当てはまるとき、なぜ最も細かく一致する行が選ばれるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">表の一番上に書かれている行が、常に優先される決まりだから</button></li>
+        <li><button type="button" data-correct="true">狭い範囲宛ての行のほうが、その宛先について詳しい情報を持っていると考えられるから</button></li>
+        <li><button type="button" data-correct="false">広い範囲宛ての行のほうが、通信の速度が速いから</button></li>
+        <li><button type="button" data-correct="false">行の順番は、そのつどランダムに選ばれるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、狭い範囲宛ての行のほうが、その宛先について詳しい情報を持っていると考えられるから、です。この選び方を最長一致と呼び、範囲が狭いほど、より一致した内容が優先されます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ネクストホップとは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の最終的な宛先の機械</button></li>
+        <li><button type="button" data-correct="true">ある宛先へ通信を送るとき、次に渡す相手の機械のこと</button></li>
+        <li><button type="button" data-correct="false">表の中で一番古い行のこと</button></li>
+        <li><button type="button" data-correct="false">宛先までに経由した機械の合計台数のこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ある宛先へ通信を送るとき、次に渡す相手の機械のこと、です。ネクストホップは最終的な宛先ではなく、あくまで次の 1 台を指す情報です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">直結の範囲へ向かう行で、次に渡す機械の欄が「直接」となっているのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">その行の設定を書き忘れているから</button></li>
+        <li><button type="button" data-correct="true">直結の範囲は、途中に別の機械を挟まずに届くため、次に渡す相手という考え方自体が要らないから</button></li>
+        <li><button type="button" data-correct="false">直結の範囲では、最長一致のルールが適用されないから</button></li>
+        <li><button type="button" data-correct="false">直結の範囲は、常に他の行より優先される決まりだから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、直結の範囲は、途中に別の機械を挟まずに届くため、次に渡す相手という考え方自体が要らないから、です。直結の行は、宛先への到達に別の機械の中継を必要としません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m08-1.html">← 8-1 次の送り先は、何を見て決まるのか</a>
+    <a class="up" href="m08.html">第 8 章の入口</a>
+    <a class="next" href="m08-3.html">8-3 どの行にも当てはまらないときの行き先 →</a>
+  </nav>
+</main>
+</body>
+</html>

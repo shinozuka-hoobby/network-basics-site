@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>暗号化しても、隠れないものがある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m18-1" data-chapter="m18" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 18-1</p>
+  <p class="chapter-label">第 18 章 TLS と PKI　18-1</p>
+  <h1>暗号化しても、隠れないものがある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>HTTPS の通信は、途中でやり取りの中身を暗号化する段階を挟むことで、内容を読み取られにくくしている。ただし、この暗号化が<strong>すべてを見えなくするわけではなく</strong>、通信の前段(名前解決)で見えてしまう情報もある。このページでは、暗号化の段階が守るものと、守らないものを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 1 章で、暗号化の段階では相手を確かめて鍵を決めるって聞きましたけど、結局どこまで守ってくれるんですか?</p>
+    <p class="t" data-who="ふくろう先生">この暗号化の手続きを TLS と呼びます。TCP 接続ができたあとに行われ、その先のやり取りを守ります。</p>
+    <p class="s" data-who="ひよこちゃん">TLS って、要するに中身を読めなくするだけのものですか?</p>
+    <p class="t" data-who="ふくろう先生">それだけではありません。TLS は大きく 3 つのことを守っています。</p>
+    <p class="t" data-who="ふくろう先生">1 つ目はやり取りの中身が読めなくなること、2 つ目は相手が本当にその相手かどうかを確認できること、3 つ目は途中で書き換えられていないかを確認できることです。</p>
+    <p class="s" data-who="ひよこちゃん">2 つ目と 3 つ目は、今まであまり意識してなかったです。相手が本物かどうかって、そんなに重要なんですか?</p>
+    <p class="t" data-who="ふくろう先生">とても重要です。もし相手が本物かどうかを確認できなければ、偽物のサーバに繋いでしまっても、見た目だけでは気づけません。</p>
+    <p class="s" data-who="ひよこちゃん">改ざんっていうのは、途中でデータを書き換えられるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。通信の途中に誰かが割り込んで、送った内容を書き換えてしまう可能性です。TLS はこれも検知できるようにしています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ HTTPS なら全部安心ってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうとも言い切れません。TLS より前に、名前解決という段階があります。</p>
+    <p class="s" data-who="ひよこちゃん">名前解決って、ドメイン名を IP アドレスに変える、あの手続きですよね?</p>
+    <p class="t" data-who="ふくろう先生">そうです。この段階は、TLS の暗号化の外側で行われます。</p>
+    <p class="s" data-who="ひよこちゃん">先輩から、会社の共有 Wi-Fi だと、誰がどのサイトを見ているか分かるらしいと聞いて、ちょっと怖くなったことがあります。</p>
+    <p class="t" data-who="ふくろう先生">それは十分にありえます。名前解決の問い合わせは、<strong>従来ほとんどの場合暗号化されていません</strong>。</p>
+    <p class="t" data-who="ふくろう先生">同じネットワークにいる人には、どのホスト名に問い合わせているかが見えてしまうことがあります。</p>
+    <p class="s" data-who="ひよこちゃん">つまり、サイトの中身は読めなくても、どこにアクセスしようとしたかは分かってしまうんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。暗号化される前の段階だから、TLS の保護が及びません。</p>
+    <p class="s" data-who="ひよこちゃん">この名前解決自体を暗号化する方法ってないんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ただしそれは別の章で扱う話なので、今日は「TLS の保護は、それより前の段階には及ばない」ということだけ覚えておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">分かりました。守ってくれる範囲と、守ってくれない範囲があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。範囲を正しく知っておくことが、安心して使うための第一歩です。</p>
+    <p class="s" data-who="ひよこちゃん">TLS が守るものと守らないものの境目が分かった気がします。</p>
+    <p class="t" data-who="ふくろう先生">次のページからは、TLS の中でどうやって鍵を決めているかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>TLS は、TCP 接続ができたあとに行われる暗号化の手続きで、(1)やり取りの中身が読めなくなること、(2)相手が本当にその相手かどうかを確認できること、(3)途中で書き換えられていないかを確認できること、の 3 つを守る。</li>
+      <li>相手が本物かどうかを確認できないと、偽物のサーバに繋いでしまっても気づけない。改ざんは、通信の途中に誰かが割り込んで内容を書き換えることを指す。</li>
+      <li>TLS より前に行われる名前解決の段階は、TLS の暗号化の外側にある。</li>
+      <li>名前解決の問い合わせは、従来ほとんどの場合暗号化されておらず、同じネットワークにいる人には、どのホスト名に問い合わせているかが見えてしまうことがある。</li>
+      <li>HTTPS でも、通信の中身が守られていることと、どのサイトにアクセスしようとしたか自体が見えないこととは、別の話である。守られている範囲を正しく知っておくことが、安心して使うための第一歩になる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>TLS は、TCP 接続が済んだあとに行われる暗号化の手続きで、送り手と受け手の間でやり取りの中身を読めなくすること、相手が本当にその相手かどうかを確認できること、途中で書き換えられていないかを確認できること、の 3 つを守る。相手を確認できなければ偽物のサーバに繋いでしまっても気づけず、改ざんを検知できなければ通信の途中で書き換えられた内容に気づけない。これらの手続きの中身(相手をどう確認するか、鍵をどう決めるか)は、次のページ以降で順番に見ていく。この保護が及ぶのは、TLS の手続きが始まったあとのやり取りに限られる。TLS より前には、ホスト名を IP アドレスに変える名前解決の段階があり、この段階は TLS の暗号化の外側で行われる。名前解決の問い合わせは、従来ほとんどの場合暗号化されておらず、同じネットワークにいる第三者には、どのホスト名に問い合わせているかが見えてしまうことがある。したがって、HTTPS の通信の中身が暗号化されていても、どのサイトにアクセスしようとしたか自体は、別の経路から知られることがある。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="55">[#55] Cloudflare Learning Center「What happens in a TLS handshake?」 — <a href="https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/" rel="noopener">原典</a>(TLS の定義、ハンドシェイクで相手の認証・改ざん検知・暗号化を行うという概要)</li>
+    <li class="cite" data-src="21">[#21] JPNIC「インターネット 10 分講座:SSL/TLS」 — <a href="https://www.nic.ad.jp/ja/newsletter/No59/0800.html" rel="noopener">原典</a>(SSL/TLS には暗号化・認証・改ざん検知の 3 つの機能があるという記述)</li>
+    <li class="cite" data-src="54">[#54] Cloudflare Blog「DNS Encryption Explained」 — <a href="https://blog.cloudflare.com/dns-encryption-explained/" rel="noopener">原典</a>(DNS の問い合わせは従来ほとんど暗号化されておらず、問い合わせ先のドメイン名が見えてしまうという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m18-1">
+    <div class="q" data-q="1">
+      <p class="q-text">TLS が守るものとして正しい組み合わせはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">通信の速度を上げること、通信の量を減らすこと</button></li>
+        <li><button type="button" data-correct="true">やり取りの中身が読めなくなること、相手が本当にその相手かどうかを確認できること、途中で書き換えられていないかを確認できること</button></li>
+        <li><button type="button" data-correct="false">ホスト名を IP アドレスに変えること、経路上の混雑を避けること</button></li>
+        <li><button type="button" data-correct="false">送り手と受け手の IP アドレスを隠すこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、やり取りの中身が読めなくなること、相手が本当にその相手かどうかを確認できること、途中で書き換えられていないかを確認できること、です。TLS は通信の速度や経路の混雑、IP アドレスそのものを隠す仕組みではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HTTPS の通信でも、どのホスト名にアクセスしようとしたかが別の経路から見えてしまうことがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">TLS の暗号化に不具合があるから</button></li>
+        <li><button type="button" data-correct="true">名前解決の問い合わせは、TLS より前の段階で行われ、従来ほとんどの場合暗号化されていないから</button></li>
+        <li><button type="button" data-correct="false">ブラウザがアクセス履歴を毎回サーバに送り返しているから</button></li>
+        <li><button type="button" data-correct="false">ブラウザがホスト名を毎回ログに残して公開しているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決の問い合わせは、TLS より前の段階で行われ、従来ほとんどの場合暗号化されていないから、です。TLS の暗号化に不具合があるわけではなく、暗号化の対象になる前の段階の話です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">暗号化の中身が読めないことと、どのサイトにアクセスしようとしたかが見えないことの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">同じ保護の範囲に含まれ、どちらか一方が守られればもう一方も必ず守られる</button></li>
+        <li><button type="button" data-correct="true">保護の範囲が異なり、中身が読めなくても、どのサイトにアクセスしようとしたかは別の経路から見えることがある</button></li>
+        <li><button type="button" data-correct="false">どちらも名前解決の段階だけで決まる</button></li>
+        <li><button type="button" data-correct="false">HTTPS では両方とも守られないことが多い</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、保護の範囲が異なり、中身が読めなくても、どのサイトにアクセスしようとしたかは別の経路から見えることがある、です。TLS の保護と名前解決の段階は別物です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m18.html">← 第 18 章の入口</a>
+    <a class="up" href="m18.html">第 18 章の入口</a>
+    <a class="next" href="m18-2.html">18-2 鍵を、ひとつではなく 2 つに分ける理由 →</a>
+  </nav>
+</main>
+</body>
+</html>

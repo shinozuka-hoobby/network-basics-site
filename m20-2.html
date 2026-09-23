@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主要なヘッダ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m20-2" data-chapter="m20" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 20-2</p>
+  <p class="chapter-label">第 20 章 HTTP/1.1　20-2</p>
+  <h1>主要なヘッダ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>リクエストとレスポンスに添えられている、宛先や中身についての情報の並びには、いくつか代表的な項目がある。このページでは、<strong>その項目が何を伝えているか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページでヘッダの話が出てきましたけど、あれって具体的には何が書かれてるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ヘッダには、コロンで区切られた名前と値の組が並びます。これをまとめて HTTP ヘッダと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">コロンで区切られた名前と値、ですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。例えば Host という名前の後にコロンを挟んで、example.com のような値が続きます。</p>
+    <p class="s" data-who="ひよこちゃん">他には、どんな名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">リクエストなら、宛先のホスト名を伝える Host、ブラウザの種類を伝える User-Agent などがあります。</p>
+    <p class="s" data-who="ひよこちゃん">Accept みたいなヘッダも見たことあるんですけど、あれも仲間ですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。ブラウザがどんな形式の返事を望んでいるかを伝えるヘッダで、User-Agent と同じく、ブラウザの側から伝える情報の一つです。</p>
+    <p class="s" data-who="ひよこちゃん">レスポンス側にもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。本文の種類を伝える Content-Type、本文の長さを伝える Content-Length などです。</p>
+    <p class="s" data-who="ひよこちゃん">Host って、URL に書いてあるホスト名と同じですよね? なんでヘッダにも書くんですか?</p>
+    <p class="t" data-who="ふくろう先生">良いところに気づきました。前のページで見た要求行にはパスしか書かれていないので、宛先のホスト名は Host ヘッダの方に書く決まりになっています。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、要求行だけでは宛先が分からないってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。Web サーバは Host ヘッダを見て、どの宛先向けのリクエストかを判断します。</p>
+    <p class="s" data-who="ひよこちゃん">あ、そういえば第 19 章で見た、https を強制する指示(HSTS)って、どこに書かれてたんでしたっけ?</p>
+    <p class="t" data-who="ふくろう先生">まさにそれも、この HTTP ヘッダの一つです。応答の中の指示、と言っていたものは、正式には HTTP ヘッダに書かれていたんです。</p>
+    <p class="s" data-who="ひよこちゃん">ヘッダって、全部でどれくらいの種類があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実際には数多くの種類がありますが、まずは今日見た代表的な項目を押さえておけば十分です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、ヘッダって結構いろんな役割があるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。宛先を伝えるもの、中身の性質を伝えるもの、指示を伝えるものなど、役割はさまざまです。</p>
+    <p class="s" data-who="ひよこちゃん">実際にどんな項目が並んでいるか、見てみたいです。</p>
+    <p class="t" data-who="ふくろう先生">試してみましょう。実際の応答を見れば、こうした項目がいくつも並んでいるのが分かります。</p>
+    <p class="s" data-who="ひよこちゃん">ヘッダを見れば、いろんな情報が分かるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この接続をどう使い回すかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>リクエストとレスポンスのヘッダには、コロンで区切られた名前と値の組が並ぶ。これをまとめて HTTP ヘッダと呼ぶ。</li>
+      <li>リクエストの要求行にはパスしか書かれていないため、宛先のホスト名は Host ヘッダに書く決まりになっている。</li>
+      <li>User-Agent はブラウザの種類、Accept はブラウザが望む返事の形式、Content-Type は本文の種類、Content-Length は本文の長さを伝える。</li>
+      <li>第 19 章で見た、次からは必ず HTTPS でつないでほしいという指示(HSTS)も、HTTP ヘッダの一つとして応答に添えられている。</li>
+      <li>ヘッダの役割は、宛先を伝えるもの、ブラウザの情報を伝えるもの、中身の性質を伝えるもの、指示を伝えるものなど、項目によってさまざまである。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP ヘッダは、コロンで区切られた名前と値の組が並ぶ部分で、リクエストにもレスポンスにも付けられる(#71 p.46)。リクエストの要求行にはパスしか書かれていないため、宛先のホスト名は Host ヘッダに書く決まりになっており、Web サーバはこれを見て宛先を判断する(#71 p.47)。ほかにも、ブラウザの種類を伝える User-Agent、ブラウザが望む返事の形式を伝える Accept、本文の種類を伝える Content-Type、本文の長さを伝える Content-Length などがある(#71 p.46)。第 19 章で見た、次からは必ず HTTPS でつないでほしいという指示(HSTS)も、この HTTP ヘッダの一つとして応答に添えられている。HTTP メッセージがメソッドやヘッダといった要素を持つという構造は、HTTP のバージョンが変わっても共通している(#20)。ヘッダには数多くの種類があるが、宛先・中身の種類・ブラウザの情報など、代表的なものを押さえておくと、通信の中身を読み解きやすい(#71 p.46)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: 1 行目のプロトコルの版は気にせず、その後に続く「名前: 値」の形の行を見てください。content-type: のような行が、ここで説明した HTTP ヘッダです。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.46 HTTP Headers の表 = Host・Content-Type・Content-Length・User-Agent などの分類、p.47 HTTP Conditional GET の例 = GET /index.html HTTP/1.1 に続く Host: somesite.sn の行）</li>
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座：HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>（HTTP リクエストやレスポンスにはメソッドやヘッダがあり、この構造は HTTP のバージョンが変わっても意味が変わらないという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m20-2">
+    <div class="q" data-q="1">
+      <p class="q-text">リクエストの要求行にはパスしか書かれていないのに、Web サーバはどうやって宛先のホスト名を知るのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">Host ヘッダに書かれたホスト名を見る</button></li>
+        <li><button type="button" data-correct="false">IP アドレスから逆算する</button></li>
+        <li><button type="button" data-correct="false">DNS サーバに毎回問い合わせ直す</button></li>
+        <li><button type="button" data-correct="false">ステータスコードに含まれている</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、Host ヘッダに書かれたホスト名を見る、です。要求行にはパスしか書かれていないため、宛先のホスト名は Host ヘッダに書く決まりになっています。IP アドレスからの逆算や DNS への再問い合わせ、ステータスコードは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">Content-Type ヘッダの役割として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">本文の中身がどんな種類のデータかを伝える</button></li>
+        <li><button type="button" data-correct="false">接続を暗号化するかどうかを伝える</button></li>
+        <li><button type="button" data-correct="false">応答が成功したかどうかを伝える</button></li>
+        <li><button type="button" data-correct="false">ブラウザの種類を伝える</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、本文の中身がどんな種類のデータかを伝える、です。接続の暗号化は TLS の役目、成功したかどうかはステータスコード、ブラウザの種類を伝えるのは User-Agent ヘッダの役割です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">第 19 章で見た、https を強制する指示(HSTS)は、正式には何の一部として送られているか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">HTTP ヘッダの一つ</button></li>
+        <li><button type="button" data-correct="false">TCP 接続の一部</button></li>
+        <li><button type="button" data-correct="false">URL の一部</button></li>
+        <li><button type="button" data-correct="false">DNS レコードの一部</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、HTTP ヘッダの一つ、です。第 19 章では「応答の中の指示」と言い換えていましたが、正式には HTTP ヘッダとして応答に添えられています。TCP 接続・URL・DNS レコードとは別の話です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m20-1.html">← 20-1 リクエストとレスポンスは、決まった型で書かれている</a>
+    <a class="up" href="m20.html">第 20 章の入口</a>
+    <a class="next" href="m20-3.html">20-3 接続を使い回す →</a>
+  </nav>
+</main>
+</body>
+</html>

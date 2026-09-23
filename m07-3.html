@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>パケットが宛先に届くまでを、順番に追う — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m07-3" data-chapter="m07" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 7-3</p>
+  <p class="chapter-label">第 7 章 ARP と同一ネットワーク内の通信　7-3</p>
+  <h1>パケットが宛先に届くまでを、順番に追う</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>前の 2 ページで見た、同じサブネットかどうかの判定と、IP アドレスから MAC アドレスを調べる仕組みを、1 回の送信の流れとしてつなげる。<strong>宛先 MAC アドレスと宛先 IP アドレスが、別サブネット宛てのときに別の動き方をする</strong>ことを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前の 2 ページ、同じサブネットかどうかの判定と、ARP で MAC アドレスを調べる話でしたけど、1 回の送信としてつなげて見るとどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">順番に整理しましょう。同じサブネットの相手に送る場合と、別のサブネットの相手に送る場合とで、途中から流れが分かれます。</p>
+    <p class="s" data-who="ひよこちゃん">同じサブネットの相手だったら、ARP で直接その相手の MAC アドレスを調べて送るんですよね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。そのときは、宛先 MAC アドレスも宛先 IP アドレスも、その相手そのものになります。</p>
+    <p class="s" data-who="ひよこちゃん">別サブネットだったら、宛先 MAC アドレスはデフォルトゲートウェイになるってことですか? でも宛先 IP アドレスは...?</p>
+    <p class="t" data-who="ふくろう先生">宛先 IP アドレスは変わりません。最終的な相手のままです。変わるのは、次に渡す隣の機器を指す宛先 MAC アドレスだけです。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、フレームの宛先とパケットの宛先が別だったのは、こういうことだったんですね。第 1 章で聞いたときは、まだピンと来てなかったです。</p>
+    <p class="t" data-who="ふくろう先生">今なら分かるはずです。宛先 MAC アドレスは次に渡す隣の機器、宛先 IP アドレスは最終的な相手を指す番号です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあその先、デフォルトゲートウェイが受け取ったあとはどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">そこから先は<a class="term" href="glossary.html#router" data-term="router">ルータ</a>の仕事です。宛先 IP アドレスを見て、次にどこへ渡すか判断します。中身は第 8 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">第 1 章 1-4 で、ヘッダが付く順番はトランスポート層、インターネット層、ネットワークインターフェース層の順だって、クイズで見た気がします。</p>
+    <p class="t" data-who="ふくろう先生">よく覚えていますね。IP アドレスを扱うのがインターネット層、MAC アドレスを扱うのがネットワークインターフェース層です。この 2 つの層がちょうど接するところで、今日の判定と付け替えが起きています。</p>
+    <p class="s" data-who="ひよこちゃん">あ、第 5 章で、サブネットマスクを間違えて「別のネットワークにいる」と判定しちゃう話がありましたよね。その続きが分かった気がします。</p>
+    <p class="t" data-who="ふくろう先生">そうです。判定を誤ると、本当は同じ部屋にいる相手なのに、ARP で直接調べる代わりにデフォルトゲートウェイの MAC アドレスを調べて渡そうとしてしまいます。</p>
+    <p class="s" data-who="ひよこちゃん">宛先 IP アドレスは正しいままなのに、もったいないですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。本来同じ部屋で済むはずの通信が、いったんデフォルトゲートウェイを経由しようとして、届かなかったり遅れたりすることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ最初から最後まで、もう一度流れを整理してもらえますか?</p>
+    <p class="t" data-who="ふくろう先生">いいですよ。しくみの話で、番号付きの手順としてまとめておきます。</p>
+    <p class="s" data-who="ひよこちゃん">分かりました。これで、宛先 MAC アドレスと宛先 IP アドレスの違いが、やっと自分の言葉で説明できそうです。</p>
+    <p class="t" data-who="ふくろう先生">それは何よりです。次の章では、デフォルトゲートウェイに渡した先、ルータの中で何が起きているかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>同じサブネットの相手に送るときは、宛先 MAC アドレスも宛先 IP アドレスも、その相手そのものになる。</li>
+      <li>別のサブネットの相手に送るときは、宛先 MAC アドレスがデフォルトゲートウェイのものに変わる一方、宛先 IP アドレスは最終的な相手のまま変わらない。</li>
+      <li>宛先 MAC アドレスは次に渡す隣の機器を指す番号、宛先 IP アドレスは最終的な相手を指す番号であり、この違いは IP アドレスを扱うインターネット層と MAC アドレスを扱うネットワークインターフェース層の接点にあたる。</li>
+      <li>同一サブネットかどうかの判定を誤ると、本当は同じサブネットにいる相手なのに、デフォルトゲートウェイ経由で送ろうとしてしまうことがある。</li>
+      <li>デフォルトゲートウェイが受け取った先、ルータの中で何が起きるかは第 8 章で扱う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>1 つのパケットが送り出されるまでの流れは、次の 6 段階として整理できる(#65)。</p>
+    <ol>
+      <li>送信元ホストが、宛先 IP アドレスと自分のサブネットマスクから、宛先が同じサブネットにいるかどうかを判定する。</li>
+      <li>同じサブネットなら ARP で宛先本人の MAC アドレスを、別サブネットなら ARP でデフォルトゲートウェイの MAC アドレスを調べる。</li>
+      <li>調べた MAC アドレスを宛先 MAC アドレスにしてフレームを送り出す。宛先 IP アドレスは最終的な相手のまま変わらない。</li>
+      <li>別サブネット宛てのとき、デフォルトゲートウェイがフレームを受け取り、中の宛先 IP アドレスを見る(#47)。</li>
+      <li>デフォルトゲートウェイは、宛先 IP アドレスに応じて次に渡す機器を選び、新しい宛先 MAC アドレスを付け直してフレームを作り直す。</li>
+      <li>これを繰り返し、最終的に宛先 IP アドレスと一致するホストにフレームが届く。</li>
+    </ol>
+    <p>途中の地点ごとに宛先 MAC アドレスが変わる一方、宛先 IP アドレスは変わらない様子は、パケットトレーサーのような演習でも確認できる(#43)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>netstat -rn</code></pre>
+    <p>見方: 「default」で始まる行にある番号を見る。これが、このページで説明したデフォルトゲートウェイの、実際の IP アドレスである。第 4 章 4-2 で見た「まず送り出される先」と同じものである。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（Workstation A から B までの 11 段階の LAN Traffic Flow を、6 段階に圧縮する際の主根拠）</li>
+    <li class="cite" data-src="47">[#47] Cisco「Address Resolution Protocol」 — <a href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_arp/configuration/xe-16/arp-xe-16-book/arp-config-arp.pdf" rel="noopener">原典</a>（宛先が別サブネットのとき、デフォルトゲートウェイが受け取ってから先の転送先を判断するという記述）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 13.1.3、経路の各地点で宛先 MAC アドレスが変わる一方、宛先 IP アドレスは変わらないことを観察する演習）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m07-3">
+    <div class="q" data-q="1">
+      <p class="q-text">別サブネット宛てのパケットで、フレームの宛先 MAC アドレスがデフォルトゲートウェイのものになる一方、パケットの宛先 IP アドレスが最終的な相手のまま変わらないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">宛先 MAC アドレスは次に渡す隣の機器を指す番号、宛先 IP アドレスは最終的な相手を指す番号で、役割が違うから</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイが、宛先 IP アドレスを自分のものに書き換える決まりになっているから</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスと IP アドレスは、実際には同じ情報を別の形式で表しているだけだから</button></li>
+        <li><button type="button" data-correct="false">ARP が宛先 IP アドレスを MAC アドレスに変換してしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先 MAC アドレスは次に渡す隣の機器を指す番号、宛先 IP アドレスは最終的な相手を指す番号で、役割が違うから、です。デフォルトゲートウェイ宛てに変わるのは宛先 MAC アドレスだけで、宛先 IP アドレスは最後まで書き換わりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">サブネットマスクの設定を間違えて、本当は同じサブネットにいる相手を「別のサブネット」と判定してしまうと、何が起きるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ARP で相手の MAC アドレスを直接調べる代わりに、デフォルトゲートウェイの MAC アドレスを調べて渡そうとしてしまう</button></li>
+        <li><button type="button" data-correct="false">相手の IP アドレスが自動的に書き換わってしまう</button></li>
+        <li><button type="button" data-correct="false">ARP の仕組みそのものが使えなくなる</button></li>
+        <li><button type="button" data-correct="false">間違えたサブネットマスクの値が、自動的に正しい値へ修正される</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ARP で相手の MAC アドレスを直接調べる代わりに、デフォルトゲートウェイの MAC アドレスを調べて渡そうとしてしまう、です。判定に使うのは自分のサブネットマスクなので、これを間違えると判定そのものを誤ります。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">別のサブネット宛てのパケットが送り出されるまでの手順として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同一サブネット判定 → ARP でデフォルトゲートウェイの MAC アドレスを調べる → 宛先 MAC アドレスをデフォルトゲートウェイにしてフレームを送る</button></li>
+        <li><button type="button" data-correct="false">ARP でデフォルトゲートウェイの MAC アドレスを調べる → 同一サブネット判定 → 宛先 IP アドレスを書き換える</button></li>
+        <li><button type="button" data-correct="false">宛先 IP アドレスをデフォルトゲートウェイのアドレスに書き換える → ARP で調べる → フレームを送る</button></li>
+        <li><button type="button" data-correct="false">デフォルトゲートウェイに ARP で尋ねることはせず、いきなりフレームを送る</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同一サブネット判定→ARP でデフォルトゲートウェイの MAC アドレスを調べる→宛先 MAC アドレスをデフォルトゲートウェイにしてフレームを送る、です。宛先 IP アドレスは最後まで書き換わりません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m07-2.html">← 7-2 相手の MAC アドレスを、IP アドレスから調べる</a>
+    <a class="up" href="m07.html">第 7 章の入口</a>
+    <a class="next" href="m08.html">第 8 章 ルーティングの基本 →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>きちんと終わる接続と、いきなり切れる接続 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m13-4" data-chapter="m13" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 13-4</p>
+  <p class="chapter-label">第 13 章 TCP の接続と信頼性　13-4</p>
+  <h1>きちんと終わる接続と、いきなり切れる接続</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>接続を終えるときは通常、<strong>両側が終わりの合図を送り合って段階的に終える</strong>が、相手がいない、または応答できない状況では、打ち切りの合図でその場で終わらせることもある。このページでは、この 2 通りの終わり方と、相手が突然応答できなくなった場合に何が起きるかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">接続を作るときは 3 回のやり取りがありましたけど、終えるときはどうやるんですか?</p>
+    <p class="t" data-who="ふくろう先生">通常は、両側が「もう終わり」という合図を送り合って、段階的に終えます。この合図を<strong>FIN</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">両側が送り合うってことは、片方だけが終わりたい場合はどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">先に終わりたい側が FIN を送ります。相手は ACK で応じたあと、今度は相手側も FIN を送ります。最後に、最初に FIN を送った側が ACK を返して終わります。</p>
+    <p class="s" data-who="ひよこちゃん">つまり合計で 4 回、合図をやり取りするんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。片方が先に終わりたいと申し出て、相手が応じてから自分の分も終える、という順番になります。</p>
+    <p class="s" data-who="ひよこちゃん">段階を踏まずに、いきなり終わることもあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。相手がいない、または応答できない状況では、打ち切りの合図(<strong>RST</strong>)でその場で終わらせます。</p>
+    <p class="s" data-who="ひよこちゃん">RST って、具体的にはどんな場面で送られるんですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、存在しないポートに接続しようとしたときや、通信中のプログラムを強制終了したときなどに送られます。相手からの申し出そのものを拒む場合にも使われます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、サーバのプロセスが急に落ちたのに、こっちの接続はしばらく生きてるみたいに見えたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">よくある事例です。終了の合図(FIN)も打ち切りの合図(RST)も、相手が能動的に送るものです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、相手が突然落ちたらどうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">相手はどちらの合図も送れないため、こちら側には何も知らされません。次に何か送ろうとして初めて、異常に気づくまで、接続がまだ続いているかのように見えます。</p>
+    <p class="s" data-who="ひよこちゃん">電源が落ちるのと、プログラムだけが落ちるのとでは、違いがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">プログラムだけが落ちる場合は、OS がまだ動いているため、RST を送ってから止まることがあります。電源が落ちるなど、合図を送る余裕すらない場合は、こちらには何も届きません。この違いが、気づくまでの早さにそのまま影響します。</p>
+    <p class="s" data-who="ひよこちゃん">普通に終わる場合と比べると、ずいぶん違いますね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。FIN で正常に終わればすぐに分かりますが、相手が落ちた場合はこちらから確認するまで気づけません。この違いは、障害の切り分けをするときにも意識しておく価値があります。</p>
+    <p class="s" data-who="ひよこちゃん">RST で終わった場合も、後始末は同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、RST はその場で強制的に打ち切るための合図なので、FIN のような段階を踏んだやり取りにはなりません。</p>
+    <p class="s" data-who="ひよこちゃん">FIN で終わった直後の接続って、その場ですぐ消えるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実はすぐには消えません。次のページで、接続がどんな段階を経て消えていくかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>接続を終えるときは通常、両側が終了の合図(FIN)を送り合って段階的に終える。片方が先に FIN を送り、相手が ACK で応じたあと、相手も FIN を送り、最初の側が ACK を返す、合計 4 回のやり取りになる。</li>
+      <li>相手がいない、または応答できない状況では、打ち切りの合図(RST)でその場で終わらせることもある。RST は FIN のような段階を踏まない。</li>
+      <li>FIN も RST も相手が能動的に送るものなので、相手が突然落ちて何も送れない場合、こちら側は異常にすぐには気づけない。</li>
+      <li>FIN で終わった接続も、その場ですぐには消えない。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>接続を終える合図には、正常な終了を伝える FIN(No More Data From Sender)と、強制的な打ち切りを伝える RST(Reset the Connection)の 2 種類がある(#4 p.9)。通常の終了では、先に終わりたい側が FIN を送り、相手が ACK で応じたあと、相手側も自分の FIN を送り、最初に送った側が ACK を返して終わる、という 4 回のやり取りになる(#71 p.11)。RST は、存在しないポートへの接続や、通信中のプログラムの強制終了など、相手が応答を続けられない場面で送られ、FIN のような段階を踏まずにその場で終わらせる(#71 p.12)。FIN も RST も相手が能動的に送る合図であるため、相手が突然落ちてどちらも送れない場合、こちら側には何も知らされない。こちらから何か送ろうとして応答が無いことに気づくまで、接続はまだ続いているかのように見え続ける。プログラムだけが落ちる場合は、OS がまだ動いているため RST を送ってから止まることがあり、この違いは電源断のように合図を送る余裕自体が無い場合に特に目立つ。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.9 FIN・RST フラグの意味、p.13 接続の確立と解放の用語）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.11 FIN による接続解放の 4 回のやり取り、p.12 RST の実例）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m13-4">
+    <div class="q" data-q="1">
+      <p class="q-text">接続を終えるときの FIN と RST の違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">FIN は強制的な打ち切り、RST は段階的な終了である</button></li>
+        <li><button type="button" data-correct="true">FIN は両側が合図を送り合って段階的に終える、RST はその場で強制的に打ち切る</button></li>
+        <li><button type="button" data-correct="false">FIN と RST はどちらも同じ手順で、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="false">FIN はデータを送るとき、RST は接続を作るときにだけ使われる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、FIN は両側が合図を送り合って段階的に終える、RST はその場で強制的に打ち切る、です。FIN は正常な終了の合図、RST は相手がいない、または応答できない状況で使われる打ち切りの合図です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">相手が突然落ちた場合、なぜこちら側はすぐに異常に気づけないのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">FIN も RST も、こちら側が定期的に送って確認する仕組みだから</button></li>
+        <li><button type="button" data-correct="true">FIN も RST も相手が能動的に送る合図であり、相手が落ちるとどちらも送れないから</button></li>
+        <li><button type="button" data-correct="false">こちら側が受け取った ACK の番号を数え間違えるから</button></li>
+        <li><button type="button" data-correct="false">相手が落ちると、シーケンス番号が自動的にリセットされるから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、FIN も RST も相手が能動的に送る合図であり、相手が落ちるとどちらも送れないから、です。終了の合図は相手側から送られてくるものなので、相手が突然応答できなくなると、こちら側には知らせが届きません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">通常の終了(FIN による段階的な終了)の順番として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">先に終わりたい側の FIN → 相手の ACK → 相手の FIN → 最初に送った側の ACK</button></li>
+        <li><button type="button" data-correct="false">相手の FIN → 先に終わりたい側の ACK → 先に終わりたい側の FIN → 相手の ACK</button></li>
+        <li><button type="button" data-correct="false">先に終わりたい側の FIN → 相手の FIN → 先に終わりたい側の ACK → 相手の ACK</button></li>
+        <li><button type="button" data-correct="false">先に終わりたい側の RST → 相手の ACK</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、先に終わりたい側の FIN → 相手の ACK → 相手の FIN → 最初に送った側の ACK、です。先に終わりたい側が FIN を送り、相手が ACK で応じたあと相手も FIN を送り、最初に送った側が ACK を返して終わります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m13-3.html">← 13-3 届かなかったら、送り直す</a>
+    <a class="up" href="m13.html">第 13 章の入口</a>
+    <a class="next" href="m13-5.html">13-5 今、この接続はどの段階にいるか →</a>
+  </nav>
+</main>
+</body>
+</html>

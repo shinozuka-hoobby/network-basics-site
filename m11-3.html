@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新しい IP アドレスは、機械が自分で組み立てることもできる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m11-3" data-chapter="m11" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 11-3</p>
+  <p class="chapter-label">第 11 章 IPv6　11-3</p>
+  <h1>新しい IP アドレスは、機械が自分で組み立てることもできる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>新しい形式の IP アドレスを使い始めるには、第 4 章で見た DHCP のようにサーバから配ってもらう方法だけでなく、<strong>機械が自分でアドレスを組み立てて使い始める方法</strong>もある。このページでは、この 2 つの方法を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 4 章 4-3 で見た DHCP、新しい形式の IP アドレスでも同じように番号をもらうんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのやり方もありますが、新しい形式には、機械が自分でアドレスを組み立てる方法もあります。これを SLAAC と呼びます。サーバに毎回頼らなくて済みます。</p>
+    <p class="s" data-who="ひよこちゃん">自分で組み立てるって、どうやってですか?</p>
+    <p class="t" data-who="ふくろう先生">ネットワーク側から届く情報と、機械自身の情報(MAC アドレスなど)を組み合わせて作ります。DHCP のようにサーバに頼らなくても、機械だけでアドレスを完成させられます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、いつも自分で組み立てるだけなんですか?</p>
+    <p class="t" data-who="ふくろう先生">実はもう 1 つ、電源を入れた時点で必ず作る番号があります。同じネットワークの中だけで通じる、リンクローカルアドレスと呼ばれる番号です。通信できる相手がまだいなくても、これは自分で作ります。</p>
+    <p class="s" data-who="ひよこちゃん">世界中で通じる番号じゃなくて、同じネットワークの中だけなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。世界中で通じる番号(グローバルユニキャストアドレスと呼びます。第 5 章で見たグローバルアドレスと同じ考え方です)は、ネットワーク側から届く情報をもとに、別に組み立てます。</p>
+    <p class="s" data-who="ひよこちゃん">DHCP と同じように、サーバが配る方法も新しい形式にはあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。DHCPv6 と呼ばれる仕組みです。第 4 章 4-3 で見た DHCP と同じように、サーバが機械にアドレスを配ります。</p>
+    <p class="s" data-who="ひよこちゃん">SLAAC と DHCPv6、実際にはどちらが使われるんですか?</p>
+    <p class="t" data-who="ふくろう先生">両方使われることがあります。新しい形式だけの環境を試した合宿の報告でも、両方使われていました。ただ、うまくいかない場面もありました。</p>
+    <p class="s" data-who="ひよこちゃん">どんな場面だったんですか?</p>
+    <p class="t" data-who="ふくろう先生">よくある事例なんですが、古い OS(Windows XP や Mac OS X 10.6 以前)を使っていた参加者が、DHCPv6 に対応していないために名前解決の問い合わせ先を自動で受け取れず、手作業で設定する必要があったそうです。</p>
+    <p class="s" data-who="ひよこちゃん">なんで、番号自体はもらえたのに、そっちは自動で受け取れなかったんですか?</p>
+    <p class="t" data-who="ふくろう先生">SLAAC によって機械は自分でアドレスを組み立てられますが、名前を IP アドレスに変換する仕組みの問い合わせ先のような、追加の情報までは自分で用意できません。この追加の情報を配るのが DHCPv6 の役目ですが、当時のこれらの OS は DHCPv6 に対応していなかったため、手作業が必要になりました。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、アドレス自体と、それ以外の情報とでは、担当が違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、新しい形式へ切り替えが進む間、どうやって今までの形式とやり取りするのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>新しい形式の IP アドレスは、DHCP のようにサーバから配ってもらう方法だけでなく、機械が自分で組み立てる方法(SLAAC)でも使い始められる。</li>
+      <li>SLAAC では、ネットワーク側から届く情報と機械自身の情報を組み合わせて、機械が自分でアドレスを作る。</li>
+      <li>機械は電源を入れた時点で、同じネットワークの中だけで通じるリンクローカルアドレスを必ず自分で作る。世界中で通じるアドレスは別に組み立てる。</li>
+      <li>DHCP と同じようにサーバがアドレスを配る仕組み(DHCPv6)もあり、名前解決の問い合わせ先のような追加の情報も配る。実際のネットワークでは、両方が使われることがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>新しい形式の IP アドレスを使い始める方法には 2 つある。1 つは、機械がネットワーク側から届く情報と、自分自身の情報(MAC アドレスなど)を組み合わせてアドレスを組み立てる SLAAC である(#67)。機械は電源を入れた時点で、同じネットワークの中だけで通じるリンクローカルアドレスを必ず自分で作り、世界中で通じるアドレス(グローバルユニキャストアドレス)は、ネットワーク側から届く情報をもとに別に組み立てる。もう 1 つは、第 4 章 4-3 で見た DHCP と同じように、サーバが機械にアドレスを配る DHCPv6 である。実際のネットワークでは、SLAAC と DHCPv6 の両方が使われることがある(#16)。DHCPv6 は、アドレスに加えて、名前解決の問い合わせ先のような追加の情報を配る役目も持つ。古い OS の一部は DHCPv6 に対応しておらず、SLAAC でアドレス自体は得られても、この追加の情報だけは自動で受け取れないことがあった(#16)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 実行結果の中に、「inet6」に続いて「fe80:」から始まる番号の行がある。これが、このページで見たリンクローカルアドレスであり、ネットワークに他の機械がいるかどうかに関わらず、機械が自分で作っている番号である。</p>
+    <p class="try-note">複数の「fe80:」行が出ることもあるが、少なくとも 1 行あることを確認できれば十分である。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="67">[#67] Juniper Networks「IPv6 Technology Overview」 — <a href="https://www.juniper.net/documentation/us/en/software/junos/routing-overview/topics/concept/ipv6-technology-overview.html" rel="noopener">原典</a>(Table 1「Ways to Create the Host Portion of an IPv6 Address」の EUI-64 の行、機械が MAC アドレスをもとに自分でアドレスの一部を作るという記述)</li>
+    <li class="cite" data-src="16">[#16] WIDE Project「IPv6 Only Network 設計・実験報告」 — <a href="https://www.wide.ad.jp/About/report/pdf2011/part02.pdf" rel="noopener">原典</a>(DHCP6 の利用実験の記述、「DHCP6 未対応によるトラブル」の節)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（06_IP.txt p.43「IPv6 Unicast Address」の Link-Local Unicast Address の定義〈`fe80::/10`〉、Global Unicast Address の定義）</li>
+    <li class="cite" data-src="79">[#79] IETF「RFC 4862: IPv6 Stateless Address Autoconfiguration」 — <a href="https://www.rfc-editor.org/rfc/rfc4862.html" rel="noopener">原典</a>（SLAAC という名称の位置づけ）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m11-3">
+    <div class="q" data-q="1">
+      <p class="q-text">DHCPv6 に対応していない古い OS では、SLAAC で新しい形式の IP アドレス自体は使えるようになるのに、名前解決の問い合わせ先は自動で設定されないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">SLAAC が担当するのはアドレスの組み立てで、追加の情報を配るのは DHCPv6 の役目であり、両者は別の仕組みだから</button></li>
+        <li><button type="button" data-correct="false">SLAAC はリンクローカルアドレスしか作れず、通信そのものができないから</button></li>
+        <li><button type="button" data-correct="false">DHCPv6 に対応していない OS は、そもそもネットワークにつながらないから</button></li>
+        <li><button type="button" data-correct="false">名前解決の問い合わせ先は、いつも手作業で設定するものと決まっているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、SLAAC が担当するのはアドレスの組み立てで、追加の情報を配るのは DHCPv6 の役目であり、両者は別の仕組みだから、です。SLAAC でもリンクローカルアドレスだけでなく世界中で通じるアドレスも組み立てられ、OS はネットワークにつながっています。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">SLAAC の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ネットワーク側から届く情報と機械自身の情報を組み合わせて、機械が自分でアドレスを組み立てる仕組み</button></li>
+        <li><button type="button" data-correct="false">サーバが機械の代わりにアドレスを選び、機械に送りつける仕組み</button></li>
+        <li><button type="button" data-correct="false">機械同士が話し合って、重複しないアドレスをじゃんけんで決める仕組み</button></li>
+        <li><button type="button" data-correct="false">機械が同じアドレスを固定で使い続ける仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ネットワーク側から届く情報と機械自身の情報を組み合わせて、機械が自分でアドレスを組み立てる仕組み、です。サーバが送りつけるのは DHCPv6 のやり方です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">リンクローカルアドレスの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">同じネットワークの中だけで通じる、機械が電源を入れた時点で自分で作るアドレス</button></li>
+        <li><button type="button" data-correct="false">世界中で重複しない、ただ 1 つのアドレス</button></li>
+        <li><button type="button" data-correct="false">DHCPv6 サーバだけが持つ、特別なアドレス</button></li>
+        <li><button type="button" data-correct="false">通信の相手が見つかるまでは作られない、一時的なアドレス</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じネットワークの中だけで通じる、機械が電源を入れた時点で自分で作るアドレス、です。通信できる相手がいるかどうかに関わらず、機械は必ずこの番号を作ります。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m11-2.html">← 11-2 ARP の役目を、新しい仕組みが引き継ぐ</a>
+    <a class="up" href="m11.html">第 11 章の入口</a>
+    <a class="next" href="m11-4.html">11-4 新しい IP アドレスに、時間をかけて置き換えていく →</a>
+  </nav>
+</main>
+</body>
+</html>

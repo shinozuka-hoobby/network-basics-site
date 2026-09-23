@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>会社のネットワークとつなぐ — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m25-3" data-chapter="m25" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 25-3</p>
+  <p class="chapter-label">第 25 章 VPC をつなぐ — ピアリング・ハブ・ハイブリッド　25-3</p>
+  <h1>会社のネットワークとつなぐ</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>VPC を社内のネットワークとつなぐ方法には、大きく分けて 2 つある。<strong>インターネット回線を使う方法と、契約した専用の回線を使う方法</strong>で、それぞれ向き不向きが違う。このページでは、その違いを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">VPC とオフィスのネットワークをつなぎたいときは、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つの方法は、インターネット回線の上に、暗号化した専用の通り道を作ることです。これを<strong>VPN</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">第 18 章で見た、通信の中身を暗号化するっていう考え方と同じですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ考え方を、拠点同士をつなぐ回線の上で使います。</p>
+    <p class="s" data-who="ひよこちゃん">インターネット回線を使うってことは、普段使っているインターネットと同じ経路を通るんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。VPN は、公衆のインターネット回線の上に、暗号化したトンネルを作って通信を通します。</p>
+    <p class="s" data-who="ひよこちゃん">よくある事例として聞いたんですけど、VPN 経由の通信が、アクセスが増える時間帯だけ不安定になったことがあるらしいです。</p>
+    <p class="t" data-who="ふくろう先生">それは VPN の弱点です。公衆のインターネット回線の上を通るので、インターネットそのものの混雑や不安定さの影響をそのまま受けます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、もっと安定してつなぎたいときは、どうするんですか?</p>
+    <p class="t" data-who="ふくろう先生">契約した回線業者の物理的な専用の回線を、直接引く方法があります。これを<strong>専用線</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">専用線を使えば、インターネットの混雑の影響を受けないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。AWS の資料によれば、多くの場合、専用線の方がより一貫した通信品質を得られるとされています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、みんな最初から専用線を使えばいいんじゃないですか?</p>
+    <p class="t" data-who="ふくろう先生">専用線は契約や工事が必要で、始めやすさでは VPN に劣ります。すぐ始めたいか、一貫した品質を優先するかで選びます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、始めやすさと安定感のトレードオフなんですね。新しく会社のネットワークをつなぐときは、AWS の資料ではどちらを勧めているんですか?</p>
+    <p class="t" data-who="ふくろう先生">AWS の資料でも、VPN はまず始めるのに向いているとされています。ただ、本番の通信ではインターネット経由の接続が十分に信頼できないことがあるとして、専用線を選択肢に挙げています。</p>
+    <p class="s" data-who="ひよこちゃん">確かに、始めるなら VPN、本番の信頼性を求めるなら専用線、というふうに使い分けられそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。前のページで見た Transit Gateway には、VPN も専用線もまとめて接続できます。</p>
+    <p class="s" data-who="ひよこちゃん">1 か所にまとめられるのは便利そうですね。ところで、インターネット越しの経路って、実際どんな感じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">実際に確かめてみましょう。試してみようで、経由する機器の数を見てみてください。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>VPN は、インターネット回線の上に暗号化した専用の通り道(トンネル)を作り、拠点同士を安全につなぐ仕組みである。</li>
+      <li>VPN は、第 18 章で見た通信の中身を暗号化するという考え方を、拠点間の回線の上で使う。</li>
+      <li>VPN は公衆のインターネット回線の上を通るため、インターネットそのものの混雑や不安定さの影響を受けることがある。</li>
+      <li>専用線は、契約した回線業者の物理的な専用の回線で、直接つなぐ仕組みである。</li>
+      <li>AWS の資料によれば、多くの場合、専用線の方がより一貫した通信品質を得られるとされる一方、契約や工事が必要で、VPN より始めやすいとは言えない。</li>
+      <li>AWS の資料は、まず VPN で始めるのに向いているとしつつ、本番の通信ではインターネット経由の接続が十分に信頼できないことがあるとして、専用線を選択肢に挙げている。</li>
+      <li>前のページで見た Transit Gateway には、VPN も専用線もまとめて接続できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>VPN は、インターネット回線の上に、暗号化した専用の通り道(トンネル)を作り、クラウドの仕切られたネットワークと社内のネットワークを安全につなぐ仕組みである(#22)。第 18 章で見た、通信の中身を第三者に読まれないよう暗号化するという考え方を、拠点間をつなぐ回線の上で使っていると考えるとよい。VPN は公衆のインターネット回線の上を通るため、本番のアクセスが増える時間帯には、インターネットそのものの混雑の影響を受けて不安定になることがある(#26)。専用線は、契約した回線業者の物理的な専用の回線で、インターネットを経由せずに直接つなぐ仕組みである(#26)。AWS の資料では、多くの場合、専用線の方が費用を抑えつつ帯域を広げ、より一貫した通信品質を得られるとされている(#26)。ただし専用線は契約や工事が必要な分、VPN ほど始めやすくはない。同じ資料は、VPN はまず始めるのに向いているとしつつ、本番の通信ではインターネット経由の接続が十分に信頼できないことがあるとして、専用線を選択肢に挙げている(#26)。前のページで見た Transit Gateway には、VPN も専用線もまとめて接続できる(#22)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>traceroute -m 15 example.com</code></pre>
+    <p>見方: 実行結果で、経由する機器の数と、応答が返ってくるまでの時間(ミリ秒)を見てください。インターネット越しの経路は、途中に家庭用ルータや回線事業者の機器を何段も経由します。VPN は、この経路の上をそのまま(暗号化して)通ります。専用線は、契約した物理回線を直接使うため、この経路自体を通りません。</p>
+    <p class="try-note">実行に十数秒かかることがあります。途中に "*" が並ぶ行が出ても、そのまま読み進めてよい。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>(「Access a corporate or home network」の節。IPsec を使った Site-to-Site VPN 接続、2 本の VPN トンネルの説明。「Connect VPCs and networks」の節、transit gateway が VPN 接続・Direct Connect ゲートウェイも扱うという記述)</li>
+    <li class="cite" data-src="26">[#26] AWS ホワイトペーパー「Building a Scalable and Secure Multi-VPC AWS Network Infrastructure」 — <a href="https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/building-scalable-secure-multi-vpc-network-infrastructure.pdf" rel="noopener">原典</a>(p.29「While VPN over internet is a great option to get started, internet connectivity may not be reliable for production traffic」「private network connections can reduce costs, increase bandwidth, and provide a more consistent network experience than internet-based connections」という記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m25-3">
+    <div class="q" data-q="1">
+      <p class="q-text">VPN 経由の通信が、アクセスが増える時間帯だけ不安定になることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">VPN は暗号化のせいで、そもそも通信速度が出ないから</button></li>
+        <li><button type="button" data-correct="true">VPN は公衆のインターネット回線の上を通るため、インターネットそのものの混雑の影響を受けるから</button></li>
+        <li><button type="button" data-correct="false">VPN は 1 日に決まった回数しか接続できないから</button></li>
+        <li><button type="button" data-correct="false">VPN は専用線より暗号化の強度が低いから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、VPN は公衆のインターネット回線の上を通るため、インターネットそのものの混雑の影響を受けるから、です。速度が出ない・接続回数の制限・暗号化強度の話ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">VPN の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">契約した回線業者の物理的な専用の回線のこと</button></li>
+        <li><button type="button" data-correct="true">インターネット回線の上に、暗号化した専用の通り道を作る仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">相手が用意した特定のサービスだけに、内側からアクセスする仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">たくさんの VPC を 1 か所に集めてつなぐ仕組みのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、インターネット回線の上に、暗号化した専用の通り道を作る仕組みのこと、です。物理的な専用の回線を指すのは専用線で、特定のサービスだけへのアクセスや、まとめてつなぐ仕組みとも別のものです。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">専用線の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">インターネット回線の上に、暗号化した通り道を作る仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">複数の VPC を 1 対 1 で総当たりに直接つなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="true">契約した回線業者の物理的な専用の回線で、インターネットを経由せずに直接つなぐ仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">1 つの VPC を複数のチームで分担して使う仕組みのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、契約した回線業者の物理的な専用の回線で、インターネットを経由せずに直接つなぐ仕組みのこと、です。暗号化したインターネット回線の話や、総当たりの接続、分担して使う仕組みとは別のものです。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m25-2.html">← 25-2 たくさんの VPC を、まとめてつなぐ</a>
+    <a class="up" href="m25.html">第 25 章の入口</a>
+    <a class="next" href="m25-4.html">25-4 相手のサービスだけを、内側から使う →</a>
+  </nav>
+</main>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一番外側の封筒に書かれた宛先の番号 — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m03-1" data-chapter="m03" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 3-1</p>
+  <p class="chapter-label">第 3 章 イーサネットと MAC アドレス　3-1</p>
+  <h1>一番外側の封筒に書かれた宛先の番号</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>同じ配線でつながる機械どうしがデータをやり取りするときは、送りたいデータに宛先や送信元の番号を書き加えた、ひとまとまりの単位にして送っている。このページでは、<strong>その番号の正体と、単位の中の並び順</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">1-4 でちらっと MAC アドレスとかフレームって言葉が出てきましたけど、結局何なんですか?</p>
+    <p class="t" data-who="ふくろう先生">同じ配線でつながる機械どうしが、お互いの宛先を確認するための仕組みです。この配線の共通ルールを、イーサネットと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">IP アドレスも宛先みたいなものですよね? 何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">範囲が違います。MAC アドレスは同じ配線の中だけで使う番号で、IP アドレスはネットワークをまたいで使う番号です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ同じ配線の中では、IP アドレスは使わないんですか?</p>
+    <p class="t" data-who="ふくろう先生">使いますが、それだけでは足りません。実際に送るときは、パケットに宛先などの情報を書き足した、別の単位にして送ります。</p>
+    <p class="s" data-who="ひよこちゃん">その単位にも名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。宛先 MAC アドレス、送信元 MAC アドレス、種別、データ、誤り検出の順に並んだ単位を、フレームと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">宛先が先に来て、送信元がその後なんですね。データのところには何が入るんですか?</p>
+    <p class="t" data-who="ふくろう先生">1-4 で見たパケットが、まるごと入ります。封筒の中に、もう一つ封筒が入っているような感じです。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ最後の誤り検出は何のためにあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">送っている途中で信号が乱れて、中身が変わっていないかを確かめるためのものです。</p>
+    <p class="s" data-who="ひよこちゃん">MAC アドレスって、自分で決めるものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、多くは機械のネットワーク部品にあらかじめ付いています。同じ配線の中で機械を区別するための番号です。</p>
+    <p class="s" data-who="ひよこちゃん">でも、相手の MAC アドレスなんて普段意識したことないです。どうやって知るんですか?</p>
+    <p class="t" data-who="ふくろう先生">IP アドレスから、対応する MAC アドレスを調べる仕組みがあり、これを<a class="term" href="glossary.html#arp" data-term="arp">ARP</a>と呼びます。詳しい手順は第 7 章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">MAC アドレスって、機械を買い替えない限りずっと同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">基本的にはそうです。同じ配線の中で機械を区別する番号なので、置き場所が変わっても番号自体は変わらないのが普通です。</p>
+    <p class="s" data-who="ひよこちゃん">IP アドレスは変わることがあるって聞いたことあるんですけど、MAC アドレスは違うんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。IP アドレスはつながるネットワークによって変わることがありますが、MAC アドレスは機械そのものに結びついた番号です。</p>
+    <p class="s" data-who="ひよこちゃん">誤り検出って、具体的にはどうやって確かめているんですか?</p>
+    <p class="t" data-who="ふくろう先生">送るデータをもとに計算した数字を一緒に送っておき、受け取った側で同じ計算をして、数字が一致するかどうかを確認します。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ今日のところは、フレームの並び方と MAC アドレスの役割を覚えておけばいいですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、それで十分です。次は、このフレームを複数の機械がいる中でどうやって届けるかを見ましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>同じ配線でつながる機械どうしがデータをやり取りするときの共通の約束事を、イーサネットと呼ぶ。</li>
+      <li>実際にやり取りする単位をフレームと呼び、宛先 MAC アドレス・送信元 MAC アドレス・種別・データ・誤り検出の順に並ぶ。</li>
+      <li>MAC アドレスは、同じ配線の中で機械を区別するための番号で、ネットワークをまたいで使う IP アドレスとは役割が違う。</li>
+      <li>フレームのデータの部分には、パケットがそのまま入る。</li>
+      <li>MAC アドレスは機械そのものに結びついた番号で、置き場所が変わっても基本的には変わらない。ネットワークによって変わることがある IP アドレスとは、この点でも性質が違う。</li>
+      <li>相手の MAC アドレスを調べる仕組み(ARP)は第 7 章で扱う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <pre class="fig" aria-label="フレームの中の並び順">宛先MACアドレス → 送信元MACアドレス → 種別 → データ（パケット） → 誤り検出</pre>
+    <p>イーサネットは、有線でつないだ機械どうしが同じ配線の中でデータをやり取りするときの共通の約束事である。実際にやり取りする単位がフレームで、宛先 MAC アドレス・送信元 MAC アドレス・種別・データ・誤り検出という順で情報が並ぶ(#71 p.14、#4 p.114)。データの部分には、1-4 で見たパケットがそのまま入る。MAC アドレスは機械のネットワーク部品にあらかじめ付いている番号で、同じ配線の中だけで機械を区別するために使われ、IP アドレスのようにネットワークをまたいでは使われない(#4 p.116)。誤り検出は、送信中に信号が乱れて中身が変わっていないかを確かめるためのもので、送るデータをもとに計算した数字を一緒に送り、受け取った側で同じ計算をして一致を確かめる仕組みである。MAC アドレスは機械のネットワーク部品に結びついているため、機械を別の配線につなぎ替えても、番号そのものは基本的に変わらない。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>ifconfig</code></pre>
+    <p>見方: 実行結果の中に、"ether" で始まる行がある。そこに並ぶ番号が、自分の Mac のネットワーク部品に付いている番号である。</p>
+    <p class="try-note">command not found と出たら、この回は読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（2018-02-datalink.txt p.14 フレーム構成の図、p.16「Ethernet frame」という名称）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（08_Link.txt p.114 フレーム構成、p.115 MAC アドレスの表記、p.116「MAC アドレスの利用はローカルのみ」）</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>（"A packet becomes a frame when the source and destination MAC addresses are added to a packet"）</li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>（p.46 MAC アドレスの別名・物理アドレス）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m03-1">
+    <div class="q" data-q="1">
+      <p class="q-text">フレームの中の並び順として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">誤り検出 → データ → 種別 → 送信元 MAC アドレス → 宛先 MAC アドレス</button></li>
+        <li><button type="button" data-correct="true">宛先 MAC アドレス → 送信元 MAC アドレス → 種別 → データ → 誤り検出</button></li>
+        <li><button type="button" data-correct="false">送信元 MAC アドレス → 宛先 MAC アドレス → データ → 種別 → 誤り検出</button></li>
+        <li><button type="button" data-correct="false">種別 → 宛先 MAC アドレス → 送信元 MAC アドレス → 誤り検出 → データ</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、宛先 MAC アドレス→送信元 MAC アドレス→種別→データ→誤り検出、です。フレームはこの順で情報が並び、宛先が最初、送信元がその次に来ます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">フレームのデータの部分に何が入っているか、正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">1-4 で見たパケットが、まるごと入っている</button></li>
+        <li><button type="button" data-correct="false">パケットの中に、フレームがまるごと入っている</button></li>
+        <li><button type="button" data-correct="false">宛先 MAC アドレスのコピーだけが入っている</button></li>
+        <li><button type="button" data-correct="false">誤り検出のための数字だけが入っている</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、1-4 で見たパケットが、まるごと入っている、です。フレームはパケットを一番外側から包む単位であり、逆にパケットの中にフレームが入るわけではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">MAC アドレスと IP アドレスの違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">MAC アドレスは同じ配線の中で使う番号で、IP アドレスはネットワークをまたいで使う番号である</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスはネットワークをまたいで使う番号で、IP アドレスは同じ配線の中だけで使う番号である</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスと IP アドレスは、まったく同じ範囲で使われる、呼び方が違うだけの番号である</button></li>
+        <li><button type="button" data-correct="false">MAC アドレスは誤り検出のために使われ、IP アドレスは宛先を示すために使われる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、MAC アドレスは同じ配線の中で使う番号で、IP アドレスはネットワークをまたいで使う番号である、です。両者は使われる範囲が異なり、役割を交換することはできません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m03.html">← 第 3 章の入口</a>
+    <a class="up" href="m03.html">第 3 章の入口</a>
+    <a class="next" href="m03-2.html">3-2 機械の場所を覚えて、そこだけに届ける仕組み →</a>
+  </nav>
+</main>
+</body>
+</html>

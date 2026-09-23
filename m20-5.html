@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>応答を控えておく — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m20-5" data-chapter="m20" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 20-5</p>
+  <p class="chapter-label">第 20 章 HTTP/1.1　20-5</p>
+  <h1>応答を控えておく</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>ブラウザや途中のサーバは、一度受け取った答えの控えを保存しておき、次に使うことがある。このページでは、<strong>この控えがどれくらいの間使われるかを Web サーバがどう指示するか</strong>を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、Keep-Alive でも順番待ちの問題は残るって聞きましたけど、他にも工夫できることはあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ブラウザや途中のサーバが、一度受け取った応答の控えを保存しておいて、同じ要求への答えとして再利用することがあります。これを HTTP キャッシュと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">控えを再利用するって、第 16 章で見た DNS キャッシュと同じような話ですか?</p>
+    <p class="t" data-who="ふくろう先生">控えておいて使うという考え方は同じですが、控える対象が違います。DNS キャッシュは名前解決の答え、こちらは Web サーバの応答そのものです。</p>
+    <p class="s" data-who="ひよこちゃん">応答を控えておけば、毎回 Web サーバまで問い合わせずに済むんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。控えが使えれば、応答時間も Web サーバの負担も減らせます。</p>
+    <p class="s" data-who="ひよこちゃん">途中のサーバっていうのは、具体的にはどんな機械なんですか?</p>
+    <p class="t" data-who="ふくろう先生">利用者と Web サーバの間に置かれ、みんなの代わりに控えを持っておく機械のことです。会社のネットワークの出口などに置かれることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">逆に、控えちゃいけないっていう指示もできるんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。使ってよい期間を指定するだけでなく、そもそも控えてはいけないという指示もできます。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、画像を更新したのに、しばらく古い画像が表示され続けたことがあります。</p>
+    <p class="t" data-who="ふくろう先生">それはまさに、この HTTP キャッシュの仕業だと思います。</p>
+    <p class="s" data-who="ひよこちゃん">なんで、更新したのに古い画像のままだったんですか?</p>
+    <p class="t" data-who="ふくろう先生">ブラウザや途中のサーバに残った控えが、指示された期間はそのまま使われ続けるからです。</p>
+    <p class="s" data-who="ひよこちゃん">指示、ですか? 誰が指示するんですか?</p>
+    <p class="t" data-who="ふくろう先生">Web サーバが応答に添える指示で決まります。この指示を Cache-Control と呼び、例えば「この秒数までは使ってよい」という指定ができます。</p>
+    <p class="s" data-who="ひよこちゃん">その秒数を過ぎるまでは、ずっと古いままなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。だから、画像を更新しても、その期間が過ぎるまでは古い控えが表示され続けることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">指定した秒数を過ぎたら、もう一度全部取りに行くんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうとも限りません。前と変わっていないかだけを問い合わせて、変わっていなければ控えをそのまま使い続ける、条件付きの取り直しという方法もあります。</p>
+    <p class="s" data-who="ひよこちゃん">変わっていないか確認するだけなら、全部を送り直すより速そうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。控えを上手に使えば、速さと最新さのバランスを取れます。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた話が、これで一通りつながりました。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次の章では、HTTP がどう進化していったかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ブラウザや途中のサーバが、一度受け取った応答の控えを保存しておき、同じ要求への答えとして再利用する仕組みを HTTP キャッシュと呼ぶ。</li>
+      <li>控えておいて使うという考え方は第 16 章の DNS キャッシュと同じだが、控える対象が違う(名前解決の答えか、Web サーバの応答か)。</li>
+      <li>Web サーバが応答に添えて、この内容をどれくらいの間、控えとして使ってよいかを指示する項目を Cache-Control と呼ぶ。</li>
+      <li>画像を更新しても、Cache-Control で指示された期間はブラウザや途中のサーバの控えがそのまま使われ続けるため、古い内容が表示され続けることがある。</li>
+      <li>期間が過ぎても、前と変わっていないかだけを確認する条件付きの取り直しによって、控えをそのまま使い続けられる場合がある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ブラウザは、すべてのリクエストを途中の控え(キャッシュ)経由で送るよう設定でき、控えが近くにあれば応答時間を短縮でき、Web サーバや回線の負荷も減らせる(#71 p.45)。こうした途中のサーバは、利用者と Web サーバの間、例えば会社のネットワークの出口などに置かれ、複数の利用者の代わりに控えをまとめて持つ(#71 p.45)。この、応答の控えを保存しておいて同じ要求への答えとして再利用する仕組みを HTTP キャッシュと呼ぶ。控えをどれくらいの間使ってよいか、あるいはそもそも控えてよいかどうかは、Web サーバが応答に添える Cache-Control という項目で指示され(#71 p.46)、この指示に従う期間は、内容を更新しても古い控えがそのまま使われ続けることがある。指示された期間が過ぎても、前と変わっていないかだけを問い合わせ、変わっていなければ本文を送り直さずに控えをそのまま使う、条件付きの取り直しという方法もある(#71 p.47)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sI https://example.com</code></pre>
+    <p>見方: age: という行の数字を見てください。これは、この応答がどこかの控えに保管されてから経過した秒数です。この数字が 0 より大きければ、控えから返ってきた証拠です。</p>
+    <p class="try-note">age: の行が無いサイトもあり、それも観察の結果です。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.45 Web Caches (proxy servers) = 控え経由での応答時間・負荷の削減、p.46 HTTP Headers の表の Caching related の行、p.47 HTTP Conditional GET = 前と変わっていなければ本文を送らないという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m20-5">
+    <div class="q" data-q="1">
+      <p class="q-text">サイトの画像を更新したのに、しばらく古い画像が表示され続けることがあるのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">ブラウザや途中のサーバに残った控えが、指示された間はそのまま使われるから</button></li>
+        <li><button type="button" data-correct="false">画像のファイル名を変えていないから</button></li>
+        <li><button type="button" data-correct="false">Web サーバがまだ新しい画像を受け取っていないから</button></li>
+        <li><button type="button" data-correct="false">第 16 章で見た DNS キャッシュが残っているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、ブラウザや途中のサーバに残った控えが、指示された間はそのまま使われるから、です。ファイル名や Web サーバの受け取り状況、DNS キャッシュとは別の話です。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">Cache-Control の役割として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">応答をどれくらいの間、控えとして使ってよいかなどを指示する</button></li>
+        <li><button type="button" data-correct="false">接続を暗号化するかどうかを指示する</button></li>
+        <li><button type="button" data-correct="false">応答の言語を指示する</button></li>
+        <li><button type="button" data-correct="false">接続を使い回すかどうかを指示する</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、応答をどれくらいの間、控えとして使ってよいかなどを指示する、です。接続の暗号化や応答の言語、接続を使い回すかどうか(Keep-Alive)とは別の指示です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">この章で見た「控えておいて使う」考え方と、第 16 章で見た DNS キャッシュの関係として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">控えておいて使うという考え方は同じだが、控える対象が違う(名前解決の答えか、Web サーバの応答か)</button></li>
+        <li><button type="button" data-correct="false">まったく同じ仕組みで、対象も同じである</button></li>
+        <li><button type="button" data-correct="false">HTTP キャッシュがあれば DNS キャッシュは不要になる</button></li>
+        <li><button type="button" data-correct="false">DNS キャッシュのほうが後から作られた仕組みである</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、控えておいて使うという考え方は同じだが、控える対象が違う、です。DNS キャッシュは名前解決の答え、HTTP キャッシュは Web サーバの応答そのものを控えており、一方があれば他方が不要になるものではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m20-4.html">← 20-4 順番待ちで詰まる</a>
+    <a class="up" href="m20.html">第 20 章の入口</a>
+    <a class="next" href="m21.html">第 21 章 HTTP/2 と HTTP/3 →</a>
+  </nav>
+</main>
+</body>
+</html>

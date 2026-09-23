@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新しい形式の IP アドレスは、8 つの組でできている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m11-1" data-chapter="m11" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 11-1</p>
+  <p class="chapter-label">第 11 章 IPv6　11-1</p>
+  <h1>新しい形式の IP アドレスは、8 つの組でできている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>今使われている IP アドレスの数には限りがあり、機械の増える速さに対して足りなくなってきている。そこで、<strong>今よりもはるかに多くの数を用意できる、新しい形式の IP アドレス</strong>が使われ始めている。このページでは、その新しい形式がどんな数字でできていて、どう書くのかを確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">第 5 章で、IP アドレスは全部で約 43 億通りって聞いたんですけど、これっていつか足りなくなったりしないんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は、もう足りなくなってきています。世界中でネットにつながる機械がどんどん増えているので、新しい形式の IP アドレスが作られました。</p>
+    <p class="s" data-who="ひよこちゃん">その新しい形式は、どれくらいの数を用意できるんですか?</p>
+    <p class="t" data-who="ふくろう先生">0 と 1 が 128 個並ぶ数字になっていて、2 の 128 乗という、桁違いに多い数を用意できます。この新しい形式を IPv6 と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">128 個も並んだら、書くのが大変そうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのままだと大変なので、16 進数(0 から 9 の数字のあとに a から f までの文字も使って数を表す書き方)にして、16 個ずつ 8 つの組に分け、コロンで区切って書きます。</p>
+    <p class="s" data-who="ひよこちゃん">第 5 章では、8 個のビットで 1 つの組が 0〜255 の範囲でしたよね。新しい形式の 1 つの組は、どれくらいの範囲になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">新しい形式は 16 個のビットで 1 つの組を表すので、0 から ffff(10 進数で 65535)までの範囲になります。IPv4 より広い範囲を、16 進数で短く書き表しています。</p>
+    <p class="s" data-who="ひよこちゃん">具体的には、どんな見た目になるんですか?</p>
+    <p class="t" data-who="ふくろう先生">たとえば 2001:0db8:beef:cafe:0000:0000:0000:1234 のように書きます。8 つの組が、コロンで区切られているのが分かりますか?</p>
+    <p class="s" data-who="ひよこちゃん">0000 が 3 つも並んでますけど、これも省略できたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。まず各組の先頭の 0 は省略できるので 2001:db8:beef:cafe:0:0:0:1234 と書けます。さらに、0 だけが連続する部分は「::」でまとめて省略できるので 2001:db8:beef:cafe::1234 とも書けます。</p>
+    <p class="s" data-who="ひよこちゃん">「::」って、何度でも使っていいんですか?</p>
+    <p class="t" data-who="ふくろう先生">決まりごととして、1 つのアドレスにつき「::」で省略できるのは 1 回までです。省略できる場所が複数あっても、まとめて省略できるのは 1 か所だけです。</p>
+    <p class="s" data-who="ひよこちゃん">第 5 章の CIDR 表記みたいに、範囲を表す書き方もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。同じように「/」に続く数字で範囲を表します。たとえば 2001:db8::/32 のように書きます。</p>
+    <p class="s" data-who="ひよこちゃん">新しい形式に対応してるサービスって、実際どれくらいあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">まだ半分にも届いていません。ある調査では、2025 年のインターネット全体の通信のうち新しい形式を使った通信の割合は平均で 23.9% ほどで、前の年より 25.2% 増えたそうです。少しずつですが、確実に増えてきています。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、しばらくは両方の形式が使われ続けるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、この新しい形式ならではの仕組みも見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>今の IP アドレスの形式(IPv4)では約 43 億通りしか用意できず、機械の増加に対して足りなくなってきている。</li>
+      <li>新しい形式の IP アドレス(IPv6)は、0 と 1 が 128 個並ぶ数字で、2 の 128 乗という桁違いに多い数を用意できる。</li>
+      <li>IPv6 は 16 個ずつ 8 つの組に分けて 16 進数にし、コロンで区切って書く。各組の先頭の 0 や、0 だけが連続する部分は省略できる(「::」は 1 回まで)。</li>
+      <li>IPv4 の CIDR 表記と同じように、「/」に続く数字でアドレスの範囲を表すこともでき、新しい形式の普及はまだ一部にとどまっている。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>今の IP アドレスの形式(IPv4)は 0 と 1 が 32 個並ぶ数字で、用意できる数は約 43 億通りに限られる。世界中でネットにつながる機械が増え、この数では足りなくなってきたため、0 と 1 が 128 個並ぶ新しい形式の IP アドレス、IPv6 が使われ始めた(#67)。IPv6 は 2 の 128 乗という、桁違いに多い数を用意できる。128 個のビットは、そのままでは読み書きしにくいため、16 個ずつ 8 つの組に分け、それぞれを 16 進数にしてコロン(:)で区切って書く(例: 2001:0db8:beef:cafe:0000:0000:0000:1234、#4)。各組の先頭の 0 は省略でき、0 だけが連続する部分はさらに「::」でまとめて 1 回だけ省略できる(例: 2001:db8:beef:cafe::1234、#4)。IPv4 の CIDR 表記と同じように、「/」に続く数字でアドレスの範囲を表すこともできる(例: 2001:db8::/32)。新しい形式の普及はまだ一部にとどまっており、2025 年時点でインターネット全体の通信のうち新しい形式が占める割合は平均 23.9% ほどである(#69)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>host example.com</code></pre>
+    <p>見方: 「has address」の行に加えて「has IPv6 address」という行が表示されることがある。これは、そのドメインが新しい形式の IP アドレスでもアクセスできることを示している。</p>
+    <p class="try-note">「has IPv6 address」が出ないこともある。まだ対応していないか、環境によって見えないだけなので、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="67">[#67] Juniper Networks「IPv6 Technology Overview」 — <a href="https://www.juniper.net/documentation/us/en/software/junos/routing-overview/topics/concept/ipv6-technology-overview.html" rel="noopener">原典</a>(「Expanded addressing capabilities」の節、IPv4 は 32 ビットで 43 億台、IPv6 は 128 ビットで 2 の 128 乗という記述)</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（06_IP.txt p.18・p.41「IPv6 address notation」: 128 ビットを 16 進数 8 組・コロン区切りで表す具体例、先頭 0 の省略、「::」による圧縮は 1 回までという規則）</li>
+    <li class="cite" data-src="69">[#69] IIJ「IIR Vol.68「インターネットの動向」」 — <a href="https://www.iij.ad.jp/dev/report/iir/068/01.html" rel="noopener">原典</a>（IPv6 トラフィックの比率が 2025 年に平均 23.9%、前年比 25.2% 増という記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m11-1">
+    <div class="q" data-q="1">
+      <p class="q-text">32 個のビットの形式(IPv4)ではなく、128 個のビットの新しい形式が必要になったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">32 個のビットで表せる数(約 43 億通り)には限りがあり、ネットにつながる機械の増加に対して足りなくなってきているから</button></li>
+        <li><button type="button" data-correct="false">32 個のビットのままだと、通信の速度が遅くなってしまうから</button></li>
+        <li><button type="button" data-correct="false">32 個のビットの形式は、暗号化に対応していないから</button></li>
+        <li><button type="button" data-correct="false">32 個のビットの形式は、ドット区切りでしか書けなくなったから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、32 個のビットで表せる数(約 43 億通り)には限りがあり、ネットにつながる機械の増加に対して足りなくなってきているから、です。速度や暗号化、表記の書き方は、新しい形式が必要になった理由ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">新しい形式の IP アドレスの表記として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">128 個のビットを 16 進数にして 16 個ずつ 8 つの組に分け、コロンで区切って書く</button></li>
+        <li><button type="button" data-correct="false">32 個のビットを 10 進数にして 8 個ずつ 4 つの組に分け、コロンで区切って書く</button></li>
+        <li><button type="button" data-correct="false">128 個のビットをそのまま 2 進数で、スペース区切りで書く</button></li>
+        <li><button type="button" data-correct="false">128 個のビットを 8 進数にして 8 つの組に分け、ピリオドで区切って書く</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、128 個のビットを 16 進数にして 16 個ずつ 8 つの組に分け、コロンで区切って書く、です。10 進数・2 進数・8 進数や、ピリオド区切りは、新しい形式の書き方ではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">0 だけが連続する部分の省略について正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">「::」でまとめて省略できるのは、1 つのアドレスにつき 1 回までである</button></li>
+        <li><button type="button" data-correct="false">「::」は、1 つのアドレスの中で何度でも使ってよい</button></li>
+        <li><button type="button" data-correct="false">各組の先頭の 0 は省略できるが、連続する組全体をまとめて省略することはできない</button></li>
+        <li><button type="button" data-correct="false">0 が連続していない部分も「::」で自由に省略できる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、「::」でまとめて省略できるのは、1 つのアドレスにつき 1 回までである、です。何度でも使えたり、0 が連続していない部分にも使えたりするわけではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m11.html">← 第 11 章の入口</a>
+    <a class="up" href="m11.html">第 11 章の入口</a>
+    <a class="next" href="m11-2.html">11-2 ARP の役目を、新しい仕組みが引き継ぐ →</a>
+  </nav>
+</main>
+</body>
+</html>

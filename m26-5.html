@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>社内にいることを、理由にしない — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m26-5" data-chapter="m26" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 26-5</p>
+  <p class="chapter-label">第 26 章 ネットワークセキュリティの基礎　26-5</p>
+  <h1>社内にいることを、理由にしない</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>境目の内側にいることを理由に、通信を既定で信用してよいのだろうか。<strong>この問い直しから出てきた考え方がある</strong>。このページでは、その考え方と、これまでの章で見てきた仕組みとの関係を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">26-1 で、境目の内側にいったん入られると、そのあとは自由に動けてしまうって話がありましたけど、あれってどうにかならないんですか?</p>
+    <p class="t" data-who="ふくろう先生">その問い直しから出てきた考え方が、ゼロトラストです。社内のネットワークにいるからといって信用せず、誰からの通信も毎回確かめてから許可します。</p>
+    <p class="s" data-who="ひよこちゃん">今までの考え方と、何が違うんですか?</p>
+    <p class="t" data-who="ふくろう先生">今までは、境目の外は厳しく確認し、境目の内側は既定で信用する、という考え方でした。ゼロトラストは、この「内側だから信用する」をやめます。</p>
+    <p class="s" data-who="ひよこちゃん">Cloudflare の解説にも、そういう説明があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。境目の内側、つまりネットワークや VPN の内側に入ると、既定で信頼されて自由に動き回れることが多いとされています。ゼロトラストは、この既定の信頼をやめ、通信のたびに確認を求めます。</p>
+    <p class="s" data-who="ひよこちゃん">毎回確かめるって、具体的にはどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">例えば、通信がどのネットワークから来たかだけでは、信用する理由にしない、というのが考え方の 1 つです。</p>
+    <p class="s" data-who="ひよこちゃん">社内から来た通信でも、そのままでは信用しないってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。<strong>ネットワークの場所そのものは、信頼を意味しない</strong>、という考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、第 25 章で見た VPN はどうなんですか? VPN で社内のネットワークにつながったら、信用されるんじゃないんですか?</p>
+    <p class="t" data-who="ふくろう先生">良いところに気づきましたね。Cloudflare の解説では、VPN にログインすると、接続したネットワーク全体へのアクセスが与えられるとされています。</p>
+    <p class="s" data-who="ひよこちゃん">それって、必要な範囲だけに絞って渡す、という考え方には向いてなさそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ゼロトラストは、必要な範囲だけにアクセスを絞る、という考え方を大事にします。</p>
+    <p class="s" data-who="ひよこちゃん">「必要な範囲だけに絞る」って、もう少し具体的にはどういうことですか?</p>
+    <p class="t" data-who="ふくろう先生">NIST の文書には、個々の資源へのアクセスは、通信のたびに、必要最小限の範囲で許可する、という原則が示されています。1 回まとめて広く許可するのではなく、そのつど範囲を絞るということです。</p>
+    <p class="s" data-who="ひよこちゃん">境目の内側に入れること自体が、そのまま信用につながっちゃうんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ゼロトラストは、境目の内側に入れたことと、個々の通信を許可することを、切り離して考えます。</p>
+    <p class="s" data-who="ひよこちゃん">第 24 章 24-3 で見たセキュリティグループも、必要な通信だけを許可する、という意味では近い考え方ですか?</p>
+    <p class="t" data-who="ふくろう先生">近い部分はあります。ただし、セキュリティグループは境目やサーバの手前に置く仕組みであるのに対して、ゼロトラストは境目の内外を問わず、個々の通信のたびに確認する点が異なります。</p>
+    <p class="s" data-who="ひよこちゃん">この章で見てきた、ファイアウォールの限界、なりすまし、DDoS、暗号化の範囲、そしてこのゼロトラストの考え方が、全部つながってきた気がします。</p>
+    <p class="t" data-who="ふくろう先生">良い振り返りです。次の章からは、こうした仕組みを実際に観察する道具を見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>ゼロトラストは、社内のネットワークにいるからといって信用せず、誰からの通信も毎回確かめてから許可するという考え方である。</li>
+      <li>従来の考え方は、境目の外は厳しく確認し、内側は既定で信用するというものだったが、ゼロトラストはこの既定の信頼をやめる。</li>
+      <li>通信がどのネットワークから来たかという場所だけでは、信頼する理由にしない。</li>
+      <li>VPN はログインすると接続したネットワーク全体へのアクセスを与えるとされ、必要な範囲だけに絞る考え方には向かない。</li>
+      <li>個々の資源へのアクセスは、通信のたびに、必要最小限の範囲で許可するという原則がある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>ゼロトラストは、社内のネットワークにいるからといって信用せず、誰からの通信も毎回確かめてから許可するという考え方である。26-1 で見た境界防御の考え方は、境目の外は厳しく確認するが、境目の内側にいったん入ると既定で信頼するという前提に立っていた。ゼロトラストは、この「場所による既定の信頼」をやめ、通信がどのネットワークから来たかだけでは信頼する理由にしない。第 25 章で見た VPN は、ログインすると接続したネットワーク全体へのアクセスを与えるとされており、必要な範囲だけにアクセスを絞るという考え方には向いていない。ゼロトラストでは、個々の資源へのアクセスを、通信のたびに、必要最小限の範囲で許可するという原則が示されている。一度まとめて広い範囲を許可するのではなく、そのつど必要な分だけに絞るという考え方である。ゼロトラストは、境目の内側に入れたことと、個々の通信を許可することを切り離して考える。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="100">[#100] NIST(米国国立標準技術研究所)「Zero Trust Architecture (NIST SP 800-207)」 — <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-207.pdf" rel="noopener">原典</a>(p.4 Abstract。ゼロトラストが、静的な境界に頼る防御から利用者・資産・資源そのものへ焦点を移す考え方だという定義。p.15。ネットワークの場所だけでは信頼を意味しないという原則、個々の資源へのアクセスはセッション単位で必要最小限の権限で許可されるという原則)</li>
+    <li class="cite" data-src="104">[#104] Cloudflare Learning Center「What is Zero Trust security?」 — <a href="https://www.cloudflare.com/learning/security/glossary/what-is-zero-trust/" rel="noopener">原典</a>(9・11 行目。ネットワークの内外を問わず、すべての人・機器に厳格な確認を求める考え方だという定義。13 行目。境界の外は入りにくいが内側は既定で信頼されるという従来の考え方の説明。29 行目。VPN はログインすると接続されたネットワーク全体へのアクセスを与えるため、必要な範囲だけに絞るという考え方に向かないという記述。102 行目。ネットワークや VPN の内側に入ると既定で信頼され、自由に動き回れることが多いという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m26-5">
+    <div class="q" data-q="1">
+      <p class="q-text">ゼロトラストの考え方では、社内ネットワークに接続できたことは、通信を許可する理由になるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">なる。社内ネットワークは常に安全だから</button></li>
+        <li><button type="button" data-correct="false">なる。VPN を使って接続していれば十分だから</button></li>
+        <li><button type="button" data-correct="true">ならない。ネットワークの場所だけでは信頼しないという考え方だから</button></li>
+        <li><button type="button" data-correct="false">ならない。ゼロトラストでは社内ネットワークを使わないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「ならない。ネットワークの場所だけでは信頼しないという考え方だから」です。社内ネットワークが常に安全だとは述べておらず、VPN の利用も理由にはなりません。ゼロトラストでも社内ネットワーク自体は使われます。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">ゼロトラストと、26-1 で見た従来の境界防御との違いは何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">暗号化を使うかどうか</button></li>
+        <li><button type="button" data-correct="false">ファイアウォールを使うかどうか</button></li>
+        <li><button type="button" data-correct="false">インターネットに接続するかどうか</button></li>
+        <li><button type="button" data-correct="true">境目の内側にいることを理由に、既定で信頼するかどうか</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「境目の内側にいることを理由に、既定で信頼するかどうか」です。暗号化やファイアウォールの利用、インターネットへの接続の有無は、本文で説明した違いではありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Cloudflare の解説によれば、VPN が「必要な範囲だけに絞る」という考え方に向かないのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">VPN は暗号化を行わないから</button></li>
+        <li><button type="button" data-correct="false">VPN は社外からしか使えないから</button></li>
+        <li><button type="button" data-correct="false">VPN は通信の記録を残せないから</button></li>
+        <li><button type="button" data-correct="true">ログインすると、接続したネットワーク全体へのアクセスが与えられてしまうから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は「ログインすると、接続したネットワーク全体へのアクセスが与えられてしまうから」です。VPN は暗号化を行う仕組みであり、社内からも使え、通信の記録についても本文では述べていません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m26-4.html">← 26-4 暗号化は、どこからどこまでを守っているか</a>
+    <a class="up" href="m26.html">第 26 章の入口</a>
+    <a class="next" href="m27.html">第 27 章 観測ツール入門 — ping・traceroute・dig・curl →</a>
+  </nav>
+</main>
+</body>
+</html>

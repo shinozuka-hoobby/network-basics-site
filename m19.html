@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTPS を運用する — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m19" data-chapter="m19" data-rev="1">
+<noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 19 章</p>
+  <p class="chapter-label">第 19 章</p>
+  <h1>HTTPS を運用する</h1>
+
+  <div class="lead">
+    <p class="lead-label">この章で分かること</p>
+    <ul>
+      <li>身分証(TLS 証明書)を認証局からどう受け取り、<strong>更新し続けるか</strong>を説明できる。</li>
+      <li>有効期間の途中でも身分証を無効にする必要がある場面と、その見分け方を説明できる。</li>
+      <li>http でアクセスされても、ブラウザに次からは必ず https でつながせる仕組みがあることを説明できる。</li>
+      <li>ページ全体を https にしても、中の部品まで気をつけないと守られないことがあることを説明できる。</li>
+      <li>暗号を解く役目をどの機械が受け持つかによって、<strong>その先の通信や身分証の置き場所が変わる</strong>ことを説明できる。</li>
+    </ul>
+  </div>
+
+  <h2 id="fig">中心図</h2>
+  <div class="fig-sec">
+    <svg class="fig" viewBox="0 0 900 300" role="img" aria-label="身分証が申請から発行、使用、更新または無効化までをたどる一生の図。左から右へ、認証局に申請する、発行してもらう、使う、期限が来たら更新する、または途中でも無効にする、の 4 つの箱が並ぶ。最後の箱から 2 つ目の箱(発行してもらう)へ戻る矢印があり、更新の場合も無効にした場合も、また新しい身分証が発行されることを示す。">
+      <defs>
+        <marker id="m19-arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-ink)"/>
+        </marker>
+        <marker id="m19-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--fig-accent)"/>
+        </marker>
+      </defs>
+
+      <text x="20" y="24" font-size="12" fill="var(--fig-muted)">サイトの持ち主の視点</text>
+
+      <path d="M 700 108 C 700 30 300 30 300 108" fill="none" stroke="var(--fig-accent)" stroke-width="1.5" marker-end="url(#m19-arrow-accent)"/>
+      <text x="500" y="26" text-anchor="middle" font-size="12" fill="var(--fig-accent)">また新しい身分証が発行される</text>
+
+      <g font-size="13" fill="var(--fig-ink)">
+        <rect x="20" y="110" width="160" height="65" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="100" y="138" text-anchor="middle">認証局に</text>
+        <text x="100" y="158" text-anchor="middle">申請する</text>
+
+        <rect x="220" y="110" width="160" height="65" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="300" y="138" text-anchor="middle">発行して</text>
+        <text x="300" y="158" text-anchor="middle">もらう</text>
+
+        <rect x="420" y="110" width="120" height="65" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+        <text x="480" y="148" text-anchor="middle">使う</text>
+
+        <rect x="580" y="110" width="300" height="65" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+        <text x="730" y="138" text-anchor="middle">期限が来たら更新する、</text>
+        <text x="730" y="158" text-anchor="middle">または途中でも無効にする</text>
+      </g>
+
+      <g stroke="var(--fig-ink)" stroke-width="1.5" marker-end="url(#m19-arrow-ink)">
+        <line x1="180" y1="142" x2="220" y2="142"/>
+        <line x1="380" y1="142" x2="420" y2="142"/>
+        <line x1="540" y1="142" x2="580" y2="142"/>
+      </g>
+
+      <text x="450" y="220" text-anchor="middle" font-size="12" fill="var(--fig-muted)">身分証には有効期間があり、期限が来る前に更新する</text>
+      <text x="450" y="245" text-anchor="middle" font-size="12" fill="var(--fig-muted)">秘密鍵が漏れるなど、途中で無効にする必要が生じることもある</text>
+    </svg>
+    <p class="fig-cap">身分証は、認証局への申請と発行から始まり、使われたあと、期限が来れば更新され、途中で無効にされることもある。どちらの場合も、また新しい身分証が発行され、このやり取りが繰り返される。</p>
+  </div>
+
+  <h2 id="pages">この章のページ</h2>
+  <ol class="page-list" data-chapter-pages="m19"></ol>
+
+  <nav class="pager">
+    <a class="prev" href="m18.html">← 第 18 章 TLS と PKI</a>
+    <a class="next" href="m20.html">第 20 章 HTTP/1.1 →</a>
+  </nav>
+</main>
+</body>
+</html>

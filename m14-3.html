@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>はじめは少なく、様子を見ながら増やしていく — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m14-3" data-chapter="m14" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 14-3</p>
+  <p class="chapter-label">第 14 章 TCP のフロー制御と輻輳制御　14-3</p>
+  <h1>はじめは少なく、様子を見ながら増やしていく</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>途中の経路がどれくらい混んでいるかは、送り手からは直接見えない。<strong>送り手は自分なりの目安を持ち、通信の最初は少ない量から始めて、様子を見ながら急に増やしていく</strong>。このページでは、この目安の決め方と、少ない量から始める理由を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページで、経路が混んでいるかどうかも理由になるって話でしたけど、それって送り手からどうやって分かるんですか?</p>
+    <p class="t" data-who="ふくろう先生">実は、直接は見えません。相手の受信ウィンドウのように、数字を教えてもらえるわけでもないんです。</p>
+    <p class="s" data-who="ひよこちゃん">見えないのに、どうやって量を加減するんですか?</p>
+    <p class="t" data-who="ふくろう先生">送り手は自分なりの目安を持ちます。「これくらいなら経路は混まないはずだ」という、送り手自身が様子を見ながら決めている量で、輻輳ウィンドウと呼びます。経路の混み具合を見ながら送る量を加減する、この仕組み全体を輻輳制御と呼び、14-1 で名前だけ出したものです。</p>
+    <p class="s" data-who="ひよこちゃん">受信ウィンドウと似てますね。この目安が大きいほど、たくさん送れるってことですか?</p>
+    <p class="t" data-who="ふくろう先生">考え方は近いですが、決め方が違います。受信ウィンドウは受け手が伝えてくる数字でしたが、輻輳ウィンドウは送り手が自分の判断で決める数字です。</p>
+    <p class="s" data-who="ひよこちゃん">実際に送れる量は、輻輳ウィンドウと受信ウィンドウ、どちらで決まるんですか?</p>
+    <p class="t" data-who="ふくろう先生">その時々で小さい方が効きます。輻輳ウィンドウが大きくても受信ウィンドウが小さければそこで頭打ちになりますし、逆もあります。</p>
+    <p class="s" data-who="ひよこちゃん">その目安って、どうやって決まるんですか? 最初から大きい値なんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、通信の最初はとても小さい値から始めます。そして ACK が順調に返ってくるたびに、倍々に近い勢いで急速に増やしていきます。</p>
+    <p class="s" data-who="ひよこちゃん">急に増やして大丈夫なんですか?</p>
+    <p class="t" data-who="ふくろう先生">経路がどれくらい混んでいるか分からない最初のうちに、いきなり大量に送って混雑させないためです。少しずつ様子を見ながら量を確かめていきます。</p>
+    <p class="s" data-who="ひよこちゃん">この、少ない量から急速に増やしていくやり方にも、名前があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。スロースタートと呼びます。名前のとおり、小さく始めるという意味です。</p>
+    <p class="s" data-who="ひよこちゃん">個人開発で、似たような話を聞いたことがあります。接続を毎回新しく作り直す実装にしていたら、いつまでも速度が上がらなかったらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">それは、この目安が関係している可能性が高いです。輻輳ウィンドウは接続ごとに保たれていて、通信をしばらく休ませたり、接続を作り直したりすると、また小さな値からやり直しになります。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、接続を作り直すたびに、また倍々に増やし直しからのスタートってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。だから、接続を使い回さず毎回作り直す実装だと、いつまでもこの立ち上がりの遅い状態を繰り返すことになります。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、だから遅かったんですね。てっきりサーバの性能の問題だと思ってました。</p>
+    <p class="t" data-who="ふくろう先生">サーバの性能を疑う前に、この目安のリセットを原因の一つとして疑う価値があります。だから実務では、接続をなるべく使い回す設計にすることが大切になります。</p>
+    <p class="s" data-who="ひよこちゃん">この増やし方って、ずっと倍々のままなんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、ある程度まで増えると、増やし方が変わります。それは次のページで見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">分かりました。今日のところは、経路の混み具合を送り手が自分で見積もっていて、最初は小さく、急速に増やしていくってことを覚えておきます。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。今のところは、この最初の立ち上がり方を押さえておいてください。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>経路の混み具合を見ながら送る量を加減する仕組み全体を輻輳制御と呼ぶ。途中の経路がどれくらい混んでいるかは、送り手からは直接見えないため、送り手は自分なりの目安(輻輳ウィンドウ)を持って量を決める。</li>
+      <li>輻輳ウィンドウは、受け手が伝える受信ウィンドウと違い、送り手自身が様子を見ながら決める数字である。実際に送れる量は、その時々で小さい方の値で決まる。</li>
+      <li>通信の最初はごく小さい値から始め、ACK が順調に返るたびに倍々に近い勢いで急速に増やす。このやり方をスロースタートと呼ぶ。</li>
+      <li>輻輳ウィンドウは接続ごとに保たれており、通信を休ませたり接続を作り直したりすると、また小さな値からやり直しになる。</li>
+      <li>接続を使い回さず毎回作り直す実装は、このやり直しを繰り返すため、いつまでも速度が上がらないことがある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>経路の混み具合を見ながら送る量を加減する仕組み全体を輻輳制御と呼ぶ。受け取る側の限界とは別に、途中の経路がどれくらい混んでいるかは送り手からは直接見えない。そこで送り手は輻輳ウィンドウという自分なりの目安を持ち、様子を見ながら一度に送ってよい量を決める。通信の最初は目安が小さく、ACK が順調に返ってくるたびに倍々に近い勢いで目安を増やしていく。このやり方をスロースタートと呼ぶ。少ない量から始めるのは、経路がどれくらい混んでいるか分からないうちに、いきなり大量に送って混雑させないためである。この目安は接続ごとに保たれる値で、接続を作り直したときや長く休ませたときには忘れられ、また小さな値からやり直される。休ませずに使い続けている接続と、作り直した直後の接続とでは、この目安の大きさが違うことがある。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（p.23〜34 スライディングウィンドウ、輻輳ウィンドウとスロースタート）</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab（インターネット工学研究室）「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>（p.31〜35 スロースタートは指数増加という整理）</li>
+    <li class="cite" data-src="35">[#35] Google Cloud「TCP optimization for network performance」 — <a href="https://docs.cloud.google.com/compute/docs/networking/tcp-optimization-for-network-performance-in-gcp-and-hybrid" rel="noopener">原典</a>（「Disable slow start after idle」）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m14-3">
+    <div class="q" data-q="1">
+      <p class="q-text">接続を毎回新しく作り直す実装で、いつまでも速度が上がらなかったのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">サーバの処理能力が低かったから</button></li>
+        <li><button type="button" data-correct="true">輻輳ウィンドウという目安が接続ごとにリセットされ、そのたびに小さな値からのスロースタートをやり直すことになるから</button></li>
+        <li><button type="button" data-correct="false">受信ウィンドウの値が固定されていて変わらなかったから</button></li>
+        <li><button type="button" data-correct="false">ACK が途中で届かなくなっていたから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、輻輳ウィンドウという目安が接続ごとにリセットされ、そのたびに小さな値からのスロースタートをやり直すことになるから、です。輻輳ウィンドウは接続ごとに保たれる値で、接続を作り直すたびに忘れられ、また小さな値から増やし直しになります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">輻輳ウィンドウと受信ウィンドウの違いとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">輻輳ウィンドウは受け手が伝える数字で、受信ウィンドウは送り手が自分で決める数字である</button></li>
+        <li><button type="button" data-correct="true">輻輳ウィンドウは送り手が自分の判断で決める目安で、受信ウィンドウは受け手が送り手に伝える数字である</button></li>
+        <li><button type="button" data-correct="false">どちらも受け手が伝える数字で、決め方は同じである</button></li>
+        <li><button type="button" data-correct="false">輻輳ウィンドウは、経路の空き具合を送り手が直接測定した値である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、輻輳ウィンドウは送り手が自分の判断で決める目安で、受信ウィンドウは受け手が送り手に伝える数字である、です。経路の混み具合は送り手から直接見えないため、輻輳ウィンドウは測定値ではなく、様子を見ながら送り手自身が決める目安です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">通信の最初に少ない量から送り始める(スロースタート)のはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">経路がどれくらい混んでいるか分からないうちに、いきなり大量に送って混雑させないため</button></li>
+        <li><button type="button" data-correct="false">受け手がまだデータを受け取る準備をできていないため</button></li>
+        <li><button type="button" data-correct="false">ACK の到着を早めるため</button></li>
+        <li><button type="button" data-correct="false">サーバ側の起動処理が終わるのを待つため</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、経路がどれくらい混んでいるか分からないうちに、いきなり大量に送って混雑させないため、です。受け手側の準備の話はフロー制御であり、スロースタートは経路の混雑を避けるための送り手側の予防策です。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m14-2.html">← 14-2 相手が受け取れる量に、送る量を合わせる</a>
+    <a class="up" href="m14.html">第 14 章の入口</a>
+    <a class="next" href="m14-4.html">14-4 増やし方をゆるめ、届かなかったときは大きく減らす →</a>
+  </nav>
+</main>
+</body>
+</html>

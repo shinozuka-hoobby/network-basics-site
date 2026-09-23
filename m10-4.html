@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クラウドのネットワークにも、同じ役目がある — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m10-4" data-chapter="m10" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 10-4</p>
+  <p class="chapter-label">第 10 章 NAT とプライベートネットワーク　10-4</p>
+  <h1>クラウドのネットワークにも、同じ役目がある</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>クラウドの中に作る仕切られたネットワークでも、内側から外のインターネットへ出るときにアドレスを付け替える専用の部品が用意されている。<strong>家庭用ルータの NAT と同じ役目を、クラウドでは専用の部品が担っている</strong>。このページでは、その位置づけと、この章全体を振り返る。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">そういえば、AWS を使うとき、手順書に沿って専用に仕切られたネットワークの範囲を作る作業があったんですけど、あれと NAT って関係あるんですか?</p>
+    <p class="t" data-who="ふくろう先生">関係があります。それは<a class="term" href="glossary.html#vpc" data-term="vpc">VPC</a>と呼ばれる、クラウドの中に用意する自分専用の仕切られたネットワークの範囲のことです。仕組みは第 24 章で詳しく見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">VPC の中に置いたサーバにも、プライベートアドレスみたいな番号が割り当てられるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。細かい仕組みは第 24 章に譲りますが、外から直接見えない番号を使うことが多い点は、家庭用ルータの中のネットワークと似ています。</p>
+    <p class="s" data-who="ひよこちゃん">その中のサーバも、外のインターネットに出ていくときは、家庭用ルータの NAT と同じようなことが起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。この仕切られたネットワークの中から外へ出るときにも、番号を付け替える専用の部品が用意されています。AWS では<a class="term" href="glossary.html#nat-gateway" data-term="nat-gateway">NAT ゲートウェイ</a>と呼ばれています。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイの中にも、変換表のようなものがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。中の番号と外の番号の対応を記録して、戻ってきた通信を正しく届けるという考え方は、家庭用ルータの NAPT と同じです。</p>
+    <p class="s" data-who="ひよこちゃん">NAT ゲートウェイを使うと、VPC の中のサーバ自身はグローバルアドレスを持たなくていいってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。サーバ自身はプライベートアドレスのままで、外へ出るときだけ NAT ゲートウェイがアドレスを付け替えます。家庭用ルータの中の機器と同じ考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、外から NAT ゲートウェイ経由で VPC の中に直接アクセスすることはできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのままではできません。前のページで見たとおり、変換表に対応が無い外からの通信は届かないのは、クラウドでも同じ考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、NAT ゲートウェイって、家庭用ルータの NAPT と同じ役目をしてるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。中から外へ出るときに番号を付け替えるという役目は同じで、クラウドではその役目だけを専用に担う部品が用意されています。</p>
+    <p class="s" data-who="ひよこちゃん">他のクラウドでも同じような部品があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ただ、名前や細かい違いは第 24 章でまとめて見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん">この章、ずっと「番号が足りないから付け替える」っていう話でしたけど、そもそも本当に足りなくなってるんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい。<strong>世界的にグローバルアドレスの数が足りなくなってきた</strong>ことも、この仕組みが広く使われるようになった理由の一つです。</p>
+    <p class="s" data-who="ひよこちゃん">根本的な解決策は無いんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。<a class="term" href="glossary.html#ipv6" data-term="ipv6">IPv6</a> です。第 11 章で詳しく見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">NAT、変換表、ポートフォワード、NAT ゲートウェイ……この章で番号の付け替えにまつわる話が全部つながりました。</p>
+    <p class="t" data-who="ふくろう先生">その調子です。次の章では、そもそも番号を使い切る問題そのものに、正面から向き合っていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>VPC は、クラウドの中に用意する自分専用の仕切られたネットワークの範囲である。</li>
+      <li>クラウドの仮想ネットワークの中から外のインターネットへ出るときにも、番号を付け替える専用の部品(AWS では NAT ゲートウェイ)が用意されている。</li>
+      <li>家庭用ルータの NAT・NAPT と、クラウドの NAT ゲートウェイは、内側から外へ出るときに番号を付け替えるという役目が共通している。</li>
+      <li>世界的にグローバルアドレスが足りなくなってきたことも NAT が広く使われる理由の一つで、根本的な解決策は IPv6 である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>クラウドの中に作る仕切られたネットワーク(VPC)でも、内側の機器はそのままでは外から直接の宛先にできない番号を使っていることが多く、家庭用ルータの NAT と同じ役目を専用の部品が担っている。AWS では、この部品を NAT ゲートウェイと呼ぶ。VPC の中から外のインターネットへ出るときに送信元アドレスを付け替え、外からの意図しない通信はそのままでは通さないという考え方は、家庭用ルータの NAT・NAPT と共通する。ほかのクラウド事業者にも同じ役目の部品があるが、名前や細かい違いは第 24 章でまとめて扱う。NAT がこれほど広く使われるようになった背景には、世界的にグローバルアドレスの数が足りなくなってきたことがある。実際に、あるネットワークの実験では、参加者全員分のグローバル IPv4 アドレスを用意できず、変換を重ねて対応した例も報告されている。この不足への根本的な解決策が IPv6 であり、次の章で扱う。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="22">[#22] AWS「How Amazon VPC works」 — <a href="https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html" rel="noopener">原典</a>（"Access the internet" の節、NAT device が Elastic IP アドレスを使って internet gateway 経由でインターネットに接続するという記述）</li>
+    <li class="cite" data-src="16">[#16] WIDE Project「IPv6 Only Network 設計・実験報告」 — <a href="https://www.wide.ad.jp/About/report/pdf2011/part02.pdf" rel="noopener">原典</a>（p.4、"camp-net で参加者全員を収容できるほど十分なグローバル IPv4 アドレスを保持していない" ため NAT44 のカスケードが必要になったという記述）</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m10-4">
+    <div class="q" data-q="1">
+      <p class="q-text">家庭用ルータの NAT と、クラウドの NAT ゲートウェイに共通する役目は何か。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">どちらも、内側のネットワークから外のインターネットへ出るときに、アドレスを付け替える役目を担う</button></li>
+        <li><button type="button" data-correct="false">どちらも、外部からの侵入を検知して通知する役目を担う</button></li>
+        <li><button type="button" data-correct="false">どちらも、ドメイン名を IP アドレスに変換する役目を担う</button></li>
+        <li><button type="button" data-correct="false">どちらも、通信の速度を測定して記録する役目を担う</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、どちらも、内側のネットワークから外のインターネットへ出るときに、アドレスを付け替える役目を担う、です。侵入の検知、ドメイン名の変換、速度の測定はいずれも NAT の役目ではありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">VPC の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">クラウドの中に用意する、自分専用の仕切られたネットワークの範囲</button></li>
+        <li><button type="button" data-correct="false">クラウド事業者が提供する、無料のグローバルアドレスの一覧</button></li>
+        <li><button type="button" data-correct="false">クラウド上の仮想サーバそのものを指す言葉</button></li>
+        <li><button type="button" data-correct="false">クラウドの利用料金を管理する画面</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、クラウドの中に用意する、自分専用の仕切られたネットワークの範囲、です。グローバルアドレスの一覧でも、仮想サーバそのものでも、料金管理の画面でもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">NAT ゲートウェイの説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">クラウドの仕切られたネットワークの中から外のインターネットへ出るときに、番号を付け替える役目の機械</button></li>
+        <li><button type="button" data-correct="false">クラウドの仕切られたネットワークの外から中へ、自由に入れるようにする機械</button></li>
+        <li><button type="button" data-correct="false">クラウド上のサーバの負荷を分散する機械</button></li>
+        <li><button type="button" data-correct="false">クラウドの利用料金を計算する機械</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、クラウドの仕切られたネットワークの中から外のインターネットへ出るときに、番号を付け替える役目の機械、です。外から中へ自由に入れるようにする機械ではなく、負荷分散や料金計算の役目でもありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m10-3.html">← 10-3 外から声をかけても、届かないことがある</a>
+    <a class="up" href="m10.html">第 10 章の入口</a>
+    <a class="next" href="m11.html">第 11 章 IPv6 →</a>
+  </nav>
+</main>
+</body>
+</html>

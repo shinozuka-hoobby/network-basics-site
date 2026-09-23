@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同じヘッダを、もう一度は送らない — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m21-2" data-chapter="m21" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 21-2</p>
+  <p class="chapter-label">第 21 章 HTTP/2 と HTTP/3　21-2</p>
+  <h1>同じヘッダを、もう一度は送らない</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>リクエストとレスポンスのやり取りでは、多くのヘッダがほとんど同じ内容で繰り返される。前のページで見た仕組みとは別に、HTTP/2 は<strong>一度送ったヘッダの内容を送り手と受け手の双方が覚えておく</strong>ことで、次回以降は同じ内容を送り直さずに済ませる工夫も持っている。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">前のページの多重化のおかげで詰まりはなくなったんですね。HTTP/2 には他にも工夫があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ヘッダの送り方です。</p>
+    <p class="s" data-who="ひよこちゃん">ヘッダって、リクエストやレスポンスに添える付加情報のことですよね? あれがどう変わるんですか?</p>
+    <p class="t" data-who="ふくろう先生">多くのヘッダは、やり取りのたびにほとんど同じ内容が繰り返されます。同じ内容を毎回そのまま送るのは無駄です。</p>
+    <p class="s" data-who="ひよこちゃん">確かに、宛先のホスト名やブラウザの種類なんかは、毎回変わらなそうですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。HTTP/2 は、こうした繰り返しを避けるための仕組みを持っています。</p>
+    <p class="s" data-who="ひよこちゃん">毎回送らずに済ませる方法があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。一度送ったヘッダの内容を、送り手と受け手の双方が覚えておきます。次回以降は、覚えた内容を指す番号などで済ませます。</p>
+    <p class="s" data-who="ひよこちゃん">番号だけで、元の内容がちゃんと分かるんですか?</p>
+    <p class="t" data-who="ふくろう先生">分かります。送り手と受け手が同じ対応表を持っているので、番号から元のヘッダの内容を復元できます。これを HPACK と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、覚えているから、いちいち全部書かなくていいんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ヘッダの数が多いページほど、この工夫の効果は大きくなります。</p>
+    <p class="s" data-who="ひよこちゃん">1 つ 1 つは小さくても、積み重なると効果が大きいってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。ページを表示するには何十ものリクエストが必要になることも珍しくありません。ヘッダの数だけこの効果が積み重なるので、全体では大きな差になります。</p>
+    <p class="s" data-who="ひよこちゃん">全く新しい内容のヘッダを送るときは、どうなるんですか?</p>
+    <p class="t" data-who="ふくろう先生">その場合は、名前と値をそのまま送ります。ただし、その中でよく使われる文字の並びは、短い符号に置き換えられるので、そのまま送るより小さくなります。</p>
+    <p class="s" data-who="ひよこちゃん">初めて送るヘッダも、多少は小さくなるってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。<strong>HPACK は、繰り返しを覚えておくことと、文字を短い符号に置き換えることの両方でヘッダを小さくします。</strong></p>
+    <p class="s" data-who="ひよこちゃん">ヘッダを圧縮する仕組みって、HTTP/1.1 には無かったんですか?</p>
+    <p class="t" data-who="ふくろう先生">HTTP/1.1 にも、メッセージ全体を圧縮する仕組みはありました。ただし HPACK は、ヘッダの中の繰り返しをより効果的に取り除ける、より進んだ圧縮方法です。</p>
+    <p class="s" data-who="ひよこちゃん">これも HTTP/2 が 1 本の接続を使い続けるからこそ、できることなんですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。同じ接続の中でやり取りが続くからこそ、送り手と受け手はお互いに覚えた内容をずっと使い続けられます。</p>
+    <p class="s" data-who="ひよこちゃん">多重化とヘッダの送り方、2 つの工夫が組み合わさっているんですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、それでも残っていた詰まりを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>リクエストとレスポンスのヘッダは、やり取りのたびにほとんど同じ内容が繰り返される。</li>
+      <li>HTTP/2 は、一度送ったヘッダの内容を送り手と受け手の双方が覚えておき、次回以降は覚えた内容を指す番号などで済ませる。これを HPACK と呼ぶ。</li>
+      <li>初めて送るヘッダも、よく使われる文字の並びを短い符号に置き換えることで、そのまま送るより小さくなる。</li>
+      <li>ヘッダの数が多いページほど、HPACK の効果は大きくなる。1 ページの表示には何十ものリクエストが必要になることも珍しくなく、効果はその数だけ積み重なる。</li>
+      <li>HTTP/1.1 にもメッセージ全体を圧縮する仕組みはあったが、HPACK はヘッダの中の繰り返しをより効果的に取り除ける、より進んだ方法である。</li>
+      <li>この仕組みは、HTTP/2 が 1 本の接続を使い続けるからこそ、送り手と受け手が覚えた内容を保ち続けられる。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>HTTP のリクエストとレスポンスに添えられるヘッダは、宛先のホスト名やブラウザの種類など、やり取りのたびにほとんど同じ内容が繰り返される(#20)。HTTP/2 は HPACK と呼ばれる仕組みで、一度送ったヘッダの内容を送り手と受け手の双方が覚えておき、次回以降は覚えた内容を指す番号などで済ませることで、同じ内容を毎回送り直す無駄を減らす(#56)。全く新しい内容のヘッダを送る場合も、その中でよく使われる文字の並びを短い符号に置き換えるため、そのまま送るより小さくなる(#20)。この仕組みが働くのは、HTTP/2 が 1 本の接続を使い続け、送り手と受け手が覚えた内容を保ち続けられるからである。HTTP/1.1 にもメッセージ全体を圧縮する仕組みはあったが、HPACK はヘッダの中の繰り返しをより効果的に取り除ける、より進んだ方法である(#56)。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>curl -sv https://example.com -o /dev/null</code></pre>
+    <p>見方: 出力の中に、名前と値の組として並んでいる行(要求の中身を示す行)がある。これがリクエストのヘッダで、ここで見た仕組みが圧縮する対象である。</p>
+    <p class="try-note">出力は長いので、見るべき行だけ探せばよい。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="56">[#56] Cloudflare Learning Center「HTTP/2 vs. HTTP/1.1」 — <a href="https://www.cloudflare.com/learning/performance/http2-vs-http1.1/" rel="noopener">原典</a>(HPACK の説明)</li>
+    <li class="cite" data-src="20">[#20] JPNIC「インターネット 10 分講座:HTTP/3 〜QUIC とともに〜」 — <a href="https://www.nic.ad.jp/ja/newsletter/No88/0800.html" rel="noopener">原典</a>(ヘッダ圧縮の仕組み、ハフマン符号化と辞書登録、QPACK への置き換え)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m21-2">
+    <div class="q" data-q="1">
+      <p class="q-text">HPACK によって、毎回のヘッダをそのまま送り直さなくて済むのはなぜか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">送り手と受け手の双方が、一度送ったヘッダの内容を覚えているから</button></li>
+        <li><button type="button" data-correct="false">ヘッダの内容を暗号化して送るから</button></li>
+        <li><button type="button" data-correct="false">受け手がヘッダの内容を推測して補うから</button></li>
+        <li><button type="button" data-correct="false">ヘッダを毎回別のストリームに分けて送るから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、送り手と受け手の双方が、一度送ったヘッダの内容を覚えているから、です。暗号化や推測、ストリームの使い分けとは関係ありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">HPACK の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">一度送ったヘッダを双方が覚えておき、次回以降は番号などで済ませる、HTTP/2 の圧縮の仕組み</button></li>
+        <li><button type="button" data-correct="false">1 本の接続の中に複数の流れを持たせる仕組み</button></li>
+        <li><button type="button" data-correct="false">応答の控えを保存して再利用する仕組み</button></li>
+        <li><button type="button" data-correct="false">接続を新しく作り直さずに使い回す仕組み</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、一度送ったヘッダを双方が覚えておき、次回以降は番号などで済ませる、HTTP/2 の圧縮の仕組み、です。他の選択肢は、いずれも前の章やページで見た別の仕組みの説明です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">初めて送る、全く新しい内容のヘッダについて正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="true">よく使われる文字の並びが短い符号に置き換えられるため、そのまま送るより小さくなる</button></li>
+        <li><button type="button" data-correct="false">覚える相手がいないため、送ること自体ができない</button></li>
+        <li><button type="button" data-correct="false">次回から使えるように、2 回続けて送る必要がある</button></li>
+        <li><button type="button" data-correct="false">HPACK の対象外なので、圧縮されずにそのまま送られる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、よく使われる文字の並びが短い符号に置き換えられるため、そのまま送るより小さくなる、です。初めてのヘッダも送れますし、2 回送る必要も、圧縮されないこともありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m21-1.html">← 21-1 1 本の接続で、リクエストをいくつも同時に運ぶ</a>
+    <a class="up" href="m21.html">第 21 章の入口</a>
+    <a class="next" href="m21-3.html">21-3 接続の土台を変えて、残った詰まりを無くす →</a>
+  </nav>
+</main>
+</body>
+</html>

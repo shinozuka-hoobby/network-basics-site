@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>名前解決の答えは、しばらく覚えられている — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m01-2" data-chapter="m01" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 1-2</p>
+  <p class="chapter-label">第 1 章 パケットの旅　1-2</p>
+  <h1>名前解決の答えは、しばらく覚えられている</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>名前解決の答え(ホスト名に対応する IP アドレス)には、この秒数の間は使ってよいという有効期限が付いており、その間は<strong>同じ答えが繰り返し使われる</strong>。このページでは、対応する IP アドレスを書き換えても、すぐには新しい行き先に切り替わらないことがある理由を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">そういえば先輩から聞いた話なんですけど、サーバを新しいところに引っ越したのに、しばらく古いサーバに繋がり続けたことがあるらしいんです。</p>
+    <p class="t" data-who="ふくろう先生">名前解決自体は成功していたはずですよ。ホスト名と IP アドレスの対応を書いた<a class="term" href="glossary.html#dns-record" data-term="dns-record">DNS レコード</a>は、新しい IP アドレスに変えていたんですよね?</p>
+    <p class="s" data-who="ひよこちゃん">はい、変えていたそうです。なのに、なんで古い方に繋がり続けたんですか?</p>
+    <p class="t" data-who="ふくろう先生">名前解決の答えには、毎回問い合わせなくていいように「この秒数の間は覚えておいてよい」という期限がついていて、これを<a class="term" href="glossary.html#ttl-dns" data-term="ttl-dns">TTL</a> と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、その期限が切れるまでは、古い答えのままってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。TTL が切れるまでは、前に覚えた答えがそのまま使われ続けます。</p>
+    <p class="s" data-who="ひよこちゃん">その「覚えておく」場所って、どこにあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">ブラウザや OS、途中の<a class="term" href="glossary.html#dns" data-term="dns">DNS</a> サーバなど、複数の場所に控えが残ります。これを<a class="term" href="glossary.html#dns-cache" data-term="dns-cache">キャッシュ</a>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">ブラウザのキャッシュって、開発者ツールとかで見れたりするんですか?</p>
+    <p class="t" data-who="ふくろう先生">ブラウザによっては専用の確認画面があります。今日は「複数の場所に控えがある」ということだけ押さえておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">複数の場所に控えがあるなら、全部が新しい答えに入れ替わるまで、時間差が出るってことですね。</p>
+    <p class="t" data-who="ふくろう先生">その理解で合っています。だから引っ越し直後は、見ている場所によって新旧どちらのサーバに繋がるか変わることがあるんです。</p>
+    <p class="s" data-who="ひよこちゃん">怖いですね…事前に対策とかできないんですか?</p>
+    <p class="t" data-who="ふくろう先生">できます。引っ越しの前に TTL を短くしておけば、切り替え後に古い答えが残り続ける時間を短くできます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、TTL の値自体を事前にいじれるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。詳しい設定や運用の話は、DNS を専門に扱う第 16 章でまとめて説明します。</p>
+    <p class="s" data-who="ひよこちゃん">ちなみに、TTL の値ってどれくらいが普通なんですか?</p>
+    <p class="t" data-who="ふくろう先生">サービスによって様々で、数十秒から 1 日程度まで幅があります。値を小さくするほど切り替えは早く終わりますが、その分問い合わせの回数が増えます。</p>
+    <p class="s" data-who="ひよこちゃん">なるほど、短くすればいいってものでもないんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。普段は程よい長さにしておいて、引っ越しのような予定が分かっているときだけ、前もって短くしておくのがよくあるやり方です。</p>
+    <p class="s" data-who="ひよこちゃん">実務では、他にどんな場面でこの仕組みを意識するんですか?</p>
+    <p class="t" data-who="ふくろう先生">クラウドの DNS サービスを使うときなど、TTL の値を自分で設定する場面があります。詳しくは後の章で扱います。</p>
+    <p class="s" data-who="ひよこちゃん">今日のところは、「名前解決の答えにも期限がある」ってことだけ覚えておけばいいですか?</p>
+    <p class="t" data-who="ふくろう先生">それで十分です。次のページでは、この名前解決も含めて、旅の途中にどんな機器がいるかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>名前解決の答えには、この秒数の間は使ってよいという TTL と呼ばれる期限が付いている。</li>
+      <li>TTL が切れるまでは、ブラウザや OS、途中の DNS サーバなどに残ったキャッシュの答えがそのまま使われ続ける。</li>
+      <li>答えの控えは複数の場所にあるため、DNS レコードを変更しても、全部が新しい答えに入れ替わるまで時間差が生じることがある。</li>
+      <li>引っ越しなど切り替えの前に TTL を短くしておくと、古い答えが残り続ける時間を短くできる。</li>
+      <li>この仕組みは毎回問い合わせをさばく必要を減らし、DNS サーバ全体の負荷を抑えることにもつながる。名前解決の失敗とは別の理由で、意図しない相手に繋がることがある、という点が重要である。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>DNS の問い合わせ先には複数の役割があり、ブラウザや OS がまず自分の手元の控え(キャッシュ)を確認し、無ければ外部の DNS サーバに尋ねに行く(#52)。DNS サーバの側も、一度調べた答えを TTL で指定された秒数の間だけ覚えておき、その間の問い合わせには自分の控えから即座に答える。TTL が切れると、DNS サーバは答えの出どころに改めて確認しに行き、新しい答えと TTL を受け取る。ブラウザ、OS、途中の DNS サーバがそれぞれ別のタイミングでキャッシュしているため、DNS レコードを変更しても、すべての控えが新しい答えに入れ替わるまでは時間差が生じる。事前に TTL を短く設定しておけば、この時間差を短くできる。この仕組みは、多くの利用者からの同じ問い合わせを毎回さばかずに済むという利点もあり、DNS サーバ全体の負荷を抑えることにもつながる。運用の現場では、切り替えの影響範囲を見積もるために、事前に現在の TTL の値を確認しておくことが多い。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try">
+    <pre><code>host example.com</code></pre>
+    <p>見方: 「has address」の行に、ホスト名に対応する IP アドレスが出る。これが名前解決の答え、つまりしばらくキャッシュに残る値そのものである。</p>
+    <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="52">[#52] Cloudflare Learning Center「What is DNS?」 — <a href="https://www.cloudflare.com/learning/dns/what-is-dns/" rel="noopener">原典</a></li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a></li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m01-2">
+    <div class="q" data-q="1">
+      <p class="q-text">名前解決が成功しているのに、なぜ引っ越し後もしばらく古いサーバに繋がり続けることがあるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">名前解決は失敗しているが、エラーが表示されないだけだから</button></li>
+        <li><button type="button" data-correct="true">TTL が切れるまで、複数の場所に残ったキャッシュの古い答えが使われ続けるから</button></li>
+        <li><button type="button" data-correct="false">古いサーバの方が新しいサーバより優先して選ばれる決まりがあるから</button></li>
+        <li><button type="button" data-correct="false">DNS レコードの変更は暗号化の段階が終わるまで反映されないから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、TTL が切れるまで、複数の場所に残ったキャッシュの古い答えが使われ続けるから、です。名前解決の答えにはこの秒数の間は使ってよいという TTL が付いており、ブラウザや OS、途中の DNS サーバに残った控えは、TTL が切れるまで新しい答えに入れ替わりません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">TTL の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">DNS サーバの応答が遅れたときに再送するまでの待ち時間</button></li>
+        <li><button type="button" data-correct="true">名前解決の答えを、この秒数の間は使ってよいとする有効期限</button></li>
+        <li><button type="button" data-correct="false">ブラウザがキャッシュを保存できる最大の容量</button></li>
+        <li><button type="button" data-correct="false">ブラウザが 1 回の接続を維持できる最大時間</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、名前解決の答えを、この秒数の間は使ってよいとする有効期限、です。TTL は名前解決の答えに付く期限で、この間はブラウザや OS、DNS サーバが同じ答えをキャッシュから返し、外部への問い合わせを省略します。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">サーバの引っ越し前に TTL を短くしておくと、何ができるか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">引っ越し後の接続を暗号化なしで行えるようにできる</button></li>
+        <li><button type="button" data-correct="false">名前解決そのものを省略できるようにできる</button></li>
+        <li><button type="button" data-correct="true">切り替え後に古い答えが残り続ける時間を短くできる</button></li>
+        <li><button type="button" data-correct="false">DNS サーバへの問い合わせを完全に無くせる</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、切り替え後に古い答えが残り続ける時間を短くできる、です。TTL を短くしておくと、キャッシュに残った古い答えが早めに期限切れになるため、引っ越し後に新しい IP アドレスへ切り替わるまでの時間差を短くできます。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m01-1.html">← 1-1 「URL を開く」の裏で起きる 4 段階</a>
+    <a class="up" href="m01.html">第 1 章の入口</a>
+    <a class="next" href="m01-3.html">1-3 途中にいる機器たち →</a>
+  </nav>
+</main>
+</body>
+</html>

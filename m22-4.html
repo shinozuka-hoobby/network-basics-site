@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>近くの配信先に、自動でたどり着く仕組み — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m22-4" data-chapter="m22" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 22-4</p>
+  <p class="chapter-label">第 22 章 CDN とキャッシュ　22-4</p>
+  <h1>近くの配信先に、自動でたどり着く仕組み</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>世界中に置かれたエッジサーバのうち、利用者は<strong>自動的に近い場所へ</strong>たどり着く。このページでは、その仕組みと、第 9 章で見た経路選択との関係を確認する。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">エッジサーバって世界中にあるんですよね? 利用者は、どうやって近くの 1 台にたどり着くんですか?</p>
+    <p class="t" data-who="ふくろう先生">1 つの方法は、同じ IP アドレスを、複数の場所から同時に経路広告することです。</p>
+    <p class="s" data-who="ひよこちゃん">同じアドレスを複数の場所から広告して、大丈夫なんですか?</p>
+    <p class="t" data-who="ふくろう先生">第 9 章 9-3 で、BGP は通ってきた AS の並びが短い方を選ぶ、という話をしましたね。同じアドレス宛ての経路が複数広告されていても、結局はその基準で、利用者ごとに一番近い経路が選ばれます。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ、利用者の場所が変われば、届く先も変わるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。これを<strong>Anycast</strong>と呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">Anycast を使うと、速さ以外にも良いことがあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。ある場所のエッジサーバが使えなくなっても、その場所からの経路広告を止めれば、利用者からの通信は自動的に別の場所へ向かいます。</p>
+    <p class="s" data-who="ひよこちゃん">地理的に一番近いところに、必ず届くってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうとは限りません。9-3 で見たとおり、選ばれるのは地理的な距離ではなく、経路選択の基準で決まる、一番近い経路です。</p>
+    <p class="s" data-who="ひよこちゃん">経路の広告以外の方法もあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。名前解決のときに、近くのエッジサーバのアドレスを答えるという方式もあります。</p>
+    <p class="s" data-who="ひよこちゃん">DNS を使う方法ってことですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。問い合わせてきた場所に応じて、違うエッジサーバのアドレスを答える、という考え方です。</p>
+    <p class="s" data-who="ひよこちゃん">Anycast と、この DNS を使う方法、どっちがよく使われるんですか?</p>
+    <p class="t" data-who="ふくろう先生">どちらの方式が使われるかは配信事業者によって異なります。この講座では、両方の考え方があることを知っておいてください。</p>
+    <p class="s" data-who="ひよこちゃん">同じ宛先なのに、場所によって違う機械が応答するって、最初はちょっと不思議な感じがします。</p>
+    <p class="t" data-who="ふくろう先生">慣れないうちはそう感じるかもしれません。ただ、第 9 章で見た経路選択の仕組みが、そのまま応用されているだけです。</p>
+    <p class="s" data-who="ひよこちゃん">さっき出てきた、場所を外して別の場所へ向かわせる話、他にも使い道があるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。大量の通信を送りつける攻撃を受けたときも、その通信を複数の場所に分散させることで、影響を抑えられます。</p>
+    <p class="s" data-who="ひよこちゃん">経路の話が、こんなところにもつながってくるんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。次のページでは、こうして近くに届いた控えが、なぜ速さにつながるのかを見ていきましょう。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>同じ IP アドレスを複数の場所から経路として広告しておき、利用者から見て経路上一番近い 1 台に通信が自動的に届く仕組みを、Anycast と呼ぶ。</li>
+      <li>同じ宛先への経路が複数の場所から広告されていても、第 9 章 9-3 で見た経路選択の基準(通ってきた AS の並びの短さなど)に従って、利用者ごとに一番近い経路が選ばれる。</li>
+      <li>Anycast で選ばれるのは、地理的に一番近い機械とは限らず、経路選択の基準で決まる一番近い経路である。</li>
+      <li>ある場所のエッジサーバが使えなくなっても、その場所からの経路広告を止めれば、利用者からの通信は自動的に別の場所へ向かう。</li>
+      <li>同じ役割を果たす別の方法として、名前解決のときに、問い合わせてきた場所に応じて近くのエッジサーバのアドレスを答える方式もある。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>同じ IP アドレスを複数の場所から経路として広告しておき、利用者から見て経路上一番近い 1 台に、通信が自動的に届くようにする仕組みを Anycast と呼ぶ(#59)。同じ宛先への経路が複数の場所から広告されていても、第 9 章 9-3 で見た経路選択の基準(通ってきた AS の並びの短さや、各 AS の方針)に従って、利用者ごとに一番近い経路が選ばれる。ここでの「近い」は地理的な距離そのものではなく、経路選択の基準で決まる、一番近い経路であることに注意する。Anycast は速さだけでなく、信頼性にも関わる。ある場所のエッジサーバが使えなくなっても、その場所からの経路広告を止めれば、利用者からの通信は自動的に別の、まだ使える場所へ向かう(#59)。大量の通信を送りつける攻撃を受けたときも、通信が複数の場所に自動的に分散されるため、影響を抑えやすくなる(#59)。同じ役割を、別の方法で果たす仕組みもある。名前解決のときに、問い合わせてきた場所に応じて近くのエッジサーバのアドレスを答える、DNS を使った方式である(#71)。どちらの方式を使うかは配信事業者によって異なり、この講座では、経路広告による方式と、名前解決による方式の 2 つがあることを押さえておけば十分である。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="59">[#59] Cloudflare Learning Center「CDN reliability and load balancing」 — <a href="https://www.cloudflare.com/learning/cdn/glossary/anycast-network/" rel="noopener">原典</a>(「How can a CDN use an Anycast network to increase reliability?」の節。複数の機械が同じ IP アドレスを共有し、ルータが一番近い機械に振り分けるという記述)</li>
+    <li class="cite" data-src="71">[#71] NAIST IPLab(インターネット工学研究室)「Internet Engineering (4007)」 — <a href="https://iplab.naist.jp/class/2018/" rel="noopener">原典</a>(2018-06-application.txt p.52「Directing clients to nearby nodes with DNS」。DNS への問い合わせに応じて近くの CDN ノードのアドレスを答えるという記述)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m22-4">
+    <div class="q" data-q="1">
+      <p class="q-text">同じ IP アドレスが複数の場所から広告されているのに、なぜ利用者はそれぞれ近い方の機械に届くのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">利用者の端末が、あらかじめ一番近い場所を選んで問い合わせているから</button></li>
+        <li><button type="button" data-correct="true">第 9 章 9-3 で見た経路選択の基準に従って、通常は最も近い(最も短い)経路が選ばれるから</button></li>
+        <li><button type="button" data-correct="false">同じアドレスへの通信は、常に地図上の直線距離が最も短い機械へ送られる決まりがあるから</button></li>
+        <li><button type="button" data-correct="false">オリジンサーバが、利用者の場所に応じて答えるアドレスを毎回書き換えているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、第 9 章 9-3 で見た経路選択の基準に従って、通常は最も近い(最も短い)経路が選ばれるから、です。利用者の端末が選んでいるわけでも、直線距離だけで決まる決まりがあるわけでもありません。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">Anycast の説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">1 台の機械だけが持つ、世界に 1 つしかないアドレスのこと</button></li>
+        <li><button type="button" data-correct="true">同じ IP アドレスを複数の場所から経路として広告しておき、経路上一番近い 1 台に通信が自動的に届くようにする仕組みのこと</button></li>
+        <li><button type="button" data-correct="false">利用者の端末が、接続先を手動で選び直す操作のこと</button></li>
+        <li><button type="button" data-correct="false">同じ要求に対して同じ控えを返してよいかを判断する材料の組み合わせのこと</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、同じ IP アドレスを複数の場所から経路として広告しておき、経路上一番近い 1 台に通信が自動的に届くようにする仕組みのこと、です。1 つしかないアドレスの話でも、手動の操作でも、キャッシュキーの話でもありません。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">Anycast で選ばれる「近い」機械についての説明として正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">必ず地図上の直線距離が最も短い機械が選ばれる</button></li>
+        <li><button type="button" data-correct="true">経路選択の基準で決まる、経路上一番近い機械が選ばれ、地理的な距離そのものとは限らない</button></li>
+        <li><button type="button" data-correct="false">選ばれる機械は、あらかじめ利用者ごとに固定されている</button></li>
+        <li><button type="button" data-correct="false">選ばれる機械は、常にオリジンサーバに一番近い機械である</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、経路選択の基準で決まる、経路上一番近い機械が選ばれ、地理的な距離そのものとは限らない、です。直線距離や固定の割り当て、オリジンサーバとの近さで決まるわけではありません。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m22-3.html">← 22-3 控えを消す</a>
+    <a class="up" href="m22.html">第 22 章の入口</a>
+    <a class="next" href="m22-5.html">22-5 控えが近くにあると、なぜ速いのか →</a>
+  </nav>
+</main>
+</body>
+</html>

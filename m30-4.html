@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>遅いと感じたら、まず測ってみる — ネットワークのしくみ</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/app.js" defer></script>
+</head>
+<body data-page="m30-4" data-chapter="m30" data-rev="1">
+<noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
+<main>
+  <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 30-4</p>
+  <p class="chapter-label">第 30 章 性能の考え方 — レイテンシ・帯域・RTT　30-4</p>
+  <h1>遅いと感じたら、まず測ってみる</h1>
+
+  <div class="lead">
+    <p class="lead-label">このページでわかること</p>
+    <p>「遅い」と感じたときは、勘に頼らず<strong>測ってみる</strong>とよい。往復にかかる時間や、名前解決・接続・暗号化の手続きのそれぞれにどれだけ時間がかかったかを数字で見れば、往復の回数が効いているのか、運ぶ量が効いているのかの手がかりになる。このページでは、これまでの章で使ってきた道具を、この目的で読み直す。</p>
+  </div>
+
+  <details class="toc"><summary>このページの目次</summary></details>
+
+  <h2 id="dialog">かけあい</h2>
+  <div class="dialog">
+    <p class="s" data-who="ひよこちゃん">往復の回数が効く場合と、運ぶ量が効く場合があるって分かりましたけど、実際どっちなのかは、どうやって確かめるんですか。</p>
+    <p class="t" data-who="ふくろう先生">測ってみるのが一番です。まず、往復にかかる時間そのものは、第 27 章 27-1 で見た道具で確かめられます。</p>
+    <p class="s" data-who="ひよこちゃん">相手までの通信が届くかどうかと、届くまでの時間を確かめる道具でしたね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。経由する機械を 1 台ずつ確かめる道具(第 27 章 27-2)を使えば、経路のどこで時間がかかっているかの手がかりも得られます。</p>
+    <p class="s" data-who="ひよこちゃん">経路の途中に何か問題がある場合も、それで見えるんですね。</p>
+    <p class="t" data-who="ふくろう先生">見えることがあります。ただし、それだけでは名前解決や暗号化のように、接続ができたあとの内訳までは分かりません。</p>
+    <p class="s" data-who="ひよこちゃん">名前解決や接続、暗号化の手続きのそれぞれにどれだけ時間がかかったかは、どうやって確かめるんですか。</p>
+    <p class="t" data-who="ふくろう先生">第 27 章 27-4 で、送受信の記号の読み方を見ましたが、あれは「何が起きたか」を見分けるものでした。今日は「それぞれにどれだけ時間がかかったか」を数字で見る方法を紹介します。</p>
+    <p class="s" data-who="ひよこちゃん">数字で見る方法があるんですか。</p>
+    <p class="t" data-who="ふくろう先生">あります。試してみましょう。</p>
+    <p class="s" data-who="ひよこちゃん">5 つの数字が並んでいますけど、これはどう読むんですか。</p>
+    <p class="t" data-who="ふくろう先生">左から右へ、実際に起きた順番に並んでいます。名前解決、接続、暗号化の手続き、最初の応答、全体の完了、という順です。</p>
+    <p class="s" data-who="ひよこちゃん">この数字は、それぞれの区間だけにかかった時間なんですか。</p>
+    <p class="t" data-who="ふくろう先生">いいえ、それぞれの数字は開始からの累積の秒数なので、隣どうしの差を取って初めて、その区間だけにかかった時間が分かります。差が大きい区間ほど、そこに時間がかかっているということです。名前解決の区間が大きければ往復の回数、応答から完了までの区間が大きければ運ぶ量、といった手がかりになります。</p>
+    <p class="s" data-who="ひよこちゃん">さっき見た、往復の回数が支配する場面の話とも、これでつながりますね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。名前解決や接続、暗号化の手続きの区間がそれぞれ大きければ、30-1 で見た往復の積み重ねが効いている手がかりになります。逆に、最初の応答から全体の完了までの区間が大きければ、30-2 で見た運ぶ量の話が効いている手がかりになります。</p>
+    <p class="s" data-who="ひよこちゃん">1 回測っただけで判断していいんですか。</p>
+    <p class="t" data-who="ふくろう先生">余裕があれば、何度か測って傾向を見ると、より確実です。1 回だけの数字には、そのときたまたまの揺れが含まれることがあります。</p>
+    <p class="s" data-who="ひよこちゃん">ブラウザの開発者ツールの Network タブにも、似たような表示がありますよね。</p>
+    <p class="t" data-who="ふくろう先生">あります。同じような段階の表示が、ブラウザにも用意されています。数字の並び方は違っても、名前解決から応答までの区間を段階ごとに見る、という考え方は同じです。</p>
+    <p class="s" data-who="ひよこちゃん">これで、遅い原因をどの順番で確かめればいいか、だいたい分かった気がします。</p>
+    <p class="t" data-who="ふくろう先生">今日のところは、それぞれの道具で何が分かるかを押さえておいてください。どの順で確かめて原因を絞り込むかは、次の第 31 章でまとめて扱います。</p>
+  </div>
+
+  <h2 id="recap">まとめ</h2>
+  <div class="recap">
+    <ul>
+      <li>「遅い」と感じたときは、往復にかかる時間や、名前解決・接続・暗号化の手続きのそれぞれの所要時間を測ることで、往復の回数が効いているのか、運ぶ量が効いているのかの手がかりが得られる。</li>
+      <li>往復にかかる時間そのものは第 27 章 27-1 の道具で、経由する機械ごとの様子は 27-2 の道具で確かめられるが、手続きごとの内訳までは分からない。</li>
+      <li>名前解決・接続・暗号化の手続きのそれぞれにかかった時間は、開始からの累積の秒数を書式で指定して数字として確かめられる。</li>
+      <li>隣どうしの数字の差が、その区間だけにかかった時間の目安になる。</li>
+      <li>ブラウザの開発者ツールの Network タブにも、同じような段階の表示がある。どの順で確かめて原因を絞り込むかという手順は、第 31 章でまとめて扱う。</li>
+    </ul>
+  </div>
+
+  <h2 id="deep">しくみの話</h2>
+  <div class="deep">
+    <p>往復にかかる時間そのものは第 27 章 27-1 の道具で、経由する機械ごとの様子は 27-2 の道具で確かめられるが、名前解決・接続・暗号化の手続きのそれぞれにどれだけ時間がかかったかまでは、この 2 つだけでは分からない。それぞれの区間にかかった時間は、開始からの累積の秒数を書式指定で取り出すことで数字として確かめられる(#106)。数字は、名前解決が終わるまで、接続が終わるまで、暗号化の手続き(TLS のハンドシェイクなど)が終わるまで、最初の応答を受け取るまで、全体が終わるまで、という順に、開始からの累積の秒数として並ぶ(#106)。隣どうしの数字の差が、その区間だけにかかった時間の目安になり、どの区間が大きいかで、往復の回数が効いているのか、運ぶ量が効いているのかの手がかりになる。名前解決・接続・暗号化の手続きの区間がそれぞれ大きければ往復の積み重ねが効いている手がかりであり、最初の応答から全体の完了までの区間が大きければ運ぶ量が効いている手がかりである。1 回だけの数字にはそのときの揺れが含まれることがあるため、余裕があれば何度か測ると確実である。</p>
+  </div>
+
+  <h2 id="try">試してみよう</h2>
+  <div class="try" data-reviewed="true">
+    <pre><code>curl -s -o /dev/null -w 'dns:%{time_namelookup} connect:%{time_connect} tls:%{time_appconnect} first-byte:%{time_starttransfer} total:%{time_total}\n' https://example.com</code></pre>
+    <p>見方: 5 つの数字は起きた順に並び、いずれも開始からの累積の秒数なので、隣どうしの差がその区間だけにかかった時間になる。</p>
+    <p class="try-note">数字は実行するたびに変わる。単位は秒。command not found などで動かなければ、読むだけで進んでよい。</p>
+  </div>
+
+  <h2 id="sources">参考文献</h2>
+  <ul class="sources">
+    <li class="cite" data-src="106">[#106] curl project(curl.se)「curl.1 the man page」 — <a href="https://curl.se/docs/manpage.html" rel="noopener">原典</a>(5547 行目 time_appconnect、5551 行目 time_connect、5555 行目 time_namelookup、5575 行目 time_starttransfer、5579 行目 time_total。いずれも「開始からの累積の秒数」という定義)</li>
+  </ul>
+
+  <h2 id="quiz">クイズ</h2>
+  <div class="quiz" data-quiz="m30-4">
+    <div class="q" data-q="1">
+      <p class="q-text">なぜ、名前解決・接続・暗号化の手続きのそれぞれにかかった時間を測ると、遅さの原因の手がかりになるのか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">すべての区間が、常に同じ長さになる決まりだから</button></li>
+        <li><button type="button" data-correct="true">各区間の時間の差を見れば、往復にかかっている時間が積み重なっているのか、特定の区間だけが長いのかを区別できるから</button></li>
+        <li><button type="button" data-correct="false">測るだけで、原因が自動的に直るから</button></li>
+        <li><button type="button" data-correct="false">名前解決の時間が、常に一番長いと決まっているから</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、各区間の時間の差を見れば、往復にかかっている時間が積み重なっているのか、特定の区間だけが長いのかを区別できるから、です。区間の長さは決まった値ではなく、測って初めて分かります。"></p>
+    </div>
+    <div class="q" data-q="2">
+      <p class="q-text">このページで見た書式指定で得られる 5 つの数字は、それぞれ何を表すか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">送った回数、受け取った回数、失われた割合など</button></li>
+        <li><button type="button" data-correct="true">開始から、名前解決・接続・暗号化の手続き・最初の応答・全体の完了までの、それぞれの累積の秒数</button></li>
+        <li><button type="button" data-correct="false">経由した機械の台数</button></li>
+        <li><button type="button" data-correct="false">応答のヘッダの内容</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、開始から、名前解決・接続・暗号化の手続き・最初の応答・全体の完了までの、それぞれの累積の秒数、です。送った回数などは別の道具(第 27 章 27-1)の結果です。"></p>
+    </div>
+    <div class="q" data-q="3">
+      <p class="q-text">往復にかかる時間そのものと、経路の途中の様子を確かめる道具の組み合わせとして正しいものはどれか。</p>
+      <ol class="opts">
+        <li><button type="button" data-correct="false">往復にかかる時間は 27-2 の道具、経路の途中の様子は 27-1 の道具で確かめる</button></li>
+        <li><button type="button" data-correct="true">往復にかかる時間は 27-1 の道具、経路の途中の様子は 27-2 の道具で確かめる</button></li>
+        <li><button type="button" data-correct="false">どちらも 27-4 の道具で確かめる</button></li>
+        <li><button type="button" data-correct="false">どちらも確かめる方法が無い</button></li>
+      </ol>
+      <p class="feedback" data-explain="正解は、往復にかかる時間は 27-1 の道具、経路の途中の様子は 27-2 の道具で確かめる、です。27-4 の道具は、送受信の記号を見分けるためのものでした。"></p>
+    </div>
+  </div>
+
+  <nav class="pager">
+    <a class="prev" href="m30-3.html">← 30-3 何を減らすと、速くなるのか</a>
+    <a class="up" href="m30.html">第 30 章の入口</a>
+    <a class="next" href="m31.html">第 31 章 総合演習 — 「つながらない」「遅い」を層で切り分ける →</a>
+  </nav>
+</main>
+</body>
+</html>
