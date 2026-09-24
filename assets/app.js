@@ -18,10 +18,15 @@
     - 読了記録（nav.pager が画面に入ったら記録）。
     - 章の入口の ol.page-list[data-chapter-pages] にページ一覧を描画。
     - index.html の学習マップ（[data-learning-map]）と学習記録リセット。
+    - 進捗の端末間同期（§6.5、plans/progress-sync.md）: 進捗を章ごと 2 文字の
+      コードにして URL フラグメント #p=1.<payload> に常時載せ、開いた端末が
+      和集合で取り込む。index.html の「進捗リンクをコピー」でも手動で運べる。
 
   進捗キーは内容の版を含む（§6.5）: 読了 "nb:read:<page>:<rev>"、完了 "nb:done:<page>:<rev>"。
   rev は body[data-rev]（無ければ "1"）。サイドバー・学習マップの集計は
   assets/curriculum.json の各ページの rev を使う。旧キー（版なし）は読まない。
+  同期用の符号化・復号（encodeProgress / decodeProgress）は "progress codec" の
+  区間コメントに囲って置き、tools/test_progress_codec.js が単体で検査する。
 
   ページ種別・現在地は body[data-page] / body[data-chapter] から判定する。
   <script defer> 前提のため、実行時には DOM の解析が終わっている。
@@ -97,6 +102,143 @@
   }
   function doneKey(pageId, rev) {
     return "nb:done:" + pageId + ":" + (rev || "1");
+  }
+
+  // ---------- progress codec begin ----------
+  // 進捗コードの符号化・復号（§6.5、plans/progress-sync.md）。
+  // この区間は DOM・localStorage・fetch に一切触れない純粋関数だけを置く。
+  // tools/test_progress_codec.js がこの区間だけを切り出して vm で検査する。
+  var PROGRESS_ALPHABET =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  var PROGRESS_MAX_PAGES = 5; // STYLE.md §3: 1 章は 3〜5 ページ
+
+  // chapters: assets/curriculum.json の chapters（章の順。各 chapter.pages がページの順）。
+  // hasRead(pageId, rev) / hasDone(pageId, rev): 真偽値を返す関数。
+  // 戻り値: "1." を含まない payload（章ごと 2 文字、base64url）。
+  function encodeProgress(chapters, hasRead, hasDone) {
+    var out = "";
+    (chapters || []).forEach(function (chapter) {
+      var v = 0;
+      (chapter.pages || []).forEach(function (page, k) {
+        if (k >= PROGRESS_MAX_PAGES) return;
+        var rev = page.rev;
+        if (hasRead(page.id, rev)) v |= 1 << (2 * k);
+        if (hasDone(page.id, rev)) v |= 1 << (2 * k + 1);
+      });
+      out += PROGRESS_ALPHABET.charAt((v >> 6) & 63) + PROGRESS_ALPHABET.charAt(v & 63);
+    });
+    return out;
+  }
+
+  // payload: "1." で始まる文字列（例 "1.ABAB…"）。
+  // 戻り値: 章ごとの 10 ビット整数の配列。不正なら null（"1." で始まらない、
+  // payload が奇数長、アルファベット外の文字を含む場合）。
+  function decodeProgress(payload) {
+    if (typeof payload !== "string" || payload.slice(0, 2) !== "1.") return null;
+    var body = payload.slice(2);
+    if (body.length % 2 !== 0) return null;
+    var values = [];
+    for (var i = 0; i < body.length; i += 2) {
+      var hi = PROGRESS_ALPHABET.indexOf(body.charAt(i));
+      var lo = PROGRESS_ALPHABET.indexOf(body.charAt(i + 1));
+      if (hi === -1 || lo === -1) return null;
+      values.push((hi << 6) | lo);
+    }
+    return values;
+  }
+  // ---------- progress codec end ----------
+
+  // ---------- 進捗の端末間同期（URL フラグメント #p=1.<payload>） ----------
+  // 対象ページ: body[data-page] が "index" か "m" 始まり（glossary/sources は対象外）。
+  function isProgressSyncPage() {
+    var page = document.body.dataset.page;
+    return page === "index" || (typeof page === "string" && page.indexOf("m") === 0);
+  }
+
+  function progressHasRead(pageId, rev) {
+    return !!safeGet(readKey(pageId, rev));
+  }
+  function progressHasDone(pageId, rev) {
+    return !!safeGet(doneKey(pageId, rev));
+  }
+
+  // 起動直後の最初の呼び出しだけ「既存フラグメントが #p= 以外なら上書きしない」を
+  // 判定する（目次アンカー #recap などのスクロールを妨げないため）。読了・完了の
+  // 契機（2 回目以降の呼び出し）は常に上書きしてよい。
+  var progressHashChecked = false;
+
+  // data: fetchCurriculum() が解決する値（{chapters: [...]})。
+  function writeProgressHash(data) {
+    if (!isProgressSyncPage()) return;
+    var chapters = (data && data.chapters) || [];
+    if (!progressHashChecked) {
+      progressHashChecked = true;
+      var hash = location.hash;
+      if (hash && hash.indexOf("#p=") !== 0) return;
+    }
+    var payload = encodeProgress(chapters, progressHasRead, progressHasDone);
+    history.replaceState(null, "", location.pathname + location.search + "#p=1." + payload);
+  }
+
+  // location.hash の #p=1.<payload> を、この端末に無い記録だけ和集合で取り込む。
+  // 戻り値: { read: 新規に取り込んだ読了ページ数, done: 同完了ページ数 }。
+  function importProgressFromHash(chapters) {
+    var result = { read: 0, done: 0 };
+    var hash = location.hash;
+    if (hash.indexOf("#p=1.") !== 0) return result;
+    var values = decodeProgress(hash.slice(3));
+    if (!values) return result;
+    (chapters || []).forEach(function (chapter, i) {
+      if (i >= values.length) return;
+      var v = values[i];
+      (chapter.pages || []).forEach(function (page, k) {
+        if (k >= PROGRESS_MAX_PAGES) return;
+        var rev = page.rev;
+        if (v & (1 << (2 * k))) {
+          var rKey = readKey(page.id, rev);
+          if (!safeGet(rKey)) {
+            safeSet(rKey, String(Date.now()));
+            result.read++;
+          }
+        }
+        if (v & (1 << (2 * k + 1))) {
+          var dKey = doneKey(page.id, rev);
+          if (!safeGet(dKey)) {
+            safeSet(dKey, String(Date.now()));
+            result.done++;
+          }
+        }
+      });
+    });
+    return result;
+  }
+
+  function insertSyncNote(readCount, doneCount) {
+    var main = document.querySelector("main");
+    if (!main) return;
+    var p = document.createElement("p");
+    p.className = "sync-note";
+    p.setAttribute("role", "status");
+    p.textContent =
+      "別の端末の進捗を取り込みました（読了 " + readCount + " ページ・完了 " + doneCount + " ページ）。";
+    // パンくず → 章ラベル → 見出しの並びを崩さないよう、main の先頭に置く。
+    main.insertBefore(p, main.firstChild);
+  }
+
+  // 起動時に取り込み → 通知 → フラグメント書き込みの順で行う。initSidebar() より
+  // 前に呼び、fetchCurriculum() の .then 登録順で取り込みが描画より先になるようにする。
+  function initProgressSync() {
+    if (!isProgressSyncPage()) return;
+    fetchCurriculum()
+      .then(function (data) {
+        var chapters = (data && data.chapters) || [];
+        var result = importProgressFromHash(chapters);
+        if (result.read > 0 || result.done > 0) insertSyncNote(result.read, result.done);
+        writeProgressHash(data);
+      })
+      .catch(function () {
+        /* curriculum を読み込めなければ同期は諦める（サイドバー側で別途エラーを出す） */
+      });
   }
 
   // ---------- テーマ切替 ----------
@@ -724,6 +866,7 @@
     if (!("IntersectionObserver" in window)) {
       // フォールバック: 観測できない環境ではページ表示時点で記録する。
       safeSet(key, String(Date.now()));
+      fetchCurriculum().then(writeProgressHash);
       return;
     }
 
@@ -732,6 +875,7 @@
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             safeSet(key, String(Date.now()));
+            fetchCurriculum().then(writeProgressHash);
             observer.disconnect();
           }
         });
@@ -831,6 +975,7 @@
 
   function markPageDone(pageId, quizEl) {
     safeSet(doneKey(pageId, currentPageRev()), String(Date.now()));
+    fetchCurriculum().then(writeProgressHash);
     appendDoneBanner(quizEl);
   }
 
@@ -1020,12 +1165,85 @@
           /* 保存領域にアクセスできない環境では削除を省略する。 */
         }
         keys.forEach(safeRemove);
+        history.replaceState(null, "", location.pathname + location.search);
         window.location.reload();
       });
     });
   }
 
+  // ---------- 「進捗リンクをコピー」ボタン（index.html、button[data-copy-progress]） ----------
+  function progressShareUrl(payload) {
+    return location.origin + location.pathname.replace(/[^/]*$/, "") + "index.html#p=1." + payload;
+  }
+
+  // クリップボードに書き込めない場合のフォールバック: ボタンの直後に読み取り専用の
+  // input を出し、.sync-help の下に操作方法の一文を添える（初回だけ）。
+  function showCopyFallback(btn, url) {
+    var input = document.querySelector("input.sync-url");
+    if (!input) {
+      input = document.createElement("input");
+      input.type = "text";
+      input.readOnly = true;
+      input.className = "sync-url";
+      btn.insertAdjacentElement("afterend", input);
+    }
+    input.value = url;
+
+    if (!document.querySelector("p.sync-fallback-note")) {
+      var help = document.querySelector("p.sync-help");
+      var note = document.createElement("p");
+      note.className = "sync-help sync-fallback-note";
+      note.textContent = "長押し／⌘C でコピーしてください。";
+      if (help) {
+        help.insertAdjacentElement("afterend", note);
+      } else {
+        btn.insertAdjacentElement("afterend", note);
+      }
+    }
+
+    input.focus();
+    input.select();
+  }
+
+  function initCopyProgress() {
+    var btn = document.querySelector("button[data-copy-progress]");
+    if (!btn) return;
+    var defaultLabel = btn.textContent;
+    var resetTimer = null;
+
+    btn.addEventListener("click", function () {
+      fetchCurriculum()
+        .then(function (data) {
+          var chapters = (data && data.chapters) || [];
+          var payload = encodeProgress(chapters, progressHasRead, progressHasDone);
+          var url = progressShareUrl(payload);
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(
+              function () {
+                if (resetTimer) window.clearTimeout(resetTimer);
+                btn.textContent = "コピーしました";
+                resetTimer = window.setTimeout(function () {
+                  btn.textContent = defaultLabel;
+                  resetTimer = null;
+                }, 2000);
+              },
+              function () {
+                showCopyFallback(btn, url);
+              }
+            );
+          } else {
+            showCopyFallback(btn, url);
+          }
+        })
+        .catch(function () {
+          /* curriculum を読み込めなければコピーできない（ボタンは何もしない） */
+        });
+    });
+  }
+
   // ---------- 起動 ----------
+  initProgressSync();
   initSidebar();
   initEscHandler();
   initTOC();
@@ -1035,4 +1253,5 @@
   initLearningMap();
   initResetProgress();
   initGlossaryTerms();
+  initCopyProgress();
 })();
