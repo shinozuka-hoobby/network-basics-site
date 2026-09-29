@@ -1060,6 +1060,20 @@ p.fig-cap {
   text-align: center;
   margin-block: 0.8em 0.2em;
 }
+/* かけあいの途中に置く図（div.dialog > div.fig-sec > pre.fig + p.fig-cap）。
+   div.dialog p の吹き出し用の幅・余白・角丸を、図の説明文には当てない。 */
+div.dialog div.fig-sec {
+  align-self: stretch;
+  margin-block: 0;
+}
+div.dialog div.fig-sec p.fig-cap {
+  max-width: none;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  margin-block: 0.8em 0.2em;
+  font-size: 0.9rem;
+}
 
 /* ---------- 13. index.html ---------- */
 .intro-lead { font-size: 1.05em; color: var(--ink-muted); }
