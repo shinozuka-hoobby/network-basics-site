@@ -3,114 +3,164 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>この講座の歩き方 — ネットワークのしくみ</title>
+<title>封筒の重なり — PC が包み、ルータが外側だけ入れ替え、サーバが開ける — ネットワークのしくみ</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/app.js" defer></script>
 </head>
-<body data-page="m01-5" data-chapter="m01" data-rev="1">
+<body data-page="m01-5" data-chapter="m01" data-rev="2">
 <noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
 <main>
   <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 1-5</p>
   <p class="chapter-label">第 1 章 パケットの旅　1-5</p>
-  <h1>この講座の歩き方</h1>
+  <h1>封筒の重なり — PC が包み、ルータが外側だけ入れ替え、サーバが開ける</h1>
 
   <div class="lead">
     <p class="lead-label">このページでわかること</p>
-    <p>この講座は全 31 章、9 つの Part で構成され、番号順に読み進めることを前提に積み上げていく。<strong>前の章で説明した用語は、後の章で再説明せずそのまま使う</strong>。このページでは、この先の道筋と、毎回のページの読み方を確認する。</p>
+    <p>1-4 で見た 5 つの段を、1 つの HTTP リクエストが実際にどう通るかを追いかける。<strong>送る側の PC では段を降りるたびに宛先などの情報が前に付け足され、途中の機器では一番外側だけが付け替えられ、受け取るサーバでは外側から順に外される</strong>。このページでは、その包まれ方と、宛先の番号が 2 種類ある理由を確認する。ここでは PC が有線でつながっている場合で見る。</p>
   </div>
 
   <details class="toc"><summary>このページの目次</summary></details>
 
   <h2 id="dialog">かけあい</h2>
   <div class="dialog">
-    <p class="s" data-who="ひよこちゃん">今日だけでもお腹いっぱいなんですけど、この後どんな順番で進むんですか?</p>
-    <p class="t" data-who="ふくろう先生">導入の Part 0 を除くと、残りは大きく 8 つの Part に分かれています。まず Part 1 で、電気や光の信号や、家庭のネットワーク機器を扱います。</p>
-    <p class="s" data-who="ひよこちゃん">番号順に読まなきゃダメなんですか? 気になるところだけ拾い読みしたい気もします。</p>
-    <p class="t" data-who="ふくろう先生">一応可能ですが、おすすめしません。この講座は前の章で説明した用語を、後の章で説明し直さずにそのまま使うので、拾い読みすると前提の説明が抜けたまま読むことになります。</p>
-    <p class="s" data-who="ひよこちゃん">つまり、前の章の用語を知らないまま後の章を読むと、途中で分からなくなるということですね。全部で 31 章もあるんですよね。読み切れるか不安になってきました。</p>
-    <p class="t" data-who="ふくろう先生">そうです。1 ページ 10 分で読めるように作っているので、1 日 1 ページでも読み進められます。読んだ記録は端末に保存されるので、続きから再開できます。</p>
-    <p class="s" data-who="ひよこちゃん">今日出てきた<a class="term" href="glossary.html#mac-address" data-term="mac-address">MAC アドレス</a>の話が、もっと詳しくなるってことですか?</p>
-    <p class="t" data-who="ふくろう先生">そうです。Part 2 で住所の付け方や経路の選び方、Part 3 で通信の運び方の違いを扱います。</p>
-    <p class="s" data-who="ひよこちゃん"><a class="term" href="glossary.html#dns" data-term="dns">DNS</a> や<a class="term" href="glossary.html#tls-certificate" data-term="tls-certificate">TLS 証明書</a>はどこで出てくるんですか?</p>
-    <p class="t" data-who="ふくろう先生">Part 4 です。DNS の仕組みと運用、TLS 証明書の裏側もここでまとめて扱います。</p>
-    <p class="s" data-who="ひよこちゃん">今日は名前解決や TLS 証明書、さらっとしか説明してもらってない気がします。</p>
-    <p class="t" data-who="ふくろう先生">そうですね。第 16 章から第 19 章で、もっと詳しく扱います。今日は「順番と役割」だけ覚えておいてください。</p>
-    <p class="s" data-who="ひよこちゃん">Web サーバの手前にいた<a class="term" href="glossary.html#home-router" data-term="home-router">家庭用ルータ</a>とか、<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>や<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>は?</p>
-    <p class="t" data-who="ふくろう先生">家庭用ルータは Part 1、ロードバランサと CDN は Part 5 で扱います。</p>
-    <p class="s" data-who="ひよこちゃん">クラウドの話は出てこないんですか?</p>
-    <p class="t" data-who="ふくろう先生">Part 6 です。クラウドで仮想的なネットワークを組み立てるときの部品を扱います。ここまでの層の知識が土台になります。</p>
-    <p class="s" data-who="ひよこちゃん">最後は?</p>
-    <p class="t" data-who="ふくろう先生">Part 7 で、ネットワークの状態を確認するコマンドの使い方を練習します。そして Part 8 の最終章で、「繋がらない」「遅い」を層ごとに切り分ける総合演習をやります。</p>
-    <p class="s" data-who="ひよこちゃん">毎回このかけあいとまとめとしくみの話とクイズの流れで進むんですか?</p>
-    <p class="t" data-who="ふくろう先生">はい。かけあいで疑問や誤解をほどき、まとめで要点を押さえ、しくみの話で正確な用語に戻し、最後にクイズで区別できるかを確認する。この繰り返しで進みます。</p>
-    <p class="s" data-who="ひよこちゃん">クイズって、暗記できてるかを見るだけのものなんですか?</p>
-    <p class="t" data-who="ふくろう先生">それだけではありません。似た用語同士を混同していないか、境目を正しく引けているかを確認するためのものです。</p>
-    <p class="s" data-who="ひよこちゃん">この講座を読み終わる頃には、何ができるようになってるんですか?</p>
-    <p class="t" data-who="ふくろう先生">障害が起きたとき、どの層の話かを自分で切り分けられるようになりますし、クラウドのネットワーク設定も、手順書に頼らず自分の判断で組めるようになります。</p>
+    <p class="s" data-who="ひよこちゃん">1-4 で、PC は 5 段を上から下へ降りると聞きました。降りるたびに、リクエストに何が起きるんですか?</p>
+    <p class="t" data-who="ふくろう先生">段を 1 つ降りるごとに、データの前に宛先などの情報を書いた部分が付け足されます。これをヘッダと呼びます。4 段目で <a class="term" href="glossary.html#tcp" data-term="tcp">TCP</a> のヘッダ、3 段目で IP のヘッダ、2 段目で<a class="term" href="glossary.html#ethernet" data-term="ethernet">イーサネット</a>のヘッダの順に付きます。</p>
+    <p class="s" data-who="ひよこちゃん">3 回包まれるんですね。図で見たいです。</p>
+    <p class="t" data-who="ふくろう先生">こうなります。</p>
+
+    <div class="fig-sec">
+    <pre class="fig" aria-label="HTTP の中身に、PC の中で段を 1 つ降りるたびにヘッダが付け足され、封筒の中にもう一つ封筒が入るように重なっていく図。4 段目で TCP のヘッダ、3 段目で IP のヘッダ、2 段目でイーサネットのヘッダの順に付く。サーバの中で受け取るときは、段を 1 つ上がるたびに外側から順にヘッダを外し、最後に HTTP の中身だけが残る。">送るとき
+(PC の中で、段を 1 つ降りるたびに付け足す)
+
+  HTTP の中身
+   → [ TCP のヘッダ | HTTP の中身 ]
+   → [ IP のヘッダ
+       [ TCP のヘッダ | HTTP の中身 ] ]
+   → [ イーサネットのヘッダ
+       [ IP のヘッダ
+         [ TCP のヘッダ | HTTP の中身 ] ] ]
+
+受け取るとき
+(サーバの中で、段を 1 つ上がるたびに外す)
+
+  [ イーサネットのヘッダ
+    [ IP のヘッダ
+      [ TCP のヘッダ [ HTTP の中身 ] ] ] ]
+   → イーサネットのヘッダを外す
+   → IP のヘッダを外す
+   → TCP のヘッダを外す
+   → HTTP の中身が残る</pre>
+    <p class="fig-cap">PC の中では、段を降りるたびに TCP・IP・イーサネットの順にヘッダが付け足される。サーバの中では、段を上がるたびに外側から順に外されて、最後に HTTP の中身だけが残る。</p>
+    </div>
+
+    <p class="s" data-who="ひよこちゃん">手紙を封筒に入れて、さらに別の封筒に入れるみたいですね。</p>
+    <p class="t" data-who="ふくろう先生">近いです。そのイメージで<span class="tag-simp">簡略化</span>でき、正式にはこの処理をカプセル化と呼びます。HTTP や TCP、IP のような共通の約束事はプロトコルと呼びます。</p>
+    <p class="s" data-who="ひよこちゃん">IP の封筒に入った状態のかたまりにも、名前はあるんですか?</p>
+    <p class="t" data-who="ふくろう先生">あります。パケットと呼びます。機器から機器へ実際に運ばれるのは、このパケットがさらにイーサネットの封筒に入ったものです。</p>
+    <p class="s" data-who="ひよこちゃん"><strong>一番外側のイーサネットの封筒の宛先は <a class="term" href="glossary.html#mac-address" data-term="mac-address">MAC アドレス</a>でしたよね。</strong>IP アドレスがあるのに、なぜもう 1 つ宛先が要るんですか?</p>
+    <p class="t" data-who="ふくろう先生">役割が違うからです。IP アドレスは最終的な届け先、つまり相手のサーバを指します。MAC アドレスは次に渡す隣の機器を指し、PC から見れば<a class="term" href="glossary.html#home-router" data-term="home-router">家庭用ルータ</a>です。</p>
+    <p class="s" data-who="ひよこちゃん">じゃあ PC が送るとき、外側の封筒の宛先はサーバじゃなくて家庭用ルータなんですか?</p>
+    <p class="t" data-who="ふくろう先生">そうです。1-4 で見たとおり、2 段目のデータリンク層は隣の機器へ渡すだけの段なので、宛先も隣の機器になります。家庭用ルータに届いた後、<a class="term" href="glossary.html#router" data-term="router">ルータ</a>の中でどうなるかを図で見ましょう。</p>
+
+    <div class="fig-sec">
+    <pre class="fig" aria-label="PC から家庭用ルータまでの区間では、一番外側のイーサネットのヘッダの宛先が家庭用ルータの MAC アドレス、その内側の IP のヘッダの宛先がサーバの IP アドレスになっている。家庭用ルータは外側のイーサネットのヘッダを外し、IP のヘッダの宛先を見て次の送り先を決め、次の区間用のイーサネットのヘッダを新しく付ける。IP のヘッダから内側は開けずにそのまま。家庭用ルータから次のルータまでの区間では、外側のヘッダの宛先が次のルータの MAC アドレスに付け替わり、IP のヘッダの宛先はサーバのまま変わらない。">区間 1: PC → 家庭用ルータ
+  [ イーサネットのヘッダ
+      宛先: 家庭用ルータ(MAC アドレス)
+    [ IP のヘッダ
+        宛先: サーバ(IP アドレス)
+      [ TCP のヘッダ [ HTTP の中身 ] ] ] ]
+
+家庭用ルータの中で
+  1. 外側のイーサネットのヘッダを外す
+  2. IP のヘッダの宛先を見て、
+     次の送り先を決める
+  3. 次の区間用のイーサネットのヘッダを付ける
+  IP のヘッダから内側は、開けずにそのまま
+
+区間 2: 家庭用ルータ → 次のルータ
+  [ イーサネットのヘッダ
+      宛先: 次のルータ(MAC アドレス)
+        ← 付け替わった
+    [ IP のヘッダ
+        宛先: サーバ(IP アドレス)
+        ← 変わらない
+      [ TCP のヘッダ [ HTTP の中身 ] ] ] ]</pre>
+    <p class="fig-cap">途中のルータで付け替わるのは一番外側のヘッダだけ。IP のヘッダの宛先(最終的な届け先)は、何台のルータを通っても変わらない。</p>
+    </div>
+
+    <p class="s" data-who="ひよこちゃん">ルータは外側の封筒を開けて、IP の封筒の宛先を見て、次の機器宛ての新しい外側の封筒に入れ直す。中の IP の封筒は触らない、ということですか?</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ルータは自分が使う一番上の段、3 段目の IP のヘッダの宛先を見て次の送り先を決め、外側のイーサネットのヘッダだけを次の区間用に付け替えます。TCP のヘッダや HTTP の中身は開けません。</p>
+    <p class="s" data-who="ひよこちゃん">だから 1-4 で「ルータは IP アドレスだけを見る」だったんですね。サーバに着いたらどうなりますか?</p>
+    <p class="t" data-who="ふくろう先生">サーバは 5 段全部を使うので、外側から順にイーサネット、IP、TCP のヘッダを外し、最後に HTTP の中身だけが残ります。これが 1-1 で見た「要求」がサーバに届いた瞬間です。</p>
+    <p class="s" data-who="ひよこちゃん">ルータが何台あっても、外側の封筒が付け替わるだけで、IP の封筒はずっと同じなんですね。</p>
+    <p class="t" data-who="ふくろう先生">そうです。だから途中のルータが 10 台あっても、PC とサーバは相手の IP アドレスだけを気にすればよいのです。</p>
+    <p class="s" data-who="ひよこちゃん">1-4 の「下の段を差し替えても上はそのまま」ともつながりました。無線でも有線でも、外側の封筒の種類が変わるだけですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。外側の封筒の形が変わっても、IP の封筒から内側は作り直さなくてよいのが、層を分ける一番の利点でした。</p>
+    <p class="s" data-who="ひよこちゃん">今日は「PC が包み、ルータが外側だけ入れ替え、サーバが開ける」と覚えておけばいいですか?</p>
+    <p class="t" data-who="ふくろう先生">それで十分です。ヘッダの中に実際に何が書かれているかは、第 3 章・第 6 章・第 13 章でそれぞれ開けて見ていきます。</p>
   </div>
 
   <h2 id="recap">まとめ</h2>
   <div class="recap">
     <ul>
-      <li>この講座は全 31 章、9 つの Part(Part 0〜Part 8)で構成され、番号順に読むことを前提に積み上げていく。</li>
-      <li>前の章で説明した用語は後の章で再説明されないため、拾い読みより番号順に読み進める方が理解しやすい。</li>
-      <li>各ページは「かけあい → まとめ → しくみの話 → (試してみよう) → クイズ」の順で読む。</li>
-      <li>クイズは暗記の確認だけでなく、似た用語同士を混同していないかを確認するためのものである。</li>
-      <li>読み終える頃には、障害を層ごとに切り分けたり、クラウドのネットワークを自分の判断で組んだりできるようになることを目指す。</li>
-      <li>用語がつながって、他の人に自分の言葉で説明できるようになることが、この講座の一番のゴールである。</li>
+      <li>PC で段を 1 つ降りるごとに、データの前に宛先などの情報を書いたヘッダが付け足される。4 段目で TCP、3 段目で IP、2 段目でイーサネットの順で、この包む処理をカプセル化と呼ぶ。</li>
+      <li>HTTP や TCP、IP のような共通の約束事をプロトコルと呼び、IP の封筒に入った状態のひとかたまりをパケットと呼ぶ。</li>
+      <li>IP アドレスは最終的な届け先、MAC アドレスは次に渡す隣の機器を指す。途中のルータで付け替わるのは一番外側のヘッダだけで、IP のヘッダの宛先は変わらない。</li>
+      <li>サーバは 5 段すべてを使い、外側から順にヘッダを外して、最後に HTTP の中身を取り出す。</li>
     </ul>
   </div>
 
   <h2 id="deep">しくみの話</h2>
   <div class="deep">
-    <p>この講座は全 31 章、9 つの Part(Part 0〜Part 8)で構成される。番号順に読み進めると、前の章で説明した用語をそのまま参照できる。東京大学の講義(#1)も、データ伝送・プロトコル・Web 技術・セキュリティ・運用管理といった区分で全体像を示しており、この講座の Part 構成もおおむね対応する。Microsoft Learn の基礎教材が挙げる学習目標(プロトコルとネットワーク規格、機器の種類、DNS やポートの動作)とも重なる(#36)。各ページは、かけあいで疑問や誤解をほどき、まとめで要点を押さえ、しくみの話で正確な用語に戻し、試してみようで手を動かし、クイズで区別できるかを確認する、という順で構成されている。番号順に読み進めることで、後の章で新しく出てくる専門用語も、この章で先取りした説明とつながった状態で理解しやすくなる。</p>
+    <p>かけあいで手紙を何重にも封筒に入れることにたとえたとおり、カプセル化は段を降りるごとにデータ全体を包み、ヘッダを付け足す処理である。段ごとに使うプロトコル(共通の約束事)が決まっていて、トランスポート層では TCP のヘッダ、インターネット層(この講座のネットワーク層)では IP のヘッダが付き、IP のヘッダまで付いたひとかたまりがパケットである。その外側に、ネットワークインターフェース層(この講座のデータリンク層)で次の送信先の情報を含むヘッダが付き、受け取る側は逆の順に外す(#12)。IP のヘッダの宛先は最終的な届け先で、途中のルータは次にどこへ送るかだけを決めて外側のヘッダを付け替える(#73、#4)。ルータの中の図で外側をイーサネットとしたのは簡略化で、区間ごとに配線の約束事が違えば、外側のヘッダの種類もその区間のものになる。</p>
   </div>
 
   <h2 id="sources">参考文献</h2>
   <ul class="sources">
-    <li class="cite" data-src="1">[#1] 東京大学 UTokyo OCW「ネットワーク工学概論（講義ページ）」 — <a href="https://ocw.u-tokyo.ac.jp/course_11320/" rel="noopener">原典</a></li>
-    <li class="cite" data-src="36">[#36] Microsoft Learn「Fundamentals of computer networking」 — <a href="https://learn.microsoft.com/en-us/training/modules/network-fundamentals/" rel="noopener">原典</a></li>
+    <li class="cite" data-src="12">[#12] 北海道大学大学院理学院「最低限 Unix（Linux）III ネットワークの仕組み」 — <a href="https://www.ep.sci.hokudai.ac.jp/~inex/y2026/0508/lecture/pub/inex_network.pdf" rel="noopener">原典</a>（p.18〜28）</li>
+    <li class="cite" data-src="73">[#73] 京都大学 OCW「基礎情報処理 第 9 回「コンピュータネットワーク」」（2004 年度スライド） — <a href="https://ocw.kyoto-u.ac.jp/course/120/" rel="noopener">原典</a>（p.50）</li>
+    <li class="cite" data-src="4">[#4] 東京大学 江崎研究室（wide.ad.jp）「ネットワーク工学概論（教員公開版・現行）」 — <a href="http://hiroshi1.hongo.wide.ad.jp/hiroshi/lecture/network/" rel="noopener">原典</a>（06_IP p.13〜14）</li>
   </ul>
 
   <h2 id="quiz">クイズ</h2>
   <div class="quiz" data-quiz="m01-5">
     <div class="q" data-q="1">
-      <p class="q-text">この講座で番号順に読み進めることが勧められるのはなぜか。</p>
+      <p class="q-text">送信時、データにヘッダが付加されていく順序として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">番号順に読まないと、クイズの採点が正しく行われない仕組みになっているから</button></li>
-        <li><button type="button" data-correct="true">前の章で説明した用語を、後の章で再説明せずそのまま使うから</button></li>
-        <li><button type="button" data-correct="false">各章の内容が独立していて、読む順番に意味がないから</button></li>
-        <li><button type="button" data-correct="false">後の章の方が、前の章より易しく書かれているから</button></li>
+        <li><button type="button" data-correct="false">イーサネットのヘッダ → IP のヘッダ → TCP のヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="true">TCP のヘッダ → IP のヘッダ → イーサネットのヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="false">IP のヘッダ → TCP のヘッダ → イーサネットのヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="false">すべてのヘッダが同時に 1 つにまとめて付加される</button></li>
       </ol>
-      <p class="feedback" data-explain="正解は、前の章で説明した用語を、後の章で再説明せずそのまま使うから、です。この講座は積み上げ式で書かれており、前の章の用語がそのまま後の章で使われます。拾い読みすると、前提の説明が抜けたまま読むことになります。"></p>
+      <p class="feedback" data-explain="正解は、TCP のヘッダ→IP のヘッダ→イーサネットのヘッダの順に付加される、です。段を降りるごとにヘッダを付け足していく処理(カプセル化)は、4 段目、3 段目、2 段目の順に進みます。"></p>
     </div>
     <div class="q" data-q="2">
-      <p class="q-text">DNS の仕組みや TLS 証明書を詳しく扱うのはどの Part か。</p>
+      <p class="q-text">途中のルータで付け替えられるヘッダとその理由として、正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">Part 2</button></li>
-        <li><button type="button" data-correct="false">Part 3</button></li>
-        <li><button type="button" data-correct="true">Part 4</button></li>
-        <li><button type="button" data-correct="false">Part 6</button></li>
+        <li><button type="button" data-correct="false">IP のヘッダ。ルータを通るたびに宛先が書き換わるから</button></li>
+        <li><button type="button" data-correct="true">一番外側のイーサネットのヘッダ。隣の機器へ渡す段のヘッダなので、区間ごとに宛先が変わるから</button></li>
+        <li><button type="button" data-correct="false">TCP のヘッダ。区間ごとにアプリが変わるから</button></li>
+        <li><button type="button" data-correct="false">すべてのヘッダが毎回付け替えられる</button></li>
       </ol>
-      <p class="feedback" data-explain="正解は Part 4 です。Part 4「名前と信頼」で DNS の仕組みとあわせて、TLS 証明書や HTTPS の運用までを扱います。Part 2 はネットワーク層、Part 3 はトランスポート層、Part 6 はクラウドの仮想ネットワークを扱うため、TLS 証明書の詳細はここでは扱いません。"></p>
+      <p class="feedback" data-explain="正解は、一番外側のイーサネットのヘッダです。隣の機器へ渡す段のヘッダなので、区間ごとに宛先が変わります。IP のヘッダの宛先は最終的な届け先で、何台のルータを通っても変わらず、TCP のヘッダや HTTP の中身も開けられません。"></p>
     </div>
     <div class="q" data-q="3">
-      <p class="q-text">この講座の読み方として正しい説明はどれか。</p>
+      <p class="q-text">IP アドレスと MAC アドレスの役割の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">どの章から読んでも、前提知識なしで理解できるように書かれている</button></li>
-        <li><button type="button" data-correct="true">番号順に読み進めることを前提に、前の章で説明した用語は再説明せず参照する</button></li>
-        <li><button type="button" data-correct="false">クイズにさえ正解すれば、かけあいやしくみの話は読み飛ばしてよい</button></li>
-        <li><button type="button" data-correct="false">各章の内容は独立しており、他の章と関連づける必要はない</button></li>
+        <li><button type="button" data-correct="false">IP アドレスは次に渡す隣の機器を、MAC アドレスは最終的な届け先を指す</button></li>
+        <li><button type="button" data-correct="false">同じ番号の別の書き方で、どちらを使っても同じ</button></li>
+        <li><button type="button" data-correct="true">IP アドレスは最終的な届け先を、MAC アドレスは次に渡す隣の機器を指す</button></li>
+        <li><button type="button" data-correct="false">IP アドレスは有線用、MAC アドレスは無線用の番号である</button></li>
       </ol>
-      <p class="feedback" data-explain="正解は、番号順に読み進めることを前提に、前の章で説明した用語は再説明せず参照する、です。この講座は積み上げ式で書かれており、前の章の用語がそのまま後の章で使われます。拾い読みや一部だけの学習では、前提の説明が抜けたまま読むことになります。"></p>
+      <p class="feedback" data-explain="正解は、IP アドレスが最終的な届け先、MAC アドレスが次に渡す隣の機器を指す、です。2 つは別の段で使う別の番号で、有線か無線かの違いではありません。ルータを通るたびに変わるのは MAC アドレスのほうで、IP アドレスは変わりません。"></p>
     </div>
   </div>
 
   <nav class="pager">
-    <a class="prev" href="m01-4.html">← 1-4 層に分ける理由と封筒の重なり</a>
+    <a class="prev" href="m01-4.html">← 1-4 層に分ける理由と、どの機器にも積まれている 5 つの段</a>
     <a class="up" href="m01.html">第 1 章の入口</a>
-    <a class="next" href="m02.html">第 2 章 信号と回線 →</a>
+    <a class="next" href="m01-6.html">1-6 この講座の歩き方 →</a>
   </nav>
 </main>
 </body>

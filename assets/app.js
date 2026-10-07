@@ -110,7 +110,7 @@
   // tools/test_progress_codec.js がこの区間だけを切り出して vm で検査する。
   var PROGRESS_ALPHABET =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  var PROGRESS_MAX_PAGES = 5; // STYLE.md §3: 1 章は 3〜5 ページ
+  var PROGRESS_MAX_PAGES = 6; // 章ごと 2 文字（12 ビット）に収まる上限。7 ページ以上の章ができたら版を上げる（plans/progress-sync.md）
 
   // chapters: assets/curriculum.json の chapters（章の順。各 chapter.pages がページの順）。
   // hasRead(pageId, rev) / hasDone(pageId, rev): 真偽値を返す関数。
@@ -131,7 +131,7 @@
   }
 
   // payload: "1." で始まる文字列（例 "1.ABAB…"）。
-  // 戻り値: 章ごとの 10 ビット整数の配列。不正なら null（"1." で始まらない、
+  // 戻り値: 章ごとの 12 ビット整数の配列。不正なら null（"1." で始まらない、
   // payload が奇数長、アルファベット外の文字を含む場合）。
   function decodeProgress(payload) {
     if (typeof payload !== "string" || payload.slice(0, 2) !== "1.") return null;
