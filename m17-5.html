@@ -17,14 +17,14 @@
 
   <div class="lead">
     <p class="lead-label">このページでわかること</p>
-    <p>クラウドの DNS サービスを使うとき、何を単位に設定すればよいのか。第 16 章で見た<strong>ゾーンという考え方が、そのまま設定の単位になっている</strong>。このページでは、3 社の呼び名の違いと、レコードの置き方を確認する。</p>
+    <p>クラウドの DNS サービスを使うとき、何を単位に設定すればよいのか。<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見た<strong>ゾーンという考え方が、そのまま設定の単位になっている</strong>。このページでは、3 社の呼び名の違いと、レコードの置き方を確認する。</p>
   </div>
 
   <details class="toc"><summary>このページの目次</summary></details>
 
   <h2 id="dialog">かけあい</h2>
   <div class="dialog">
-    <p class="s" data-who="ひよこちゃん">クラウドで DNS を使うとき、何を単位に設定すればいいんですか? 第 16 章で見たゾーンと関係あるんですか?</p>
+    <p class="s" data-who="ひよこちゃん">クラウドで DNS を使うとき、何を単位に設定すればいいんですか? <a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見たゾーンと関係あるんですか?</p>
     <p class="t" data-who="ふくろう先生">まさにそのゾーンが、そのまま設定の単位になります。ただ、事業者ごとに呼び名が違います。</p>
     <p class="s" data-who="ひよこちゃん">例えばどう違うんですか?</p>
     <p class="t" data-who="ふくろう先生">AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼びます。</p>
@@ -33,14 +33,14 @@
     <p class="s" data-who="ひよこちゃん">レコードは、このゾーンの中に置くってことですね。</p>
     <p class="t" data-who="ふくろう先生">そうです。DNS レコードを追加・変更するときは、このゾーンを指定して操作します。</p>
     <p class="s" data-who="ひよこちゃん">ゾーンには、どんな種類のレコードでも置けるんですか?</p>
-    <p class="t" data-who="ふくろう先生">置けます。第 16 章で見た A・AAAA・CNAME・NS・MX・TXT といった DNS レコードは、どれもこのゾーンの中に置かれます。</p>
+    <p class="t" data-who="ふくろう先生">置けます。<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見た A・AAAA・CNAME・NS・MX・TXT といった DNS レコードは、どれもこのゾーンの中に置かれます。</p>
     <p class="s" data-who="ひよこちゃん">3 社を乗り換えるときも、この「ゾーン」という考え方は変わらないんですか?</p>
     <p class="t" data-who="ふくろう先生">変わりません。呼び名は違っても、レコードをまとめて管理する入れ物という役割はどの事業者でも同じなので、考え方はそのまま持っていけます。</p>
     <p class="s" data-who="ひよこちゃん">ゾーンさえ作れば、すぐに使えるようになるんですか?</p>
     <p class="t" data-who="ふくろう先生">もう一つ手順があります。ドメインを最初に登録したレジストラ(ドメインの登録先の会社)には、そのドメインを管理する権威サーバの名前を伝えておく必要があります。</p>
     <p class="s" data-who="ひよこちゃん">なんでレジストラにも伝える必要があるんですか?</p>
     <p class="t" data-who="ふくろう先生">ドメインの登録情報には、そのドメインの権威サーバの名前も含まれています。ここが正しく設定されていないと、DNS リゾルバがそもそもどこに聞きに行けばいいか分かりません。</p>
-    <p class="s" data-who="ひよこちゃん">そこも第 16 章で見た、権威サーバの話とつながってるんですね。</p>
+    <p class="s" data-who="ひよこちゃん">そこも<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見た、権威サーバの話とつながってるんですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。</p>
     <p class="s" data-who="ひよこちゃん">3 社の呼び名、ちゃんと覚えておいたほうがいいんですかね。</p>
     <p class="t" data-who="ふくろう先生">覚えるというより、「呼び名が違っても、指しているものは同じ」という考え方を押さえておけば十分です。</p>
@@ -51,7 +51,7 @@
   <h2 id="recap">まとめ</h2>
   <div class="recap">
     <ul>
-      <li>クラウドの DNS サービスでは、第 16 章で見たゾーンがそのまま設定の単位になっている。</li>
+      <li>クラウドの DNS サービスでは、<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見たゾーンがそのまま設定の単位になっている。</li>
       <li>AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼ぶが、指している考え方は同じである。</li>
       <li>DNS レコードは、このゾーンの中に置き、追加・変更もゾーンを指定して行う。</li>
       <li>ドメインを最初に登録したレジストラには、そのゾーンを管理する権威サーバの名前を伝えておく必要がある。</li>
@@ -61,7 +61,7 @@
 
   <h2 id="deep">しくみの話</h2>
   <div class="deep">
-    <p>クラウドの DNS サービスでは、第 16 章で見たゾーンという考え方が、そのまま設定の単位になっている。AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼ぶ(#24、#32、#41)。呼び名は違っても、あるドメインとそのサブドメインの DNS レコードをまとめて入れる入れ物という考え方は共通しており、DNS レコードの追加・変更は、このゾーンを指定して行う。また、ドメインを最初に登録したレジストラ(ドメインの登録先の会社)には、そのドメインを管理する権威サーバの名前を伝えておく必要がある。ドメインの登録情報に権威サーバの名前が含まれていないと、DNS リゾルバはどこに問い合わせればよいか分からない(#24)。</p>
+    <p>クラウドの DNS サービスでは、<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見たゾーンという考え方が、そのまま設定の単位になっている。AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼ぶ(#24、#32、#41)。呼び名は違っても、あるドメインとそのサブドメインの DNS レコードをまとめて入れる入れ物という考え方は共通しており、DNS レコードの追加・変更は、このゾーンを指定して行う。また、ドメインを最初に登録したレジストラ(ドメインの登録先の会社)には、そのドメインを管理する権威サーバの名前を伝えておく必要がある。ドメインの登録情報に権威サーバの名前が含まれていないと、DNS リゾルバはどこに問い合わせればよいか分からない(#24)。</p>
     <table>
       <tr><th>会社</th><th>サービス</th><th>ゾーンの呼び名</th></tr>
       <tr><td>AWS</td><td>Route 53</td><td>hosted zone</td></tr>

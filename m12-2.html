@@ -25,7 +25,7 @@
   <h2 id="dialog">かけあい</h2>
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">ポート番号で行き先のプログラムが決まるのは分かったんですけど、データの運び方自体はいつも同じなんですか?</p>
-    <p class="t" data-who="ふくろう先生">実は複数の方式があります。よく使われる方式の一つは、届いたか確認して、足りなければ送り直す方式で、これを<a class="term" href="glossary.html#tcp" data-term="tcp">TCP</a>と呼び、詳しくは第 13 章で扱います。</p>
+    <p class="t" data-who="ふくろう先生">実は複数の方式があります。よく使われる方式の一つは、届いたか確認して、足りなければ送り直す方式で、これを<a class="term" href="glossary.html#tcp" data-term="tcp">TCP</a>と呼び、詳しくは<a class="xref" href="m13.html" data-page="m13">第 13 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、確認も送り直しもしない方式もあるんですか?</p>
     <p class="t" data-who="ふくろう先生">あります。それがこのページで見る UDP です。接続を作らず、届いたかどうかの確認も、順番の直しも、<strong>送り直しもしません</strong>。</p>
     <p class="s" data-who="ひよこちゃん">送りっぱなしで大丈夫なんですか? データが消えても気づけないですよね。</p>
@@ -37,13 +37,13 @@
     <p class="s" data-who="ひよこちゃん">なるほど、UDP のせいというより、アプリ側の作り方の問題でもあるんですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。音声や動画では、少しくらい乱れても止まらずに先へ進むほうが自然なので、送り直しをしない作りにすることもあります。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、それ以外にも UDP が向いてる場面ってあるんですか?</p>
-    <p class="t" data-who="ふくろう先生">あります。名前を IP アドレスに変える問い合わせのような、短く済むやり取りでよく使われ、これは<a class="term" href="glossary.html#dns" data-term="dns">DNS</a>と呼ばれる仕組みの一場面です。詳しくは第 16 章で扱います。</p>
+    <p class="t" data-who="ふくろう先生">あります。名前を IP アドレスに変える問い合わせのような、短く済むやり取りでよく使われ、これは<a class="term" href="glossary.html#dns" data-term="dns">DNS</a>と呼ばれる仕組みの一場面です。詳しくは<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">短いやり取りだと、確認や送り直しの手間のほうが大きくなっちゃうんですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。DHCP のような、たまに行う短いやり取りにも同じ理由で使われます。</p>
     <p class="s" data-who="ひよこちゃん">毎回接続を作っていたら、その分待ち時間がかかっちゃうってことですか?</p>
     <p class="t" data-who="ふくろう先生">そうです。接続を作るための手間や待ち時間が無い分、一往復で済むような短いやり取りほど、UDP の身軽さが活きてきます。</p>
     <p class="s" data-who="ひよこちゃん">速さや身軽さが欲しい場面で選ばれる方式なんですね。</p>
-    <p class="t" data-who="ふくろう先生">そうです。実は、UDP の上に新しく作られた運び方もあり、<a class="term" href="glossary.html#quic" data-term="quic">QUIC</a>と呼ばれています。詳しくは第 15 章で扱います。</p>
+    <p class="t" data-who="ふくろう先生">そうです。実は、UDP の上に新しく作られた運び方もあり、<a class="term" href="glossary.html#quic" data-term="quic">QUIC</a>と呼ばれています。詳しくは<a class="xref" href="m15.html" data-page="m15">第 15 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">UDP を土台にした、新しい方式もあるんですね。</p>
     <p class="t" data-who="ふくろう先生">そうです。次のページでは、今どのプログラムがどの番号で通信しているかを確認する方法を見ていきましょう。</p>
   </div>

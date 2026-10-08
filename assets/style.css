@@ -12,7 +12,7 @@
     5.  モバイルメニュー / テーマ切替ボタン
     6.  パンくず・章ラベル・見出し・lead 箱・details.toc
     7.  かけあい（吹き出し・アイコン・data-face 雛形）
-    7b. 用語リンクとツールチップ（a.term / div.term-tip）
+    7b. 用語リンクとツールチップ（a.term / a.xref / div.term-tip）
     8.  まとめ / しくみの話 / details.more（もっと知りたい人へ）
     8b. 試してみよう（div.try）
     9.  参考文献
@@ -687,7 +687,9 @@ div.dialog p.s::before {
 
 div.deep pre, div.deep code { font-size: 0.85em; }
 
-/* ---------- 7b. 用語リンクとツールチップ（a.term / div.term-tip） ---------- */
+/* ---------- 7b. 用語リンクとツールチップ（a.term / a.xref / div.term-tip） ---------- */
+/* a.xref は他ページ・章への番号参照（§6.8b）。a.term（点線）と見分けるため破線の下線にし、
+   吹き出し（div.term-tip）は a.term と共用する。 */
 a.term {
   color: inherit;
   text-decoration-line: underline;
@@ -699,6 +701,21 @@ a.term {
 a.term:hover,
 a.term:focus-visible,
 a.term[aria-describedby] {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+a.xref {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--ink-muted);
+  text-underline-offset: 0.18em;
+  cursor: help;
+}
+a.xref:hover,
+a.xref:focus-visible,
+a.xref[aria-describedby] {
   color: var(--accent);
   text-decoration-color: var(--accent);
 }
@@ -718,6 +735,7 @@ div.term-tip {
 }
 div.term-tip[hidden] { display: none; }
 div.term-tip p.term-tip-short { margin: 0 0 0.6em; }
+div.term-tip p.term-tip-title { margin: 0 0 0.3em; font-weight: 700; }
 div.term-tip p.term-tip-links {
   display: flex;
   flex-direction: column;
@@ -1254,6 +1272,7 @@ input.sync-url {
   }
   body { color: #000; background: #fff; }
   a { color: #000; text-decoration: underline; }
+  a.xref { text-decoration: none; }
   div.lead, div.recap, div.deep, div.fig-sec, div.quiz div.q {
     border: 1px solid #999 !important;
     background: #fff !important;

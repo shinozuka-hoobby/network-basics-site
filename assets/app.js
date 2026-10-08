@@ -13,6 +13,8 @@
     - サイト内検索（assets/search-index.json を初回入力時に fetch。2 文字以上で部分一致）。
     - 用語ツールチップ（assets/glossary.json を初回に 1 度だけ fetch。a.term[data-term] への
       ホバー／フォーカス／クリック／タップで吹き出しを表示。§6.8）。
+    - ページ参照ツールチップ（a.xref[data-page]。assets/curriculum.json から題名と要約を出す。
+      吹き出しは a.term と共用。§6.8b）。
     - details.toc の自動生成（main h2[id] から）。
     - クイズ（3 問正解でそのページを完了扱いにする）。
     - 読了記録（nav.pager が画面に入ったら記録）。
@@ -749,16 +751,41 @@
   function showTermTip(anchor, glossaryMap, pinned) {
     var entry = glossaryMap[anchor.dataset.term];
     if (!entry) return;
+    showTipWith(anchor, function (tip) { renderTermTipContent(tip, entry); }, pinned);
+  }
+
+  // a.term と a.xref で吹き出しの要素・位置決め・開閉を共用する。
+  function showTipWith(anchor, render, pinned) {
     if (openTip && openTip.anchor !== anchor) hideTermTip();
 
     var tip = ensureTermTipEl();
-    renderTermTipContent(tip, entry);
+    render(tip);
     // 吹き出しは body 直下に置いたまま使う（段落の中へ移すと div.dialog p::before の装飾が当たる）
     if (tip.parentNode !== document.body) document.body.appendChild(tip);
     tip.hidden = false;
     positionTermTip(tip, anchor);
     anchor.setAttribute("aria-describedby", tip.id);
     openTip = { anchor: anchor, pinned: !!(openTip && openTip.anchor === anchor && openTip.pinned) || !!pinned };
+  }
+
+  var tipGlobalReady = false;
+  function initTipGlobalListeners() {
+    if (tipGlobalReady) return;
+    tipGlobalReady = true;
+    // 開いた吹き出しの外側をタップ／クリックすると閉じる。
+    document.addEventListener("pointerdown", function (e) {
+      if (!openTip || !termTipEl) return;
+      var target = e.target;
+      if (termTipEl.contains(target) || openTip.anchor.contains(target)) return;
+      hideTermTip();
+    });
+
+    window.addEventListener("scroll", function () {
+      if (openTip && termTipEl) positionTermTip(termTipEl, openTip.anchor);
+    }, true);
+    window.addEventListener("resize", function () {
+      if (openTip && termTipEl) positionTermTip(termTipEl, openTip.anchor);
+    });
   }
 
   function initGlossaryTerms() {
@@ -797,24 +824,110 @@
           });
         });
 
-        // 開いた吹き出しの外側をタップ／クリックすると閉じる。
-        document.addEventListener("pointerdown", function (e) {
-          if (!openTip || !termTipEl) return;
-          var target = e.target;
-          if (termTipEl.contains(target) || openTip.anchor.contains(target)) return;
-          hideTermTip();
-        });
-
-        window.addEventListener("scroll", function () {
-          if (openTip && termTipEl) positionTermTip(termTipEl, openTip.anchor);
-        }, true);
-        window.addEventListener("resize", function () {
-          if (openTip && termTipEl) positionTermTip(termTipEl, openTip.anchor);
-        });
+        initTipGlobalListeners();
       })
       .catch(function () {
         // assets/glossary.json の読み込みに失敗したら、a.term は普通のリンクとして
         // 用語集ページへ遷移させる（href="glossary.html#<id>" のまま何もしない）。
+      });
+  }
+
+  // ---------- ページ参照ツールチップ（a.xref[data-page]、§6.8b） ----------
+  // data-page は mNN-K（ページ）か mNN（章）。吹き出しは a.term と共用する。
+  function buildXrefEntry(anchor, data) {
+    var id = anchor.getAttribute("data-page") || "";
+    var m = /^m(\d{2})(?:-(\d))?$/.exec(id);
+    if (!m || !data || !data.chapters) return null;
+    var note = anchor.getAttribute("data-note");
+    var i, j, ch, pg;
+    for (i = 0; i < data.chapters.length; i++) {
+      ch = data.chapters[i];
+      if (m[2]) {
+        for (j = 0; j < (ch.pages || []).length; j++) {
+          pg = ch.pages[j];
+          if (pg.id === id) {
+            return {
+              title: pg.number + " " + pg.title,
+              body: note || pg.lead || "",
+              open: "このページを開く →"
+            };
+          }
+        }
+      } else if (ch.id === id) {
+        return {
+          title: "第 " + ch.number + " 章 " + ch.title,
+          body: note || (ch.goals && ch.goals[0]) || "",
+          open: "この章の入口を開く →"
+        };
+      }
+    }
+    return null;
+  }
+
+  function renderXrefTipContent(tip, entry, href) {
+    tip.innerHTML = "";
+    var t = document.createElement("p");
+    t.className = "term-tip-title";
+    t.textContent = entry.title;
+    tip.appendChild(t);
+
+    if (entry.body) {
+      var p = document.createElement("p");
+      p.className = "term-tip-short";
+      p.textContent = entry.body;
+      tip.appendChild(p);
+    }
+
+    var links = document.createElement("p");
+    links.className = "term-tip-links";
+    var a = document.createElement("a");
+    a.href = href;
+    a.textContent = entry.open;
+    links.appendChild(a);
+    tip.appendChild(links);
+  }
+
+  function initPageRefs() {
+    var anchors = Array.prototype.slice.call(document.querySelectorAll("a.xref[data-page]"));
+    if (!anchors.length) return;
+
+    fetchCurriculum()
+      .then(function (data) {
+        var shown = false;
+        anchors.forEach(function (anchor) {
+          var entry = buildXrefEntry(anchor, data);
+          // curriculum に無い参照は、吹き出しを付けず普通のリンクのままにする。
+          if (!entry) return;
+          var href = anchor.getAttribute("href") || (anchor.getAttribute("data-page") + ".html");
+          var show = function (pinned) {
+            showTipWith(anchor, function (tip) { renderXrefTipContent(tip, entry, href); }, pinned);
+          };
+          shown = true;
+          anchor.addEventListener("mouseenter", function () { show(false); });
+          anchor.addEventListener("mouseleave", function () {
+            if (openTip && openTip.anchor === anchor && !openTip.pinned) hideTermTip();
+          });
+          anchor.addEventListener("focus", function () { show(false); });
+          anchor.addEventListener("blur", function () {
+            if (openTip && openTip.anchor === anchor && !openTip.pinned) hideTermTip();
+          });
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (openTip && openTip.anchor === anchor) {
+              if (openTip.pinned) {
+                hideTermTip();
+              } else {
+                openTip.pinned = true;
+              }
+            } else {
+              show(true);
+            }
+          });
+        });
+        if (shown) initTipGlobalListeners();
+      })
+      .catch(function () {
+        // curriculum.json の読み込みに失敗したら、a.xref は普通のリンクとして遷移させる。
       });
   }
 
@@ -1253,5 +1366,6 @@
   initLearningMap();
   initResetProgress();
   initGlossaryTerms();
+  initPageRefs();
   initCopyProgress();
 })();

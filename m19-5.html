@@ -27,11 +27,11 @@
     <p class="s" data-who="ひよこちゃん">この章では、身分証の取得や更新、失効の話をしてきましたけど、その身分証って、いつも自分のサーバに置いてあるものなんですか?</p>
     <p class="t" data-who="ふくろう先生">そうとは限りません。TLS の暗号を解く役目を、どの機械が受け持つかを<strong>TLS 終端</strong>と呼び、これにはいくつかの選択肢があります。</p>
     <p class="s" data-who="ひよこちゃん">解く役目、ですか? どこでもいいってことですか?</p>
-    <p class="t" data-who="ふくろう先生">1 つ目は自分のサーバです。第 18 章で見た TLS ハンドシェイクの相手が、そのまま自分のサーバになります。</p>
+    <p class="t" data-who="ふくろう先生">1 つ目は自分のサーバです。<a class="xref" href="m18.html" data-page="m18">第 18 章</a>で見た TLS ハンドシェイクの相手が、そのまま自分のサーバになります。</p>
     <p class="s" data-who="ひよこちゃん">他にも選択肢があるんですか?</p>
-    <p class="t" data-who="ふくろう先生">あります。手前に<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>(同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械)を置いて、そこで解く方法です。詳しくは第 23 章で扱います。</p>
+    <p class="t" data-who="ふくろう先生">あります。手前に<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>(同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械)を置いて、そこで解く方法です。詳しくは<a class="xref" href="m23.html" data-page="m23">第 23 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">もう 1 つは何ですか?</p>
-    <p class="t" data-who="ふくろう先生">利用者の近くにある配信専用の機械、<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>で解く方法です。詳しくは第 22 章で扱います。</p>
+    <p class="t" data-who="ふくろう先生">利用者の近くにある配信専用の機械、<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>で解く方法です。詳しくは<a class="xref" href="m22.html" data-page="m22">第 22 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">自分のサーバ以外で解くと、何が変わるんですか?</p>
     <p class="t" data-who="ふくろう先生">手前で暗号を解くと、そこから先のサーバへの通信は、<strong>暗号化されないまま転送される</strong>ことがあります。</p>
     <p class="s" data-who="ひよこちゃん">先輩から、ロードバランサで終端していたら、サーバ側のアプリが自分は http で受けていると勘違いしていた、という話を聞いたことがあります。</p>

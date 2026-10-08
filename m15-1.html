@@ -26,10 +26,10 @@
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">前の章の最後で、新しいトランスポート技術があるって聞いたんですけど、それがこれですか?</p>
     <p class="t" data-who="ふくろう先生">そうです。まずは、今までの TCP を土台にした通信で何が問題だったかから見ていきましょう。</p>
-    <p class="s" data-who="ひよこちゃん">TCP は第 13 章で接続を作る手続きを習いましたけど、それだけでは足りないんですか?</p>
+    <p class="s" data-who="ひよこちゃん">TCP は<a class="xref" href="m13.html" data-page="m13">第 13 章</a>で接続を作る手続きを習いましたけど、それだけでは足りないんですか?</p>
     <p class="t" data-who="ふくろう先生">https の通信では足りません。TCP 接続を作ったあとに、もう一つ、相手を確かめながらこの先の通信を守る鍵を決める、暗号化の手続きが必要です。</p>
     <p class="s" data-who="ひよこちゃん">その暗号化の手続きって、名前は無いんですか?</p>
-    <p class="t" data-who="ふくろう先生">あります。<a class="term" href="glossary.html#tls" data-term="tls">TLS</a>と呼び、相手が本物かどうかを確かめながら、この先の通信を守る鍵を取り決める手続きです。詳しくは第 18 章で扱います。</p>
+    <p class="t" data-who="ふくろう先生">あります。<a class="term" href="glossary.html#tls" data-term="tls">TLS</a>と呼び、相手が本物かどうかを確かめながら、この先の通信を守る鍵を取り決める手続きです。詳しくは<a class="xref" href="m18.html" data-page="m18">第 18 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、TCP の接続を作る手続きと、この TLS の手続き、それぞれ別々にやり取りするってことですか?</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。接続を作る往復と、暗号化の往復が別々に重なるので、最初のやり取りができるまでの待ち時間が積み重なります。</p>
     <p class="s" data-who="ひよこちゃん">待ち時間が伸びるのは分かりました。他にも問題があるんですか?</p>
