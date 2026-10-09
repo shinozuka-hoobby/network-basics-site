@@ -29,6 +29,24 @@
     <p class="s" data-who="ひよこちゃん">コロンで区切られた名前と値、ですか?</p>
     <p class="t" data-who="ふくろう先生">はい。例えば Host という名前の後にコロンを挟んで、example.com のような値が続きます。</p>
     <p class="s" data-who="ひよこちゃん">他には、どんな名前があるんですか?</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="代表的な HTTP ヘッダの一覧。Host はリクエスト用で宛先のホスト名を伝え、例は Host: example.com。User-Agent はリクエスト用でブラウザの種類を伝える。Accept はリクエスト用でブラウザが望む返事の形式を伝える。Content-Type はレスポンス用で本文の種類を伝え、例は Content-Type: text/html。Content-Length はレスポンス用で本文の長さを伝える。strict-transport-security はレスポンス用で、次からは必ず https でつないでほしいという指示を伝える。">代表的なヘッダ
+Host(リクエスト)
+  宛先のホスト名
+  例: Host: example.com
+User-Agent(リクエスト)
+  ブラウザの種類
+Accept(リクエスト)
+  ブラウザが望む返事の形式
+Content-Type(レスポンス)
+  本文の種類
+  例: Content-Type: text/html
+Content-Length(レスポンス)
+  本文の長さ
+strict-transport-security(レスポンス)
+  次からは必ず https で、という指示</pre>
+<p class="fig-cap">名前ごとに、どちら向きで何を伝えるかが決まっている。</p>
+    </div>
     <p class="t" data-who="ふくろう先生">リクエストなら、宛先のホスト名を伝える Host、ブラウザの種類を伝える User-Agent などがあります。</p>
     <p class="s" data-who="ひよこちゃん">Accept みたいなヘッダも見たことあるんですけど、あれも仲間ですか?</p>
     <p class="t" data-who="ふくろう先生">はい。ブラウザがどんな形式の返事を望んでいるかを伝えるヘッダで、User-Agent と同じく、ブラウザの側から伝える情報の一つです。</p>
@@ -39,7 +57,7 @@
     <p class="s" data-who="ひよこちゃん">なるほど、要求行だけでは宛先が分からないってことですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。Web サーバは Host ヘッダを見て、どの宛先向けのリクエストかを判断します。</p>
     <p class="s" data-who="ひよこちゃん">あ、そういえば<a class="xref" href="m19.html" data-page="m19">第 19 章</a>で見た、https を強制する指示(HSTS)って、どこに書かれてたんでしたっけ?</p>
-    <p class="t" data-who="ふくろう先生">まさにそれも、この HTTP ヘッダの一つです。応答の中の指示、と言っていたものは、正式には HTTP ヘッダに書かれていたんです。</p>
+    <p class="t" data-who="ふくろう先生">まさにそれも、この HTTP ヘッダの一つです(図の最後の名前がそれです)。応答の中の指示、と言っていたものは、正式には HTTP ヘッダに書かれていたんです。</p>
     <p class="s" data-who="ひよこちゃん">ヘッダって、全部でどれくらいの種類があるんですか?</p>
     <p class="t" data-who="ふくろう先生">実際には数多くの種類がありますが、まずは今日見た代表的な項目を押さえておけば十分です。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、ヘッダって結構いろんな役割があるんですね。</p>
