@@ -17,7 +17,7 @@
 
   <div class="lead">
     <p class="lead-label">このページでわかること</p>
-    <p><a class="xref" href="m25-1.html" data-page="m25-1">25-1</a> から <a class="xref" href="m25-4.html" data-page="m25-4">25-4</a> で見た呼び方は、いずれも AWS のものである。<strong>GCP・Azure では呼び方や、確認できた資料の厚みが違う</strong>。このページでは、3 社の対応を 1 つの表で整理する。</p>
+    <p><a class="xref" href="m25-1.html" data-page="m25-1">25-1</a> から <a class="xref" href="m25-4.html" data-page="m25-4">25-4</a>(この章の 4 つの答え)で見た呼び方は、いずれも AWS のものである。<strong>GCP・Azure では呼び方や、確認できた資料の厚みが違う</strong>。このページでは、3 社の対応を 1 つの表で整理する。</p>
   </div>
 
   <details class="toc"><summary>このページの目次</summary></details>
@@ -26,7 +26,39 @@
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">ここまで AWS の言葉で見てきましたけど、GCP や Azure だとどう呼ぶんですか?</p>
     <p class="t" data-who="ふくろう先生">呼び方が違うだけのものが多いです。表で整理しましょう。</p>
-    <p class="s" data-who="ひよこちゃん">VPC ピアリングは、GCP だと VPC Network Peering って呼ぶんですね。制約も同じですか?</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="役目ごとの、3 社の呼び名の対応。1 対 1 で直接つなぐは、AWS が VPC ピアリング、GCP が VPC Network Peering、Azure が見つかっていない。ハブでまとめてつなぐは、AWS が Transit Gateway、GCP が Network Connectivity Center、Azure が Virtual WAN(見出しのみ)。複数チームで VPC を使うは、AWS が共有 VPC、GCP が Shared VPC、Azure が見つかっていない。暗号化トンネルでつなぐは、AWS が VPN、GCP が Cloud VPN、Azure が VPN Gateway(見出しのみ)。物理回線で直接つなぐは、AWS が専用線、GCP が Cloud Interconnect、Azure が ExpressRoute(見出しのみ)。特定のサービスだけへは、AWS が PrivateLink、GCP が Private Service Connect、Azure が Private Link(見出しのみ)。">1 対 1 で直接つなぐ
+ AWS: VPC ピアリング
+ GCP: VPC Network Peering
+ Azure: —
+
+ハブでまとめてつなぐ
+ AWS: Transit Gateway
+ GCP: Network Connectivity Center
+ Azure: Virtual WAN(見出しのみ)
+
+複数チームで VPC を使う
+ AWS: 共有 VPC
+ GCP: Shared VPC
+ Azure: —
+
+暗号化トンネルでつなぐ
+ AWS: VPN
+ GCP: Cloud VPN
+ Azure: VPN Gateway(見出しのみ)
+
+物理回線で直接つなぐ
+ AWS: 専用線
+ GCP: Cloud Interconnect
+ Azure: ExpressRoute(見出しのみ)
+
+特定のサービスだけへ
+ AWS: PrivateLink
+ GCP: Private Service Connect
+ Azure: Private Link(見出しのみ)</pre>
+<p class="fig-cap">役目ごとに、3 社の呼び名を 1 行ずつ並べた。Azure の「—」は確認できていないという意味である。</p>
+    </div>
+    <p class="s" data-who="ひよこちゃん">表の 1 つ目を見ると、VPC ピアリングは GCP だと VPC Network Peering って呼ぶんですね。制約も同じですか?</p>
     <p class="t" data-who="ふくろう先生">そうです。GCP の VPC Network Peering も、推移しないことと、互いの IP アドレスの範囲が重ならないことが必要な点は同じです。</p>
     <p class="s" data-who="ひよこちゃん">Transit Gateway や共有 VPC は、GCP だとどう呼ぶんですか?</p>
     <p class="t" data-who="ふくろう先生">Transit Gateway に近いのは Network Connectivity Center、共有 VPC はそのまま Shared VPC と呼びます。</p>

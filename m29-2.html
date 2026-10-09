@@ -27,13 +27,34 @@
     <p class="s" data-who="ひよこちゃん">AWS 以外のクラウドにも、同じような診断機能ってあるんですか?</p>
     <p class="t" data-who="ふくろう先生">あります。GCP には Connectivity Tests、Azure には Network Watcher という名前の機能があります。</p>
     <p class="s" data-who="ひよこちゃん">どれも同じ仕組みなんですか?</p>
-    <p class="t" data-who="ふくろう先生">近いですが、少し違います。GCP の Connectivity Tests は、AWS と同じように設定を読み取って経路をシミュレートします。ただ、一部の場合には確認用のパケットを実際に送って、届いた割合まで測ります。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="3 社の診断機能の対比。AWS は、設定を読んで判定するのが Reachability Analyzer、実際に送って確かめる機能は無し、届かない場合に分かるのは止めている設定。GCP は、設定を読んで判定するのが Connectivity Tests、実際に送って確かめるのも Connectivity Tests(一部の場合)、届かない場合に分かるのは到達した割合。Azure は、設定を読んで判定するのが IP flow verify、実際に送って確かめるのが Connection troubleshoot、届かない場合に分かるのは経由した機器ごとの問題。">3 社の診断機能の対比
+AWS
+ 設定を読んで判定: Reachability Analyzer
+ 実際に送って確かめる: 無し
+ 届かない場合に分かること: 止めている設定
+
+GCP
+ 設定を読んで判定: Connectivity Tests
+ 実際に送って確かめる:
+   Connectivity Tests(一部の場合)
+ 届かない場合に分かること: 到達した割合
+
+Azure
+ 設定を読んで判定: IP flow verify
+ 実際に送って確かめる:
+   Connection troubleshoot
+ 届かない場合に分かること:
+   経由した機器ごとの問題</pre>
+<p class="fig-cap">3 社とも設定を読んで判定する機能を持つが、実際に送って確かめる機能の有無と、届かないときに分かることが違う。</p>
+    </div>
+    <p class="t" data-who="ふくろう先生">近いですが、少し違います。図の GCP の行のとおり、Connectivity Tests は、AWS と同じように設定を読み取って経路をシミュレートします。ただ、図の GCP の 2 行目にあるように、一部の場合には確認用のパケットを実際に送って、届いた割合まで測ります。</p>
     <p class="s" data-who="ひよこちゃん">え、じゃあ AWS の Reachability Analyzer より、確かめられることが多いんですね。</p>
     <p class="t" data-who="ふくろう先生">一長一短です。到達した割合が <strong>95% 以上</strong>なら「到達可能」、0 なら「到達不能」、その間なら「部分的に到達可能」と 3 段階で判定します。</p>
     <p class="s" data-who="ひよこちゃん">Azure はどうなんですか?</p>
-    <p class="t" data-who="ふくろう先生">Azure は、Network Watcher という機能の中に、役割の違う複数の道具が用意されています。IP flow verify は、AWS の Reachability Analyzer に近く、仮想マシンに適用された設定を読み取って、通信が許可されるか拒否されるかと、その根拠になった規則の名前を返します。</p>
+    <p class="t" data-who="ふくろう先生">Azure は、Network Watcher という機能の中に、役割の違う複数の道具が用意されています。図の Azure の 1 行目の IP flow verify は、AWS の Reachability Analyzer に近く、仮想マシンに適用された設定を読み取って、通信が許可されるか拒否されるかと、その根拠になった規則の名前を返します。</p>
     <p class="s" data-who="ひよこちゃん">実際に送る方の道具もあるんですか?</p>
-    <p class="t" data-who="ふくろう先生">あります。Connection troubleshoot です。実際に確認用のパケットを送り、届いたかどうかと、経由した機器ごとの情報を返します。</p>
+    <p class="t" data-who="ふくろう先生">あります。図の Azure の 2 行目の Connection troubleshoot です。実際に確認用のパケットを送り、届いたかどうかと、経由した機器ごとの情報を返します。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ Azure は、設定を読む道具と、実際に送る道具の、両方を持ってるんですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。GCP の Connectivity Tests は 1 つの機能の中に両方の性質を持ち、Azure は役割ごとに別の道具に分かれている、という違いがあります。</p>
     <p class="s" data-who="ひよこちゃん">Connection troubleshoot は、具体的にどんな問題を見つけてくれるんですか?</p>

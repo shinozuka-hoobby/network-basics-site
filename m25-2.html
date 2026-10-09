@@ -25,13 +25,27 @@
   <h2 id="dialog">かけあい</h2>
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">前のページで、VPC の数が増えたら大変になるって言ってましたけど、具体的にどれくらい大変になるんですか?</p>
-    <p class="t" data-who="ふくろう先生">数字で見てみましょう。VPC が 100 個あって、全部を直接 VPC ピアリングでつなごうとすると、必要な接続は 4,950 個にもなります。</p>
+    <p class="t" data-who="ふくろう先生">数字で見てみましょう。VPC ピアリングは 2 つの VPC を 1 対 1 でつなぐ仕組みでした(<a class="xref" href="m25-1.html" data-page="m25-1">25-1</a>)。VPC が 100 個あって、全部を直接 VPC ピアリングでつなごうとすると、必要な接続は 4,950 個にもなります。</p>
     <p class="s" data-who="ひよこちゃん">そんなに! 1 つの VPC が持てる接続の数にも、限りがありそうですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。1 つの VPC が持てる VPC ピアリング接続には上限があります。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、VPC がたくさんある場合は、どうすればいいんですか?</p>
     <p class="t" data-who="ふくろう先生">たくさんの VPC を 1 か所に集めてつなぐ仕組みを使います。AWS ではこれを<strong>Transit Gateway</strong>と呼びます。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="VPC が 4 個(A、B、C、D)の場合の、2 つのつなぎ方の比較。上は、全部を VPC ピアリングでつなぐ形で、A-B、A-C、A-D、B-C、B-D、C-D の 6 本が必要。下は、Transit Gateway を中心につなぐ形で、A、B、C、D のそれぞれが Transit Gateway とつながる 4 本で済む。">VPC が 4 個(A〜D)の場合の例
+
+全部を VPC ピアリングでつなぐ: 6 本
+ A-B  A-C  A-D
+ B-C  B-D  C-D
+
+Transit Gateway を中心につなぐ: 4 本
+ A --- Transit Gateway
+ B --- Transit Gateway
+ C --- Transit Gateway
+ D --- Transit Gateway</pre>
+<p class="fig-cap">VPC が 4 個なら 6 本と 4 本で、個数が増えるほど差が開く。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">1 か所に集めるって、具体的にはどういうことですか?</p>
-    <p class="t" data-who="ふくろう先生">Transit Gateway が持つ経路の設定にしたがって、つながっている VPC 同士の通信を中継します。VPC はそれぞれ、Transit Gateway とだけつながればよくなります。</p>
+    <p class="t" data-who="ふくろう先生">Transit Gateway が持つ経路の設定にしたがって、つながっている VPC 同士の通信を中継します。図の下のように、VPC はそれぞれ、Transit Gateway とだけつながればよくなります。</p>
     <p class="s" data-who="ひよこちゃん">なるほど、1 対 1 でつながなくてよくなるんですね。ところで、AWS の資料でたまに見かける「シェアード VPC」って、これとは別の仕組みですか?</p>
     <p class="t" data-who="ふくろう先生">別の仕組みで、<strong>共有 VPC</strong>と呼びます。1 つの VPC を、複数のチームやアカウントで分担して使えるようにする仕組みです。</p>
     <p class="s" data-who="ひよこちゃん">つなぐ仕組みじゃなくて、使う仕組みってことですか?</p>

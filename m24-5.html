@@ -26,22 +26,55 @@
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">ここまで AWS の言葉で見てきましたけど、GCP や Azure を使うときも同じことを覚え直すんですか?</p>
     <p class="t" data-who="ふくろう先生">考え方は同じです。呼び方が違うだけのものが多いので、表で整理しましょう。</p>
+
+    <div class="fig-sec">
+    <pre class="fig" aria-label="3 社の呼び名の対応。1 番目、仕切られた範囲は、AWS が VPC、GCP が VPC ネットワーク(グローバル)、Azure が Virtual Network。2 番目、範囲の中の区画は、AWS と Azure がサブネット、GCP がサブネット(リージョン単位)。3 番目、送り先を決める設定は、AWS と Azure がルートテーブル、GCP がルート。4 番目、インターネットへの出口は、AWS がインターネットゲートウェイ、GCP が default internet gateway、Azure は資料に記述なし。5 番目、外への番号の付け替えは、AWS が NAT ゲートウェイ、GCP が Cloud NAT、Azure が NAT Gateway。6 番目、サーバ単位の許可設定は、AWS がセキュリティグループ、GCP が許可・拒否のルール、Azure が NSG。7 番目、区画単位の許可設定は、AWS が NACL、GCP が許可・拒否のルール(区画で絞る)、Azure が NSG。">3 社の呼び名(— は資料に記述なし)
+1 仕切られた範囲
+  AWS: VPC
+  GCP: VPC ネットワーク(グローバル)
+  Azure: Virtual Network
+2 範囲の中の区画
+  AWS: サブネット
+  GCP: サブネット(リージョン単位)
+  Azure: サブネット
+3 送り先を決める設定
+  AWS: ルートテーブル
+  GCP: ルート
+  Azure: ルートテーブル
+4 インターネットへの出口
+  AWS: インターネットゲートウェイ
+  GCP: default internet gateway
+  Azure: —
+5 外への番号の付け替え
+  AWS: NAT ゲートウェイ
+  GCP: Cloud NAT
+  Azure: NAT Gateway
+6 サーバ単位の許可設定
+  AWS: セキュリティグループ
+  GCP: 許可・拒否のルール
+  Azure: NSG
+7 区画単位の許可設定
+  AWS: NACL
+  GCP: 許可・拒否のルール(区画で絞る)
+  Azure: NSG</pre>
+    <p class="fig-cap">ここまでの仕組みを、役目ごとに 3 社の呼び名で並べたもの。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">VPC は、GCP でも同じ名前なんですか?</p>
-    <p class="t" data-who="ふくろう先生">名前は VPC ネットワークで近いですが、範囲が違います。GCP の VPC ネットワークはリージョンをまたぐグローバルな資源で、その中のサブネットの方がリージョン単位に分かれています。</p>
+    <p class="t" data-who="ふくろう先生">図の 1 番目のとおり、名前は VPC ネットワークで近いですが、範囲が違います。GCP の VPC ネットワークはリージョンをまたぐグローバルな資源で、その中のサブネットの方がリージョン単位に分かれています。</p>
     <p class="s" data-who="ひよこちゃん">AWS だと逆に、VPC が 1 つのリージョンの中に閉じてるんでしたね。</p>
-    <p class="t" data-who="ふくろう先生">そのとおりです。外への出口の名前も違います。GCP では、宛先 0.0.0.0/0 の経路の送り先を「default internet gateway」と呼びます。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。図の 4 番目、外への出口の名前も違います。GCP では、宛先 0.0.0.0/0 の経路の送り先を「default internet gateway」と呼びます。</p>
     <p class="s" data-who="ひよこちゃん">Azure にも、似た名前の出入り口ってあるんですか?</p>
     <p class="t" data-who="ふくろう先生">Azure の資料には、その名前の出入り口についての記述が見当たりませんでした。表ではその欄を空欄にしています。</p>
     <p class="s" data-who="ひよこちゃん">Azure のルートテーブルは、AWS と同じような表になってるんですか?</p>
-    <p class="t" data-who="ふくろう先生">近い形です。Azure でも、サブネットごとにルートテーブルが自動で用意され、宛先 0.0.0.0/0 ならインターネットへ、という行が既定で入っています。</p>
+    <p class="t" data-who="ふくろう先生">図の 3 番目のとおり、近い形です。Azure でも、サブネットごとにルートテーブルが自動で用意され、宛先 0.0.0.0/0 ならインターネットへ、という行が既定で入っています。</p>
     <p class="s" data-who="ひよこちゃん">NAT ゲートウェイも、Azure にあるんですか?</p>
-    <p class="t" data-who="ふくろう先生">あります。名前も NAT Gateway で、サブネット単位で使えます。</p>
+    <p class="t" data-who="ふくろう先生">あります。図の 5 番目のとおり、名前も NAT Gateway で、サブネット単位で使えます。</p>
     <p class="s" data-who="ひよこちゃん">セキュリティグループと NACL、GCP や Azure でも 2 つ別々にあるんですか?</p>
-    <p class="t" data-who="ふくろう先生">そこは少し違います。GCP は、通信を許可・拒否する同じ 1 つの仕組みを、サーバ単位にもサブネット単位にも使えます。区画を境界にする使い方は「サブネット分離」と呼ばれています。</p>
+    <p class="t" data-who="ふくろう先生">図の 6・7 番目のとおり、そこは少し違います。GCP は、通信を許可・拒否する同じ 1 つの仕組み(図の「許可・拒否のルール」)を、サーバ単位にもサブネット単位にも使えます。区画を境界にする使い方は「サブネット分離」と呼ばれています。</p>
     <p class="s" data-who="ひよこちゃん">Azure は?</p>
     <p class="t" data-who="ふくろう先生">Azure も NSG という 1 つの仕組みを、サブネットにもサーバのネットワークインタフェースにも、どちらにも適用できます。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、AWS だけがセキュリティグループと NACL の 2 つを別々に持ってるってことですね。</p>
-    <p class="t" data-who="ふくろう先生">そのとおりです。決めた条件に合わない通信を止めるという意味では、セキュリティグループも、GCP や Azure の同じ役目の仕組みも、どれも<a class="xref" href="m26.html" data-page="m26">第 26 章</a>で見る<a class="term" href="glossary.html#firewall" data-term="firewall">ファイアウォール</a>の一種です。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。決めた条件に合わない通信を止めるという意味では、セキュリティグループも、GCP や Azure の同じ役目の仕組みも、どれも<a class="xref" href="m26.html" data-page="m26">第 26 章</a>で見る<a class="term" href="glossary.html#firewall" data-term="firewall">ファイアウォール</a>の一種です。GCP では、図の「許可・拒否のルール」をファイアウォールルールと呼びます。</p>
     <p class="s" data-who="ひよこちゃん">なるほど、名前や仕組みの分かれ方が違うだけなんですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。表の空欄は、無いと決まったわけではなく、今回集めた資料の中では確認できなかった、という意味だと考えてください。</p>
     <p class="s" data-who="ひよこちゃん">呼び方の違いはあっても、区切って中と外を分けるっていう考え方自体は共通なんですね。</p>

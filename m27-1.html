@@ -30,6 +30,28 @@
     <p class="t" data-who="ふくろう先生">行ごとに役目が違います。icmp_seq= は何回目の確認かを示す番号、ttl= は<a class="xref" href="m06-2.html" data-page="m06-2">第 6 章 6-2</a> で見た IP の TTL の残りです。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、今日はどこを見ればいいんですか。</p>
     <p class="t" data-who="ふくろう先生">time= に続く数字と、最後にまとめて出る統計の行に注目しましょう。time= は、確認の合図を送ってから返事が戻るまでの時間で、<a class="xref" href="m02-2.html" data-page="m02-2">第 2 章 2-2</a> で見た往復時間そのものです。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="ping -c 3 example.com の出力の抜粋。64 bytes from 203.0.113.80 で始まる 3 行に、icmp_seq=0 から 2 までの番号、ttl=57、time=20.403 ms などの往復時間が並ぶ。icmp_seq は何回目の確認かで 0 から数える、ttl は IP の TTL の残り、time は往復時間。最後の統計の 2 行は、送った数 3、受け取った数 3、失われた割合 0.0 パーセントと、往復時間の最小・平均・最大・ばらつきを示す。数字は環境で変わる。">ping -c 3 example.com の出力の抜粋
+64 bytes from 203.0.113.80:
+ icmp_seq=0 ttl=57 time=20.403 ms
+64 bytes from 203.0.113.80:
+ icmp_seq=1 ttl=57 time=19.095 ms
+64 bytes from 203.0.113.80:
+ icmp_seq=2 ttl=57 time=18.145 ms
+  ↑ icmp_seq: 何回目の確認か(0 から数える)
+  ↑ ttl: IP の TTL の残り
+  ↑ time: 往復時間
+--- example.com ping statistics ---
+3 packets transmitted,
+3 packets received, 0.0% packet loss
+  ↑ 送った数・受け取った数・失われた割合
+round-trip min/avg/max/stddev =
+ 18.145/19.214/20.403/0.926 ms
+  ↑ 往復時間の最小・平均・最大(と、ばらつき)
+(数字は環境で変わる。見る行は time と統計の 3 行)</pre>
+<p class="fig-cap">ping の出力は、1 回ごとの行と、最後の統計の行に分かれる。</p>
+    </div>
+    <p class="s" data-who="ひよこちゃん">time= の数字と、最後の統計の行ですね。</p>
     <p class="s" data-who="ひよこちゃん">統計の行って、何が書かれているんですか。</p>
     <p class="t" data-who="ふくろう先生">送った回数、受け取った回数、届かなかった割合、それに往復時間の最小・平均・最大が並びます。</p>
     <p class="s" data-who="ひよこちゃん">届かなかった割合があるってことは、届かないこともあるんですね。届かなかったら、相手の機械が止まってるってことですか。</p>

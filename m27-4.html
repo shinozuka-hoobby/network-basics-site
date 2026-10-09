@@ -17,7 +17,7 @@
 
   <div class="lead">
     <p class="lead-label">このページでわかること</p>
-    <p>curl でリクエストを送れることはすでに知っているだろうが、付け足すオプションによって見える範囲が変わる。<strong>送受信の経過をまとめて表示するオプションを使うと、行の先頭の記号で内容を見分けられる</strong>。このページでは、これまでの章で使ってきたオプションと、その記号の読み方を整理する。</p>
+    <p>curl でリクエストを送れることは、これまでの章で使ってきたとおりだが、付け足すオプションによって見える範囲が変わる。<strong>送受信の経過をまとめて表示するオプションを使うと、行の先頭の記号で内容を見分けられる</strong>。このページでは、これまでの章で使ってきたオプションと、その記号の読み方を整理する。</p>
   </div>
 
   <details class="toc"><summary>このページの目次</summary></details>
@@ -28,12 +28,47 @@
     <p class="t" data-who="ふくろう先生">-v を付けると、送った内容と受け取った内容が、接続の経過も含めて表示されます。行の先頭の記号を見分けると読みやすくなります。</p>
     <p class="s" data-who="ひよこちゃん">記号って、どんな種類があるんですか。</p>
     <p class="t" data-who="ふくろう先生">&gt; が自分が送った内容、&lt; が相手から受け取った内容、* が接続や暗号化の経過などの補足情報です。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="curl -sv https://example.com -o /dev/null の出力の抜粋。行頭が * の行は接続や暗号化の経過で、Connected to example.com の行と TLS handshake の Client hello、Server hello の行。行頭が } の行は送った中身のバイト数で 316 bytes data。行頭が { の行は受け取った中身のバイト数で 122 bytes data。行頭が &gt; の行は自分が送った内容で、GET / HTTP/2 と Host: example.com。行頭が &lt; の行は相手から受け取った内容で、HTTP/2 200 と content-type: text/html。数字は環境で変わる。">curl -sv https://example.com
+  -o /dev/null の出力の抜粋
+* Connected to example.com (203.0.113.80) port 443
+* (304) (OUT), TLS handshake,
+  Client hello (1):
+} [316 bytes data]
+* (304) (IN), TLS handshake,
+  Server hello (2):
+{ [122 bytes data]
+&gt; GET / HTTP/2
+&gt; Host: example.com
+&lt; HTTP/2 200
+&lt; content-type: text/html; charset=utf-8
+  *  接続や暗号化の経過
+  &gt;  自分が送った内容
+  &lt;  相手から受け取った内容
+  }  送った中身のバイト数
+  {  受け取った中身のバイト数
+(数字は環境で変わる。見るのは行頭の記号)</pre>
+<p class="fig-cap">curl -v の出力は、行頭の記号で、経過・送った内容・受け取った内容・中身のバイト数に分かれる。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん"><a class="xref" href="m18.html" data-page="m18">第 18 章</a>で見た Client hello とか Server hello は、どの記号に入るんですか。</p>
     <p class="t" data-who="ふくろう先生">* の行に入ります。TLS のハンドシェイクの経過も、この補足情報として表示されているんです。</p>
     <p class="s" data-who="ひよこちゃん"><a class="xref" href="m20.html" data-page="m20">第 20 章</a>や<a class="xref" href="m21.html" data-page="m21">第 21 章</a>で見た HTTP/2 200 とか content-type: みたいな行は、どの記号ですか。</p>
     <p class="t" data-who="ふくろう先生">&lt; の行に入ります。相手から受け取った応答の中身だからです。</p>
     <p class="s" data-who="ひよこちゃん">じゃあ、自分が送った要求の中身を見たいときは、&gt; の行を探せばいいんですね。</p>
-    <p class="t" data-who="ふくろう先生">そのとおりです。ほかに { と } という記号もあり、それぞれ受け取ったデータの中身、送ったデータの中身を表します。量が多いので、実際の中身ではなくバイト数だけが表示されることもあります。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。ほかに、図の { と } という記号もあり、それぞれ受け取ったデータの中身、送ったデータの中身を表します。量が多いので、実際の中身ではなくバイト数だけが表示されることもあります。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="curl のオプション 4 つの一覧。-I は返ってきたヘッダだけを見る。-s は進捗などの表示を消す。-o は応答の中身の保存先を指定し、/dev/null を指定すると捨てる。--http1.1 は使う HTTP のバージョンを指定する。">curl のオプション 4 つ
+-I
+  返ってきたヘッダだけを見る
+-s
+  進捗などの表示を消す
+-o
+  応答の中身の保存先を指定する
+  (/dev/null なら捨てる)
+--http1.1
+  使う HTTP のバージョンを指定する</pre>
+<p class="fig-cap">4 つのオプションは、それぞれ見える範囲や出力先を変える役目を持つ。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">-I だけだと、これは分からないんですか。</p>
     <p class="t" data-who="ふくろう先生">-I は相手から返ってきたヘッダだけを見る方法で、自分が送った内容や、接続・暗号化の経過は表示されません。-v を使えば、そのすべてを記号で見分けながら確認できます。</p>
     <p class="s" data-who="ひよこちゃん">-s は何のためのオプションだったんですか。</p>

@@ -26,22 +26,45 @@
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">これまでの章で dig を何回も実行してきましたけど、結果に区画がいくつもあって、正直まだ全体像が分かってないんです。</p>
     <p class="t" data-who="ふくろう先生"><a class="xref" href="m16-5.html" data-page="m16-5">第 16 章 16-5</a> で少し触れましたが、今日は結果の区画を整理しましょう。dig の結果は、尋ねた内容の区画と、答えの区画のほかに、権威サーバの情報を載せる区画、追加の情報を載せる区画の、決まった区画に分かれています。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="dig example.com の出力の抜粋。HEADER の行の status: NOERROR が結果の状態。flags: の行の QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1 に、4 つの区画の件数が並ぶ。QUESTION SECTION の下の example.com. IN A が尋ねた内容、ANSWER SECTION の下の example.com. 233 IN A 203.0.113.80 が答えで 233 が TTL。末尾の Query time: 42 msec が応答時間、SERVER: 192.168.1.1#53 が問い合わせ先。AUTHORITY と ADDITIONAL は 0 件なら区画ごと出ない。数字は環境で変わる。">dig example.com の出力の抜粋
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 33788
+  ↑ status: 結果の状態(NOERROR など)
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+  ↑ flags: と、4 区画の件数
+;; QUESTION SECTION:
+;example.com.    IN    A
+  ↑ 尋ねた内容(名前と型)
+;; ANSWER SECTION:
+example.com. 233 IN A 203.0.113.80
+  ↑ 答え(レコードと TTL の 233)
+;; Query time: 42 msec
+;; SERVER: 192.168.1.1#53(192.168.1.1)
+  ↑ 応答時間と問い合わせ先
+(AUTHORITY と ADDITIONAL は 0 件なら
+ 区画ごと出ない。出るときは
+ ;; AUTHORITY SECTION: の見出しで始まる。
+ 例の ADDITIONAL: 1 は見出しの出ない
+ 別枠の 1 件で、この図では省略した)
+(数字は環境で変わる。見る行は 5 か所)</pre>
+<p class="fig-cap">dig の出力は、状態と件数の行、区画ごとの内容、末尾の応答時間と問い合わせ先の順に並ぶ。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">区画の分け方って、dig が勝手に決めてるんですか。</p>
     <p class="t" data-who="ふくろう先生">いいえ。名前解決の問い合わせと答えのやり取り自体の決まりごとで、その決まりを dig がそのまま表示しています。</p>
     <p class="s" data-who="ひよこちゃん">権威サーバの情報を載せる区画って、いつ使われるんですか。</p>
-    <p class="t" data-who="ふくろう先生">答えの区画だけでは足りないときに、参考として権威サーバの名前などが載ります。答えがすでに十分な問い合わせでは、空になることもあります。</p>
+    <p class="t" data-who="ふくろう先生">見本の flags: の行の AUTHORITY: が、その区画の件数です。答えの区画だけでは足りないときに、参考として権威サーバの名前などが載り、答えが十分な問い合わせでは 0 件で区画ごと出ません。</p>
     <p class="s" data-who="ひよこちゃん">追加の情報を載せる区画には、何が入るんですか。</p>
-    <p class="t" data-who="ふくろう先生">答えに直接は当たらないけれど、参考になる情報です。例えば、権威サーバの名前だけでなく、その権威サーバ自身の住所が載ることがあります。</p>
+    <p class="t" data-who="ふくろう先生">見本の flags: の行の ADDITIONAL: が件数です。答えに直接は当たらないけれど、参考になる情報です。例えば、権威サーバの名前だけでなく、その権威サーバ自身の住所が載ることがあります。</p>
     <p class="s" data-who="ひよこちゃん"><a class="xref" href="m17.html" data-page="m17">第 17 章</a>で見た NOERROR とか NXDOMAIN は、どこに出るんでしたっけ。</p>
-    <p class="t" data-who="ふくろう先生">status: に続けて表示されます。</p>
+    <p class="t" data-who="ふくろう先生">見本の HEADER の行にある status: に続けて表示されます。</p>
     <p class="s" data-who="ひよこちゃん">dig コマンド自体が失敗したときと、NXDOMAIN が返ってきたときって、見分けられるんですか。</p>
     <p class="t" data-who="ふくろう先生">別物です。NXDOMAIN は、問い合わせ自体はきちんと処理された上で、その名前が無いという答えが返ってきた状態です。dig コマンド自体が動かなかった場合とは違います。</p>
     <p class="s" data-who="ひよこちゃん">flags: っていう行もありましたよね。</p>
-    <p class="t" data-who="ふくろう先生">そこには qr や rd といった短い文字が並びます。問い合わせなのか答えなのか、答えを探しに行くよう頼んだかどうかなどを、この短い文字で示しています。</p>
+    <p class="t" data-who="ふくろう先生">見本の flags: の行では、先頭に qr や rd といった短い文字が並びます。問い合わせなのか答えなのか、答えを探しに行くよう頼んだかどうかなどを、この短い文字で示しています。</p>
     <p class="s" data-who="ひよこちゃん">答えの区画には、何が並ぶんですか。</p>
-    <p class="t" data-who="ふくろう先生"><a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見た DNS レコードと、DNS の TTL が並びます。これまでの章で見てきた内容が、実はこの区画にまとまっていたんです。</p>
+    <p class="t" data-who="ふくろう先生"><a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見た DNS レコードと、DNS の TTL が、見本の ANSWER SECTION: の下に並びます。これまでの章で見てきた内容が、実はこの区画にまとまっていたんです。</p>
     <p class="s" data-who="ひよこちゃん">Query time っていう行も見た覚えがあります。</p>
-    <p class="t" data-who="ふくろう先生">結果の末尾近くにある行で、問い合わせにかかった時間を示します。SERVER という行には、どこに問い合わせに行ったかも表示されます。</p>
+    <p class="t" data-who="ふくろう先生">見本の末尾近くの Query time: の行で、問い合わせにかかった時間を示します。SERVER という行には、どこに問い合わせに行ったかも表示されます。</p>
     <p class="s" data-who="ひよこちゃん">毎回この長い結果を全部見るのは大変そうですね。</p>
     <p class="t" data-who="ふくろう先生">答えの区画だけを短く表示する、簡潔な聞き方も用意されています。</p>
     <p class="s" data-who="ひよこちゃん">dig にそういう聞き方もあったんですね。</p>
