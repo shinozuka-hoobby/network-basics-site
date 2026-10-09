@@ -25,7 +25,16 @@
   <h2 id="dialog">かけあい</h2>
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">ケース 1、練習してみましょう。「名前が解けない」とか「古い IP アドレスに行く」っていう症状でしたよね。</p>
-    <p class="t" data-who="ふくろう先生">そうです。<a class="xref" href="m31-1.html" data-page="m31-1">31-1</a> の①、まず dig で確かめます。</p>
+    <p class="t" data-who="ふくろう先生">そうです。ここからは 3 つのケース(名前が解けない、証明書の警告、届かない)を順に見ます。<a class="xref" href="m31-1.html" data-page="m31-1">31-1</a> の①、まず dig で確かめます。</p>
+    <div class="fig-sec">
+    <pre class="fig" aria-label="31-1 の 5 段階の再掲。上から順に、①名前解決は dig、②到達性は ping・traceroute、③入口はポート到達性の道具、④握手は openssl s_client、⑤応答は curl。今ここは①。">5 段階のどこか(31-1 の再掲)
+① 名前解決  dig  ← 今ここ
+② 到達性  ping・traceroute
+③ 入口  ポート到達性の道具
+④ 握手  openssl s_client
+⑤ 応答  curl</pre>
+    <p class="fig-cap">31-1 で見た 5 段階を縮めた図で、このページは①の段階を扱う。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん"><a class="xref" href="m17-1.html" data-page="m17-1">第 17 章 17-1</a> で、レコードを書き間違えて「このサイトにアクセスできません」が出た話がありましたよね。</p>
     <p class="t" data-who="ふくろう先生">よく覚えていますね。あの状況を、<a class="xref" href="m31-1.html" data-page="m31-1">31-1</a> の手順に当てはめて見直してみましょう。</p>
     <p class="s" data-who="ひよこちゃん">dig を実行すると、どこを見ればいいんですか。</p>
@@ -42,6 +51,23 @@
     <p class="t" data-who="ふくろう先生">複数の場所に残ったキャッシュの控えが、まだ古い答えを保持している可能性を疑います。時間を置いて聞き直すと、新しい答えに変わっていることがあります。</p>
     <p class="s" data-who="ひよこちゃん">SERVFAIL の場合はどうですか。</p>
     <p class="t" data-who="ふくろう先生">SERVFAIL は、権威サーバに届かなかったり、時間内に答えが得られなかったりして、答えそのものを返せなかった失敗です。レコードの書き間違いとは、原因の性質が違います。</p>
+    <div class="fig-sec">
+    <pre class="fig" aria-label="dig の結果ごとの判断。status が NXDOMAIN なら、名前が存在しないという確定した答えで、①で原因が確定し後の段階は不要。status が NOERROR で ANSWER に古い IP アドレスと残りの TTL があれば、キャッシュの控えが古い答えを持っている可能性があり、時間を置いて聞き直す。status が SERVFAIL なら、答えを返せなかった失敗で、権威サーバに届かないなどを疑う。">dig の結果の読み方(3 通り)
+結果: status: NXDOMAIN
+意味: 名前が存在しないという確定した答え
+次に: ①で原因確定。後の段階は不要
+
+結果: status: NOERROR
+  ANSWER に古い IP アドレスと残りの TTL
+意味: キャッシュの控えが古い答えを
+  持っている可能性がある
+次に: 時間を置いて聞き直す
+
+結果: status: SERVFAIL
+意味: 答えを返せなかった失敗
+次に: 権威サーバに届かないなどを疑う</pre>
+    <p class="fig-cap">status の行で、確定した答えか、古い答えか、失敗かを見分ける。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">NXDOMAIN は「無いという確定した答え」、SERVFAIL は「答えを返せなかった失敗」ってことですね。</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。</p>
     <p class="s" data-who="ひよこちゃん"><a class="xref" href="m27-3.html" data-page="m27-3">第 27 章 27-3</a> で、dig コマンド自体の終了コードと、DNS の答えの中身は別物だっていう話がありましたよね。</p>
