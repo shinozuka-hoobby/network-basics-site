@@ -28,6 +28,12 @@
     <p class="t" data-who="ふくろう先生">まさにそのゾーンが、そのまま設定の単位になります。ただ、事業者ごとに呼び名が違います。</p>
     <p class="s" data-who="ひよこちゃん">例えばどう違うんですか?</p>
     <p class="t" data-who="ふくろう先生">AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone と呼びます。</p>
+    <div class="fig-sec">
+    <pre class="fig" aria-label="3 社のゾーンの呼び名の対応。AWS の Route 53 では hosted zone、Google Cloud の Cloud DNS では managed zone、Azure の Azure DNS では DNS zone。">AWS(Route 53): hosted zone
+Google Cloud(Cloud DNS): managed zone
+Azure(Azure DNS): DNS zone</pre>
+    <p class="fig-cap">事業者ごとに呼び名は違いますが、どれもゾーンのことです。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">呼び名はバラバラですけど、指しているものは同じなんですか?</p>
     <p class="t" data-who="ふくろう先生">同じ考え方です。あるドメインとそのサブドメインの DNS レコードをまとめて入れる入れ物、という点はどの事業者でも共通しています。</p>
     <p class="s" data-who="ひよこちゃん">レコードは、このゾーンの中に置くってことですね。</p>
@@ -38,6 +44,12 @@
     <p class="t" data-who="ふくろう先生">変わりません。呼び名は違っても、レコードをまとめて管理する入れ物という役割はどの事業者でも同じなので、考え方はそのまま持っていけます。</p>
     <p class="s" data-who="ひよこちゃん">ゾーンさえ作れば、すぐに使えるようになるんですか?</p>
     <p class="t" data-who="ふくろう先生">もう一つ手順があります。ドメインを最初に登録したレジストラ(ドメインの登録先の会社)には、そのドメインを管理する権威サーバの名前を伝えておく必要があります。</p>
+    <div class="fig-sec">
+    <pre class="fig" aria-label="ゾーンを使えるようにする手順 3 つ。1 番目、ゾーンを作る。2 番目、レコードを追加する。3 番目、レジストラに権威サーバの名前を伝える。">1 ゾーンを作る
+2 レコードを追加する
+3 レジストラに権威サーバの名前を伝える</pre>
+    <p class="fig-cap">ゾーンを作っただけでは足りず、最後にレジストラへ伝えます。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">なんでレジストラにも伝える必要があるんですか?</p>
     <p class="t" data-who="ふくろう先生">ドメインの登録情報には、そのドメインの権威サーバの名前も含まれています。ここが正しく設定されていないと、DNS リゾルバがそもそもどこに聞きに行けばいいか分かりません。</p>
     <p class="s" data-who="ひよこちゃん">そこも<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で見た、権威サーバの話とつながってるんですね。</p>

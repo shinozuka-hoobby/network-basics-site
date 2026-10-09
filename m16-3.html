@@ -28,6 +28,21 @@
     <p class="t" data-who="ふくろう先生">いいえ、聞く内容によって返ってくる情報の種類が変わります。この情報のことを<strong>DNS レコード</strong>と呼びます。</p>
     <p class="s" data-who="ひよこちゃん">具体的にはどんな種類があるんですか?</p>
     <p class="t" data-who="ふくろう先生">一番よく聞かれるのは、名前に対応する IPv4 アドレスで、これを A レコードと呼びます。IPv6 アドレスを聞くときは AAAA レコードです。</p>
+    <div class="fig-sec">
+<pre class="fig" aria-label="DNS レコードの型の一覧。A は名前の IPv4 アドレスを答え、例は 203.0.113.80。AAAA は IPv6 アドレスで、例は 2001:db8::80。CNAME は別の名前の別名であることを答え、例は www が example.com の別名。NS は権威サーバの名前で、例は ns1.example.com。MX はメールの送り先のサーバで、例は mail.example.com。TXT は任意の文字列を答える。">DNS レコードの型と、返ってくる答え
+A      名前の IPv4 アドレス
+         例: 203.0.113.80
+AAAA   名前の IPv6 アドレス
+         例: 2001:db8::80
+CNAME  別の名前の別名であること
+         例: www は example.com の別名
+NS     権威サーバの名前
+         例: ns1.example.com
+MX     メールの送り先のサーバ
+         例: mail.example.com
+TXT    任意の文字列(用途は決まらない)</pre>
+<p class="fig-cap">聞く型によって、同じ名前でも返る情報の種類が変わる。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">IPv6 のアドレスも聞けるんですね。</p>
     <p class="t" data-who="ふくろう先生">そうです。他にもあります。ある名前が、別の名前の別名になっていることを示す CNAME レコードもあります。</p>
     <p class="s" data-who="ひよこちゃん">別名ってどういうときに使うんですか?</p>
@@ -43,7 +58,7 @@
     <p class="s" data-who="ひよこちゃん">1 つの型を聞いたら、答えはいつも 1 件だけ返ってくるんですか?</p>
     <p class="t" data-who="ふくろう先生">そうとは限りません。同じ型でも、複数の答えがまとめて返ってくることがあります。</p>
     <p class="s" data-who="ひよこちゃん">全部聞いてみたら、同じ名前なのに毎回違う答えが返ってくるってことですね。</p>
-    <p class="t" data-who="ふくろう先生">そうです。同じ example.com でも、A を聞けば IPv4 アドレス、AAAA を聞けば IPv6 アドレスが返ります。</p>
+    <p class="t" data-who="ふくろう先生">そうです。同じ example.com でも、図の例のように、A を聞けば IPv4 アドレス、AAAA を聞けば IPv6 アドレスが返ります。</p>
     <p class="s" data-who="ひよこちゃん">聞いたのに、答えが 1 件も無いこともあるんですか?</p>
     <p class="t" data-who="ふくろう先生">あります。聞いた型のレコードが、そのドメイン名には登録されていない場合です。</p>
     <p class="s" data-who="ひよこちゃん">問い合わせの内容次第で、いろんな種類の答えが返ってくるんですね。</p>

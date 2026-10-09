@@ -26,12 +26,26 @@
   <div class="dialog">
     <p class="s" data-who="ひよこちゃん">この章では、身分証の取得や更新、失効の話をしてきましたけど、その身分証って、いつも自分のサーバに置いてあるものなんですか?</p>
     <p class="t" data-who="ふくろう先生">そうとは限りません。TLS の暗号を解く役目を、どの機械が受け持つかを<strong>TLS 終端</strong>と呼び、これにはいくつかの選択肢があります。</p>
+    <div class="fig-sec">
+    <pre class="fig" aria-label="暗号を解く場所の 3 通りを縦に並べた図。1 通り目は自分のサーバで解く。利用者とサーバの間が暗号化され、身分証はサーバに置く。2 通り目は手前の機械で解く。利用者と手前の機械の間が暗号化され、手前の機械とサーバの間は暗号化されないことがある。身分証は手前の機械に置く。3 通り目は配信専用の機械で解く。利用者と配信専用の機械の間が暗号化され、そこからサーバへは暗号化されないことがある線でつながる。身分証は配信専用の機械に置く。">暗号を解く場所の 3 通り(== 暗号化、-- 暗号化されないことがある)
+
+1 自分のサーバで解く
+  利用者 ==== サーバ
+  身分証の置き場所: サーバ
+2 手前の機械で解く
+  利用者 ==== 手前の機械 ---- サーバ
+  身分証の置き場所: 手前の機械
+3 配信専用の機械で解く
+  利用者 ==== 配信専用の機械 ---- サーバ
+  身分証の置き場所: 配信専用の機械</pre>
+    <p class="fig-cap">暗号を解く機械が変わると、暗号化の区間と身分証の置き場所が変わる。</p>
+    </div>
     <p class="s" data-who="ひよこちゃん">解く役目、ですか? どこでもいいってことですか?</p>
     <p class="t" data-who="ふくろう先生">1 つ目は自分のサーバです。<a class="xref" href="m18.html" data-page="m18">第 18 章</a>で見た TLS ハンドシェイクの相手が、そのまま自分のサーバになります。</p>
     <p class="s" data-who="ひよこちゃん">他にも選択肢があるんですか?</p>
-    <p class="t" data-who="ふくろう先生">あります。手前に<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>(同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械)を置いて、そこで解く方法です。詳しくは<a class="xref" href="m23.html" data-page="m23">第 23 章</a>で扱います。</p>
+    <p class="t" data-who="ふくろう先生">あります。手前に<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>(同じ役目を持つ複数の Web サーバに、届いたリクエストを振り分ける機械)を置いて、そこで解く方法で、図の「手前の機械」がこれです。詳しくは<a class="xref" href="m23.html" data-page="m23">第 23 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">もう 1 つは何ですか?</p>
-    <p class="t" data-who="ふくろう先生">利用者の近くにある配信専用の機械、<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>で解く方法です。詳しくは<a class="xref" href="m22.html" data-page="m22">第 22 章</a>で扱います。</p>
+    <p class="t" data-who="ふくろう先生">利用者の近くにある配信専用の機械、<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>で解く方法です(図の「配信専用の機械」がこれです)。詳しくは<a class="xref" href="m22.html" data-page="m22">第 22 章</a>で扱います。</p>
     <p class="s" data-who="ひよこちゃん">自分のサーバ以外で解くと、何が変わるんですか?</p>
     <p class="t" data-who="ふくろう先生">手前で暗号を解くと、そこから先のサーバへの通信は、<strong>暗号化されないまま転送される</strong>ことがあります。</p>
     <p class="s" data-who="ひよこちゃん">先輩から、ロードバランサで終端していたら、サーバ側のアプリが自分は http で受けていると勘違いしていた、という話を聞いたことがあります。</p>
