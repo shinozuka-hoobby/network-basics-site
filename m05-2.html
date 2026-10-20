@@ -36,7 +36,26 @@
     <p class="t" data-who="ふくろう先生">そのとおりです。たとえばサブネットマスクが 255.255.255.0 なら、先頭 24 ビットがネットワークを表す部分です。</p>
     <p class="s" data-who="ひよこちゃん">255.255.255.0 を 2 進数にすると、そういう並びになるんですね。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="IP アドレス 192.168.1.5 のビットの並び 11000000 10101000 00000001 00000101 の下に、マスク 255.255.255.0 のビットの並び 11111111 11111111 11111111 00000000 を重ねている。マスクが 1 の先頭 24 個がネットワークを表す部分、0 の最後の 8 個が機械を表す部分に対応する。">IP アドレス (192.168.1.5)
+<svg class="fig" viewBox="0 0 640 212" role="img" aria-label="上に IP アドレス (192.168.1.5) のビットの並び 11000000 10101000 00000001 00000101、その下にマスク (255.255.255.0) のビットの並び 11111111 11111111 11111111 00000000 を桁をそろえて重ねている。前半 24 ビットの列(マスクが 1 の 24 個)が強調色の薄い塗りで囲まれ「ネットワークを表す部分」、後半 8 ビットの列(マスクが 0 の 8 個)が控えめな色の薄い塗りで囲まれ「機械を表す部分」と示されている。">
+<text x="123" y="28" text-anchor="start" font-size="15" fill="var(--fig-ink)">IP アドレス (192.168.1.5)</text>
+<text x="123" y="112" text-anchor="start" font-size="15" fill="var(--fig-ink)">マスク (255.255.255.0)</text>
+<rect x="117" y="38" width="304" height="112" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="1.5"/>
+<rect x="423" y="38" width="100" height="112" rx="6" fill="var(--fig-muted)" fill-opacity="0.12" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="123" y="66" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">11000000</text>
+<text x="123" y="138" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">11111111</text>
+<text x="225" y="66" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">10101000</text>
+<text x="225" y="138" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">11111111</text>
+<text x="327" y="66" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">00000001</text>
+<text x="327" y="138" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">11111111</text>
+<text x="429" y="66" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">00000101</text>
+<text x="429" y="138" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace" textLength="88" lengthAdjust="spacing">00000000</text>
+<text x="269.0" y="176" text-anchor="middle" font-size="14" fill="var(--fig-accent)">マスクが 1 の 24 個:</text>
+<text x="269.0" y="196" text-anchor="middle" font-size="14" fill="var(--fig-accent)">ネットワークを表す部分</text>
+<text x="473.0" y="176" text-anchor="middle" font-size="14" fill="var(--fig-muted)">マスクが 0 の 8 個:</text>
+<text x="473.0" y="196" text-anchor="middle" font-size="14" fill="var(--fig-muted)">機械を表す部分</text>
+</svg>
+<!-- 図の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+<pre class="fig" hidden>IP アドレス (192.168.1.5)
 11000000 10101000 00000001 00000101
 マスク (255.255.255.0)
 11111111 11111111 11111111 00000000

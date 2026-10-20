@@ -29,7 +29,41 @@
     <p class="s" data-who="ひよこちゃん">じゃあ、なんで 4 つに分けて、しかもこんな数字(0〜255)で書くんですか?</p>
     <p class="t" data-who="ふくろう先生">32 個のビットをそのまま 0 と 1 で書くと人には読みにくいので、8 個ずつ 4 つのまとまりに分けて、それぞれを 10 進数にして書いています。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="上の段に 10 進数で 192、168、1、5 の 4 つの数字、下の段に 11000000、10101000、00000001、00000101 の 4 つのビットの並びがあり、それぞれ上下で対応している。各ビットの並びは 8 個で、4 つ合わせて 32 個のビット。">192.168.1.5 を 4 つに分けると
+<svg class="fig" viewBox="0 0 640 260" role="img" aria-label="上の段に 10 進数で 192、168、1、5 の 4 つの数字、下の段に 11000000、10101000、00000001、00000101 の 4 つのビットの並びがあり、それぞれ線で結ばれて上下で対応している。各ビットの並びの下に 8 個の幅を示す括弧があり、全体の下に「8 個ずつ、合わせて 32 個のビット」と書かれている。">
+<text x="320" y="26" text-anchor="middle" font-size="16" fill="var(--fig-ink)">192.168.1.5 を 4 つに分けると</text>
+<rect x="10" y="44" width="140" height="44" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="1.5"/>
+<text x="80" y="74" text-anchor="middle" font-size="22" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192</text>
+<line x1="80" y1="88" x2="80" y2="116" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<rect x="10" y="116" width="140" height="44" rx="6" fill="var(--fig-muted)" fill-opacity="0.12" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="80" y="146" text-anchor="middle" font-size="20" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">11000000</text>
+<path d="M10 172 v6 h140 v-6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="80" y="200" text-anchor="middle" font-size="14" fill="var(--fig-muted)">8 個</text>
+<rect x="170" y="44" width="140" height="44" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="1.5"/>
+<text x="240" y="74" text-anchor="middle" font-size="22" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">168</text>
+<line x1="240" y1="88" x2="240" y2="116" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<rect x="170" y="116" width="140" height="44" rx="6" fill="var(--fig-muted)" fill-opacity="0.12" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="240" y="146" text-anchor="middle" font-size="20" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">10101000</text>
+<path d="M170 172 v6 h140 v-6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="240" y="200" text-anchor="middle" font-size="14" fill="var(--fig-muted)">8 個</text>
+<rect x="330" y="44" width="140" height="44" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="1.5"/>
+<text x="400" y="74" text-anchor="middle" font-size="22" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">1</text>
+<line x1="400" y1="88" x2="400" y2="116" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<rect x="330" y="116" width="140" height="44" rx="6" fill="var(--fig-muted)" fill-opacity="0.12" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="400" y="146" text-anchor="middle" font-size="20" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">00000001</text>
+<path d="M330 172 v6 h140 v-6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="400" y="200" text-anchor="middle" font-size="14" fill="var(--fig-muted)">8 個</text>
+<rect x="490" y="44" width="140" height="44" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="1.5"/>
+<text x="560" y="74" text-anchor="middle" font-size="22" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">5</text>
+<line x1="560" y1="88" x2="560" y2="116" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<rect x="490" y="116" width="140" height="44" rx="6" fill="var(--fig-muted)" fill-opacity="0.12" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="560" y="146" text-anchor="middle" font-size="20" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">00000101</text>
+<path d="M490 172 v6 h140 v-6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="560" y="200" text-anchor="middle" font-size="14" fill="var(--fig-muted)">8 個</text>
+<path d="M10 214 v6 h620 v-6" fill="none" stroke="var(--fig-accent)" stroke-width="1.5"/>
+<text x="320" y="242" text-anchor="middle" font-size="16" fill="var(--fig-accent)">8 個ずつ、合わせて 32 個のビット</text>
+</svg>
+<!-- 図の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+<pre class="fig" hidden>192.168.1.5 を 4 つに分けると
 192      168      1        5
 11000000 10101000 00000001 00000101
 |--8--|  |--8--|  |--8--|  |--8--|

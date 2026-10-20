@@ -35,7 +35,40 @@
     <p class="s" data-who="ひよこちゃん">じゃあ、家の中に何台も機器があっても、それぞれ別のポート番号が割り当たるってことですか?</p>
     <p class="t" data-who="ふくろう先生">そうです。この表を見てください。同じ家の中の 2 台の機器が、同じ Web サーバとやり取りしていても、外向けのポート番号はそれぞれ別になります。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="変換表の 3 つのやり取りを縦に並べた図。やり取り 1 は、家の中 192.168.1.10 の 51000 番が、外向け 203.0.113.5 の 40001 番になり、相手は 203.0.113.80 の 443 番。やり取り 2 は、家の中 192.168.1.11 の 52000 番が外向け 203.0.113.5 の 40002 番になる。やり取り 3 は、家の中 192.168.1.10 の 53000 番が外向け 203.0.113.5 の 40003 番になる。相手はどれも同じ。">やり取り 1
+<svg class="fig" viewBox="0 0 640 372" role="img" aria-label="変換表の 3 つのやり取りを縦に並べた 3 枚のカード。やり取り 1 は、家の中 192.168.1.10:51000、外向け 203.0.113.5:40001、相手 203.0.113.80:443。やり取り 2 は、家の中 192.168.1.11:52000、外向け 203.0.113.5:40002、相手 203.0.113.80:443。やり取り 3 は、家の中 192.168.1.10:53000、外向け 203.0.113.5:40003、相手 203.0.113.80:443。外向けのポート番号 40001、40002、40003 だけが強調色で、3 枚で違っている。家の中のアドレスの横に印があり、やり取り 1 と 3 は同じ黒い丸の印で、同じ機器 192.168.1.10 だと分かる(点線でも結ばれている)。やり取り 2 は輪郭だけの丸で別の機器。">
+<rect x="30" y="10" width="600" height="108" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="46" y="36" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">やり取り 1</text>
+<text x="78" y="64" text-anchor="start" font-size="15" fill="var(--fig-muted)">家の中</text>
+<text x="160" y="64" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192.168.1.10:51000</text>
+<text x="78" y="88" text-anchor="start" font-size="15" fill="var(--fig-muted)">外向け</text>
+<text x="160" y="88" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">203.0.113.5:<tspan fill="var(--fig-accent)" font-weight="bold">40001</tspan></text>
+<text x="78" y="112" text-anchor="start" font-size="15" fill="var(--fig-muted)">相手</text>
+<text x="160" y="112" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">203.0.113.80:443</text>
+<circle cx="62" cy="59" r="5" fill="var(--fig-ink)"/>
+<rect x="30" y="130" width="600" height="108" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="46" y="156" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">やり取り 2</text>
+<text x="78" y="184" text-anchor="start" font-size="15" fill="var(--fig-muted)">家の中</text>
+<text x="160" y="184" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192.168.1.11:52000</text>
+<text x="78" y="208" text-anchor="start" font-size="15" fill="var(--fig-muted)">外向け</text>
+<text x="160" y="208" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">203.0.113.5:<tspan fill="var(--fig-accent)" font-weight="bold">40002</tspan></text>
+<text x="78" y="232" text-anchor="start" font-size="15" fill="var(--fig-muted)">相手</text>
+<text x="160" y="232" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">203.0.113.80:443</text>
+<circle cx="62" cy="179" r="5" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<rect x="30" y="250" width="600" height="108" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="46" y="276" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">やり取り 3</text>
+<text x="78" y="304" text-anchor="start" font-size="15" fill="var(--fig-muted)">家の中</text>
+<text x="160" y="304" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192.168.1.10:53000</text>
+<text x="78" y="328" text-anchor="start" font-size="15" fill="var(--fig-muted)">外向け</text>
+<text x="160" y="328" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">203.0.113.5:<tspan fill="var(--fig-accent)" font-weight="bold">40003</tspan></text>
+<text x="78" y="352" text-anchor="start" font-size="15" fill="var(--fig-muted)">相手</text>
+<text x="160" y="352" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">203.0.113.80:443</text>
+<circle cx="62" cy="299" r="5" fill="var(--fig-ink)"/>
+<line x1="12" y1="59" x2="30" y2="59" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<line x1="12" y1="299" x2="30" y2="299" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<line x1="12" y1="59" x2="12" y2="299" stroke="var(--fig-ink)" stroke-width="1.5" stroke-dasharray="4 3"/>
+</svg>
+<!-- 図の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+<pre class="fig" hidden>やり取り 1
   家の中  192.168.1.10:51000
   外向け  203.0.113.5:40001
   相手    203.0.113.80:443
