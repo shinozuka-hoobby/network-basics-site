@@ -28,7 +28,7 @@
     <p class="t" data-who="ふくろう先生">全体はこう並んでいます。まず手元の端末から、<a class="term" href="glossary.html#home-router" data-term="home-router">家庭用ルータ</a>につながります。ネットワークの出入り口としての役割に加えて、家庭内のアドレス配布やアドレス変換なども 1 台でこなす機器です。</p>
 
     <div class="fig-sec">
-    <img src="assets/fig/m01-3-devices.webp" alt="途中にいる機器の並びの図。左から右へ、端末(ブラウザ) → 家庭用ルータ → ISP → 中継する機器(何台も) → Web サーバ が矢印でつながる。上に「名前を調べるサーバ」があり、端末から家庭用ルータと ISP を経由して問い合わせる点線の矢印が伸びる。Web サーバの手前に「Web サーバの手前に入ることがある機器」として「振り分ける機器」と「利用者の近くの控え」が置かれている。" width="1536" height="1024" loading="lazy">
+    <img src="assets/fig/m01-3-devices.webp" alt="途中にいる機器の並びの図。左から右へ、端末(ブラウザ) → 家庭用ルータ → ISP → 中継する機器(何台も) → Web サーバ が矢印でつながる。上に「名前を調べるサーバ」があり、端末から家庭用ルータと ISP を経由して問い合わせる点線の矢印が伸びる。Web サーバの手前に「Web サーバの手前に入ることがある機器」として、「振り分ける機器」(1 本の矢印が 3 台の小さなサーバへ分かれる記号)と「利用者の近くの控え」(利用者のノート PC のそばに置かれた書類の複製)が置かれている。中継する機器と ISP は差し込み口の無い丸みのある箱で描かれ、スイッチの見た目ではない。" width="1536" height="1024" loading="lazy">
     <!-- 画像の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
     <pre class="fig" hidden>途中にいる機器の並び
 
@@ -51,7 +51,7 @@ Web サーバの手前に入ることがある機器
     <p class="s" data-who="ひよこちゃん">さっき出てきた<a class="term" href="glossary.html#dns" data-term="dns">DNS</a> サーバはどこにいるんですか? 家庭用ルータの中?</p>
     <p class="t" data-who="ふくろう先生">家庭用ルータの中とは限りません。ISP が用意した別のサーバか、公開されている DNS サーバに、家庭用ルータや ISP の回線を経由して問い合わせに行きます。</p>
     <p class="s" data-who="ひよこちゃん">じゃあサーバの手前にも何かいたりするんですか?</p>
-    <p class="t" data-who="ふくろう先生">規模の大きいサービスだと、複数台のサーバにリクエストを振り分ける<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>や、利用者の近くにコンテンツの控えを用意しておく<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>が手前にいることがあります。</p>
+    <p class="t" data-who="ふくろう先生">規模の大きいサービスだと、複数台のサーバにリクエストを振り分ける<a class="term" href="glossary.html#load-balancer" data-term="load-balancer">ロードバランサ</a>や、利用者の近くにコンテンツの控えを用意しておく<a class="term" href="glossary.html#cdn" data-term="cdn">CDN</a>が手前にいることがあります。図の「振り分ける機器」がロードバランサ、「利用者の近くの控え」が CDN です。</p>
     <p class="s" data-who="ひよこちゃん">ロードバランサと CDN、何が違うんですか?</p>
     <p class="t" data-who="ふくろう先生">ロードバランサは自社の複数サーバへの振り分け、CDN は利用者の近くへのコンテンツ配置と、目的が違います。どちらも詳しくは後の章(第 22・23 章)で扱います。</p>
     <p class="s" data-who="ひよこちゃん">機器の名前だけでもこんなに出てくるんですね…</p>
