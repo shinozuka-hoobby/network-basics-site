@@ -56,7 +56,52 @@ tcp.port==443
     <p class="t" data-who="ふくろう先生">ip.addr は、指定したアドレスが送信元でも宛先でも一致する条件です。and でつなぐと、1 つの通信の中に A と B の両方が現れる場合だけに絞られます。</p>
     <p class="s" data-who="ひよこちゃん">A が他の相手とやり取りしてる通信や、B が他の相手とやり取りしてる通信は出てこないってことですね。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="記録 4 件に 2 つの条件を当てた結果の対比。記録は A と B、A と C、B と D、C と D のやり取り。ip.addr==A and ip.addr==B では A と B のやり取りの 1 件目だけが表示される。ip.addr==A or ip.addr==B では 1 件目、2 件目、3 件目が表示され、A も B もいない 4 件目だけが出ない。">記録 4 件(A〜D は別々のアドレス)
+<svg class="fig" viewBox="0 0 640 368" role="img" aria-label="記録 4 件(A〜D は別々のアドレス)。1 件目は A と B のやり取り、2 件目は A と C、3 件目は B と D、4 件目は C と D のやり取り。ip.addr==A and ip.addr==B を当てると、A と B が両方いる 1 件目だけが表示される。ip.addr==A or ip.addr==B を当てると、A か B がいる 1・2・3 件目が表示され、A も B もいない 4 件目は出ない。and の方が残る件が少なく狭い。">
+<text x="30" y="22" font-size="16" font-weight="bold" fill="var(--fig-ink)">記録 4 件(A〜D は別々のアドレス)</text>
+<rect x="30" y="32" width="140" height="56" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<text x="42" y="54" font-size="16" font-weight="bold" fill="var(--fig-ink)">1 件目</text>
+<text x="42" y="76" font-size="14" fill="var(--fig-ink)">A と B のやり取り</text>
+<rect x="183" y="32" width="140" height="56" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<text x="195" y="54" font-size="16" font-weight="bold" fill="var(--fig-ink)">2 件目</text>
+<text x="195" y="76" font-size="14" fill="var(--fig-ink)">A と C のやり取り</text>
+<rect x="336" y="32" width="140" height="56" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<text x="348" y="54" font-size="16" font-weight="bold" fill="var(--fig-ink)">3 件目</text>
+<text x="348" y="76" font-size="14" fill="var(--fig-ink)">B と D のやり取り</text>
+<rect x="489" y="32" width="140" height="56" rx="6" fill="none" stroke="var(--fig-ink)" stroke-width="1.5"/>
+<text x="501" y="54" font-size="16" font-weight="bold" fill="var(--fig-ink)">4 件目</text>
+<text x="501" y="76" font-size="14" fill="var(--fig-ink)">C と D のやり取り</text>
+<text x="30" y="126" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">ip.addr==A and ip.addr==B</text>
+<rect x="30" y="136" width="140" height="52" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="2"/>
+<text x="42" y="158" font-size="16" font-weight="bold" fill="var(--fig-ink)">1 件目</text>
+<text x="42" y="180" font-size="16" fill="var(--fig-ink)">A と B</text>
+<rect x="183" y="136" width="140" height="52" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="195" y="158" font-size="16" font-weight="bold" fill="var(--fig-muted)">2 件目</text>
+<text x="195" y="180" font-size="16" fill="var(--fig-muted)">A と C</text>
+<rect x="336" y="136" width="140" height="52" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="348" y="158" font-size="16" font-weight="bold" fill="var(--fig-muted)">3 件目</text>
+<text x="348" y="180" font-size="16" fill="var(--fig-muted)">B と D</text>
+<rect x="489" y="136" width="140" height="52" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="501" y="158" font-size="16" font-weight="bold" fill="var(--fig-muted)">4 件目</text>
+<text x="501" y="180" font-size="16" fill="var(--fig-muted)">C と D</text>
+<text x="30" y="210" font-size="16" fill="var(--fig-ink)">表示: 1 件目だけ(A と B が両方いる)</text>
+<text x="30" y="248" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">ip.addr==A or ip.addr==B</text>
+<rect x="30" y="258" width="140" height="52" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="2"/>
+<text x="42" y="280" font-size="16" font-weight="bold" fill="var(--fig-ink)">1 件目</text>
+<text x="42" y="302" font-size="16" fill="var(--fig-ink)">A と B</text>
+<rect x="183" y="258" width="140" height="52" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="2"/>
+<text x="195" y="280" font-size="16" font-weight="bold" fill="var(--fig-ink)">2 件目</text>
+<text x="195" y="302" font-size="16" fill="var(--fig-ink)">A と C</text>
+<rect x="336" y="258" width="140" height="52" rx="6" fill="var(--fig-accent)" fill-opacity="0.12" stroke="var(--fig-accent)" stroke-width="2"/>
+<text x="348" y="280" font-size="16" font-weight="bold" fill="var(--fig-ink)">3 件目</text>
+<text x="348" y="302" font-size="16" fill="var(--fig-ink)">B と D</text>
+<rect x="489" y="258" width="140" height="52" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="501" y="280" font-size="16" font-weight="bold" fill="var(--fig-muted)">4 件目</text>
+<text x="501" y="302" font-size="16" fill="var(--fig-muted)">C と D</text>
+<text x="30" y="332" font-size="16" fill="var(--fig-ink)">表示: 1・2・3 件目(A か B がいる)</text>
+<text x="30" y="356" font-size="16" fill="var(--fig-muted)">出ない: 4 件目(A も B もいない)</text>
+</svg>
+<!-- 図の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+<pre class="fig" hidden>記録 4 件(A〜D は別々のアドレス)
   1 件目  A と B のやり取り
   2 件目  A と C のやり取り
   3 件目  B と D のやり取り
