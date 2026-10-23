@@ -31,7 +31,9 @@
     <p class="s" data-who="ひよこちゃん">じゃあ、VPC がたくさんある場合は、どうすればいいんですか?</p>
     <p class="t" data-who="ふくろう先生">たくさんの VPC を 1 か所に集めてつなぐ仕組みを使います。AWS ではこれを<strong>Transit Gateway</strong>と呼びます。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="VPC が 4 個(A、B、C、D)の場合の、2 つのつなぎ方の比較。上は、全部を VPC ピアリングでつなぐ形で、A-B、A-C、A-D、B-C、B-D、C-D の 6 本が必要。下は、Transit Gateway を中心につなぐ形で、A、B、C、D のそれぞれが Transit Gateway とつながる 4 本で済む。">VPC が 4 個(A〜D)の場合の例
+<img src="assets/fig/m25-2-tgw.webp" alt="VPC が 4 個(A〜D)の場合の例の図。左「全部を VPC ピアリングでつなぐ: 6 本」: A・B・C・D を四角形の角に置き、A-B、A-C、A-D、B-C、B-D、C-D の 6 本の線(対角線 2 本を含む)で全部を結ぶ。右「Transit Gateway を中心につなぐ: 4 本」: 中央の Transit Gateway のハブから A・B・C・D へ 4 本の線。" width="1536" height="1024" loading="lazy">
+    <!-- 画像の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+    <pre class="fig" hidden>VPC が 4 個(A〜D)の場合の例
 
 全部を VPC ピアリングでつなぐ: 6 本
  A-B  A-C  A-D

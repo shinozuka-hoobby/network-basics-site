@@ -39,7 +39,9 @@
     <p class="s" data-who="ひよこちゃん">分かりました。あと、VPC A と B をつないで、VPC A と C もつないだら、B から C にも通信できますか?</p>
     <p class="t" data-who="ふくろう先生">できません。VPC ピアリングは 1 対 1 のつながりで、つないだ相手を経由して、さらに別の VPC へ届けること(推移)はできません。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="VPC A、B、C の 3 つの VPC の図。VPC A から VPC B へ、ピアリングの線が 1 本。VPC A から VPC C へも、ピアリングの線が 1 本。VPC B と VPC C の間には線が無く、×印がついている。注記として、B から C へは A 経由では届かないこと、B と C をつなぐには B と C の間にも直接の線が必要なことが書いてある。">VPC A と B、A と C をそれぞれつないだ場合
+<img src="assets/fig/m25-1-peering.webp" alt="VPC A と B、A と C をそれぞれつないだ場合の図。上に VPC A、左下に VPC B、右下に VPC C を三角形に置き、A-B と A-C を実線「(ピアリング)」で結ぶ。B から A を経由して C へ向かおうとする矢印は A で止まり(×)、B と C の間は点線に大きな ×。下に注記「B から C へは、A 経由では届かない」「B-C をつなぐには、B-C にも直接の線が必要」。" width="1536" height="1024" loading="lazy">
+    <!-- 画像の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+    <pre class="fig" hidden>VPC A と B、A と C をそれぞれつないだ場合
 VPC A
  +-- (ピアリング) -- VPC B
  +-- (ピアリング) -- VPC C
