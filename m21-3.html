@@ -37,7 +37,9 @@
     <p class="s" data-who="ひよこちゃん"><a class="xref" href="m15.html" data-page="m15">第 15 章</a>では、この詰まりを QUIC で解決していましたよね?</p>
     <p class="t" data-who="ふくろう先生">そのとおりです。HTTP/3 は、TCP の代わりに、<a class="xref" href="m15.html" data-page="m15">第 15 章</a>で見た QUIC の上で HTTP を運ぶことで、この詰まりを解決した HTTP の版です。土台を並べると、次のようになります。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="HTTP/2 と HTTP/3 の土台の比較。上は HTTP/2。上から HTTP、ストリーム(多重化)、TCP、IP の順に積まれ、TCP の段でパケットが 1 つ失われると全ストリームが止まる。下は HTTP/3。上から HTTP、QUIC(ストリームはここ)、UDP、IP の順に積まれる。">HTTP/2 の土台(上から下へ)
+<img src="assets/fig/m21-3-stack.webp" alt="左「HTTP/2 の土台(上から下へ)」: HTTP、ストリーム(多重化)、TCP、IP の 4 段。TCP の段に吹き出し「ここでパケットが 1 つ失われると全ストリームが止まる」(欠けたパケットに ×)。右「HTTP/3 の土台(上から下へ)」: HTTP、QUIC (ストリームはここ)、UDP、IP の 4 段。HTTP と IP の段は左右で同じ色。" width="1536" height="1024" loading="lazy">
+    <!-- 画像の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+    <pre class="fig" hidden>HTTP/2 の土台(上から下へ)
   +-------------------------
   | HTTP
   +-------------------------

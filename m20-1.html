@@ -28,7 +28,36 @@
     <p class="t" data-who="ふくろう先生">名前解決・接続・暗号化は、もう終わったという前提で話を進めます。ここからは、実際に交わされる HTTP そのものの中身を見ていきます。</p>
     <p class="s" data-who="ひよこちゃん">HTTP のリクエストって、決まった形があるんですか?</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="HTTP のリクエストとレスポンスの実物の形。リクエストは 1 行目が GET /index.html HTTP/1.1 で要求行、次に Host: example.com などのヘッダが続き、その後に何も書かない空行があり、最後に本文が来る。GET では本文は空。レスポンスは 1 行目が HTTP/1.1 200 OK で状態行、次に Content-Type: text/html などのヘッダが続き、空行の後に HTML の本文が来る。">リクエスト(送る側)
+<svg class="fig" viewBox="0 0 640 430" role="img" aria-label="2 枚のカードの上下並びの図。上のカード「リクエスト(送る側)」は、1 行目が GET /index.html HTTP/1.1 で要求行、2 行目が Host: example.com でヘッダ、3 行目が (ほかのヘッダが続く) でヘッダ、4 行目が (何も書かない) で空行、5 行目が (GET では本文は空) で本文。下のカード「レスポンス(返す側)」は、1 行目が HTTP/1.1 200 OK で状態行、2 行目が Content-Type: text/html でヘッダ、3 行目が (ほかのヘッダが続く) でヘッダ、4 行目が (何も書かない) で空行、5 行目が (HTML) で本文。どちらも、1 行目・ヘッダ・空行・本文の順に並ぶ。">
+<rect x="20" y="10" width="600" height="196" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="36" y="36" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">リクエスト(送る側)</text>
+<text x="48" y="72" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">GET /index.html HTTP/1.1</text>
+<text x="400" y="72" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">要求行</text>
+<text x="48" y="102" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">Host: example.com</text>
+<text x="400" y="102" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">ヘッダ</text>
+<text x="48" y="132" text-anchor="start" font-size="16" fill="var(--fig-muted)">(ほかのヘッダが続く)</text>
+<text x="400" y="132" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">ヘッダ</text>
+<rect x="40" y="142" width="320" height="28" rx="4" fill="none" stroke="var(--fig-muted)" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.7"/>
+<text x="48" y="162" text-anchor="start" font-size="16" fill="var(--fig-muted)">(何も書かない)</text>
+<text x="400" y="162" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">空行</text>
+<text x="48" y="192" text-anchor="start" font-size="16" fill="var(--fig-muted)">(GET では本文は空)</text>
+<text x="400" y="192" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">本文</text>
+<rect x="20" y="222" width="600" height="196" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="36" y="248" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">レスポンス(返す側)</text>
+<text x="48" y="284" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">HTTP/1.1 200 OK</text>
+<text x="400" y="284" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">状態行</text>
+<text x="48" y="314" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">Content-Type: text/html</text>
+<text x="400" y="314" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">ヘッダ</text>
+<text x="48" y="344" text-anchor="start" font-size="16" fill="var(--fig-muted)">(ほかのヘッダが続く)</text>
+<text x="400" y="344" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">ヘッダ</text>
+<rect x="40" y="354" width="320" height="28" rx="4" fill="none" stroke="var(--fig-muted)" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.7"/>
+<text x="48" y="374" text-anchor="start" font-size="16" fill="var(--fig-muted)">(何も書かない)</text>
+<text x="400" y="374" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">空行</text>
+<text x="48" y="404" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">(HTML)</text>
+<text x="400" y="404" text-anchor="start" font-size="16" fill="var(--fig-accent)" font-weight="bold">本文</text>
+</svg>
+<!-- 図の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+<pre class="fig" hidden>リクエスト(送る側)
 GET /index.html HTTP/1.1   ← 要求行
 Host: example.com          ← ヘッダ
 (ほかのヘッダが続く)
