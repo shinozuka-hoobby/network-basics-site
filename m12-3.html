@@ -29,7 +29,30 @@
     <p class="s" data-who="ひよこちゃん">片方だけの情報じゃ、区別できないんですか?</p>
     <p class="t" data-who="ふくろう先生">できません。1 本のやり取りは、自分側と相手側、両方のソケットの組で区別されます。どちらか一方の番号が違うだけでも、別のやり取りとして扱われます。</p>
     <div class="fig-sec">
-<pre class="fig" aria-label="同じ Web サーバ 203.0.113.80 の 443 番に 2 台の PC が接続する 3 つのやり取りの図。やり取り 1 は、送信元 192.168.1.10 の 51000 番から宛先 203.0.113.80 の 443 番。やり取り 2 は、送信元 192.168.1.11 の 52000 番から同じ宛先。やり取り 3 は、送信元 192.168.1.10 の 53000 番から同じ宛先。宛先は 3 本とも同じで、送信元ポートだけ違っても別のやり取りになる。">同じ Web サーバへの 3 つのやり取り
+<svg class="fig" viewBox="0 0 640 346" role="img" aria-label="同じ Web サーバ 203.0.113.80 の 443 番に 2 台の PC が接続する 3 つのやり取りの図。やり取り 1 は、送信元 192.168.1.10 の 51000 番から宛先 203.0.113.80 の 443 番。やり取り 2 は、送信元 192.168.1.11 の 52000 番から同じ宛先。やり取り 3 は、送信元 192.168.1.10 の 53000 番から同じ宛先。宛先は 3 本とも同じで、送信元ポートだけ違っても別のやり取りになる。">
+<rect x="30" y="10" width="600" height="84" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="46" y="34" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">やり取り 1</text>
+<text x="78" y="60" text-anchor="start" font-size="15" fill="var(--fig-muted)">送信元</text>
+<text x="160" y="60" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192.168.1.10:<tspan fill="var(--fig-accent)" font-weight="bold">51000</tspan></text>
+<text x="78" y="84" text-anchor="start" font-size="15" fill="var(--fig-muted)">宛先</text>
+<text x="160" y="84" font-size="18" fill="var(--fig-muted)" font-family="ui-monospace, Menlo, monospace">203.0.113.80:443</text>
+<rect x="30" y="102" width="600" height="84" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="46" y="126" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">やり取り 2</text>
+<text x="78" y="152" text-anchor="start" font-size="15" fill="var(--fig-muted)">送信元</text>
+<text x="160" y="152" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192.168.1.11:<tspan fill="var(--fig-accent)" font-weight="bold">52000</tspan></text>
+<text x="78" y="176" text-anchor="start" font-size="15" fill="var(--fig-muted)">宛先</text>
+<text x="160" y="176" font-size="18" fill="var(--fig-muted)" font-family="ui-monospace, Menlo, monospace">203.0.113.80:443</text>
+<rect x="30" y="194" width="600" height="84" rx="6" fill="none" stroke="var(--fig-muted)" stroke-width="1.5"/>
+<text x="46" y="218" text-anchor="start" font-size="16" fill="var(--fig-ink)" font-weight="bold">やり取り 3</text>
+<text x="78" y="244" text-anchor="start" font-size="15" fill="var(--fig-muted)">送信元</text>
+<text x="160" y="244" font-size="18" fill="var(--fig-ink)" font-family="ui-monospace, Menlo, monospace">192.168.1.10:<tspan fill="var(--fig-accent)" font-weight="bold">53000</tspan></text>
+<text x="78" y="268" text-anchor="start" font-size="15" fill="var(--fig-muted)">宛先</text>
+<text x="160" y="268" font-size="18" fill="var(--fig-muted)" font-family="ui-monospace, Menlo, monospace">203.0.113.80:443</text>
+<text x="30" y="308" text-anchor="start" font-size="16" fill="var(--fig-ink)">宛先は同じ。送信元ポートだけ違っても</text>
+<text x="30" y="332" text-anchor="start" font-size="16" fill="var(--fig-ink)">別のやり取りになる。</text>
+</svg>
+<!-- 図の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+<pre class="fig" hidden>同じ Web サーバへの 3 つのやり取り
 
 やり取り 1
   送信元  192.168.1.10:51000
