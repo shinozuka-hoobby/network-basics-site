@@ -3,143 +3,166 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>つないだ瞬間に、番号は自動で配られる — ネットワークのしくみ</title>
+<title>壁から家庭用ルータまで — 回線の信号を変える箱 — ネットワークのしくみ</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/app.js" defer></script>
 </head>
-<body data-page="m04-3" data-chapter="m04" data-rev="3">
+<body data-page="m04-3" data-chapter="m04" data-rev="4">
 <noscript><p class="noscript-warn">目次・クイズ・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
 <main>
   <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 4-3</p>
   <p class="chapter-label">第 4 章 家庭とオフィスの LAN — Wi-Fi・家庭用ルータ・DHCP　4-3</p>
-  <h1>つないだ瞬間に、番号は自動で配られる</h1>
+  <h1>壁から家庭用ルータまで — 回線の信号を変える箱</h1>
 
   <div class="lead">
     <p class="lead-label">このページでわかること</p>
-    <p>機器をネットワークにつなぐと、何も設定しなくてもすぐにインターネットが使えるようになる。<strong>これは、使ってよい番号を自動で配る仕組みが、機器との間で 4 段階のやり取りをしているからである</strong>。このページでは、その 4 段階を確認する。</p>
+    <p>壁まで来ている ISP の回線は、そのままでは家庭用ルータにつなげず、間に回線の信号を変換する箱が入る。<strong>箱は信号を変えるだけで、行き先を選ぶのは家庭用ルータである</strong>。このページでは、壁から家の中の機器までの並び順と、箱の呼び方が回線の種類で変わることを確認する。</p>
   </div>
 
   <details class="toc"><summary>このページの目次</summary></details>
 
   <h2 id="dialog">かけあい</h2>
   <div class="dialog">
-    <p class="s" data-who="ひよこちゃん">前のページで出てきた、番号を自動で配る役目って、具体的にはどういうやり取りなんですか?</p>
-    <p class="t" data-who="ふくろう先生">4 段階のやり取りがあります。番号を配るのは DHCP サーバです。先に全体を図で見ましょう。</p>
+    <p class="s" data-who="ひよこちゃん"><a class="xref" href="m04-2.html" data-page="m04-2">4-2</a> で、外へ出る口は家庭用ルータのインターネット用の口だと聞きましたけど、壁からそこへ直接ケーブルをつなげばいいんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ、間に信号を変換する箱が入ります。壁まで来ている ISP の回線の信号は、家庭用ルータの LAN ケーブルの口にそのまま差せる形ではないからです。LAN ケーブルは、家の中の有線の機器をつなぐのと同じケーブルのことです。</p>
+    <p class="s" data-who="ひよこちゃん">そのまま差せる形じゃないって、どういうことですか?</p>
+    <p class="t" data-who="ふくろう先生"><a class="xref" href="m02-4.html" data-page="m02-4">第 2 章 2-4</a> で見たとおり、銅線は信号を電気で、光ファイバは光で伝えます。家庭用ルータに差す LAN ケーブルは銅線で電気の信号を運ぶので、光ファイバで壁まで来た光の信号とは形が違います。ケーブルテレビの回線も、間に箱を挟んでつなぐ点は同じです。</p>
+    <p class="s" data-who="ひよこちゃん">その箱って、何て呼ぶんですか? 名前は 1 つなんですか?</p>
+    <p class="t" data-who="ふくろう先生">回線の種類で名前が決まります。光回線なら ONU(光回線終端装置)、ケーブルテレビの回線ならケーブルモデムと呼ばれる箱です。</p>
+    <p class="s" data-who="ひよこちゃん">名前が違うだけで、やってることは同じなんですか?</p>
+    <p class="t" data-who="ふくろう先生">はい、どちらも壁まで来た信号を、LAN ケーブルで渡せる信号に変える箱です。ただ、変換する元の信号が違うので、ONU とケーブルモデムは別々の機器になっています。</p>
+    <p class="s" data-who="ひよこちゃん">壁から家の中の機器までは、どんな順に並ぶんですか?</p>
+    <p class="t" data-who="ふくろう先生">壁の差し込み口、箱、家庭用ルータのインターネット用の口、家の中の機器の順です。図にするとこうなります。</p>
     <div class="fig-sec">
-    <img src="assets/fig/m04-3-dhcp.webp" alt="機器と DHCP サーバの 4 段階のやり取りの図。左に機器、右に DHCP サーバ。1 機器 → 周りの全員へ「誰か番号をください」(放射状の矢印)、2 サーバ → 機器「このアドレスはどうですか」、3 機器 → サーバ「それを使わせてください」、4 サーバ → 機器「では確定です」。上から順に進む。" width="1536" height="1024" loading="lazy">
+    <img src="assets/fig/m04-3-line-box.webp" alt="壁から家の中の機器までの並びの図。左から右へ、壁の差し込み口(壁のコンセントの記号) → 箱(差し込み口の無い小さな箱。「信号を変換するだけ」「(行き先は選ばない)」) → 家庭用ルータ(アンテナ付きの箱。「行き先を選ぶ」「(インターネット用の口に箱をつなぐ)」) → 家の中の機器(有線・無線。ノート PC とスマホ)が矢印でつながる。壁から箱への矢印に「回線の信号」、箱から家庭用ルータへの矢印に「LAN ケーブルで渡せる信号」のラベル。箱の下に注記「光回線なら ONU」「ケーブルテレビの回線なら ケーブルモデム」。" width="1536" height="1024" loading="lazy">
     <!-- 画像の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
-    <pre class="fig" hidden>機器と DHCP サーバの 4 段階のやり取り
+    <pre class="fig" hidden>壁から家の中の機器まで
 
-1 機器 → 周りの全員へ
-  「誰か番号をください」
-2 サーバ → 機器
-  「このアドレスはどうですか」
-3 機器 → サーバ
-  「それを使わせてください」
-4 サーバ → 機器
-  「では確定です」</pre>
-    <p class="fig-cap">機器の呼びかけから始まり、提案・希望・確定と、4 段階で番号が決まる。</p>
+ 壁の差し込み口
+      |  回線の信号
+      v
++- 箱 -----------------------+
+| 信号を変換するだけ         |
+| (行き先は選ばない)         |
++----------------------------+
+  光回線なら ONU
+  ケーブルテレビの回線なら
+  ケーブルモデム
+      |  LAN ケーブルで
+      |  渡せる信号
+      v
++- 家庭用ルータ -------------+
+| 行き先を選ぶ               |
+| (インターネット用の口に    |
+|   箱をつなぐ)              |
++----------------------------+
+      |
+      v
+ 家の中の機器(有線・無線)</pre>
+    <p class="fig-cap">壁から家の中の機器まで、壁の差し込み口、箱、家庭用ルータの順に並ぶ。箱は信号を変えるだけで、行き先を選ぶのは家庭用ルータである。</p>
     </div>
-    <p class="t" data-who="ふくろう先生">まず機器が「誰か番号をください」と、周りに向けて呼びかけます。</p>
-    <p class="s" data-who="ひよこちゃん">呼びかけられた方はどう答えるんですか?</p>
-    <p class="t" data-who="ふくろう先生">DHCP サーバが「このアドレスはどうですか」と 1 つ提案します。これが 2 段階目です。</p>
-    <p class="s" data-who="ひよこちゃん">提案されたら、そのまま使い始めるんですか?</p>
-    <p class="t" data-who="ふくろう先生">いえ、機器はその提案を受けて「それを使わせてください」と希望を伝えます。これが 3 段階目です。</p>
-    <p class="s" data-who="ひよこちゃん">それで確定するんですか?</p>
-    <p class="t" data-who="ふくろう先生">はい。DHCP サーバが「では確定です」と応答して、ここで初めて正式に使えるようになります。呼びかけ→提案→希望→確定という、4 段階の流れです。</p>
-    <p class="s" data-who="ひよこちゃん">呼びかけから確定まで、4 段階もあるんですね。</p>
-    <p class="t" data-who="ふくろう先生">そうなんです。それぞれの段階には正式な合図の名前もついていて、しくみの話で表にまとめます。</p>
-    <p class="s" data-who="ひよこちゃん">DHCP サーバって、1 つのネットワークに何台もあったりするんですか?</p>
-    <p class="t" data-who="ふくろう先生">複数の DHCP サーバが同じネットワークにいること自体は、珍しいことではなく、呼びかけにはどれでも応じられます。ただ、2 台がそれぞれ別々に番号の範囲を管理していて、範囲が重なっていると、同じ番号を別の機器に配ってしまうことがあるんです。</p>
-    <p class="s" data-who="ひよこちゃん">個人開発で起きたことなんですけど、家に古い機器を無線の中継用に置いていたら、それも DHCP サーバとして動き出していて、同じ番号が 2 台の機器に配られてしまって、両方ネットにつながらなくなったことがあるんです。</p>
-    <p class="t" data-who="ふくろう先生">それはまさに今話した状況ですね。2 台の DHCP サーバの範囲がたまたま重なっていたんだと思います。</p>
-    <p class="s" data-who="ひよこちゃん">もらえるのは番号だけですか?</p>
-    <p class="t" data-who="ふくろう先生">いえ、他にも渡されるものがあります。1 つは、外へ出るときの出口となる機器のアドレスです。</p>
-    <p class="s" data-who="ひよこちゃん">もう 1 つは何ですか?</p>
-    <p class="t" data-who="ふくろう先生">名前を IP アドレスに変える仕組みを担当するサーバのアドレスです。<a class="term" href="glossary.html#dns" data-term="dns">DNS</a> と呼ばれる仕組みで、詳しくは<a class="xref" href="m16.html" data-page="m16">第 16 章</a>で扱います。</p>
-    <p class="s" data-who="ひよこちゃん">今の番号のもらい方は、新しいバージョンの IP アドレスでも同じなんですか?</p>
-    <p class="t" data-who="ふくろう先生">似たような、自動で番号を配る仕組みが<a class="term" href="glossary.html#ipv6" data-term="ipv6">IPv6</a> にもあります。違いは、<a class="xref" href="m11.html" data-page="m11">第 11 章</a>でまとめて説明します。</p>
-    <p class="s" data-who="ひよこちゃん">なるほど、つないだ瞬間に、いろんな番号が自動でそろうんですね。</p>
-    <p class="t" data-who="ふくろう先生">そのとおりです。次はその家庭用ルータが、オフィスのような場所でも同じように使えるのか、規模を変えて見ていきましょう。</p>
+    <p class="s" data-who="ひよこちゃん">箱が間に入ってるなら、行き先を選ぶ役目も、箱がしているんですか?</p>
+    <p class="t" data-who="ふくろう先生">いいえ。行き先を選ぶのは家庭用ルータで、<a class="xref" href="m04-2.html" data-page="m04-2">4-2</a> で見た<a class="term" href="glossary.html#router" data-term="router">ルータ</a>としての役目です。箱がするのは、信号を変換することだけです。</p>
+    <p class="s" data-who="ひよこちゃん">箱は信号を変えるだけで、行き先は家庭用ルータが選ぶ、ってことですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。4-2 で見た 5 つの役目に、信号を変換する役目は入っていません。それは壁の側の箱の役目だと、分けて覚えてください。</p>
+    <p class="s" data-who="ひよこちゃん">友達の家は箱が見当たらなくて、家庭用ルータだけに見えたんですけど。</p>
+    <p class="t" data-who="ふくろう先生">箱の役目と家庭用ルータの役目を 1 台にまとめた機器もあります。光回線では、ONU と家庭用ルータの役目をまとめたものが、ホームゲートウェイと呼ばれます。見た目は 1 台でも、役目が 2 つあることは変わりません。</p>
+    <div class="fig-sec">
+    <img src="assets/fig/m04-3-one-box.webp" alt="箱と家庭用ルータが 1 台の場合の図。上段「ふつう」は、壁(コンセントの記号) → 箱 → 家庭用ルータ(アンテナ付き) → 機器(ノート PC とスマホ)の 4 つが矢印で横に並ぶ。下段「1 台にまとめた機器」は、壁 → 1 台 → 機器の順で、その 1 台のカードの中が 2 つの区画に分かれ、左に「箱の役目: 信号を変換」(波形が四角い信号に変わる記号)、右に「家庭用ルータの役目: 行き先を選ぶ ほか」(1 本の矢印が 3 本に分かれる記号)。いちばん下に注記「見た目は 1 台でも、役目は 2 つ」。" width="1536" height="1024" loading="lazy">
+    <!-- 画像の文字版。画面には出さず、検索や HTML を読む AI が読めるように残す -->
+    <pre class="fig" hidden>箱と家庭用ルータが 1 台の場合
+
+ふつう
+  壁 -> 箱 -> 家庭用ルータ -> 機器
+
+1 台にまとめた機器
+  壁 -> [ 1 台 ] -> 機器
++- 1 台の中 -----------------+
+| 箱の役目: 信号を変換       |
+| 家庭用ルータの役目:        |
+|   行き先を選ぶ ほか        |
++----------------------------+
+見た目は 1 台でも、役目は 2 つ</pre>
+    <p class="fig-cap">箱と家庭用ルータを 1 台にまとめた機器でも、信号を変換する役目と家庭用ルータの役目は別々にある。</p>
+    </div>
+    <p class="s" data-who="ひよこちゃん">ちなみに、その箱は自分で用意するものなんですか?</p>
+    <p class="t" data-who="ふくろう先生">ONU は、多くの場合、光回線を契約した会社から提供されます。まずは自宅の壁のそばに、この箱があるか見てみてください。</p>
+    <p class="s" data-who="ひよこちゃん">壁、箱、家庭用ルータ、機器の順で、箱は信号を変えるだけ、行き先は家庭用ルータが選ぶ。1 台にまとまっていても役目は 2 つ、ですね。</p>
+    <p class="t" data-who="ふくろう先生">そのとおりです。次のページでは、<a class="xref" href="m04-2.html" data-page="m04-2">4-2</a> で出てきた <a class="term" href="glossary.html#dhcp" data-term="dhcp">DHCP</a> が、家庭用ルータにつないだ機器へ番号を配るやり取りを見ていきましょう。</p>
   </div>
 
   <h2 id="recap">まとめ</h2>
   <div class="recap">
     <ul>
-      <li>DHCP は、機器に使ってよい番号を自動で配る仕組みで、呼びかけ→提案→希望→確定という 4 段階のやり取りを経て番号が正式に使えるようになる。</li>
-      <li>呼びかけと提案、希望はそれぞれ機器と DHCP サーバの間で 1 往復ずつ行われ、確定でようやく番号が使えるようになる。</li>
-      <li>複数の DHCP サーバが同じネットワークにいること自体は珍しくないが、番号の範囲が重なっていると、別々のタイミングで同じ番号を別の機器に配ってしまうことがある。</li>
-      <li>DHCP は番号のほかに、外へ出るときの出口となる機器のアドレスや、名前を IP アドレスに変える仕組み(DNS)を担当するサーバのアドレスも一緒に配ることができる。</li>
-      <li>IPv6 にも、DHCP と同じように自動で番号を配る仕組みがある。</li>
+      <li>壁まで来ている回線の信号は、家庭用ルータの LAN ケーブルの口にそのまま差せる形ではないので、間に信号を変換する箱が入る。</li>
+      <li>箱の名前は回線の種類で決まる。光回線なら ONU(光回線終端装置)、ケーブルテレビの回線ならケーブルモデムで、変換する元の信号が違うので別々の機器である。</li>
+      <li>並びは、壁の差し込み口、箱、家庭用ルータのインターネット用の口、家の中の機器の順。箱は信号を変換するだけで、行き先を選ぶのは家庭用ルータである。</li>
+      <li>箱と家庭用ルータの役目を 1 台にまとめた機器もあり、光回線ではホームゲートウェイと呼ばれる。見た目は 1 台でも、役目は 2 つある。</li>
     </ul>
   </div>
 
   <h2 id="deep">しくみの話</h2>
   <div class="deep">
-    <p>DHCP は、機器がネットワークにつながるとき、使ってよい番号を自動で配る仕組みである。機器が周りに呼びかけ、DHCP サーバが 1 つ提案し、機器がその提案を選んで希望を伝え、DHCP サーバが確定を返す、という 4 段階のやり取りを経て番号が使えるようになる。それぞれの段階には正式な合図の名前が付いている。複数の DHCP サーバが同じネットワークにいること自体は珍しくないが、番号の範囲が重なっていると、別々のタイミングで同じ番号を別の機器に配ってしまうことがある。DHCP は番号のほかに、外へ出るときの出口となる機器のアドレスや、名前を IP アドレスに変える仕組みを担当するサーバのアドレスも一緒に配ることができる。</p>
+    <p>壁まで来ている回線の信号は、回線の種類によって形が違う。光回線では光ファイバで光の信号が来る。家庭用ルータに差す LAN ケーブルは銅線で、電気の信号を運ぶ(#43)。そのため、壁と家庭用ルータの間に、信号を変換する箱が入る。光回線の箱は ONU(光回線終端装置)で、光の信号と LAN ケーブルで渡せる信号を相互に変換する。ケーブルテレビの回線の箱はケーブルモデムで、ONU とは変換する信号が違う。並びは、壁の差し込み口、箱、家庭用ルータのインターネット用の口、家の中の機器の順になる。箱がするのは信号の変換だけで、宛先を見て次の転送先を選ぶのは家庭用ルータのルータの役目である。箱と家庭用ルータの役目を 1 台にまとめた機器もあり、光回線ではホームゲートウェイと呼ばれるが、その場合も役目は 2 つある。</p>
     <table>
-      <tr><th>段階</th><th>正式な名前</th><th>何が起きるか</th></tr>
-      <tr><td>① 呼びかけ</td><td>DHCPDISCOVER</td><td>機器が周りに「番号をください」と呼びかける</td></tr>
-      <tr><td>② 提案</td><td>DHCPOFFER</td><td>DHCP サーバが「このアドレスはどうですか」と提案する</td></tr>
-      <tr><td>③ 希望</td><td>DHCPREQUEST</td><td>機器が提案の中から 1 つを選んで希望を伝える</td></tr>
-      <tr><td>④ 確定</td><td>DHCPACK</td><td>選ばれた DHCP サーバが確定を応答する</td></tr>
+      <tr><th>回線の種類</th><th>箱の名前</th><th>箱の位置</th></tr>
+      <tr><td>光回線</td><td>ONU(光回線終端装置)</td><td>壁の差し込み口と家庭用ルータの間</td></tr>
+      <tr><td>ケーブルテレビの回線</td><td>ケーブルモデム</td><td>壁の差し込み口と家庭用ルータの間</td></tr>
     </table>
   </div>
 
   <h2 id="try">試してみよう</h2>
   <div class="try">
-    <pre><code>ifconfig</code></pre>
-    <p>見方: 実行結果の「en0」の項目にある「inet」の行の数字が、DHCP によって自動で配られた、今使っている IP アドレスです。</p>
+    <pre><code>netstat -rn</code></pre>
+    <p>見方: 実行結果の「default」で始まる行の右側にあるアドレスが、外あての通信を最初に任せる相手で、このページで見た家庭用ルータのアドレスです。任せる相手は、壁の側の箱ではなく家庭用ルータです。</p>
     <p class="try-note">command not found などで動かなければ、読むだけで進んでよい。</p>
   </div>
 
   <h2 id="sources">参考文献</h2>
   <ul class="sources">
-    <li class="cite" data-src="73">[#73] 京都大学 OCW「基礎情報処理 第 9 回(コンピュータネットワーク)」 — <a href="https://ocw.kyoto-u.ac.jp/course/120/" rel="noopener">原典</a>（p.49「DHCP での IP アドレスのリース」の図。DHCP サーバ 2 台とクライアント 1 台の構成で、呼びかけ→提案→希望→確定の 4 段階を示す）</li>
-    <li class="cite" data-src="3">[#3] 東京大学 UTokyo OCW「ネットワーク工学概論(IP)」 — <a href="https://ocw.u-tokyo.ac.jp/lecture_files/engin_10/4/notes/ja/03_IP.pdf" rel="noopener">原典</a>（p.57、DHCP の割り当て方式と、貸し出し期間があること）</li>
-    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>（演習 11.2.3「ワイヤレスルータで DHCP を設定する」、DHCP のアドレスの範囲と台数の上限を設定する場面）</li>
-    <li class="cite" data-src="16">[#16] WIDE Project「IPv6 Only Network 設計・実験報告」 — <a href="https://www.wide.ad.jp/About/report/pdf2011/part02.pdf" rel="noopener">原典</a>（IP アドレスの自動割り当てに DHCP4 と DHCP6 の両方を用いたという記述）</li>
+    <li class="cite" data-src="43">[#43] Cisco Networking Academy「Networking Basics」 — <a href="https://www.netacad.com/courses/networking-basics?courseLang=en-US" rel="noopener">原典</a>(演習 4.4.4「ワイヤレスルータとクライアントを設定する」、ケーブルモデムを家庭用ルータのインターネットポートに銅製のストレートケーブルで接続する場面)</li>
+    <li class="cite" data-src="65">[#65] Juniper Networks「Day One: Routing the Internet Protocol」 — <a href="https://www.juniper.net/documentation/en_US/day-one-books/DO_Routing_the_IP.pdf" rel="noopener">原典</a>(p.11、クライアントは IP アドレスと、サブネット上のルータにあたる出口のアドレスを割り当てられること)</li>
   </ul>
 
   <h2 id="quiz">クイズ</h2>
   <div class="quiz" data-quiz="m04-3">
     <div class="q" data-q="1">
-      <p class="q-text">同じネットワークに DHCP サーバが 2 台あると、なぜアドレスの重複が起きることがあるのか。</p>
+      <p class="q-text">壁と家庭用ルータの間に入る箱(ONU やケーブルモデム)と、家庭用ルータの役目の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">呼びかけには複数の DHCP サーバが応じられ、それぞれが別々に管理する番号の範囲が重なっていることがあるから</button></li>
-        <li><button type="button" data-correct="false">DHCP サーバは同じネットワークに 1 台までしか置けない決まりになっているから</button></li>
-        <li><button type="button" data-correct="false">4 段階のやり取りのうち、確定の段階は省略されることが多いから</button></li>
-        <li><button type="button" data-correct="false">機器の方が、複数の DHCP サーバに同時に番号を要求してしまうから</button></li>
+        <li><button type="button" data-correct="false">箱が行き先を選び、家庭用ルータが回線の信号を変換する</button></li>
+        <li><button type="button" data-correct="true">箱は回線の信号を LAN ケーブルで渡せる信号に変換し、行き先を選ぶのは家庭用ルータである</button></li>
+        <li><button type="button" data-correct="false">箱も家庭用ルータも、信号の変換と行き先の選択の両方を行う</button></li>
+        <li><button type="button" data-correct="false">箱が家の中の機器に番号を自動で配る</button></li>
       </ol>
-      <p class="feedback" data-explain="正解は、呼びかけには複数の DHCP サーバが応じられ、それぞれが別々に管理する番号の範囲が重なっていることがあるから、です。複数の DHCP サーバが同じネットワークにいること自体は珍しくありませんが、範囲の管理が別々だと同じ番号を別の機器に配ってしまうことがあります。"></p>
+      <p class="feedback" data-explain="正解は、箱は回線の信号を LAN ケーブルで渡せる信号に変換し、行き先を選ぶのは家庭用ルータである、です。箱がするのは信号の変換だけで、行き先を選ぶ役目と番号を配る役目は、どちらも家庭用ルータが持っています。"></p>
     </div>
     <div class="q" data-q="2">
-      <p class="q-text">DHCP で番号がもらえるまでの 4 段階の順番として正しいものはどれか。</p>
+      <p class="q-text">ONU とケーブルモデムが別の名前で呼ばれるのは、なぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">呼びかけ→提案→希望→確定</button></li>
-        <li><button type="button" data-correct="false">提案→呼びかけ→確定→希望</button></li>
-        <li><button type="button" data-correct="false">希望→確定→呼びかけ→提案</button></li>
-        <li><button type="button" data-correct="false">確定→希望→提案→呼びかけ</button></li>
+        <li><button type="button" data-correct="false">ONU は無線の機器を、ケーブルモデムは有線の機器をつなぐ箱だから</button></li>
+        <li><button type="button" data-correct="false">ONU は行き先を選ぶ役目を持ち、ケーブルモデムは持たないから</button></li>
+        <li><button type="button" data-correct="true">壁まで来る回線の種類が違い、変換する元の信号も違うから</button></li>
+        <li><button type="button" data-correct="false">ISP の会社ごとに名前が違うだけで、同じ機器だから</button></li>
       </ol>
-      <p class="feedback" data-explain="正解は、呼びかけ→提案→希望→確定、です。機器が呼びかけ、DHCP サーバが提案し、機器が希望を伝え、DHCP サーバが確定して初めて番号が使えるようになります。"></p>
+      <p class="feedback" data-explain="正解は、壁まで来る回線の種類が違い、変換する元の信号も違うから、です。光回線の箱が ONU、ケーブルテレビの回線の箱がケーブルモデムで、どちらも行き先を選ぶ役目は持たず、信号の変換だけを担います。"></p>
     </div>
     <div class="q" data-q="3">
-      <p class="q-text">DHCP が番号と一緒に配ることがあるものの組み合わせとして正しいものはどれか。</p>
+      <p class="q-text">箱と家庭用ルータの役目を 1 台にまとめた機器(光回線ではホームゲートウェイと呼ばれる)について、正しい説明はどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">外へ出るときの出口となる機器のアドレスと、名前を IP アドレスに変える仕組みを担当するサーバのアドレス</button></li>
-        <li><button type="button" data-correct="false">家の中と外で番号を付け替える箱の設定内容そのもの</button></li>
-        <li><button type="button" data-correct="false">無線 LAN の電波の強さの設定</button></li>
-        <li><button type="button" data-correct="false">有線の配線の長さの情報</button></li>
+        <li><button type="button" data-correct="false">1 台になると、信号の変換が要らなくなる</button></li>
+        <li><button type="button" data-correct="true">見た目は 1 台でも、信号を変換する役目と家庭用ルータの役目は別々にある</button></li>
+        <li><button type="button" data-correct="false">1 台になると、家庭用ルータの役目のうち番号を配る役目が使えなくなる</button></li>
+        <li><button type="button" data-correct="false">1 台になると、行き先を選ぶ役目が信号の変換に置き換わる</button></li>
       </ol>
-      <p class="feedback" data-explain="正解は、外へ出るときの出口となる機器のアドレスと、名前を IP アドレスに変える仕組みを担当するサーバのアドレス、です。DHCP は番号だけでなく、こうした関連するアドレスも一緒に配ることができます。"></p>
+      <p class="feedback" data-explain="正解は、見た目は 1 台でも、信号を変換する役目と家庭用ルータの役目は別々にある、です。1 台にまとめても、壁まで来た信号の変換は必要で、番号を配る役目や行き先を選ぶ役目も家庭用ルータの役目としてそのまま残ります。"></p>
     </div>
   </div>
 
   <nav class="pager">
     <a class="prev" href="m04-2.html">← 4-2 1 台に、いくつもの役目が詰め込まれている</a>
     <a class="up" href="m04.html">第 4 章の入口</a>
-    <a class="next" href="m04-4.html">4-4 人が増えると、1 台の箱では足りなくなる →</a>
+    <a class="next" href="m04-4.html">4-4 つないだ瞬間に、番号は自動で配られる →</a>
   </nav>
 </main>
 </body>

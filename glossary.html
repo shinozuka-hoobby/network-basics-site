@@ -166,9 +166,9 @@
   <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
 </li>
 <li class="g-item" id="cable-modem">
-  <p class="g-term">ケーブルモデム <span class="g-aliases">（ONU、光回線終端装置）</span></p>
-  <p class="g-short">ISP の回線から来る信号を、家庭用ルータに LAN ケーブルで渡せる信号に変換する箱のこと。ケーブルテレビの回線ではケーブルモデム、光回線では ONU(光回線終端装置)と呼ばれる。</p>
-  <p class="g-defined">定義: <a href="m04-2.html">第 4 章 4-2</a></p>
+  <p class="g-term">ケーブルモデム</p>
+  <p class="g-short">ケーブルテレビの回線で壁まで来た信号を、家庭用ルータに LAN ケーブルで渡せる信号に変える箱のこと。光回線の箱(ONU)とは変換する信号が違い、行き先は選ばない。</p>
+  <p class="g-defined">定義: <a href="m04-3.html">第 4 章 4-3</a></p>
   <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
 </li>
 <li class="g-item" id="dns-authoritative">
@@ -619,7 +619,7 @@
   <p class="g-term">ルータ</p>
   <p class="g-short">送られてきたデータの宛先を見て、次にどの機械に送ればよいかを判断し、遠くの宛先まで中継していく機械のこと。同じ場所にある機械どうしのやり取りには、通常使われない。</p>
   <p class="g-defined">定義: <a href="m08-1.html">第 8 章 8-1</a></p>
-  <p class="g-refs">用語リンクのあるページ: 1-3、1-4、1-5、3-4、4-2、6-2、7-1、7-3</p>
+  <p class="g-refs">用語リンクのあるページ: 1-3、1-4、1-5、3-4、4-2、4-3、6-2、7-1、7-3</p>
 </li>
 <li class="g-item" id="routing-table">
   <p class="g-term">ルーティングテーブル</p>
@@ -752,8 +752,8 @@
 <li class="g-item" id="dhcp">
   <p class="g-term">DHCP</p>
   <p class="g-short">家庭やオフィスの機械に、使ってよい番号を自動で配る仕組みのこと。手作業で番号を設定しなくても、機械はすぐに通信を始められる。</p>
-  <p class="g-defined">定義: <a href="m04-3.html">第 4 章 4-3</a></p>
-  <p class="g-refs">用語リンクのあるページ: 3-3、4-2</p>
+  <p class="g-defined">定義: <a href="m04-4.html">第 4 章 4-4</a></p>
+  <p class="g-refs">用語リンクのあるページ: 3-3、4-2、4-3</p>
 </li>
 <li class="g-item" id="dhcpv6">
   <p class="g-term">DHCPv6 <span class="g-aliases">（DHCP6）</span></p>
@@ -771,7 +771,7 @@
   <p class="g-term">DNS</p>
   <p class="g-short">ブラウザが URL の中のドメイン名を IP アドレスに変換するとき、実際にその変換を行っている裏側の仕組み全体のこと。世界中の機械が手分けして答えている。</p>
   <p class="g-defined">定義: <a href="m16-1.html">第 16 章 16-1</a></p>
-  <p class="g-refs">用語リンクのあるページ: 1-1、1-2、1-3、1-6、4-3、12-2</p>
+  <p class="g-refs">用語リンクのあるページ: 1-1、1-2、1-3、1-6、4-4、12-2</p>
 </li>
 <li class="g-item" id="dnssec">
   <p class="g-term">DNSSEC</p>
@@ -905,7 +905,7 @@
   <p class="g-term">IPv6</p>
   <p class="g-short">今使われている IP アドレスの形式を置き換える、より多くの番号を用意できる新しい形式のこと。使える番号が足りなくなる問題への対策として作られた。</p>
   <p class="g-defined">定義: <a href="m11-1.html">第 11 章 11-1</a></p>
-  <p class="g-refs">用語リンクのあるページ: 4-3、10-4</p>
+  <p class="g-refs">用語リンクのあるページ: 4-4、10-4</p>
 </li>
 <li class="g-item" id="ip-address">
   <p class="g-term">IP アドレス</p>
@@ -1033,6 +1033,12 @@
 
 <h2 id="letter-O">O</h2>
 <ul class="glossary-list">
+<li class="g-item" id="onu">
+  <p class="g-term">ONU <span class="g-aliases">（光回線終端装置）</span></p>
+  <p class="g-short">光回線で壁まで来た光の信号を、家庭用ルータに LAN ケーブルで渡せる信号に変える箱のこと。光回線終端装置とも呼ばれ、行き先を選ぶ役目は持たない。</p>
+  <p class="g-defined">定義: <a href="m04-3.html">第 4 章 4-3</a></p>
+  <p class="g-refs g-refs-none">用語リンクのあるページ: まだありません</p>
+</li>
 <li class="g-item" id="osi-model">
   <p class="g-term">OSI 参照モデル <span class="g-aliases">（OSI 7 層モデル）</span></p>
   <p class="g-short">通信の役目を 7 つの層に分けて考える、もう一つの整理の仕方のこと。4 つの層に分ける考え方より細かく役目を分けており、名前と対応関係がよく比較される。</p>
