@@ -102,9 +102,9 @@ round-trip min/avg/max/stddev =
       <p class="q-text">ping が失敗しても、相手の機械が止まっているとは限らないのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">ping は 3 回に 1 回しか成功しない決まりになっているから</button></li>
-        <li><button type="button" data-correct="true">経路の途中の設定で ICMP の合図そのものが拒否されている場合があり、その場合は宛先の機械が正常でも失敗するから</button></li>
         <li><button type="button" data-correct="false">ping は IP アドレスが変わるたびに失敗するように作られているから</button></li>
         <li><button type="button" data-correct="false">ping は宛先の機械の電源が入っているかどうかしか調べないから</button></li>
+        <li><button type="button" data-correct="true">経路の途中の設定で ICMP の合図そのものが拒否されている場合があり、その場合は宛先の機械が正常でも失敗するから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、経路の途中の設定で ICMP の合図そのものが拒否されている場合があり、その場合は宛先の機械が正常でも失敗するから、です。3 回に 1 回という決まりや、IP アドレスの変化、電源の有無だけを調べるという話ではありません。"></p>
     </div>
@@ -112,8 +112,8 @@ round-trip min/avg/max/stddev =
       <p class="q-text">ping の実行結果の time= に続く数字が表すものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">あと何回機械を経由できるかを示す残りの回数</button></li>
-        <li><button type="button" data-correct="false">確認の合図を送った回数</button></li>
         <li><button type="button" data-correct="true">確認の合図を送ってから応答が戻るまでの往復時間</button></li>
+        <li><button type="button" data-correct="false">確認の合図を送った回数</button></li>
         <li><button type="button" data-correct="false">応答が届かなかった割合</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、確認の合図を送ってから応答が戻るまでの往復時間、です。残りの回数は ttl=、送った回数は icmp_seq=、届かなかった割合は末尾の統計行に別に表示されます。"></p>

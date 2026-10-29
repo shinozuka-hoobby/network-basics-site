@@ -96,8 +96,8 @@
     <div class="q" data-q="1">
       <p class="q-text">ARP で MAC アドレスを尋ねるとき、尋ねる側はブロードキャストなのに、答える側は尋ねてきた相手だけに返すのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">その IP アドレスに当てはまる機械以外は、答える必要が無いから</button></li>
         <li><button type="button" data-correct="false">答える側もブロードキャストで返さないと、通信の決まりに違反するから</button></li>
+        <li><button type="button" data-correct="true">その IP アドレスに当てはまる機械以外は、答える必要が無いから</button></li>
         <li><button type="button" data-correct="false">尋ねる側の機械が、答えを 1 台からしか受け取れない仕組みになっているから</button></li>
         <li><button type="button" data-correct="false">ARP キャッシュには、1 台分の対応しか記録できないから</button></li>
       </ol>
@@ -106,18 +106,18 @@
     <div class="q" data-q="2">
       <p class="q-text">ARP キャッシュの説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ARP で調べた IP アドレスと MAC アドレスの対応を、しばらくの間覚えておく表のこと</button></li>
         <li><button type="button" data-correct="false">ブロードキャストで送れる範囲そのもののこと</button></li>
         <li><button type="button" data-correct="false">デフォルトゲートウェイだけの MAC アドレスを記録する、専用の表のこと</button></li>
         <li><button type="button" data-correct="false">サブネットマスクの値を覚えておくための表のこと</button></li>
+        <li><button type="button" data-correct="true">ARP で調べた IP アドレスと MAC アドレスの対応を、しばらくの間覚えておく表のこと</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ARP で調べた IP アドレスと MAC アドレスの対応を、しばらくの間覚えておく表のこと、です。デフォルトゲートウェイに限らず、同じサブネットの機械であれば対応が記録されます。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">送信元の機械が、送る前に確認する順序として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">自分の ARP キャッシュを確認し、対応が無ければブロードキャストで尋ねる</button></li>
         <li><button type="button" data-correct="false">必ず先にブロードキャストで尋ね、その後で ARP キャッシュに記録があるか確認する</button></li>
+        <li><button type="button" data-correct="true">自分の ARP キャッシュを確認し、対応が無ければブロードキャストで尋ねる</button></li>
         <li><button type="button" data-correct="false">デフォルトゲートウェイに確認してから、ARP キャッシュを更新する</button></li>
         <li><button type="button" data-correct="false">サブネットマスクを確認してから、ARP キャッシュを消去する</button></li>
       </ol>

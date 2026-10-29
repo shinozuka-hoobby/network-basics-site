@@ -104,18 +104,18 @@ ping -c 3 example.com</code></pre>
     <div class="q" data-q="1">
       <p class="q-text">初めて接続する相手と、以前に接続したことがある相手とで、データを送り始めるまでに必要な往復の数が異なる理由として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">以前に接続した相手となら、そのときの情報を使って暗号化の準備を先に済ませられるから</button></li>
         <li><button type="button" data-correct="false">初めての相手の方が、通信を許可するかどうかの審査に時間がかかるから</button></li>
         <li><button type="button" data-correct="false">以前に接続した相手とは、暗号化そのものを省略できるから</button></li>
         <li><button type="button" data-correct="false">初めての相手とは、接続を複数回に分けて作るから</button></li>
+        <li><button type="button" data-correct="true">以前に接続した相手となら、そのときの情報を使って暗号化の準備を先に済ませられるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、以前に接続した相手となら、そのときの情報を使って暗号化の準備を先に済ませられるから、です。暗号化そのものを省略するわけではなく、準備を前倒しできる点が速さの理由です。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">0-RTT の説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">以前に接続したことがある相手となら、次に接続するとき、最初のやり取りからデータを送り始められる仕組み</button></li>
         <li><button type="button" data-correct="false">初めて接続する相手にも使える、往復を必要としない仕組み</button></li>
+        <li><button type="button" data-correct="true">以前に接続したことがある相手となら、次に接続するとき、最初のやり取りからデータを送り始められる仕組み</button></li>
         <li><button type="button" data-correct="false">接続を作る手続きだけをまとめて省略する仕組み</button></li>
         <li><button type="button" data-correct="false">暗号化の手続きを行わずに済ませる仕組み</button></li>
       </ol>
@@ -124,9 +124,9 @@ ping -c 3 example.com</code></pre>
     <div class="q" data-q="3">
       <p class="q-text">往復を 1 回減らすことの効果について、正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">相手までの往復時間が長いほど、1 回の往復を省く効果は大きい</button></li>
         <li><button type="button" data-correct="false">相手までの距離に関わらず、効果は常に同じである</button></li>
         <li><button type="button" data-correct="false">往復を減らせるのは、初めて接続する相手だけである</button></li>
+        <li><button type="button" data-correct="true">相手までの往復時間が長いほど、1 回の往復を省く効果は大きい</button></li>
         <li><button type="button" data-correct="false">往復を減らすと、暗号化の強さが弱くなる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、相手までの往復時間が長いほど、1 回の往復を省く効果は大きい、です。1 回の往復にかかる時間そのものが長い相手ほど、それを省略できることの意味が大きくなります。"></p>

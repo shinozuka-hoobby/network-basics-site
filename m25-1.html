@@ -89,8 +89,8 @@ VPC B  --x--  VPC C
     <div class="q" data-q="1">
       <p class="q-text">VPC A-B、VPC A-C と VPC ピアリングしたのに、B から C へ通信できなかったのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">VPC A の電源が落ちていたから</button></li>
         <li><button type="button" data-correct="true">VPC ピアリングは 1 対 1 のつながりで、間の VPC を経由して届く「推移」ができないから</button></li>
+        <li><button type="button" data-correct="false">VPC A の電源が落ちていたから</button></li>
         <li><button type="button" data-correct="false">B と C の IP アドレスの範囲がまったく同じだったから</button></li>
         <li><button type="button" data-correct="false">VPC ピアリング接続は 1 つの VPC につき 1 本しか作れないから</button></li>
       </ol>
@@ -110,8 +110,8 @@ VPC B  --x--  VPC C
       <p class="q-text">VPC ピアリングでつなげない組み合わせはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">IP アドレスの範囲が重ならない、2 つの VPC</button></li>
-        <li><button type="button" data-correct="false">別々の AWS アカウントにある、2 つの VPC</button></li>
         <li><button type="button" data-correct="true">IP アドレスの範囲が重なっている、2 つの VPC</button></li>
+        <li><button type="button" data-correct="false">別々の AWS アカウントにある、2 つの VPC</button></li>
         <li><button type="button" data-correct="false">同じ AWS アカウントにある、2 つの VPC</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、IP アドレスの範囲が重なっている、2 つの VPC、です。範囲が重ならなければ、アカウントが別でも同じでもつなげます。"></p>

@@ -103,9 +103,9 @@
       <p class="q-text">なぜ AWS はロードバランサの DNS エントリの TTL を 60 秒という短い値にしているのか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">セキュリティ上の理由で、頻繁に暗号鍵を更新するため</button></li>
-        <li><button type="button" data-correct="true">通信量の変化に応じて構成を変えたときに、利用者側の古い答えを早く入れ替えて、新しい IP アドレスに素早く付け替えられるようにするため</button></li>
         <li><button type="button" data-correct="false">利用者の端末の処理負荷を減らすため</button></li>
         <li><button type="button" data-correct="false">DNS サーバの台数を減らせるため</button></li>
+        <li><button type="button" data-correct="true">通信量の変化に応じて構成を変えたときに、利用者側の古い答えを早く入れ替えて、新しい IP アドレスに素早く付け替えられるようにするため</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、通信量の変化に応じて構成を変えたときに、利用者側の古い答えを早く入れ替えて、新しい IP アドレスに素早く付け替えられるようにするため、です。暗号鍵の更新や端末の負荷、DNS サーバの台数とは関係ありません。"></p>
     </div>
@@ -113,17 +113,17 @@
       <p class="q-text">名前解決の答えそのものを使い分けて振り分けを行う方式の説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">TCP 接続の宛先や送信元の組み合わせをもとに、振り分け先を決める方式</button></li>
+        <li><button type="button" data-correct="true">名前解決の答えを、比率や応答の速さ、健康状態などに応じて使い分けることで、振り分けを行う方式</button></li>
         <li><button type="button" data-correct="false">要求が来るたびに、順番に振り分け先を変えていく方式</button></li>
         <li><button type="button" data-correct="false">同じ利用者からの要求を、必ず同じ機械に送り続ける方式</button></li>
-        <li><button type="button" data-correct="true">名前解決の答えを、比率や応答の速さ、健康状態などに応じて使い分けることで、振り分けを行う方式</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、名前解決の答えを、比率や応答の速さ、健康状態などに応じて使い分けることで、振り分けを行う方式、です。TCP 接続の組み合わせによる決定はフローハッシュ、順番の割り当てはラウンドロビンで、セッションアフィニティも「必ず」同じ機械に届くとは限りません。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">クラウド 3 社のロードバランサの種類の対応として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">AWS・GCP・Azure は、いずれも同じ名前の製品を使っている</button></li>
         <li><button type="button" data-correct="true">AWS・GCP には、L7 の Application Load Balancer と L4 の Network Load Balancer がある</button></li>
+        <li><button type="button" data-correct="false">AWS・GCP・Azure は、いずれも同じ名前の製品を使っている</button></li>
         <li><button type="button" data-correct="false">Azure の Load Balancer は、L7 の振り分けを行う</button></li>
         <li><button type="button" data-correct="false">GCP には、L4 のロードバランサが存在しない</button></li>
       </ol>

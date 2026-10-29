@@ -110,17 +110,17 @@
       <p class="q-text">1 台の機械で、複数のプログラムが同時に別々の相手と通信していても、データが混ざらずに正しいプログラムへ届くのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">プログラムごとに別々の IP アドレスが割り当てられているから</button></li>
-        <li><button type="button" data-correct="true">宛先側と送信元側、それぞれのポート番号の組み合わせでやり取りが区別されているから</button></li>
         <li><button type="button" data-correct="false">プログラムが順番を決めて、1 つずつ交代で通信しているから</button></li>
         <li><button type="button" data-correct="false">機械の中では、最初に届いたデータだけが処理されるから</button></li>
+        <li><button type="button" data-correct="true">宛先側と送信元側、それぞれのポート番号の組み合わせでやり取りが区別されているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、宛先側と送信元側、それぞれのポート番号の組み合わせでやり取りが区別されているから、です。同じ機械・同じ IP アドレスでも、ポート番号の組が違えば別のやり取りとして扱われるため、複数のプログラムが同時に通信しても混ざりません。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">ウェルノウンポートの説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">通信を始める側が、そのつど自由に選んで使う番号</button></li>
         <li><button type="button" data-correct="true">0 番から 1023 番までの、特定のサービス用にあらかじめ決められている番号</button></li>
+        <li><button type="button" data-correct="false">通信を始める側が、そのつど自由に選んで使う番号</button></li>
         <li><button type="button" data-correct="false">IP アドレスと同じ役割を持つ、機械ごとに固有の番号</button></li>
         <li><button type="button" data-correct="false">通信のたびに増えていく、順番を表す番号</button></li>
       </ol>
@@ -130,8 +130,8 @@
       <p class="q-text">通信を始める側が使う、送信元のポート番号について正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">80 番や 443 番のような、あらかじめ決められた番号だけが使われる</button></li>
-        <li><button type="button" data-correct="true">あらかじめ決まっていない番号の中から、通信のたびに一時的に選ばれる</button></li>
         <li><button type="button" data-correct="false">相手の機械が、代わりに割り当てて送り返してくる</button></li>
+        <li><button type="button" data-correct="true">あらかじめ決まっていない番号の中から、通信のたびに一時的に選ばれる</button></li>
         <li><button type="button" data-correct="false">一度使った番号は、二度と別の通信に使われない</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、あらかじめ決まっていない番号の中から、通信のたびに一時的に選ばれる、です。これをエフェメラルポートと呼びます。第 10 章の変換表が記録していたのも、この送信元側の一時的な番号と、外向けに割り当てられた番号の組でした。"></p>

@@ -78,18 +78,18 @@
     <div class="q" data-q="1">
       <p class="q-text">ページ全体を https 化しても、中の部品が http のままだと守られないのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">その部品だけは暗号化されずに送られるから</button></li>
         <li><button type="button" data-correct="false">ページ本体の暗号化が自動的に解除されてしまうから</button></li>
         <li><button type="button" data-correct="false">ブラウザが古いキャッシュを使い続けてしまうから</button></li>
         <li><button type="button" data-correct="false">認証局がその部品を承認していないから</button></li>
+        <li><button type="button" data-correct="true">その部品だけは暗号化されずに送られるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、その部品だけは暗号化されずに送られるから、です。ページ本体の暗号化が解除されるわけではなく、キャッシュや認証局の承認とは別の話です。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">混在コンテンツの説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">https のページの中で、部品が http のまま呼び出されている状態</button></li>
         <li><button type="button" data-correct="false">http のページの中に、https の部品が混ざっている状態</button></li>
+        <li><button type="button" data-correct="true">https のページの中で、部品が http のまま呼び出されている状態</button></li>
         <li><button type="button" data-correct="false">複数の認証局が発行した身分証が混在している状態</button></li>
         <li><button type="button" data-correct="false">身分証の有効期間が複数の長さで混在している状態</button></li>
       </ol>
@@ -98,9 +98,9 @@
     <div class="q" data-q="3">
       <p class="q-text">https 化したのに画像が表示されない、警告が出るという現象の原因として、本文で説明されているものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">画像の呼び出し先が http のままになっていること</button></li>
         <li><button type="button" data-correct="false">身分証の有効期間が切れていること</button></li>
         <li><button type="button" data-correct="false">発行した認証局が変更されたこと</button></li>
+        <li><button type="button" data-correct="true">画像の呼び出し先が http のままになっていること</button></li>
         <li><button type="button" data-correct="false">サーバの秘密鍵が漏れたこと</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、画像の呼び出し先が http のままになっていること、です。有効期間切れや認証局の変更、秘密鍵の漏洩は、このページで説明した原因ではありません。"></p>

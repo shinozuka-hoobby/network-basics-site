@@ -123,9 +123,9 @@
     <div class="q" data-q="2">
       <p class="q-text">nc -zv example.com 443 が failed(失敗)を返したとき、この結果だけから分かることはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">443 番の入口までは到達できなかったということだけで、セキュリティグループ・NACL・相手の不在のどれが原因かは分からない</button></li>
         <li><button type="button" data-correct="false">セキュリティグループの設定が原因だと確定する</button></li>
         <li><button type="button" data-correct="false">NACL の設定が原因だと確定する</button></li>
+        <li><button type="button" data-correct="true">443 番の入口までは到達できなかったということだけで、セキュリティグループ・NACL・相手の不在のどれが原因かは分からない</button></li>
         <li><button type="button" data-correct="false">相手のサーバが停止していると確定する</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、443 番の入口までは到達できなかったということだけで、原因までは分からない、です。原因を絞り込むには、クラウド側の経路診断ツールやフローログを確かめる必要があります。"></p>
@@ -133,8 +133,8 @@
     <div class="q" data-q="3">
       <p class="q-text">VPC A-B と VPC A-C をそれぞれ VPC ピアリングでつないだ場合、B から C への通信について正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">A を経由して自動的に通信できる</button></li>
         <li><button type="button" data-correct="true">B-C 間に直接の VPC ピアリング接続が無ければ通信できない</button></li>
+        <li><button type="button" data-correct="false">A を経由して自動的に通信できる</button></li>
         <li><button type="button" data-correct="false">セキュリティグループを設定すれば、ピアリングが無くても通信できる</button></li>
         <li><button type="button" data-correct="false">ルートテーブルの設定だけで、ピアリングが無くても通信できる</button></li>
       </ol>

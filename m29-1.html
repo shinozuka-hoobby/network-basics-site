@@ -76,9 +76,9 @@
     <div class="q" data-q="1">
       <p class="q-text">なぜ、AWS の Reachability Analyzer は、実際にパケットを送らなくても、届くかどうかを判定できるのか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ルートテーブルやセキュリティグループなどの設定を読み取り、その内容をもとにモデルを作って判定するから</button></li>
         <li><button type="button" data-correct="false">宛先の機械に、必ず問い合わせを送っているから</button></li>
         <li><button type="button" data-correct="false">過去に送ったパケットの記録を保存しているから</button></li>
+        <li><button type="button" data-correct="true">ルートテーブルやセキュリティグループなどの設定を読み取り、その内容をもとにモデルを作って判定するから</button></li>
         <li><button type="button" data-correct="false">結果をランダムに選んでいるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ルートテーブルやセキュリティグループなどの設定を読み取り、その内容をもとにモデルを作って判定するから、です。宛先への問い合わせや過去の記録の保存、ランダムな判定ではありません。"></p>
@@ -96,8 +96,8 @@
     <div class="q" data-q="3">
       <p class="q-text">経路診断ツールの判定に限界があるとすれば、どれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由までは分からない</button></li>
         <li><button type="button" data-correct="false">設定を読み取ることが一切できない</button></li>
+        <li><button type="button" data-correct="true">設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由までは分からない</button></li>
         <li><button type="button" data-correct="false">常に実際にパケットを送ってしまう</button></li>
         <li><button type="button" data-correct="false">セキュリティグループの内容は読み取れない</button></li>
       </ol>

@@ -100,8 +100,8 @@
     <div class="q" data-q="1">
       <p class="q-text">認証局が身分証を発行する前に審査するのは何か。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">身分証の見た目が本物らしいかどうか</button></li>
         <li><button type="button" data-correct="true">申請してきた相手が、本当にその名前の正当な持ち主かどうか</button></li>
+        <li><button type="button" data-correct="false">身分証の見た目が本物らしいかどうか</button></li>
         <li><button type="button" data-correct="false">ブラウザの種類とバージョン</button></li>
         <li><button type="button" data-correct="false">通信の速度が十分に出るかどうか</button></li>
       </ol>
@@ -111,9 +111,9 @@
       <p class="q-text">証明書チェーンをたどっていくと、最後はどこに行き着くか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">接続先の Web サーバ自身の身分証</button></li>
-        <li><button type="button" data-correct="true">誰の保証も受けずにそれ自体が信頼されている、一番上の身分証</button></li>
         <li><button type="button" data-correct="false">ブラウザを開発している会社のサーバ</button></li>
         <li><button type="button" data-correct="false">利用者が使っているルータ</button></li>
+        <li><button type="button" data-correct="true">誰の保証も受けずにそれ自体が信頼されている、一番上の身分証</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、誰の保証も受けずにそれ自体が信頼されている、一番上の身分証、です。ブラウザや OS は、あらかじめこの一番上の身分証を少数だけ信頼する形で持っています。"></p>
     </div>
@@ -121,9 +121,9 @@
       <p class="q-text">認証局自体がハッキングを受けて乗っ取られると、なぜ危ないのか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">ブラウザが認証局への接続を続けられなくなるから</button></li>
-        <li><button type="button" data-correct="true">本来なら審査で弾かれるはずの申請を通してしまい、不正な身分証も正規の手順を通ったものと見分けがつかなくなるから</button></li>
         <li><button type="button" data-correct="false">身分証に含まれる公開鍵が自動的に書き換えられてしまうから</button></li>
         <li><button type="button" data-correct="false">証明書チェーンの長さが変わってしまうから</button></li>
+        <li><button type="button" data-correct="true">本来なら審査で弾かれるはずの申請を通してしまい、不正な身分証も正規の手順を通ったものと見分けがつかなくなるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、本来なら審査で弾かれるはずの申請を通してしまい、不正な身分証も正規の手順を通ったものと見分けがつかなくなるから、です。認証局の保証の印は、認証局自体が信頼できることを前提にしています。"></p>
     </div>

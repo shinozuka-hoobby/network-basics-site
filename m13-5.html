@@ -108,8 +108,8 @@ netstat -an -p tcp | grep -c LISTEN</code></pre>
     <div class="q" data-q="1">
       <p class="q-text">待ち受け中(LISTEN)と会話中(ESTABLISHED)の段階の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">待ち受け中はまだ相手からの申し出を待っている段階、会話中は実際にデータをやり取りできる段階である</button></li>
         <li><button type="button" data-correct="false">待ち受け中は接続が壊れている段階、会話中は正常な段階である</button></li>
+        <li><button type="button" data-correct="true">待ち受け中はまだ相手からの申し出を待っている段階、会話中は実際にデータをやり取りできる段階である</button></li>
         <li><button type="button" data-correct="false">待ち受け中と会話中はまったく同じ段階で、呼び方が違うだけである</button></li>
         <li><button type="button" data-correct="false">待ち受け中はデータを送る側、会話中はデータを受け取る側の段階である</button></li>
       </ol>
@@ -119,8 +119,8 @@ netstat -an -p tcp | grep -c LISTEN</code></pre>
       <p class="q-text">接続を閉じた直後の段階(TIME_WAIT)が残っている間、なぜ同じ組み合わせでの接続をすぐには始めにくいのか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">相手が新しい IP アドレスを割り当てられるまで待つ必要があるから</button></li>
-        <li><button type="button" data-correct="true">前の接続がまだ完全には後片付けされておらず、その段階が残っているから</button></li>
         <li><button type="button" data-correct="false">同じポート番号は二度と使えない決まりになっているから</button></li>
+        <li><button type="button" data-correct="true">前の接続がまだ完全には後片付けされておらず、その段階が残っているから</button></li>
         <li><button type="button" data-correct="false">閉じた直後の段階では、シーケンス番号が無限に増え続けるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、前の接続がまだ完全には後片付けされておらず、その段階が残っているから、です。接続を能動的に閉じた側は、しばらくの間、閉じた直後の段階を保ち続けるため、その間は同じ組み合わせでの接続にすぐには使いにくくなります。"></p>
@@ -129,9 +129,9 @@ netstat -an -p tcp | grep -c LISTEN</code></pre>
       <p class="q-text">TCP の状態遷移とは何か。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">送ったデータに付ける通し番号のこと</button></li>
-        <li><button type="button" data-correct="true">接続が今どの段階にあるかを表す区分のこと</button></li>
         <li><button type="button" data-correct="false">送り手と受け手の間で交わされる暗号化の手順のこと</button></li>
         <li><button type="button" data-correct="false">IP アドレスとポート番号の組み合わせのこと</button></li>
+        <li><button type="button" data-correct="true">接続が今どの段階にあるかを表す区分のこと</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、接続が今どの段階にあるかを表す区分のこと、です。待ち受け中・会話中・閉じた直後など、接続はいくつかの段階のどれかにあり、段階によって機械の振る舞いが変わります。"></p>
     </div>

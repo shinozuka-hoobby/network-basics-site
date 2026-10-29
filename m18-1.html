@@ -107,8 +107,8 @@
       <p class="q-text">HTTPS の通信でも、どのホスト名にアクセスしようとしたかが別の経路から見えてしまうことがあるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">TLS の暗号化に不具合があるから</button></li>
-        <li><button type="button" data-correct="true">名前解決の問い合わせは、TLS より前の段階で行われ、従来ほとんどの場合暗号化されていないから</button></li>
         <li><button type="button" data-correct="false">ブラウザがアクセス履歴を毎回サーバに送り返しているから</button></li>
+        <li><button type="button" data-correct="true">名前解決の問い合わせは、TLS より前の段階で行われ、従来ほとんどの場合暗号化されていないから</button></li>
         <li><button type="button" data-correct="false">ブラウザがホスト名を毎回ログに残して公開しているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、名前解決の問い合わせは、TLS より前の段階で行われ、従来ほとんどの場合暗号化されていないから、です。TLS の暗号化に不具合があるわけではなく、暗号化の対象になる前の段階の話です。"></p>
@@ -117,9 +117,9 @@
       <p class="q-text">暗号化の中身が読めないことと、どのサイトにアクセスしようとしたかが見えないことの関係として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">同じ保護の範囲に含まれ、どちらか一方が守られればもう一方も必ず守られる</button></li>
-        <li><button type="button" data-correct="true">保護の範囲が異なり、中身が読めなくても、どのサイトにアクセスしようとしたかは別の経路から見えることがある</button></li>
         <li><button type="button" data-correct="false">どちらも名前解決の段階だけで決まる</button></li>
         <li><button type="button" data-correct="false">HTTPS では両方とも守られないことが多い</button></li>
+        <li><button type="button" data-correct="true">保護の範囲が異なり、中身が読めなくても、どのサイトにアクセスしようとしたかは別の経路から見えることがある</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、保護の範囲が異なり、中身が読めなくても、どのサイトにアクセスしようとしたかは別の経路から見えることがある、です。TLS の保護と名前解決の段階は別物です。"></p>
     </div>

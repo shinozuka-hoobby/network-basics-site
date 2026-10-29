@@ -77,18 +77,18 @@
       <p class="q-text">セッションアフィニティが「ベストエフォート」と説明されるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">通信を暗号化する分、処理に時間がかかるから</button></li>
-        <li><button type="button" data-correct="true">振り分け先の機械の数が変わったり、健康状態が変わったりすると、それまで同じ機械に送り続けていた対応関係が崩れることがあるから</button></li>
         <li><button type="button" data-correct="false">利用者の端末の性能によって、届く機械が変わるから</button></li>
         <li><button type="button" data-correct="false">セッションアフィニティは、あらかじめ決めた 1 台にしか使えない仕組みだから</button></li>
+        <li><button type="button" data-correct="true">振り分け先の機械の数が変わったり、健康状態が変わったりすると、それまで同じ機械に送り続けていた対応関係が崩れることがあるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、振り分け先の機械の数が変わったり、健康状態が変わったりすると、それまで同じ機械に送り続けていた対応関係が崩れることがあるから、です。暗号化や端末の性能、1 台限定の仕組みとは関係ありません。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">大きなファイルを分割して送るアップロードで、2 回目以降の断片を送ったら「続きが見つからない」と返されたのはなぜか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">途中経過を自分の中だけに覚えていた機械と、次の断片を受け取った機械が別だったから</button></li>
         <li><button type="button" data-correct="false">ネットワークの回線が混雑していたから</button></li>
         <li><button type="button" data-correct="false">ファイルの容量が大きすぎて、ロードバランサが要求を拒否したから</button></li>
-        <li><button type="button" data-correct="true">途中経過を自分の中だけに覚えていた機械と、次の断片を受け取った機械が別だったから</button></li>
         <li><button type="button" data-correct="false">ヘルスチェックが、アップロード中の機械を故障と誤って検知したから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、途中経過を自分の中だけに覚えていた機械と、次の断片を受け取った機械が別だったから、です。回線混雑や容量超過、ヘルスチェックの誤検知とは関係ありません。"></p>
@@ -98,8 +98,8 @@
       <ol class="opts">
         <li><button type="button" data-correct="false">振り分け先の機械が正常に応答しているかを、定期的に確かめる仕組み</button></li>
         <li><button type="button" data-correct="false">複数の振り分け先に、要求が来るたびに順番で割り当てていく仕組み</button></li>
-        <li><button type="button" data-correct="false">動かなくなった機械への通信を止め、別の機械に切り替える仕組み</button></li>
         <li><button type="button" data-correct="true">同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組み</button></li>
+        <li><button type="button" data-correct="false">動かなくなった機械への通信を止め、別の機械に切り替える仕組み</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、同じ利用者からの複数回の要求を、できるだけ同じ振り分け先に送り続ける仕組み、です。正常確認の定期的な確かめはヘルスチェック、順番の割り当てはラウンドロビン、切り替えはフェイルオーバーの役割です。"></p>
     </div>

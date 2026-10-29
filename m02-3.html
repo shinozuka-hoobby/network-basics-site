@@ -90,8 +90,8 @@
       <p class="q-text">同じデータ量を送る場合、回線を太くする(帯域幅を大きくする)と何が起きるか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">伝搬遅延とシリアライズ遅延の両方が短くなる</button></li>
-        <li><button type="button" data-correct="true">シリアライズ遅延は短くなるが、伝搬遅延は変わらない</button></li>
         <li><button type="button" data-correct="false">伝搬遅延は短くなるが、シリアライズ遅延は変わらない</button></li>
+        <li><button type="button" data-correct="true">シリアライズ遅延は短くなるが、伝搬遅延は変わらない</button></li>
         <li><button type="button" data-correct="false">伝搬遅延もシリアライズ遅延も変わらない</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、シリアライズ遅延は短くなるが、伝搬遅延は変わらない、です。シリアライズ遅延はデータの量と回線の太さで決まりますが、伝搬遅延は距離と信号の速さだけで決まるため、回線を太くしても短くなりません。"></p>
@@ -100,8 +100,8 @@
       <p class="q-text">シリアライズ遅延の説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">信号が送り出されてから、回線を伝わって相手に届くまでにかかる時間</button></li>
-        <li><button type="button" data-correct="false">送ってから、相手からの返事が戻ってくるまでの往復の時間</button></li>
         <li><button type="button" data-correct="true">送りたいデータのすべてを、回線に信号として送り出し終えるまでにかかる時間</button></li>
+        <li><button type="button" data-correct="false">送ってから、相手からの返事が戻ってくるまでの往復の時間</button></li>
         <li><button type="button" data-correct="false">回線の設置にかかる工事の日数</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送りたいデータのすべてを、回線に信号として送り出し終えるまでにかかる時間、です。信号が届くまでの時間は伝搬遅延、往復の時間は RTT のことで、いずれもシリアライズ遅延とは別の時間です。"></p>

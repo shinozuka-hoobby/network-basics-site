@@ -78,8 +78,8 @@
       <p class="q-text">サーバが 1 台落ちても利用者の多くが気づかないことがあるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">落ちたサーバが、利用者に気づかれないよう自動的に再起動しているから</button></li>
-        <li><button type="button" data-correct="true">ロードバランサが定期的な確認(ヘルスチェック)で異常を検知し、その機械への通信を止めて、残りの正常な機械に振り分け続ける(フェイルオーバー)から</button></li>
         <li><button type="button" data-correct="false">サーバが 1 台落ちても、利用者の通信量そのものが自動的に減るから</button></li>
+        <li><button type="button" data-correct="true">ロードバランサが定期的な確認(ヘルスチェック)で異常を検知し、その機械への通信を止めて、残りの正常な機械に振り分け続ける(フェイルオーバー)から</button></li>
         <li><button type="button" data-correct="false">利用者の端末が、落ちたサーバを自動的に検知して接続をやめているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ロードバランサが定期的な確認(ヘルスチェック)で異常を検知し、その機械への通信を止めて、残りの正常な機械に振り分け続ける(フェイルオーバー)から、です。自動再起動や通信量の変化、利用者端末側の検知が理由ではありません。"></p>
@@ -88,8 +88,8 @@
       <p class="q-text">ヘルスチェックの説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">振り分け先の機械に、要求を順番に割り当てていく仕組み</button></li>
-        <li><button type="button" data-correct="true">振り分け先の機械が正常に応答しているかどうかを、定期的に確かめる仕組み</button></li>
         <li><button type="button" data-correct="false">同じ利用者からの要求を、同じ機械に送り続ける仕組み</button></li>
+        <li><button type="button" data-correct="true">振り分け先の機械が正常に応答しているかどうかを、定期的に確かめる仕組み</button></li>
         <li><button type="button" data-correct="false">送信元と宛先の組み合わせをもとに、振り分け先を決める仕組み</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、振り分け先の機械が正常に応答しているかどうかを、定期的に確かめる仕組み、です。要求の順番割り当てはラウンドロビン、同じ機械への固定や組み合わせによる決定とは別の仕組みです。"></p>
@@ -97,9 +97,9 @@
     <div class="q" data-q="3">
       <p class="q-text">フェイルオーバーの説明として正しいものはどれか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替えること</button></li>
         <li><button type="button" data-correct="false">振り分け先の機械の台数を、あらかじめ増やしておく作業のこと</button></li>
         <li><button type="button" data-correct="false">利用者からの要求を、送信元ごとに記録しておくこと</button></li>
-        <li><button type="button" data-correct="true">動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替えること</button></li>
         <li><button type="button" data-correct="false">振り分け先の機械を、あらかじめ決めた順番で固定すること</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、動かなくなった機械への通信を止め、まだ動いている別の機械に自動的に切り替えること、です。台数を増やす作業や、送信元ごとの記録、順番の固定とは異なります。"></p>

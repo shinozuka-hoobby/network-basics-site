@@ -88,19 +88,19 @@
     <div class="q" data-q="1">
       <p class="q-text">NAT の説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">家の中で使うプライベートアドレスを、外に出ていくときにグローバルアドレスへ付け替える仕組み</button></li>
         <li><button type="button" data-correct="false">プライベートアドレスをそのまま外部に公開する仕組み</button></li>
         <li><button type="button" data-correct="false">グローバルアドレスをプライベートアドレスの範囲に書き換える仕組み</button></li>
         <li><button type="button" data-correct="false">サブネットマスクを計算し直す仕組み</button></li>
+        <li><button type="button" data-correct="true">家の中で使うプライベートアドレスを、外に出ていくときにグローバルアドレスへ付け替える仕組み</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、家の中で使うプライベートアドレスを、外に出ていくときにグローバルアドレスへ付け替える仕組み、です。プライベートアドレスをそのまま公開しても外からの宛先にはならず、グローバルアドレスをプライベートアドレスへ書き換えるのは向きが逆です。サブネットマスクの計算とは別の仕組みです。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">プライベートアドレスの機器が外のサーバに直接データを送っても、そのままでは返事を受け取れないのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">プライベートアドレスは自分のネットワークの中だけで通用する番号で、インターネットの外からは宛先として指定できないから</button></li>
         <li><button type="button" data-correct="false">プライベートアドレスの機器は送信しかできない仕組みになっているから</button></li>
         <li><button type="button" data-correct="false">グローバルアドレスの機器しかインターネットに接続できない決まりだから</button></li>
+        <li><button type="button" data-correct="true">プライベートアドレスは自分のネットワークの中だけで通用する番号で、インターネットの外からは宛先として指定できないから</button></li>
         <li><button type="button" data-correct="false">プライベートアドレスにはサブネットマスクが設定されていないから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、プライベートアドレスは自分のネットワークの中だけで通用する番号で、インターネットの外からは宛先として指定できないから、です。送信自体はでき、グローバルアドレスの機器しか接続できないという決まりでもなく、サブネットマスクの有無とも関係ありません。"></p>
@@ -108,9 +108,9 @@
     <div class="q" data-q="3">
       <p class="q-text">無線ルータの NAT を調べる演習で、パソコンから外の Web サーバへ送ったデータのヘッダーをルータの前後で見比べると、何が変わっているか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">送信元の IP アドレス</button></li>
         <li><button type="button" data-correct="false">宛先の IP アドレス</button></li>
         <li><button type="button" data-correct="false">宛先のポート番号</button></li>
+        <li><button type="button" data-correct="true">送信元の IP アドレス</button></li>
         <li><button type="button" data-correct="false">データの中身(本文)</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送信元の IP アドレス、です。ルータを境に、プライベートアドレスからグローバルアドレスへ書き換わります。宛先の IP アドレスやポート番号、データの中身は書き換えの対象ではありません。"></p>

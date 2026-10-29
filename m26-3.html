@@ -101,8 +101,8 @@
       <ol class="opts">
         <li><button type="button" data-correct="false">Web サーバのデータが消えてしまうから</button></li>
         <li><button type="button" data-correct="false">HTTPS の証明書が失効してしまうから</button></li>
-        <li><button type="button" data-correct="true">名前解決ができなくなり、利用者が IP アドレスにたどり着けなくなるから</button></li>
         <li><button type="button" data-correct="false">ルーティングテーブルが書き換えられてしまうから</button></li>
+        <li><button type="button" data-correct="true">名前解決ができなくなり、利用者が IP アドレスにたどり着けなくなるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「名前解決ができなくなり、利用者が IP アドレスにたどり着けなくなるから」です。Web サーバのデータや証明書、ルーティングテーブルが直接壊れるわけではなく、名前解決という手前の段階でつまずいてしまう点が理由です。"></p>
     </div>
@@ -111,17 +111,17 @@
       <ol class="opts">
         <li><button type="button" data-correct="false">帯域を埋め尽くす攻撃</button></li>
         <li><button type="button" data-correct="false">送信元アドレスを書き換える攻撃(IP スプーフィング)</button></li>
-        <li><button type="button" data-correct="true">アプリケーション層で負荷をかける攻撃</button></li>
         <li><button type="button" data-correct="false">名前解決の答えを偽装する攻撃</button></li>
+        <li><button type="button" data-correct="true">アプリケーション層で負荷をかける攻撃</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「アプリケーション層で負荷をかける攻撃」です。帯域を埋め尽くす攻撃は回線そのものを狙うもの、IP スプーフィングは送信元を偽る手口、名前解決の答えの偽装は前のページ以前で扱っていない別の話です。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">Anycast やロードバランサが、DDoS 攻撃の影響を抑えるのに役立つのはなぜか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">通信が複数の場所や複数のサーバに分散され、1 か所に集中しにくくなるから</button></li>
         <li><button type="button" data-correct="false">通信の中身を暗号化して、読めなくするから</button></li>
         <li><button type="button" data-correct="false">送信元 IP アドレスを検証して、弾くから</button></li>
-        <li><button type="button" data-correct="true">通信が複数の場所や複数のサーバに分散され、1 か所に集中しにくくなるから</button></li>
         <li><button type="button" data-correct="false">サーバの処理能力そのものを増やす仕組みだから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「通信が複数の場所や複数のサーバに分散され、1 か所に集中しにくくなるから」です。暗号化や送信元の検証、処理能力の増強とは別の理由で、分散によって集中を避けている点が本文の説明です。"></p>

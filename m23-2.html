@@ -96,8 +96,8 @@
       <p class="q-text">L7 のロードバランサが新しい HTTP リクエストのたびに振り分け先を選び直せるのに対し、L4 のロードバランサは同じ TCP 接続の間、振り分け先を固定するのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">L4 のロードバランサの方が、処理する速度が遅いから</button></li>
-        <li><button type="button" data-correct="true">L7 は HTTP リクエストの区切りが見えるが、L4 は接続の中身までは見ておらず、接続全体を 1 つの単位として扱うから</button></li>
         <li><button type="button" data-correct="false">L4 のロードバランサは、振り分け先の台数を 1 台に制限しているから</button></li>
+        <li><button type="button" data-correct="true">L7 は HTTP リクエストの区切りが見えるが、L4 は接続の中身までは見ておらず、接続全体を 1 つの単位として扱うから</button></li>
         <li><button type="button" data-correct="false">L7 のロードバランサは、暗号化された通信を扱えないから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、L7 は HTTP リクエストの区切りが見えるが、L4 は接続の中身までは見ておらず、接続全体を 1 つの単位として扱うから、です。処理速度や台数の制限、暗号化とは関係ありません。"></p>
@@ -106,18 +106,18 @@
       <p class="q-text">ラウンドロビンの説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">送信元と宛先の組み合わせをもとに、振り分け先を固定する方式</button></li>
-        <li><button type="button" data-correct="true">複数の振り分け先に、要求が来るたびに順番で割り当てていく方式</button></li>
         <li><button type="button" data-correct="false">振り分け先の状態を定期的に確認する方式</button></li>
         <li><button type="button" data-correct="false">同じ利用者からの要求を常に同じ機械に送り続ける方式</button></li>
+        <li><button type="button" data-correct="true">複数の振り分け先に、要求が来るたびに順番で割り当てていく方式</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、複数の振り分け先に、要求が来るたびに順番で割り当てていく方式、です。組み合わせによる固定はフローハッシュ、状態の確認や同じ機械への固定は、また別の仕組みです。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">フローハッシュの説明として正しいものはどれか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決め、同じ組み合わせが続く間は同じ振り分け先が選ばれ続ける方式</button></li>
         <li><button type="button" data-correct="false">要求が来るたびに、順番に振り分け先を変えていく方式</button></li>
         <li><button type="button" data-correct="false">HTTP リクエストの URL だけを見て振り分け先を決める方式</button></li>
-        <li><button type="button" data-correct="true">送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決め、同じ組み合わせが続く間は同じ振り分け先が選ばれ続ける方式</button></li>
         <li><button type="button" data-correct="false">振り分け先をランダムに毎回選び直す方式</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送信元と宛先の IP アドレスやポート番号などの組み合わせをもとに振り分け先を決め、同じ組み合わせが続く間は同じ振り分け先が選ばれ続ける方式、です。順番に変える方式はラウンドロビン、URL だけを見る方式やランダムに選ぶ方式とは異なります。"></p>

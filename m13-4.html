@@ -106,8 +106,8 @@ RST で打ち切る
       <p class="q-text">接続を終えるときの FIN と RST の違いとして正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">FIN は強制的な打ち切り、RST は段階的な終了である</button></li>
-        <li><button type="button" data-correct="true">FIN は両側が合図を送り合って段階的に終える、RST はその場で強制的に打ち切る</button></li>
         <li><button type="button" data-correct="false">FIN と RST はどちらも同じ手順で、呼び方が違うだけである</button></li>
+        <li><button type="button" data-correct="true">FIN は両側が合図を送り合って段階的に終える、RST はその場で強制的に打ち切る</button></li>
         <li><button type="button" data-correct="false">FIN はデータを送るとき、RST は接続を作るときにだけ使われる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、FIN は両側が合図を送り合って段階的に終える、RST はその場で強制的に打ち切る、です。FIN は正常な終了の合図、RST は相手がいない、または応答できない状況で使われる打ち切りの合図です。"></p>
@@ -116,9 +116,9 @@ RST で打ち切る
       <p class="q-text">相手が突然落ちた場合、なぜこちら側はすぐに異常に気づけないのか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">FIN も RST も、こちら側が定期的に送って確認する仕組みだから</button></li>
-        <li><button type="button" data-correct="true">FIN も RST も相手が能動的に送る合図であり、相手が落ちるとどちらも送れないから</button></li>
         <li><button type="button" data-correct="false">こちら側が受け取った ACK の番号を数え間違えるから</button></li>
         <li><button type="button" data-correct="false">相手が落ちると、シーケンス番号が自動的にリセットされるから</button></li>
+        <li><button type="button" data-correct="true">FIN も RST も相手が能動的に送る合図であり、相手が落ちるとどちらも送れないから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、FIN も RST も相手が能動的に送る合図であり、相手が落ちるとどちらも送れないから、です。終了の合図は相手側から送られてくるものなので、相手が突然応答できなくなると、こちら側には知らせが届きません。"></p>
     </div>

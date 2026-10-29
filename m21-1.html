@@ -99,9 +99,9 @@ HTTP/2: 1 本の接続に 3 本の流れ
     <div class="q" data-q="1">
       <p class="q-text">HTTP/1.1 と HTTP/2 の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">HTTP/2 は 1 本の接続の中に、独立した複数の流れを持てるが、HTTP/1.1 は 1 本の接続の中で要求と応答を 1 つずつしかやり取りできない</button></li>
         <li><button type="button" data-correct="false">HTTP/1.1 は独立した複数の流れを持てるが、HTTP/2 は 1 つずつしかやり取りできない</button></li>
         <li><button type="button" data-correct="false">HTTP/2 は、接続を複数開くことで複数のやり取りを並列に進める</button></li>
+        <li><button type="button" data-correct="true">HTTP/2 は 1 本の接続の中に、独立した複数の流れを持てるが、HTTP/1.1 は 1 本の接続の中で要求と応答を 1 つずつしかやり取りできない</button></li>
         <li><button type="button" data-correct="false">HTTP/1.1 と HTTP/2 は、通信の決まりとしては全く同じである</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、HTTP/2 は 1 本の接続の中に、独立した複数の流れを持てるが、HTTP/1.1 は 1 本の接続の中で要求と応答を 1 つずつしかやり取りできない、です。HTTP/2 は接続を複数開くのではなく、1 本の接続の中に複数の流れを持たせることで並列に処理します。"></p>
@@ -119,9 +119,9 @@ HTTP/2: 1 本の接続に 3 本の流れ
     <div class="q" data-q="3">
       <p class="q-text">個人開発の画像一覧の例で、HTTP/2 にしたら詰まりが気にならなくなった理由として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">HTTP/2 は独立した流れを複数持てるため、1 つの画像の遅れが他の画像に影響しなくなったから</button></li>
         <li><button type="button" data-correct="false">HTTP/2 は画像を圧縮して送るから</button></li>
         <li><button type="button" data-correct="false">HTTP/2 はキャッシュを使って前回の画像をそのまま表示するから</button></li>
+        <li><button type="button" data-correct="true">HTTP/2 は独立した流れを複数持てるため、1 つの画像の遅れが他の画像に影響しなくなったから</button></li>
         <li><button type="button" data-correct="false">HTTP/2 は接続を毎回新しく作り直すから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、HTTP/2 は独立した流れを複数持てるため、1 つの画像の遅れが他の画像に影響しなくなったから、です。画像の圧縮やキャッシュ、接続の作り直しとは関係ありません。"></p>

@@ -107,9 +107,9 @@
       <p class="q-text">MTU の説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">データを暗号化するときの鍵の長さ</button></li>
-        <li><button type="button" data-correct="true">回線ごとに決まっている、一度に運べるデータの大きさの上限</button></li>
         <li><button type="button" data-correct="false">1 秒あたりに送れるデータの量</button></li>
         <li><button type="button" data-correct="false">パケットの送信元を隠すための仕組み</button></li>
+        <li><button type="button" data-correct="true">回線ごとに決まっている、一度に運べるデータの大きさの上限</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、回線ごとに決まっている、一度に運べるデータの大きさの上限、です。これを MTU と呼ぶ。暗号化の鍵の長さや、1 秒あたりに送れる量(帯域幅)、送信元を隠す仕組みは、いずれも別の話である。"></p>
     </div>
@@ -117,17 +117,17 @@
       <p class="q-text">小さなページは問題なく開けるのに、大きな添付ファイルだけアップロードに失敗した理由として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">大きなファイルは自動的に暗号化されないから</button></li>
-        <li><button type="button" data-correct="true">経路の途中の MTU を超え、かつ分割してはいけない指定が付いていたため、分割できないまま捨てられたから</button></li>
         <li><button type="button" data-correct="false">大きなファイルは送信元の IP アドレスが変わってしまうから</button></li>
         <li><button type="button" data-correct="false">ページの表示と添付ファイルの送信では、使っている IP アドレスの種類が違うから</button></li>
+        <li><button type="button" data-correct="true">経路の途中の MTU を超え、かつ分割してはいけない指定が付いていたため、分割できないまま捨てられたから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、経路の途中の MTU を超え、かつ分割してはいけない指定が付いていたため、分割できないまま捨てられたから、です。小さなページは MTU を超えないため、そのまま問題なく届く。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">MTU を超えるデータと、フラグメンテーションの関係として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">MTU を超えるデータは、必ずすべて捨てられる</button></li>
         <li><button type="button" data-correct="true">MTU を超えるデータは、分割禁止の指定が無ければ、フラグメンテーションによって小さなかたまりに分けられて送られる</button></li>
+        <li><button type="button" data-correct="false">MTU を超えるデータは、必ずすべて捨てられる</button></li>
         <li><button type="button" data-correct="false">フラグメンテーションは、MTU の値そのものを大きくする仕組みである</button></li>
         <li><button type="button" data-correct="false">フラグメンテーションは、送信元の IP アドレスを分割する仕組みである</button></li>
       </ol>

@@ -118,9 +118,9 @@ HTML
     <div class="q" data-q="1">
       <p class="q-text">1 つのリクエストごとに新しい TCP 接続を作り直していると、何が問題になるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">接続を作るたびに往復が発生し、対象が増えるほど待ち時間やサーバの負担が増える</button></li>
         <li><button type="button" data-correct="false">ステータスコードが正しく返らなくなる</button></li>
         <li><button type="button" data-correct="false">ヘッダの中身が壊れる</button></li>
+        <li><button type="button" data-correct="true">接続を作るたびに往復が発生し、対象が増えるほど待ち時間やサーバの負担が増える</button></li>
         <li><button type="button" data-correct="false">名前解決をやり直す必要が生じる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、接続を作るたびに往復が発生し、対象が増えるほど待ち時間やサーバの負担が増える、です。ステータスコードやヘッダの中身、名前解決とは別の話です。"></p>
@@ -128,9 +128,9 @@ HTML
     <div class="q" data-q="2">
       <p class="q-text">Keep-Alive の説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組み</button></li>
         <li><button type="button" data-correct="false">複数の接続を同時に開いて並行して使う仕組み</button></li>
         <li><button type="button" data-correct="false">応答を暗号化せずに送る仕組み</button></li>
+        <li><button type="button" data-correct="true">一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組み</button></li>
         <li><button type="button" data-correct="false">DNS の答えを覚えておく仕組み</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、一度作った接続を、やり取りが終わってもすぐには切らず、次のやり取りにも使い回す仕組み、です。複数接続の並行利用や暗号化、DNS キャッシュとは別の仕組みです。"></p>
@@ -138,8 +138,8 @@ HTML
     <div class="q" data-q="3">
       <p class="q-text">接続を使い回すと、2 番目以降のオブジェクトの取得で何を省けるのか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">新しい接続を作るたびに必要になる往復</button></li>
         <li><button type="button" data-correct="false">ステータスコードの確認</button></li>
+        <li><button type="button" data-correct="true">新しい接続を作るたびに必要になる往復</button></li>
         <li><button type="button" data-correct="false">ヘッダの読み込み</button></li>
         <li><button type="button" data-correct="false">名前解決</button></li>
       </ol>

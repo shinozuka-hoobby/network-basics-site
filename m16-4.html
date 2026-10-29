@@ -104,8 +104,8 @@ dig example.com</code></pre>
       <p class="q-text">DNS レコードを新しい IP アドレスに変更しても、すぐには新しい方に切り替わらないことがあるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">権威サーバが変更を受け付けるのに、決まった手続きの承認が必要だから</button></li>
-        <li><button type="button" data-correct="true">複数の場所に残った DNS キャッシュの答えが、DNS の TTL が切れるまで使われ続けるから</button></li>
         <li><button type="button" data-correct="false">IP アドレスの変更は、1 日に 1 回しか行えない決まりだから</button></li>
+        <li><button type="button" data-correct="true">複数の場所に残った DNS キャッシュの答えが、DNS の TTL が切れるまで使われ続けるから</button></li>
         <li><button type="button" data-correct="false">新しい IP アドレスが、古い IP アドレスより必ず数字が大きくなければならないから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、複数の場所に残った DNS キャッシュの答えが、DNS の TTL が切れるまで使われ続けるから、です。承認手続きや変更回数の制限、アドレスの大小関係は、この時間差の理由ではありません。"></p>
@@ -114,8 +114,8 @@ dig example.com</code></pre>
       <p class="q-text">DNS の TTL の説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">権威サーバの応答が遅れたときに、送り直すまでの待ち時間</button></li>
-        <li><button type="button" data-correct="true">名前解決の答えを、この秒数の間は使ってよいとする有効期限</button></li>
         <li><button type="button" data-correct="false">DNS キャッシュが保存できる答えの最大件数</button></li>
+        <li><button type="button" data-correct="true">名前解決の答えを、この秒数の間は使ってよいとする有効期限</button></li>
         <li><button type="button" data-correct="false">リゾルバが権威サーバへの接続を維持できる最大時間</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、名前解決の答えを、この秒数の間は使ってよいとする有効期限、です。DNS の TTL は答えの有効期限であり、待ち時間や保存件数、接続の維持時間とは別の考え方です。"></p>

@@ -85,10 +85,10 @@
     <div class="q" data-q="1">
       <p class="q-text">HPACK によって、毎回のヘッダをそのまま送り直さなくて済むのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">送り手と受け手の双方が、一度送ったヘッダの内容を覚えているから</button></li>
         <li><button type="button" data-correct="false">ヘッダの内容を暗号化して送るから</button></li>
         <li><button type="button" data-correct="false">受け手がヘッダの内容を推測して補うから</button></li>
         <li><button type="button" data-correct="false">ヘッダを毎回別のストリームに分けて送るから</button></li>
+        <li><button type="button" data-correct="true">送り手と受け手の双方が、一度送ったヘッダの内容を覚えているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送り手と受け手の双方が、一度送ったヘッダの内容を覚えているから、です。暗号化や推測、ストリームの使い分けとは関係ありません。"></p>
     </div>
@@ -105,8 +105,8 @@
     <div class="q" data-q="3">
       <p class="q-text">初めて送る、全く新しい内容のヘッダについて正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">よく使われる文字の並びが短い符号に置き換えられるため、そのまま送るより小さくなる</button></li>
         <li><button type="button" data-correct="false">覚える相手がいないため、送ること自体ができない</button></li>
+        <li><button type="button" data-correct="true">よく使われる文字の並びが短い符号に置き換えられるため、そのまま送るより小さくなる</button></li>
         <li><button type="button" data-correct="false">次回から使えるように、2 回続けて送る必要がある</button></li>
         <li><button type="button" data-correct="false">HPACK の対象外なので、圧縮されずにそのまま送られる</button></li>
       </ol>

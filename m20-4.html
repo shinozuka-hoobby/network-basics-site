@@ -88,9 +88,9 @@
     <div class="q" data-q="1">
       <p class="q-text">HTTP/1.1 の 1 本の接続で、前の応答が遅いと、後ろの応答も遅れてしまうのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">その接続では、応答を要求した順番のとおりに返す決まりで、追い越しができないから</button></li>
         <li><button type="button" data-correct="false">通信全体の帯域が足りていないから</button></li>
         <li><button type="button" data-correct="false">TLS の手続きをやり直す必要があるから</button></li>
+        <li><button type="button" data-correct="true">その接続では、応答を要求した順番のとおりに返す決まりで、追い越しができないから</button></li>
         <li><button type="button" data-correct="false">名前解決に時間がかかっているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、その接続では、応答を要求した順番のとおりに返す決まりで、追い越しができないから、です。帯域不足や TLS の再手続き、名前解決の遅延とは別の話です。"></p>
@@ -108,9 +108,9 @@
     <div class="q" data-q="3">
       <p class="q-text">後ろの小さな部品がもう用意できているのに、先に渡されないのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">同じ接続では応答を追い越して先に渡すことができないから</button></li>
         <li><button type="button" data-correct="false">部品のファイルサイズが大きすぎるから</button></li>
         <li><button type="button" data-correct="false">部品のステータスコードがエラーだから</button></li>
+        <li><button type="button" data-correct="true">同じ接続では応答を追い越して先に渡すことができないから</button></li>
         <li><button type="button" data-correct="false">部品の Content-Type が間違っているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、同じ接続では応答を追い越して先に渡すことができないから、です。ファイルサイズやステータスコード、Content-Type の誤りとは別の話です。"></p>

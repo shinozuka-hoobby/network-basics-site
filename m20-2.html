@@ -102,8 +102,8 @@ strict-transport-security(レスポンス)
     <div class="q" data-q="1">
       <p class="q-text">リクエストの要求行にはパスしか書かれていないのに、Web サーバはどうやって宛先のホスト名を知るのか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">Host ヘッダに書かれたホスト名を見る</button></li>
         <li><button type="button" data-correct="false">IP アドレスから逆算する</button></li>
+        <li><button type="button" data-correct="true">Host ヘッダに書かれたホスト名を見る</button></li>
         <li><button type="button" data-correct="false">DNS サーバに毎回問い合わせ直す</button></li>
         <li><button type="button" data-correct="false">ステータスコードに含まれている</button></li>
       </ol>
@@ -122,10 +122,10 @@ strict-transport-security(レスポンス)
     <div class="q" data-q="3">
       <p class="q-text">第 19 章で見た、https を強制する指示(HSTS)は、正式には何の一部として送られているか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">HTTP ヘッダの一つ</button></li>
         <li><button type="button" data-correct="false">TCP 接続の一部</button></li>
         <li><button type="button" data-correct="false">URL の一部</button></li>
         <li><button type="button" data-correct="false">DNS レコードの一部</button></li>
+        <li><button type="button" data-correct="true">HTTP ヘッダの一つ</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、HTTP ヘッダの一つ、です。第 19 章では「応答の中の指示」と言い換えていましたが、正式には HTTP ヘッダとして応答に添えられています。TCP 接続・URL・DNS レコードとは別の話です。"></p>
     </div>

@@ -110,9 +110,9 @@
     <div class="q" data-q="2">
       <p class="q-text">TLS ハンドシェイクの Client hello で、相手の名前(SNI)が記録の中でまだ見えるのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">Client hello は、暗号化が始まる前に送られる最初のやり取りだから</button></li>
         <li><button type="button" data-correct="false">SNI だけは暗号化の対象外だと法律で決まっているから</button></li>
         <li><button type="button" data-correct="false">Wireshark が自動的に暗号を解読しているから</button></li>
+        <li><button type="button" data-correct="true">Client hello は、暗号化が始まる前に送られる最初のやり取りだから</button></li>
         <li><button type="button" data-correct="false">SNI は TLS ハンドシェイクの一部ではないから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、Client hello は、暗号化が始まる前に送られる最初のやり取りだから、です。法律の話でも自動解読の話でもなく、SNI は TLS ハンドシェイクの一部です。"></p>
@@ -120,10 +120,10 @@
     <div class="q" data-q="3">
       <p class="q-text">curl -sI https://example.com の通信を記録してたどると、どんな順序で現れるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">DNS の問い合わせと応答 → TCP ハンドシェイク → TLS ハンドシェイクの順</button></li>
         <li><button type="button" data-correct="false">TLS ハンドシェイク → TCP ハンドシェイク → DNS の問い合わせと応答の順</button></li>
         <li><button type="button" data-correct="false">TCP ハンドシェイクだけが記録され、DNS や TLS は記録されない</button></li>
         <li><button type="button" data-correct="false">DNS・TCP・TLS のすべてが、同時に 1 つのパケットとして記録される</button></li>
+        <li><button type="button" data-correct="true">DNS の問い合わせと応答 → TCP ハンドシェイク → TLS ハンドシェイクの順</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、DNS の問い合わせと応答 → TCP ハンドシェイク → TLS ハンドシェイクの順、です。順序が逆でも、一部だけしか記録されないのでも、同時に 1 つになるのでもありません。"></p>
     </div>

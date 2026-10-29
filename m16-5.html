@@ -98,8 +98,8 @@ example.com. 126 IN A 203.0.113.80
       <p class="q-text">同じ名前に続けて問い合わせると、答えの区画の DNS の TTL の数字が変わっていることがあるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">問い合わせるたびに、答える権威サーバがランダムに切り替わるから</button></li>
-        <li><button type="button" data-correct="true">数字が減っていればキャッシュに残った答えをそのまま使っており、期限切れで調べ直していれば新しい数字になるから</button></li>
         <li><button type="button" data-correct="false">問い合わせの結果は、毎回まったくでたらめな数字が表示される仕様だから</button></li>
+        <li><button type="button" data-correct="true">数字が減っていればキャッシュに残った答えをそのまま使っており、期限切れで調べ直していれば新しい数字になるから</button></li>
         <li><button type="button" data-correct="false">TLD のサーバが、問い合わせのたびに数字を書き換えているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、数字が減っていればキャッシュに残った答えをそのまま使っており、期限切れで調べ直していれば新しい数字になるから、です。数字はでたらめでも、TLD のサーバが書き換えているのでもありません。"></p>
@@ -107,8 +107,8 @@ example.com. 126 IN A 203.0.113.80
     <div class="q" data-q="2">
       <p class="q-text">尋ねた内容を示す区画に書かれている内容として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">聞いた名前と、聞いた型</button></li>
         <li><button type="button" data-correct="false">問い合わせにかかった時間だけ</button></li>
+        <li><button type="button" data-correct="true">聞いた名前と、聞いた型</button></li>
         <li><button type="button" data-correct="false">権威サーバの管理者の連絡先</button></li>
         <li><button type="button" data-correct="false">過去に問い合わせた履歴の一覧</button></li>
       </ol>

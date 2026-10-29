@@ -132,18 +132,18 @@ Content-Type: text/html    ← ヘッダ
       <p class="q-text">リクエストの要求行に対応する、レスポンス側の行はどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">ヘッダ</button></li>
-        <li><button type="button" data-correct="true">状態行</button></li>
         <li><button type="button" data-correct="false">本文</button></li>
         <li><button type="button" data-correct="false">空の行</button></li>
+        <li><button type="button" data-correct="true">状態行</button></li>
       </ol>
       <p class="feedback" data-explain="正解は状態行です。要求行はリクエストの 1 行目、状態行はレスポンスの 1 行目で、互いに対応する役割を持ちます。ヘッダ・本文・空の行は、リクエストとレスポンスの両方に共通して現れる部分で、1 行目としての対応関係ではありません。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">HTTP のリクエストで、ヘッダの後にあるものは何か。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">空の行</button></li>
         <li><button type="button" data-correct="false">要求行</button></li>
         <li><button type="button" data-correct="false">状態行</button></li>
-        <li><button type="button" data-correct="true">空の行</button></li>
         <li><button type="button" data-correct="false">もう 1 つのヘッダ</button></li>
       </ol>
       <p class="feedback" data-explain="正解は空の行です。要求行・ヘッダ・空の行・本文の順に並ぶのがリクエストの型で、ヘッダの直後には空の行が来ます。要求行は 1 行目、状態行はレスポンス側の 1 行目なので、この位置には現れません。"></p>
@@ -151,10 +151,10 @@ Content-Type: text/html    ← ヘッダ
     <div class="q" data-q="3">
       <p class="q-text">リクエストやレスポンスに、ヘッダの後の空の行が無いと何が困るか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ヘッダがどこで終わり本文がどこから始まるかが区別できなくなる</button></li>
         <li><button type="button" data-correct="false">通信そのものが暗号化されなくなる</button></li>
         <li><button type="button" data-correct="false">TCP 接続が確立できなくなる</button></li>
         <li><button type="button" data-correct="false">ステータスコードが表示されなくなる</button></li>
+        <li><button type="button" data-correct="true">ヘッダがどこで終わり本文がどこから始まるかが区別できなくなる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ヘッダがどこで終わり本文がどこから始まるかが区別できなくなる、です。空の行は区切りの役割を持ち、暗号化や TCP 接続の確立、ステータスコードの表示とは別の話です。"></p>
     </div>

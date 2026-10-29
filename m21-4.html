@@ -82,8 +82,8 @@
     <div class="q" data-q="1">
       <p class="q-text">サーバ側で HTTP/3 を有効にしても、効果が実感できないことがあるのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">通信の両側がそろって対応していないと使われず、片方でも対応していなければ自動的に前の版に切り替わるから</button></li>
         <li><button type="button" data-correct="false">HTTP/3 はサーバ側だけで完結する仕組みで、利用者側には関係が無いから</button></li>
+        <li><button type="button" data-correct="true">通信の両側がそろって対応していないと使われず、片方でも対応していなければ自動的に前の版に切り替わるから</button></li>
         <li><button type="button" data-correct="false">HTTP/3 を有効にすると、常に HTTP/1.1 に戻ってしまうから</button></li>
         <li><button type="button" data-correct="false">HTTP/3 は暗号化を無効にしないと動かないから</button></li>
       </ol>
@@ -92,10 +92,10 @@
     <div class="q" data-q="2">
       <p class="q-text">HTTP/3 の通信について正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">常に暗号化(HTTPS)された状態が前提で、暗号化しない通信は無い</button></li>
         <li><button type="button" data-correct="false">HTTP/1.1 と同じく、暗号化するかどうかを選べる</button></li>
         <li><button type="button" data-correct="false">暗号化は、利用者が設定で切り替えられる</button></li>
         <li><button type="button" data-correct="false">暗号化されるのは本文だけで、ヘッダは平文のまま送られる</button></li>
+        <li><button type="button" data-correct="true">常に暗号化(HTTPS)された状態が前提で、暗号化しない通信は無い</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、常に暗号化(HTTPS)された状態が前提で、暗号化しない通信は無い、です。HTTP/1.1 や HTTP/2 とは異なり、選ぶことも、設定で切り替えることもできません。"></p>
     </div>

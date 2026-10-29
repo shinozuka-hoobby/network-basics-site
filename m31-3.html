@@ -131,16 +131,16 @@
       <ol class="opts">
         <li><button type="button" data-correct="false">証明書チェーンが途中で途切れている</button></li>
         <li><button type="button" data-correct="false">証明書の名前不一致</button></li>
-        <li><button type="button" data-correct="true">混在コンテンツ(その部品が http のまま呼び出されている)</button></li>
         <li><button type="button" data-correct="false">DNS の TTL が切れている</button></li>
+        <li><button type="button" data-correct="true">混在コンテンツ(その部品が http のまま呼び出されている)</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、混在コンテンツです。握手そのもの(証明書チェーン・有効期限・名前一致)が正常でも、個々の部品の呼び出し方に原因が残っていることがあります。DNS の TTL は名前解決の段階の話で、この症状とは関係ありません。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">証明書チェーンが途中で途切れていると、何が起きるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ブラウザは一番上の信頼できる証明書までたどり着けず、検証できない</button></li>
         <li><button type="button" data-correct="false">通信速度が遅くなるだけで、警告は出ない</button></li>
+        <li><button type="button" data-correct="true">ブラウザは一番上の信頼できる証明書までたどり着けず、検証できない</button></li>
         <li><button type="button" data-correct="false">DNS の問い合わせが失敗する</button></li>
         <li><button type="button" data-correct="false">HTTP のステータスコードが変わる</button></li>
       </ol>

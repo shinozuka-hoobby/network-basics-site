@@ -94,9 +94,9 @@ Azure(Azure DNS): DNS zone</pre>
     <div class="q" data-q="1">
       <p class="q-text">3 社の呼び名は違っても、指しているものは同じかどうかとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">hosted zone、managed zone、DNS zone は、いずれも「あるドメインとそのサブドメインのレコードをまとめて入れる入れ物」という同じ考え方を指しており、呼び名が違うだけである</button></li>
         <li><button type="button" data-correct="false">hosted zone だけが DNS レコードを保存でき、他の 2 つは別の目的で使われる</button></li>
         <li><button type="button" data-correct="false">managed zone は無料で使えるが、hosted zone と DNS zone は有料である</button></li>
+        <li><button type="button" data-correct="true">hosted zone、managed zone、DNS zone は、いずれも「あるドメインとそのサブドメインのレコードをまとめて入れる入れ物」という同じ考え方を指しており、呼び名が違うだけである</button></li>
         <li><button type="button" data-correct="false">DNS zone だけが第 16 章で見たゾーンと同じ考え方で、他の 2 つは別の仕組みである</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、hosted zone、managed zone、DNS zone は、いずれも「あるドメインとそのサブドメインのレコードをまとめて入れる入れ物」という同じ考え方を指しており、呼び名が違うだけである、です。保存できる内容や料金、ゾーンとの対応関係で差はありません。"></p>
@@ -104,8 +104,8 @@ Azure(Azure DNS): DNS zone</pre>
     <div class="q" data-q="2">
       <p class="q-text">クラウドの DNS サービスで、DNS レコードを追加・変更するときの単位として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ゾーン(hosted zone、managed zone、DNS zone など、事業者ごとの呼び名で管理される入れ物)</button></li>
         <li><button type="button" data-correct="false">権威サーバ 1 台ごと</button></li>
+        <li><button type="button" data-correct="true">ゾーン(hosted zone、managed zone、DNS zone など、事業者ごとの呼び名で管理される入れ物)</button></li>
         <li><button type="button" data-correct="false">DNS リゾルバの設置場所ごと</button></li>
         <li><button type="button" data-correct="false">ドメインを登録したレジストラの契約プランごと</button></li>
       </ol>
@@ -114,10 +114,10 @@ Azure(Azure DNS): DNS zone</pre>
     <div class="q" data-q="3">
       <p class="q-text">ドメインを最初に登録したレジストラに伝えておく必要があるものとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">そのドメインを管理する権威サーバの名前</button></li>
         <li><button type="button" data-correct="false">DNS レコードの DNS の TTL の値</button></li>
         <li><button type="button" data-correct="false">DNSSEC を使うかどうかの設定</button></li>
         <li><button type="button" data-correct="false">DoT/DoH を使うかどうかの設定</button></li>
+        <li><button type="button" data-correct="true">そのドメインを管理する権威サーバの名前</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、そのドメインを管理する権威サーバの名前、です。DNS の TTL の値や DNSSEC・DoT/DoH の設定は、レジストラに伝える内容ではありません。"></p>
     </div>

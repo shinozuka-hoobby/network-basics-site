@@ -92,18 +92,18 @@
     <div class="q" data-q="1">
       <p class="q-text">DNSSEC と DoT/DoH の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">DNSSEC は答えが本物かを確かめる仕組みで暗号化ではなく、DoT/DoH は問い合わせそのものを暗号化して運ぶ仕組みである</button></li>
         <li><button type="button" data-correct="false">DNSSEC は問い合わせを暗号化する仕組みで、DoT/DoH は答えが本物かを確かめる仕組みである</button></li>
         <li><button type="button" data-correct="false">DNSSEC と DoT/DoH はどちらも同じ仕組みで、呼び方が違うだけである</button></li>
         <li><button type="button" data-correct="false">DNSSEC も DoT/DoH も、権威サーバの負荷を減らすための仕組みである</button></li>
+        <li><button type="button" data-correct="true">DNSSEC は答えが本物かを確かめる仕組みで暗号化ではなく、DoT/DoH は問い合わせそのものを暗号化して運ぶ仕組みである</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、DNSSEC は答えが本物かを確かめる仕組みで暗号化ではなく、DoT/DoH は問い合わせそのものを暗号化して運ぶ仕組みである、です。役割が逆でも同じでもなく、権威サーバの負荷とも関係ありません。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">偽の答えを返されて別のサーバに誘導される攻撃について、正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">DNSSEC のように答えが本物かを確かめる仕組みを使っていない環境では、こうした攻撃を見分けにくい</button></li>
         <li><button type="button" data-correct="false">DNS の TTL を長くすることで防げる</button></li>
+        <li><button type="button" data-correct="true">DNSSEC のように答えが本物かを確かめる仕組みを使っていない環境では、こうした攻撃を見分けにくい</button></li>
         <li><button type="button" data-correct="false">権威サーバの台数を増やすことで防げる</button></li>
         <li><button type="button" data-correct="false">この攻撃は DNS キャッシュを使わない場合にのみ起きる</button></li>
       </ol>
@@ -112,8 +112,8 @@
     <div class="q" data-q="3">
       <p class="q-text">DoT と DoH の説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">DoT は TLS で問い合わせ全体を包み、DoH は HTTPS の通信の中に問い合わせを含めて運ぶ</button></li>
         <li><button type="button" data-correct="false">DoT は答えが本物かを確かめる仕組みで、DoH は暗号化しない通常の問い合わせである</button></li>
+        <li><button type="button" data-correct="true">DoT は TLS で問い合わせ全体を包み、DoH は HTTPS の通信の中に問い合わせを含めて運ぶ</button></li>
         <li><button type="button" data-correct="false">DoT と DoH は、どちらも DNS レコードの新しい型である</button></li>
         <li><button type="button" data-correct="false">DoT と DoH は、権威サーバと DNS リゾルバの間の通信にのみ使われる</button></li>
       </ol>

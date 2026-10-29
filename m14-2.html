@@ -100,9 +100,9 @@
       <p class="q-text">受信ウィンドウが小さくなる場合の説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">途中の経路が混んでいる証拠である</button></li>
-        <li><button type="button" data-correct="true">受け手の処理が追いつかず、置いておける場所が少なくなっている証拠である</button></li>
         <li><button type="button" data-correct="false">送り手が、経路の混雑を見て自分で量を減らした結果である</button></li>
         <li><button type="button" data-correct="false">ACK が届かなくなった証拠である</button></li>
+        <li><button type="button" data-correct="true">受け手の処理が追いつかず、置いておける場所が少なくなっている証拠である</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、受け手の処理が追いつかず、置いておける場所が少なくなっている証拠である、です。受信ウィンドウはフロー制御のための数字で、受け手の処理力だけを表し、途中の経路の混雑とは別の事情です。"></p>
     </div>
@@ -110,17 +110,17 @@
       <p class="q-text">受信ウィンドウの値はどのように送り手に伝わるか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">TCP 接続を作り直すたびに 1 回だけ伝えられる</button></li>
-        <li><button type="button" data-correct="true">ACK に添えて、そのたびに伝えられる</button></li>
         <li><button type="button" data-correct="false">送り手が経路の様子を見て自分で推測する</button></li>
         <li><button type="button" data-correct="false">受け手が別途、専用のメッセージを送って知らせる</button></li>
+        <li><button type="button" data-correct="true">ACK に添えて、そのたびに伝えられる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ACK に添えて、そのたびに伝えられる、です。受信ウィンドウは固定値ではなく、受け手の処理状況に応じて ACK のたびに更新されて伝えられます。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">フロー制御の説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">受け手の処理できる量に送り手が合わせる仕組みで、受け手の事情だけを見ている</button></li>
         <li><button type="button" data-correct="false">途中の経路の混み具合を見ながら送る量を加減する仕組み</button></li>
+        <li><button type="button" data-correct="true">受け手の処理できる量に送り手が合わせる仕組みで、受け手の事情だけを見ている</button></li>
         <li><button type="button" data-correct="false">送ったデータが届いたことを確認する仕組み</button></li>
         <li><button type="button" data-correct="false">通信を始める前に行う、決まった手順のあいさつ</button></li>
       </ol>

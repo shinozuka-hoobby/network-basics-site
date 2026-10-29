@@ -91,9 +91,9 @@
       <p class="q-text">接続を毎回新しく作り直す実装で、いつまでも速度が上がらなかったのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">サーバの処理能力が低かったから</button></li>
-        <li><button type="button" data-correct="true">輻輳ウィンドウという目安が接続ごとにリセットされ、そのたびに小さな値からのスロースタートをやり直すことになるから</button></li>
         <li><button type="button" data-correct="false">受信ウィンドウの値が固定されていて変わらなかったから</button></li>
         <li><button type="button" data-correct="false">ACK が途中で届かなくなっていたから</button></li>
+        <li><button type="button" data-correct="true">輻輳ウィンドウという目安が接続ごとにリセットされ、そのたびに小さな値からのスロースタートをやり直すことになるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、輻輳ウィンドウという目安が接続ごとにリセットされ、そのたびに小さな値からのスロースタートをやり直すことになるから、です。輻輳ウィンドウは接続ごとに保たれる値で、接続を作り直すたびに忘れられ、また小さな値から増やし直しになります。"></p>
     </div>
@@ -110,9 +110,9 @@
     <div class="q" data-q="3">
       <p class="q-text">通信の最初に少ない量から送り始める(スロースタート)のはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">経路がどれくらい混んでいるか分からないうちに、いきなり大量に送って混雑させないため</button></li>
         <li><button type="button" data-correct="false">受け手がまだデータを受け取る準備をできていないため</button></li>
         <li><button type="button" data-correct="false">ACK の到着を早めるため</button></li>
+        <li><button type="button" data-correct="true">経路がどれくらい混んでいるか分からないうちに、いきなり大量に送って混雑させないため</button></li>
         <li><button type="button" data-correct="false">サーバ側の起動処理が終わるのを待つため</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、経路がどれくらい混んでいるか分からないうちに、いきなり大量に送って混雑させないため、です。受け手側の準備の話はフロー制御であり、スロースタートは経路の混雑を避けるための送り手側の予防策です。"></p>

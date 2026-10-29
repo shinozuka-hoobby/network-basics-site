@@ -123,9 +123,9 @@
     <div class="q" data-q="1">
       <p class="q-text">通信の相手との「今の状態」の保ち方について、TCP と UDP の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">TCP は今も話せる状態かどうかという情報を保ち続けるが、UDP にはそもそもそのような情報が無い</button></li>
         <li><button type="button" data-correct="false">UDP は今も話せる状態かどうかという情報を保ち続けるが、TCP にはそのような情報が無い</button></li>
         <li><button type="button" data-correct="false">TCP も UDP も、同じように状態の情報を保ち続ける</button></li>
+        <li><button type="button" data-correct="true">TCP は今も話せる状態かどうかという情報を保ち続けるが、UDP にはそもそもそのような情報が無い</button></li>
         <li><button type="button" data-correct="false">状態の情報を保つかどうかは、機械の設定次第でどちらでも選べる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、TCP は今も話せる状態かどうかという情報を保ち続けるが、UDP にはそもそもそのような情報が無い、です。UDP は接続を作らない方式なので、保つべき状態の情報自体がありません。"></p>
@@ -133,10 +133,10 @@
     <div class="q" data-q="2">
       <p class="q-text">自分が使っていると思っていた番号にデータを送っても応答が無いとき、原因として考えられるのはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">そのプログラムが、想定と違う番号で待ち受けている</button></li>
         <li><button type="button" data-correct="false">相手の機械の IP アドレスが変わった</button></li>
         <li><button type="button" data-correct="false">ポート番号は 65535 番までしか使えないから</button></li>
         <li><button type="button" data-correct="false">通信を始めるたびに、宛先のポート番号がランダムに変わるから</button></li>
+        <li><button type="button" data-correct="true">そのプログラムが、想定と違う番号で待ち受けている</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、そのプログラムが、想定と違う番号で待ち受けている、です。プログラムは自分が待ち受ける番号を自分で決めて登録するため、想定と違う番号で待ち受けていると、期待した番号にはどのプログラムも結び付いておらず、応答が返りません。"></p>
     </div>
@@ -144,9 +144,9 @@
       <p class="q-text">ソケットとは何か。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">MAC アドレスと IP アドレスを組にした情報</button></li>
-        <li><button type="button" data-correct="true">通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報</button></li>
         <li><button type="button" data-correct="false">ドメイン名と IP アドレスを組にした情報</button></li>
         <li><button type="button" data-correct="false">TCP と UDP のどちらを使うかを切り替えるための設定</button></li>
+        <li><button type="button" data-correct="true">通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、通信の相手を特定するために使う、IP アドレスとポート番号を組にした情報、です。1 本のやり取りは、自分側と相手側、両方のソケットの組で区別されます。"></p>
     </div>

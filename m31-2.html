@@ -116,9 +116,9 @@ dig nosuchname.example.com</code></pre>
     <div class="q" data-q="1">
       <p class="q-text">dig の結果が NXDOMAIN のとき、次に確かめるべきことはどれか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">それより後の段階ではなく、DNS レコードの設定を見直す</button></li>
         <li><button type="button" data-correct="false">traceroute で経路を確かめる</button></li>
         <li><button type="button" data-correct="false">openssl s_client で TLS の証明書を確かめる</button></li>
-        <li><button type="button" data-correct="true">それより後の段階ではなく、DNS レコードの設定を見直す</button></li>
         <li><button type="button" data-correct="false">curl で HTTP の応答を確かめる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、DNS レコードの設定を見直す、です。名前が存在しないという答えが確定している以上、経路・証明書・応答という後の段階を確かめても手がかりになりません。"></p>
@@ -126,9 +126,9 @@ dig nosuchname.example.com</code></pre>
     <div class="q" data-q="2">
       <p class="q-text">「答えは返ってくるが、古い IP アドレスを指す」という症状のとき、dig の結果のどこに注目すべきか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ANSWER の区画に出る IP アドレスと TTL の数字</button></li>
         <li><button type="button" data-correct="false">status の行だけ</button></li>
         <li><button type="button" data-correct="false">flags の行だけ</button></li>
+        <li><button type="button" data-correct="true">ANSWER の区画に出る IP アドレスと TTL の数字</button></li>
         <li><button type="button" data-correct="false">Query time の行だけ</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ANSWER の区画に出る IP アドレスと TTL の数字、です。この症状では status は NOERROR のままなので、TTL の数字からキャッシュの残り具合を疑います。"></p>
@@ -136,8 +136,8 @@ dig nosuchname.example.com</code></pre>
     <div class="q" data-q="3">
       <p class="q-text">NXDOMAIN と SERVFAIL の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">SERVFAIL は名前が存在しないという確定した答えで、NXDOMAIN は答えを返せなかった失敗である</button></li>
         <li><button type="button" data-correct="true">NXDOMAIN は名前が存在しないという確定した答えで、SERVFAIL は答えそのものを返せなかった失敗である</button></li>
+        <li><button type="button" data-correct="false">SERVFAIL は名前が存在しないという確定した答えで、NXDOMAIN は答えを返せなかった失敗である</button></li>
         <li><button type="button" data-correct="false">どちらも同じ意味で、表記が違うだけである</button></li>
         <li><button type="button" data-correct="false">SERVFAIL は dig コマンド自体が動かなかったことを示す</button></li>
       </ol>

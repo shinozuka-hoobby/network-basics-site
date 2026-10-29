@@ -105,9 +105,9 @@
     <div class="q" data-q="1">
       <p class="q-text">ある通信について、行きの ACCEPT の記録と、戻りの REJECT の記録が両方残っていた。何が起きたと考えられるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">行きの通信は許可されたが、戻りの通信のどこかで拒否された</button></li>
         <li><button type="button" data-correct="false">通信が 2 回とも成功した</button></li>
         <li><button type="button" data-correct="false">記録の取り違えが起きた</button></li>
+        <li><button type="button" data-correct="true">行きの通信は許可されたが、戻りの通信のどこかで拒否された</button></li>
         <li><button type="button" data-correct="false">通信がそもそも発生しなかった</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、行きの通信は許可されたが、戻りの通信のどこかで拒否された、です。2 回とも成功したわけでも、記録の取り違えでも、通信が発生しなかったわけでもありません。"></p>
@@ -115,9 +115,9 @@
     <div class="q" data-q="2">
       <p class="q-text">フローログに記録されない通信として、AWS の資料に挙がっているものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">AWS が用意した DNS サーバへの通信</button></li>
         <li><button type="button" data-correct="false">443 番ポート宛ての HTTPS の通信</button></li>
         <li><button type="button" data-correct="false">セキュリティグループで許可された SSH の通信</button></li>
+        <li><button type="button" data-correct="true">AWS が用意した DNS サーバへの通信</button></li>
         <li><button type="button" data-correct="false">VPC ピアリングを経由する通信</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、AWS が用意した DNS サーバへの通信、です。HTTPS の通信や許可済みの SSH の通信、VPC ピアリングを経由する通信は、記録されない対象として挙がっていません。"></p>
@@ -125,8 +125,8 @@
     <div class="q" data-q="3">
       <p class="q-text">Azure の NSG フローログと VNet フローログの記録の仕方について、収集した資料から言えることはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">許可・拒否の記号の使い方が、2 つの仕組みで異なる</button></li>
         <li><button type="button" data-correct="false">どちらも記録の項目がまったく同じである</button></li>
+        <li><button type="button" data-correct="true">許可・拒否の記号の使い方が、2 つの仕組みで異なる</button></li>
         <li><button type="button" data-correct="false">Azure には記録の仕組みが 1 つしかない</button></li>
         <li><button type="button" data-correct="false">拒否された通信は記録されない</button></li>
       </ol>

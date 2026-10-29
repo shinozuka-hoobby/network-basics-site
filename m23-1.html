@@ -112,8 +112,8 @@ L1 物理層 = 1 段目</pre>
     <div class="q" data-q="1">
       <p class="q-text">なぜロードバランサは、振り分け先の機械が 1 台ではなく複数台なのか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">複数台の方が、電気代を安く抑えられるから</button></li>
         <li><button type="button" data-correct="true">1 台に要求が集中すると処理能力の上限で頭打ちになったり、1 台が止まると全体が止まったりするため、複数に分けることでどちらも避けられるから</button></li>
+        <li><button type="button" data-correct="false">複数台の方が、電気代を安く抑えられるから</button></li>
         <li><button type="button" data-correct="false">複数台に分けないと、名前解決ができない決まりになっているから</button></li>
         <li><button type="button" data-correct="false">複数台に分けた方が、通信の暗号化が簡単になるから</button></li>
       </ol>
@@ -123,8 +123,8 @@ L1 物理層 = 1 段目</pre>
       <p class="q-text">L4 での振り分けの説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">HTTP リクエストの URL やヘッダの中身まで見て、振り分け先を決める</button></li>
-        <li><button type="button" data-correct="true">TCP 接続の宛先や送信元の IP アドレスとポート番号など、トランスポート層の情報だけを見て、振り分け先を決める</button></li>
         <li><button type="button" data-correct="false">振り分け先を 1 台だけに固定し、他の機械には送らない</button></li>
+        <li><button type="button" data-correct="true">TCP 接続の宛先や送信元の IP アドレスとポート番号など、トランスポート層の情報だけを見て、振り分け先を決める</button></li>
         <li><button type="button" data-correct="false">利用者のブラウザの種類だけを見て、振り分け先を決める</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、TCP 接続の宛先や送信元の IP アドレスとポート番号など、トランスポート層の情報だけを見て、振り分け先を決める、です。HTTP リクエストの中身まで見るのは L7 での振り分けで、1 台への固定やブラウザの種類だけを見る話ではありません。"></p>
@@ -132,10 +132,10 @@ L1 物理層 = 1 段目</pre>
     <div class="q" data-q="3">
       <p class="q-text">L4 と L7 という呼び方の由来として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">第 1 章で見た OSI 参照モデル(7 層)のうち、下から 4 番目の層(トランスポート層)と、一番上、7 番目の層(アプリケーション層)を指す</button></li>
         <li><button type="button" data-correct="false">ロードバランサの製造番号を表す</button></li>
         <li><button type="button" data-correct="false">振り分け先の機械の台数を表す</button></li>
         <li><button type="button" data-correct="false">1 秒間に処理できる要求の件数を表す</button></li>
+        <li><button type="button" data-correct="true">第 1 章で見た OSI 参照モデル(7 層)のうち、下から 4 番目の層(トランスポート層)と、一番上、7 番目の層(アプリケーション層)を指す</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、第 1 章で見た OSI 参照モデル(7 層)のうち、下から 4 番目の層(トランスポート層)と、一番上、7 番目の層(アプリケーション層)を指す、です。製造番号や台数、処理件数を表す番号ではありません。"></p>
     </div>

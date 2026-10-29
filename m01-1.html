@@ -102,8 +102,8 @@ http:// なら 3 の暗号化は無い</pre>
     <div class="q" data-q="1">
       <p class="q-text">ひよこちゃんは「まず接続をして、その後でブラウザがサーバの IP アドレスを調べる」と考えていた。実際の順序として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">ひよこちゃんの考えのとおり、接続の後に名前解決が行われる</button></li>
         <li><button type="button" data-correct="true">先に名前解決で IP アドレスを確定させてから、その IP アドレス宛てに接続を行う</button></li>
+        <li><button type="button" data-correct="false">ひよこちゃんの考えのとおり、接続の後に名前解決が行われる</button></li>
         <li><button type="button" data-correct="false">名前解決と接続は同時に行われ、順序は関係ない</button></li>
         <li><button type="button" data-correct="false">接続の後に暗号化を行い、その後で名前解決を行う</button></li>
       </ol>
@@ -123,9 +123,9 @@ http:// なら 3 の暗号化は無い</pre>
       <p class="q-text">http と https の違いの説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">http にも https にも、暗号化の段階が同じように存在する</button></li>
-        <li><button type="button" data-correct="true">http には暗号化の段階が無く、名前解決 → 接続 → 要求と応答の 3 段階で完了する</button></li>
         <li><button type="button" data-correct="false">http は名前解決の段階が無く、接続から始まる</button></li>
         <li><button type="button" data-correct="false">https は接続の段階が無く、名前解決の直後に暗号化する</button></li>
+        <li><button type="button" data-correct="true">http には暗号化の段階が無く、名前解決 → 接続 → 要求と応答の 3 段階で完了する</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、http には暗号化の段階が無く、名前解決 → 接続 → 要求と応答の 3 段階で完了する、です。暗号化の段階が挟まるのは https のときだけで、http はそれ以外の 3 段階だけで完了します。名前解決や接続の段階自体が無くなるわけではありません。"></p>
     </div>

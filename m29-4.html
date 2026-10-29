@@ -93,9 +93,9 @@
     <div class="q" data-q="1">
       <p class="q-text">経路診断ツールが「届くはず」と判定しても、実際には繋がらないことがあるのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由で実際には繋がらないことがあるから</button></li>
         <li><button type="button" data-correct="false">診断ツールは常に間違った結果を返すから</button></li>
         <li><button type="button" data-correct="false">診断ツールには設定を読み取る機能が無いから</button></li>
+        <li><button type="button" data-correct="true">設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由で実際には繋がらないことがあるから</button></li>
         <li><button type="button" data-correct="false">フローログが自動的に設定を書き換えるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、設定の上では届くはずでも、機械自体の不調のような、設定の外側の理由で実際には繋がらないことがあるから、です。常に間違うわけでも、設定を読み取れないわけでも、フローログが設定を書き換えるわけでもありません。"></p>
@@ -103,9 +103,9 @@
     <div class="q" data-q="2">
       <p class="q-text">第 24 章 24-2 の事例を経路診断ツールで確かめ直すとすれば、何を送信元・宛先に指定するか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">インターネットゲートウェイを送信元、サーバを宛先</button></li>
         <li><button type="button" data-correct="false">サーバを送信元、DNS サーバを宛先</button></li>
         <li><button type="button" data-correct="false">セキュリティグループを送信元、NACL を宛先</button></li>
+        <li><button type="button" data-correct="true">インターネットゲートウェイを送信元、サーバを宛先</button></li>
         <li><button type="button" data-correct="false">送信元・宛先のどちらも指定しない</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、インターネットゲートウェイを送信元、サーバを宛先、です。DNS サーバとの通信の話ではなく、セキュリティグループや NACL は分析の対象であって送信元・宛先ではありません。"></p>
@@ -113,10 +113,10 @@
     <div class="q" data-q="3">
       <p class="q-text">第 24 章 24-3 の事例で、フローログにはどのような記録が残ると考えられるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">要求側に ACCEPT の記録、応答側に REJECT の記録が別々に残る</button></li>
         <li><button type="button" data-correct="false">すべての記録が ACCEPT になる</button></li>
         <li><button type="button" data-correct="false">記録は一切残らない</button></li>
         <li><button type="button" data-correct="false">要求と応答が 1 つの記録にまとめられる</button></li>
+        <li><button type="button" data-correct="true">要求側に ACCEPT の記録、応答側に REJECT の記録が別々に残る</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、要求側に ACCEPT の記録、応答側に REJECT の記録が別々に残る、です。すべてが ACCEPT になるわけでも、記録が残らないわけでも、1 つにまとめられるわけでもありません。"></p>
     </div>

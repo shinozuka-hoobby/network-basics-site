@@ -98,10 +98,10 @@ NACL
     <div class="q" data-q="1">
       <p class="q-text">セキュリティグループと NACL の対象範囲の違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">セキュリティグループはサーバ 1 台ずつにかかり、NACL はサブネットの境目全体にかかる</button></li>
         <li><button type="button" data-correct="false">セキュリティグループはサブネットの境目全体にかかり、NACL はサーバ 1 台ずつにかかる</button></li>
         <li><button type="button" data-correct="false">どちらも VPC 全体に一括でかかり、区別は無い</button></li>
         <li><button type="button" data-correct="false">どちらもリージョン全体にかかり、VPC をまたいで適用される</button></li>
+        <li><button type="button" data-correct="true">セキュリティグループはサーバ 1 台ずつにかかり、NACL はサブネットの境目全体にかかる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、セキュリティグループはサーバ 1 台ずつにかかり、NACL はサブネットの境目全体にかかる、です。範囲が逆でも、両方が同じ範囲にかかるわけでもありません。"></p>
     </div>
@@ -109,8 +109,8 @@ NACL
       <p class="q-text">先輩から聞いた、NACL で外から来る 443 番宛ての通信を許可したのに、外から要求は届くのに応答が返らなかった、という話の原因はどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">外から来る通信を許可するルールの番号の順序が間違っていたから</button></li>
-        <li><button type="button" data-correct="true">NACL はステートレスで、戻りの通信を許可するルールを別に書いていなかったから</button></li>
         <li><button type="button" data-correct="false">セキュリティグループの設定と重複していたから</button></li>
+        <li><button type="button" data-correct="true">NACL はステートレスで、戻りの通信を許可するルールを別に書いていなかったから</button></li>
         <li><button type="button" data-correct="false">サーバの IP アドレスが変わってしまったから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、NACL はステートレスで、戻りの通信を許可するルールを別に書いていなかったから、です。ルールの番号の順序や重複、IP アドレスの変化とは別の原因です。"></p>
@@ -119,8 +119,8 @@ NACL
       <p class="q-text">セキュリティグループの、戻りの通信の扱いとして正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">戻りの通信も、行きとは別に許可するルールを書く必要がある</button></li>
-        <li><button type="button" data-correct="true">一度許可した通信の戻りは、自動的に許可される</button></li>
         <li><button type="button" data-correct="false">戻りの通信は、常にすべて拒否される</button></li>
+        <li><button type="button" data-correct="true">一度許可した通信の戻りは、自動的に許可される</button></li>
         <li><button type="button" data-correct="false">戻りの通信の扱いは、NACL と完全に同じである</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、一度許可した通信の戻りは、自動的に許可される、です。戻りを別に許可する必要があるのは NACL の方で、セキュリティグループがすべて拒否するわけでもありません。"></p>

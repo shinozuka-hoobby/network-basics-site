@@ -110,8 +110,8 @@
       <p class="q-text">名前が解けるかを確かめずに、いきなり TLS の証明書を疑うことが勧められないのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">証明書の確認には、特別な資格が必要だから</button></li>
-        <li><button type="button" data-correct="true">名前が解けなければ相手の IP アドレスすら分からず、それより後の段階を確かめても手がかりにならないから</button></li>
         <li><button type="button" data-correct="false">TLS の手続きは、名前解決より先に行われる仕組みだから</button></li>
+        <li><button type="button" data-correct="true">名前が解けなければ相手の IP アドレスすら分からず、それより後の段階を確かめても手がかりにならないから</button></li>
         <li><button type="button" data-correct="false">証明書は、名前解決の結果とは一切関係が無いから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、名前が解けなければ相手の IP アドレスすら分からず、それより後の段階を確かめても手がかりにならないから、です。証明書の確認に特別な資格は要らず、TLS は名前解決より後の段階で、証明書と名前解決は無関係でもありません。"></p>
@@ -120,8 +120,8 @@
       <p class="q-text">「セキュリティグループで通信を許可したのに応答が返らない」という症状は、5 段階のうちどの段階に当たるか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">名前解決</button></li>
-        <li><button type="button" data-correct="false">到達性</button></li>
         <li><button type="button" data-correct="true">入口</button></li>
+        <li><button type="button" data-correct="false">到達性</button></li>
         <li><button type="button" data-correct="false">握手</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、入口です。セキュリティグループや NACL のような通信の許可・拒否の設定は、入口の段階で確かめる対象です。"></p>
@@ -129,8 +129,8 @@
     <div class="q" data-q="3">
       <p class="q-text">5 段階と、それぞれで使う道具の組み合わせとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">名前解決は dig、到達性は ping・traceroute、入口はポートの到達性を確かめる道具、握手は openssl s_client、応答は curl</button></li>
         <li><button type="button" data-correct="false">名前解決は curl、到達性は dig、入口は ping、握手は traceroute、応答は openssl s_client</button></li>
+        <li><button type="button" data-correct="true">名前解決は dig、到達性は ping・traceroute、入口はポートの到達性を確かめる道具、握手は openssl s_client、応答は curl</button></li>
         <li><button type="button" data-correct="false">すべての段階で curl だけを使う</button></li>
         <li><button type="button" data-correct="false">この 5 段階では道具を使わず、目視だけで確認する</button></li>
       </ol>

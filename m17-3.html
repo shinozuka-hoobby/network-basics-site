@@ -98,9 +98,9 @@
     <div class="q" data-q="1">
       <p class="q-text">往復時間(RTT)が長い DNS リゾルバを使っていることと、名前解決が遅くなることの関係として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">遠い DNS リゾルバほど 1 回の問い合わせの往復時間が長く、DNS キャッシュが無い場合は何度も重なるため、遅延が積み重なる</button></li>
         <li><button type="button" data-correct="false">DNS リゾルバが遠いと、権威サーバの DNS レコードの内容が変わってしまうから</button></li>
         <li><button type="button" data-correct="false">DNS リゾルバが遠いと、問い合わせは必ず SERVFAIL になるから</button></li>
+        <li><button type="button" data-correct="true">遠い DNS リゾルバほど 1 回の問い合わせの往復時間が長く、DNS キャッシュが無い場合は何度も重なるため、遅延が積み重なる</button></li>
         <li><button type="button" data-correct="false">DNS リゾルバが遠くても、名前解決の速さには影響しない</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、遠い DNS リゾルバほど 1 回の問い合わせの往復時間が長く、DNS キャッシュが無い場合は何度も重なるため、遅延が積み重なる、です。DNS レコードの内容や SERVFAIL とは関係ありません。"></p>
@@ -108,9 +108,9 @@
     <div class="q" data-q="2">
       <p class="q-text">名前解決が遅くなる原因として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">問い合わせ先の DNS リゾルバが地理的に遠い場合</button></li>
         <li><button type="button" data-correct="false">DNS レコードの型を AAAA にしている場合</button></li>
         <li><button type="button" data-correct="false">DNS の TTL の値を大きくしている場合</button></li>
+        <li><button type="button" data-correct="true">問い合わせ先の DNS リゾルバが地理的に遠い場合</button></li>
         <li><button type="button" data-correct="false">ブラウザのキャッシュを無効にしている場合</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、問い合わせ先の DNS リゾルバが地理的に遠い場合、です。レコードの型や TTL の値、ブラウザのキャッシュの有無が、このページで見た遅延の直接の原因ではありません。"></p>

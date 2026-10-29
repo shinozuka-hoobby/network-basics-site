@@ -89,8 +89,8 @@ TTL が 24 時間のまま: 最大 24 時間
     <div class="q" data-q="1">
       <p class="q-text">管理画面で DNS レコードの変更を保存した直後に、まだ古い答えが返ってくることがあるのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">権威サーバへの反映と DNS キャッシュの期限切れは別の段階で、後者は DNS の TTL が切れるまで終わらないから</button></li>
         <li><button type="button" data-correct="false">変更が権威サーバに反映されるまでに、承認の手続きが必要だから</button></li>
+        <li><button type="button" data-correct="true">権威サーバへの反映と DNS キャッシュの期限切れは別の段階で、後者は DNS の TTL が切れるまで終わらないから</button></li>
         <li><button type="button" data-correct="false">DNS レコードの変更は、1 日に 1 回しか行えない決まりだから</button></li>
         <li><button type="button" data-correct="false">新しい IP アドレスは DNS キャッシュに保存できない決まりだから</button></li>
       </ol>
@@ -111,8 +111,8 @@ TTL が 24 時間のまま: 最大 24 時間
       <ol class="opts">
         <li><button type="button" data-correct="false">権威サーバへの問い合わせがエラーになりやすくなる</button></li>
         <li><button type="button" data-correct="false">DNS レコードが自動的に削除されてしまう</button></li>
-        <li><button type="button" data-correct="true">変更を反映しても DNS リゾルバが古い答えを長く覚えたままになり、切り替えに時間がかかる</button></li>
         <li><button type="button" data-correct="false">権威サーバの負荷が急激に増える</button></li>
+        <li><button type="button" data-correct="true">変更を反映しても DNS リゾルバが古い答えを長く覚えたままになり、切り替えに時間がかかる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、変更を反映しても DNS リゾルバが古い答えを長く覚えたままになり、切り替えに時間がかかる、です。エラーの増加やレコードの削除、権威サーバの負荷増加とは関係ありません。"></p>
     </div>

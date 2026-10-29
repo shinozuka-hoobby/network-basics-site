@@ -106,8 +106,8 @@ dig example.com</code></pre>
     <div class="q" data-q="1">
       <p class="q-text">同じ tcpdump のコマンドに port 53 という条件を付けると、何が起きるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">53 番のポートに関する通信だけが記録・表示され、それ以外の通信は現れなくなる</button></li>
         <li><button type="button" data-correct="false">tcpdump の実行速度が 53 倍速くなる</button></li>
+        <li><button type="button" data-correct="true">53 番のポートに関する通信だけが記録・表示され、それ以外の通信は現れなくなる</button></li>
         <li><button type="button" data-correct="false">53 個のパケットを受け取ると自動的に止まる</button></li>
         <li><button type="button" data-correct="false">Wi-Fi の電波の強さが変わる</button></li>
       </ol>
@@ -116,19 +116,19 @@ dig example.com</code></pre>
     <div class="q" data-q="2">
       <p class="q-text">-n を付けて tcpdump を実行すると、何が変わるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">送信元・宛先のアドレスが、名前ではなく数字のまま表示される</button></li>
         <li><button type="button" data-correct="false">記録する個数が減る</button></li>
         <li><button type="button" data-correct="false">sudo が不要になる</button></li>
         <li><button type="button" data-correct="false">記録した内容が自動的にファイルへ保存される</button></li>
+        <li><button type="button" data-correct="true">送信元・宛先のアドレスが、名前ではなく数字のまま表示される</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送信元・宛先のアドレスが、名前ではなく数字のまま表示される、です。記録する個数や sudo の要不要、ファイルへの保存とは関係ありません。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">host 10.0.0.5 and port 53 という条件でキャプチャフィルタを書くと、何が起きるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">10.0.0.5 との通信で、かつ 53 番のポートに関する通信だけに絞り込まれる</button></li>
         <li><button type="button" data-correct="false">10.0.0.5 との通信、または 53 番のポートの通信のどちらかが表示される</button></li>
         <li><button type="button" data-correct="false">10.0.0.5 以外のすべての通信が表示される</button></li>
+        <li><button type="button" data-correct="true">10.0.0.5 との通信で、かつ 53 番のポートに関する通信だけに絞り込まれる</button></li>
         <li><button type="button" data-correct="false">53 個の条件をまとめて指定したことになる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、10.0.0.5 との通信で、かつ 53 番のポートに関する通信だけに絞り込まれる、です。and は両方の条件を満たす通信に絞り込む働きで、どちらか一方が満たされればよいわけではなく、除外や個数の指定でもありません。"></p>

@@ -106,8 +106,8 @@
       <p class="q-text">身分証の有効期間が過ぎるまで更新をしないまま放置すると、何が起きるか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">認証局が自動的に新しい身分証を発行してくれる</button></li>
-        <li><button type="button" data-correct="true">ブラウザがその身分証をもう有効だと確認できず、警告を出す</button></li>
         <li><button type="button" data-correct="false">サーバへの接続そのものができなくなり、名前解決が失敗する</button></li>
+        <li><button type="button" data-correct="true">ブラウザがその身分証をもう有効だと確認できず、警告を出す</button></li>
         <li><button type="button" data-correct="false">身分証の内容が自動的に書き換わり、別のドメイン用になる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ブラウザがその身分証をもう有効だと確認できず、警告を出す、です。認証局が自動的に更新してくれるわけではなく、名前解決とは別の話で、身分証の内容が勝手に書き換わることもありません。"></p>
@@ -115,10 +115,10 @@
     <div class="q" data-q="2">
       <p class="q-text">認証局が身分証を発行する前に確認することとして、本文で説明されているものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">申請した人が、そのドメインの持ち主であること</button></li>
         <li><button type="button" data-correct="false">申請した人の支払い能力</button></li>
         <li><button type="button" data-correct="false">サーバの秘密鍵の強さ</button></li>
         <li><button type="button" data-correct="false">サイトへのアクセス数</button></li>
+        <li><button type="button" data-correct="true">申請した人が、そのドメインの持ち主であること</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、申請した人が、そのドメインの持ち主であること、です。認証局はこれを確認したうえで発行しており、支払い能力や秘密鍵の強さ、アクセス数は発行の条件として本文では説明していません。"></p>
     </div>
@@ -126,9 +126,9 @@
       <p class="q-text">身分証の更新について、本文の説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">更新は必ず手作業で行わなければならない</button></li>
-        <li><button type="button" data-correct="true">人手を介さず、期限が近づくと自動で取り直す仕組みもある</button></li>
         <li><button type="button" data-correct="false">更新すると、有効期間は無期限になる</button></li>
         <li><button type="button" data-correct="false">更新のたびに、発行する認証局を変えなければならない</button></li>
+        <li><button type="button" data-correct="true">人手を介さず、期限が近づくと自動で取り直す仕組みもある</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、人手を介さず、期限が近づくと自動で取り直す仕組みもある、です。更新は手作業に限らず、有効期間が無期限になることも、認証局を毎回変える必要もありません。"></p>
     </div>

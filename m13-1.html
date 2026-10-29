@@ -98,8 +98,8 @@
       <p class="q-text">TCP 接続とは何か。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">IP アドレスとポート番号を別の番号に変換する仕組み</button></li>
-        <li><button type="button" data-correct="true">データのやり取りを始める前に、送り手と受け手の間で作る、会話できる状態のこと</button></li>
         <li><button type="button" data-correct="false">届かなかったデータを、もう一度送り直す仕組み</button></li>
+        <li><button type="button" data-correct="true">データのやり取りを始める前に、送り手と受け手の間で作る、会話できる状態のこと</button></li>
         <li><button type="button" data-correct="false">複数の受け手に同じデータを一度に送る仕組み</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、データのやり取りを始める前に、送り手と受け手の間で作る、会話できる状態のこと、です。TCP 接続は、実際のデータのやり取りを始める前に、送り手と受け手が 3 回の合図をやり取りして作る土台です。"></p>
@@ -108,18 +108,18 @@
       <p class="q-text">TCP が接続を作るときに、2 回ではなく 3 回のやり取りをするのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">3 回でないと、途中の機器がデータを不正なものとみなして捨ててしまうから</button></li>
-        <li><button type="button" data-correct="true">送り手と受け手、両方が持つ情報が一致したことを確認するには、3 回のやり取りが過不足ない回数だから</button></li>
         <li><button type="button" data-correct="false">2 回のやり取りだと、送るデータの中身が壊れてしまうから</button></li>
         <li><button type="button" data-correct="false">3 回目のやり取りで、実際のデータそのものを送っているから</button></li>
+        <li><button type="button" data-correct="true">送り手と受け手、両方が持つ情報が一致したことを確認するには、3 回のやり取りが過不足ない回数だから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送り手と受け手、両方が持つ情報が一致したことを確認するには、3 回のやり取りが過不足ない回数だから、です。2 回だけだと、最後に送った側は相手にちゃんと伝わったかまでは確認できません。3 回目のやり取りは確認のための合図であり、データそのものではありません。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">TCP 接続を作る 3 回のやり取りの順番として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">送り手の SYN → 受け手の SYN/ACK → 送り手の ACK</button></li>
         <li><button type="button" data-correct="false">受け手の SYN → 送り手の SYN/ACK → 受け手の ACK</button></li>
         <li><button type="button" data-correct="false">送り手の SYN/ACK → 受け手の SYN → 送り手の ACK</button></li>
+        <li><button type="button" data-correct="true">送り手の SYN → 受け手の SYN/ACK → 送り手の ACK</button></li>
         <li><button type="button" data-correct="false">送り手の SYN → 送り手の ACK → 受け手の SYN/ACK</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、送り手の SYN → 受け手の SYN/ACK → 送り手の ACK、です。始めたい側(送り手)がまず SYN を送り、受け手が了解の意味を込めた SYN/ACK を返し、最後に送り手が ACK を返して両側の情報の一致を確認します。"></p>

@@ -84,29 +84,29 @@ tcpdump -n -r ~/capture.pcap</code></pre>
     <div class="q" data-q="1">
       <p class="q-text">-c を指定せずに tcpdump を -w と組み合わせて実行し、そのまま止め忘れていた場合、何が起きるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">Ctrl+C で止めるまで記録が続き、保存先のファイルが大きくなり続ける</button></li>
         <li><button type="button" data-correct="false">5 秒後に自動的に止まる</button></li>
         <li><button type="button" data-correct="false">ファイルの保存が拒否されてエラーになる</button></li>
         <li><button type="button" data-correct="false">記録される内容が自動的に間引かれる</button></li>
+        <li><button type="button" data-correct="true">Ctrl+C で止めるまで記録が続き、保存先のファイルが大きくなり続ける</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、Ctrl+C で止めるまで記録が続き、保存先のファイルが大きくなり続ける、です。自動停止やエラー、間引きは起きません。"></p>
     </div>
     <div class="q" data-q="2">
       <p class="q-text">-w で保存した pcap ファイルを -r で読み込むとき、なぜ sudo が要らないのか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">保存済みのファイルを読み込む操作は、ネットワークインターフェースから直接パケットを読み取る操作ではないから</button></li>
         <li><button type="button" data-correct="false">pcap ファイルには権限の情報が含まれていないから</button></li>
         <li><button type="button" data-correct="false">-r オプション自体が権限のチェックを行わない特別な設定だから</button></li>
         <li><button type="button" data-correct="false">一度 sudo で記録したファイルは、その後ずっと無権限で扱えるという特別な仕組みがあるから</button></li>
+        <li><button type="button" data-correct="true">保存済みのファイルを読み込む操作は、ネットワークインターフェースから直接パケットを読み取る操作ではないから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、保存済みのファイルを読み込む操作は、ネットワークインターフェースから直接パケットを読み取る操作ではないから、です。権限の情報や特別な仕組みについての説明はいずれも誤りです。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">pcap ファイルの説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">記録した通信の内容を保存しておくファイルの形式で、tcpdump でも Wireshark でも開ける</button></li>
         <li><button type="button" data-correct="false">tcpdump 専用で、他のツールでは開けない形式</button></li>
         <li><button type="button" data-correct="false">記録した内容を暗号化して保存する形式</button></li>
+        <li><button type="button" data-correct="true">記録した通信の内容を保存しておくファイルの形式で、tcpdump でも Wireshark でも開ける</button></li>
         <li><button type="button" data-correct="false">記録できる件数を必ず 100 件以下に制限する形式</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、記録した通信の内容を保存しておくファイルの形式で、tcpdump でも Wireshark でも開ける、です。他のツール専用という説明や、暗号化・件数制限についての説明はいずれも誤りです。"></p>

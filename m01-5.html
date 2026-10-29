@@ -133,8 +133,8 @@
       <p class="q-text">送信時、データにヘッダが付加されていく順序として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">イーサネットのヘッダ → IP のヘッダ → TCP のヘッダの順に付加される</button></li>
-        <li><button type="button" data-correct="true">TCP のヘッダ → IP のヘッダ → イーサネットのヘッダの順に付加される</button></li>
         <li><button type="button" data-correct="false">IP のヘッダ → TCP のヘッダ → イーサネットのヘッダの順に付加される</button></li>
+        <li><button type="button" data-correct="true">TCP のヘッダ → IP のヘッダ → イーサネットのヘッダの順に付加される</button></li>
         <li><button type="button" data-correct="false">すべてのヘッダが同時に 1 つにまとめて付加される</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、TCP のヘッダ→IP のヘッダ→イーサネットのヘッダの順に付加される、です。段を降りるごとにヘッダを付け足していく処理(カプセル化)は、4 段目、3 段目、2 段目の順に進みます。"></p>
@@ -152,9 +152,9 @@
     <div class="q" data-q="3">
       <p class="q-text">IP アドレスと MAC アドレスの役割の違いとして正しいものはどれか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">IP アドレスは最終的な届け先を、MAC アドレスは次に渡す隣の機器を指す</button></li>
         <li><button type="button" data-correct="false">IP アドレスは次に渡す隣の機器を、MAC アドレスは最終的な届け先を指す</button></li>
         <li><button type="button" data-correct="false">同じ番号の別の書き方で、どちらを使っても同じ</button></li>
-        <li><button type="button" data-correct="true">IP アドレスは最終的な届け先を、MAC アドレスは次に渡す隣の機器を指す</button></li>
         <li><button type="button" data-correct="false">IP アドレスは有線用、MAC アドレスは無線用の番号である</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、IP アドレスが最終的な届け先、MAC アドレスが次に渡す隣の機器を指す、です。2 つは別の段で使う別の番号で、有線か無線かの違いではありません。ルータを通るたびに変わるのは MAC アドレスのほうで、IP アドレスは変わりません。"></p>

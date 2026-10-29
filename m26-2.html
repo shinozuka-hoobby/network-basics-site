@@ -95,9 +95,9 @@
       <p class="q-text">IP スプーフィングを受けた側が応答を返しても、なぜ本当の攻撃者には届かないのか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">応答が暗号化されて、途中で読めなくなるから</button></li>
-        <li><button type="button" data-correct="true">送信元アドレスが偽物に書き換えられており、応答は偽の宛先に届くから</button></li>
         <li><button type="button" data-correct="false">攻撃者は IP アドレスを持っていないから</button></li>
         <li><button type="button" data-correct="false">ファイアウォールが応答をすべて止めてしまうから</button></li>
+        <li><button type="button" data-correct="true">送信元アドレスが偽物に書き換えられており、応答は偽の宛先に届くから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「送信元アドレスが偽物に書き換えられており、応答は偽の宛先に届くから」です。暗号化やファイアウォールの話ではなく、応答の宛先そのものが偽物になっている点が理由です。攻撃者も IP アドレスを持つ機械を使っています。"></p>
     </div>
@@ -105,8 +105,8 @@
       <p class="q-text">IP スプーフィングとは何か。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">パケットの宛先 IP アドレスを書き換えて、別のサーバに転送する手口</button></li>
-        <li><button type="button" data-correct="false">送信元のポート番号だけを、通信のたびに変える仕組み</button></li>
         <li><button type="button" data-correct="true">パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口</button></li>
+        <li><button type="button" data-correct="false">送信元のポート番号だけを、通信のたびに変える仕組み</button></li>
         <li><button type="button" data-correct="false">IP アドレスの中身を暗号化して送る仕組み</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「パケットの送信元 IP アドレスを、本物とは違うものに書き換えて送る手口」です。宛先の書き換えやポート番号だけの変更、暗号化はいずれも本文の定義と違います。"></p>
@@ -115,9 +115,9 @@
       <p class="q-text">経路の入口で送信元アドレスを確認するという対策について、正しいのはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">この対策を使えば、IP スプーフィングを完全に防げる</button></li>
+        <li><button type="button" data-correct="true">すべての経路の入口で行われているわけではないため、完全には防げない</button></li>
         <li><button type="button" data-correct="false">この対策は、受け取る側のサーバだけで行うものである</button></li>
         <li><button type="button" data-correct="false">この対策を使うと、通信の中身が暗号化される</button></li>
-        <li><button type="button" data-correct="true">すべての経路の入口で行われているわけではないため、完全には防げない</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「すべての経路の入口で行われているわけではないため、完全には防げない」です。この対策は受け取る側ではなく経路の途中の入口で行うもので、通信を暗号化するものでもありません。"></p>
     </div>

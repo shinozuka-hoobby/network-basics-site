@@ -101,10 +101,10 @@
     <div class="q" data-q="1">
       <p class="q-text">手前のロードバランサで TLS を終端していると、サーバ側のアプリが利用者との間は http だったと思い込むことがあるのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">サーバに届くのは暗号を解いた後の通信であり、サーバ側はそれだけを見て判断するから</button></li>
         <li><button type="button" data-correct="false">ロードバランサが、利用者に代わってサーバへ警告を送るから</button></li>
         <li><button type="button" data-correct="false">サーバの身分証の有効期間が切れているから</button></li>
         <li><button type="button" data-correct="false">サーバがロードバランサからの通信を拒否しているから</button></li>
+        <li><button type="button" data-correct="true">サーバに届くのは暗号を解いた後の通信であり、サーバ側はそれだけを見て判断するから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、サーバに届くのは暗号を解いた後の通信であり、サーバ側はそれだけを見て判断するから、です。ロードバランサが警告を送る仕組みではなく、身分証の有効期間やサーバの拒否とは別の話です。"></p>
     </div>

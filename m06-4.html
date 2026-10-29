@@ -112,9 +112,9 @@
     <div class="q" data-q="2">
       <p class="q-text">TTL が尽きたときと、大きさの上限を超えたときの共通点として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">どちらも同じ ICMP という仕組みで、その旨が送信元に知らされる</button></li>
         <li><button type="button" data-correct="false">どちらも自動的に別の経路へ送り直される</button></li>
         <li><button type="button" data-correct="false">どちらも起きた瞬間にネットワーク全体が止まる</button></li>
+        <li><button type="button" data-correct="true">どちらも同じ ICMP という仕組みで、その旨が送信元に知らされる</button></li>
         <li><button type="button" data-correct="false">どちらも起きないよう、あらかじめ完全に防ぐことができる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、どちらも同じ ICMP という仕組みで、その旨が送信元に知らされる、です。TTL が尽きたときも、大きさの上限を超えて捨てられたときも、送信元への知らせ方は同じ ICMP を使う。"></p>
@@ -123,8 +123,8 @@
       <p class="q-text">ICMP の合図が経路の途中で止められてしまうと、何が起きやすくなるか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">通信の速度がかえって速くなる</button></li>
-        <li><button type="button" data-correct="true">大きなデータだけ届かない原因が、送信元からは分かりにくくなる</button></li>
         <li><button type="button" data-correct="false">送信元の IP アドレスが自動的に変わる</button></li>
+        <li><button type="button" data-correct="true">大きなデータだけ届かない原因が、送信元からは分かりにくくなる</button></li>
         <li><button type="button" data-correct="false">届かなかったデータが自動的に暗号化される</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、大きなデータだけ届かない原因が、送信元からは分かりにくくなる、です。届けられなかったことを知らせる ICMP の合図が経路の途中で止められると、送信元からは原因の切り分けが難しくなる。"></p>

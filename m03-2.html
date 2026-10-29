@@ -103,8 +103,8 @@
     <div class="q" data-q="1">
       <p class="q-text">スイッチが送信元 MAC アドレスを見る目的として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">どの機械がどの差し込み口につながっているかを、MAC アドレステーブルに覚えるため</button></li>
         <li><button type="button" data-correct="false">そのフレームの転送先の差し込み口を直接決めるため</button></li>
+        <li><button type="button" data-correct="true">どの機械がどの差し込み口につながっているかを、MAC アドレステーブルに覚えるため</button></li>
         <li><button type="button" data-correct="false">フレームの誤り検出を行うため</button></li>
         <li><button type="button" data-correct="false">フレームの種別を確認するため</button></li>
       </ol>
@@ -114,18 +114,18 @@
       <p class="q-text">宛先 MAC アドレスがまだ MAC アドレステーブルに載っていないフレームを、スイッチはどうするか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">届いたフレームをその場で捨てる</button></li>
-        <li><button type="button" data-correct="true">他の全部の差し込み口に転送し、返事が来たら新しく覚える</button></li>
         <li><button type="button" data-correct="false">送信元にフレームをそのまま送り返す</button></li>
         <li><button type="button" data-correct="false">宛先が分かるまで、フレームを保存し続ける</button></li>
+        <li><button type="button" data-correct="true">他の全部の差し込み口に転送し、返事が来たら新しく覚える</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、他の全部の差し込み口に転送し、返事が来たら新しく覚える、です。表に載っていない宛先には念のため全部の差し込み口に送り、その後の通信で表を更新していきます。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">配線を共有する古い機械(ハブ)と比べて、スイッチが複数のやり取りを同時に行ってもぶつかりにくいのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">スイッチは宛先の分かっているフレームを、その差し込み口だけに転送するから</button></li>
         <li><button type="button" data-correct="false">スイッチは信号を増幅してから送り直すから</button></li>
         <li><button type="button" data-correct="false">スイッチは誤り検出の機能を持たないから</button></li>
+        <li><button type="button" data-correct="true">スイッチは宛先の分かっているフレームを、その差し込み口だけに転送するから</button></li>
         <li><button type="button" data-correct="false">スイッチは配線を共有せず、電波でやり取りするから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、スイッチは宛先の分かっているフレームを、その差し込み口だけに転送するから、です。配線を共有するハブと違い、差し込み口ごとにやり取りが独立しているため、複数の通信が同時に行われてもぶつかりません。"></p>

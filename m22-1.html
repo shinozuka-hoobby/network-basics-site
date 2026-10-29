@@ -105,8 +105,8 @@
       <p class="q-text">CDN を使うと、利用者からの応答がオリジンサーバまで行かずに済むことがあるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">オリジンサーバが、利用者の近くに引っ越しているから</button></li>
-        <li><button type="button" data-correct="true">エッジサーバに答えの控えがあれば、そのまま返せる(キャッシュヒットになる)から</button></li>
         <li><button type="button" data-correct="false">利用者の要求が、自動的にオリジンサーバへの問い合わせを省略するから</button></li>
+        <li><button type="button" data-correct="true">エッジサーバに答えの控えがあれば、そのまま返せる(キャッシュヒットになる)から</button></li>
         <li><button type="button" data-correct="false">エッジサーバがオリジンサーバの代わりに新しいデータを作り出すから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、エッジサーバに答えの控えがあれば、そのまま返せる(キャッシュヒットになる)から、です。オリジンサーバが移動するわけでも、要求そのものが省略されるわけでもなく、控えがそのまま使われるだけです。"></p>
@@ -115,9 +115,9 @@
       <p class="q-text">エッジサーバの説明として正しいものはどれか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">元になるデータを持っている、本来の Web サーバのこと</button></li>
-        <li><button type="button" data-correct="true">利用者の近くに置かれ、控えを代わりに届ける機械のこと</button></li>
         <li><button type="button" data-correct="false">利用者の端末そのもののこと</button></li>
         <li><button type="button" data-correct="false">控えを一切持たず、常にもとのデータへ転送するだけの機械のこと</button></li>
+        <li><button type="button" data-correct="true">利用者の近くに置かれ、控えを代わりに届ける機械のこと</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、利用者の近くに置かれ、控えを代わりに届ける機械のこと、です。元になるデータを持つのはオリジンサーバで、エッジサーバは利用者の端末でも、控えを持たない転送専用の機械でもありません。"></p>
     </div>
@@ -126,8 +126,8 @@
       <ol class="opts">
         <li><button type="button" data-correct="false">利用者の近くに置かれ、控えを代わりに届ける機械のこと</button></li>
         <li><button type="button" data-correct="false">複数の利用者の要求を振り分ける機械のこと</button></li>
-        <li><button type="button" data-correct="true">元になるデータを持っている、本来の Web サーバのこと</button></li>
         <li><button type="button" data-correct="false">名前解決の答えを保存しておく機械のこと</button></li>
+        <li><button type="button" data-correct="true">元になるデータを持っている、本来の Web サーバのこと</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、元になるデータを持っている、本来の Web サーバのこと、です。控えを届ける役目はエッジサーバが担い、要求の振り分けや名前解決の答えの保存とも別のものです。"></p>
     </div>

@@ -85,8 +85,8 @@
       <p class="q-text">近くのエッジサーバから返すと、TCP や TLS のハンドシェイクを含めて速くなるのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">近くのエッジサーバは、ハンドシェイクの手順そのものを省略できるから</button></li>
-        <li><button type="button" data-correct="true">ハンドシェイクは複数回のやり取りを伴い、そのたびに往復時間がかかるため、近いほど短縮の効果が大きいから</button></li>
         <li><button type="button" data-correct="false">近くのエッジサーバは、暗号化を行わずに通信するから</button></li>
+        <li><button type="button" data-correct="true">ハンドシェイクは複数回のやり取りを伴い、そのたびに往復時間がかかるため、近いほど短縮の効果が大きいから</button></li>
         <li><button type="button" data-correct="false">近くのエッジサーバは、回線の帯域幅を自動的に太くしてくれるから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ハンドシェイクは複数回のやり取りを伴い、そのたびに往復時間がかかるため、近いほど短縮の効果が大きいから、です。手順の省略や暗号化の省略、帯域幅の変更が理由ではありません。"></p>
@@ -94,9 +94,9 @@
     <div class="q" data-q="2">
       <p class="q-text">ニューヨークの利用者が、シンガポールのオリジンサーバへ直接アクセスした場合と、アトランタのエッジサーバの控えから受け取った場合の比較として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">直接アクセスは合計およそ 3000 ミリ秒、エッジサーバ経由は合計およそ 1100 ミリ秒だった</button></li>
         <li><button type="button" data-correct="false">直接アクセスもエッジサーバ経由も、合計時間はほとんど変わらなかった</button></li>
         <li><button type="button" data-correct="false">エッジサーバ経由の方が、直接アクセスより時間がかかった</button></li>
+        <li><button type="button" data-correct="true">直接アクセスは合計およそ 3000 ミリ秒、エッジサーバ経由は合計およそ 1100 ミリ秒だった</button></li>
         <li><button type="button" data-correct="false">直接アクセスは合計およそ 1100 ミリ秒、エッジサーバ経由は合計およそ 3000 ミリ秒だった</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、直接アクセスは合計およそ 3000 ミリ秒、エッジサーバ経由は合計およそ 1100 ミリ秒だった、です。距離が縮んだ分、エッジサーバ経由の方が短い時間で済みました。"></p>
@@ -104,8 +104,8 @@
     <div class="q" data-q="3">
       <p class="q-text">多くの利用者への応答をエッジサーバが肩代わりすることが、オリジンサーバにとってどのような関係になるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">オリジンサーバへの問い合わせの回数が増え、負荷が高まる</button></li>
         <li><button type="button" data-correct="true">オリジンサーバへの問い合わせの回数が減り、負荷が抑えられる</button></li>
+        <li><button type="button" data-correct="false">オリジンサーバへの問い合わせの回数が増え、負荷が高まる</button></li>
         <li><button type="button" data-correct="false">オリジンサーバが不要になり、電源を切ってもよくなる</button></li>
         <li><button type="button" data-correct="false">オリジンサーバの往復時間(RTT)が短くなる</button></li>
       </ol>

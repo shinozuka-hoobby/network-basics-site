@@ -118,9 +118,9 @@ TTL=3 で送る(例では 3 台目が宛先)
     <div class="q" data-q="1">
       <p class="q-text">traceroute の結果の 1 つの行に、なぜ 3 つの時間が並ぶのか。</p>
       <ol class="opts">
+        <li><button type="button" data-correct="true">同じ機械に 3 回確認を送り、それぞれの往復時間を並べているから</button></li>
         <li><button type="button" data-correct="false">3 台の機械が同時に応答したから</button></li>
         <li><button type="button" data-correct="false">1 回の確認に往復で 3 回のやり取りが必要だから</button></li>
-        <li><button type="button" data-correct="true">同じ機械に 3 回確認を送り、それぞれの往復時間を並べているから</button></li>
         <li><button type="button" data-correct="false">TTL の値を 3 ずつ増やして送っているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、同じ機械に 3 回確認を送り、それぞれの往復時間を並べているから、です。3 台同時の応答や、3 回のやり取り、TTL を 3 ずつ増やすという話ではありません。"></p>
@@ -129,8 +129,8 @@ TTL=3 で送る(例では 3 台目が宛先)
       <p class="q-text">traceroute の結果に * の行が 1 つ混じっていても、それだけでは経路が壊れているとは言えないのはなぜか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">* は必ず一時的な遅延で、数秒後には消えるから</button></li>
-        <li><button type="button" data-correct="true">* はその機械から応答が返らなかったことを示すだけで、その先の機械から応答が戻り、最終的に宛先まで届く場合があるから</button></li>
         <li><button type="button" data-correct="false">* は宛先に無事到達した証拠だから</button></li>
+        <li><button type="button" data-correct="true">* はその機械から応答が返らなかったことを示すだけで、その先の機械から応答が戻り、最終的に宛先まで届く場合があるから</button></li>
         <li><button type="button" data-correct="false">* は経由した機械の合計台数を示す記号だから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、* はその機械から応答が返らなかったことを示すだけで、その先の機械から応答が戻り、最終的に宛先まで届く場合があるから、です。一時的な遅延だと決めつけることも、到達の証拠だとすることも、台数を示す記号だという説明も誤りです。"></p>
@@ -139,9 +139,9 @@ TTL=3 で送る(例では 3 台目が宛先)
       <p class="q-text">経路の設定を誤り、2 台の機械が互いに転送し合い続けると、traceroute の結果はどう見えるか。</p>
       <ol class="opts">
         <li><button type="button" data-correct="false">結果が 1 行も表示されずエラーになる</button></li>
+        <li><button type="button" data-correct="true">同じ 2 つの住所が、TTL の上限に達するまで交互に並び続ける</button></li>
         <li><button type="button" data-correct="false">宛先の住所だけが繰り返し表示される</button></li>
         <li><button type="button" data-correct="false">すべての行が * だけになる</button></li>
-        <li><button type="button" data-correct="true">同じ 2 つの住所が、TTL の上限に達するまで交互に並び続ける</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、同じ 2 つの住所が、TTL の上限に達するまで交互に並び続ける、です。エラーになる、宛先の住所だけが表示される、すべて * になるというのはいずれも誤りです。"></p>
     </div>

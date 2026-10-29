@@ -104,9 +104,9 @@
     <div class="q" data-q="1">
       <p class="q-text">サイトの画像を更新したのに、しばらく古い画像が表示され続けることがあるのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ブラウザや途中のサーバに残った控えが、指示された間はそのまま使われるから</button></li>
         <li><button type="button" data-correct="false">画像のファイル名を変えていないから</button></li>
         <li><button type="button" data-correct="false">Web サーバがまだ新しい画像を受け取っていないから</button></li>
+        <li><button type="button" data-correct="true">ブラウザや途中のサーバに残った控えが、指示された間はそのまま使われるから</button></li>
         <li><button type="button" data-correct="false">第 16 章で見た DNS キャッシュが残っているから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ブラウザや途中のサーバに残った控えが、指示された間はそのまま使われるから、です。ファイル名や Web サーバの受け取り状況、DNS キャッシュとは別の話です。"></p>
@@ -114,18 +114,18 @@
     <div class="q" data-q="2">
       <p class="q-text">Cache-Control の役割として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">応答をどれくらいの間、控えとして使ってよいかなどを指示する</button></li>
         <li><button type="button" data-correct="false">接続を暗号化するかどうかを指示する</button></li>
         <li><button type="button" data-correct="false">応答の言語を指示する</button></li>
         <li><button type="button" data-correct="false">接続を使い回すかどうかを指示する</button></li>
+        <li><button type="button" data-correct="true">応答をどれくらいの間、控えとして使ってよいかなどを指示する</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、応答をどれくらいの間、控えとして使ってよいかなどを指示する、です。接続の暗号化や応答の言語、接続を使い回すかどうか(Keep-Alive)とは別の指示です。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">この章で見た「控えておいて使う」考え方と、第 16 章で見た DNS キャッシュの関係として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">控えておいて使うという考え方は同じだが、控える対象が違う(名前解決の答えか、Web サーバの応答か)</button></li>
         <li><button type="button" data-correct="false">まったく同じ仕組みで、対象も同じである</button></li>
+        <li><button type="button" data-correct="true">控えておいて使うという考え方は同じだが、控える対象が違う(名前解決の答えか、Web サーバの応答か)</button></li>
         <li><button type="button" data-correct="false">HTTP キャッシュがあれば DNS キャッシュは不要になる</button></li>
         <li><button type="button" data-correct="false">DNS キャッシュのほうが後から作られた仕組みである</button></li>
       </ol>

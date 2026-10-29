@@ -97,8 +97,8 @@ DHCPv6
     <div class="q" data-q="1">
       <p class="q-text">DHCPv6 に対応していない古い OS では、SLAAC で新しい形式の IP アドレス自体は使えるようになるのに、名前解決の問い合わせ先は自動で設定されないのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">SLAAC が担当するのはアドレスの組み立てで、追加の情報を配るのは DHCPv6 の役目であり、両者は別の仕組みだから</button></li>
         <li><button type="button" data-correct="false">SLAAC はリンクローカルアドレスしか作れず、通信そのものができないから</button></li>
+        <li><button type="button" data-correct="true">SLAAC が担当するのはアドレスの組み立てで、追加の情報を配るのは DHCPv6 の役目であり、両者は別の仕組みだから</button></li>
         <li><button type="button" data-correct="false">DHCPv6 に対応していない OS は、そもそもネットワークにつながらないから</button></li>
         <li><button type="button" data-correct="false">名前解決の問い合わせ先は、いつも手作業で設定するものと決まっているから</button></li>
       </ol>
@@ -107,8 +107,8 @@ DHCPv6
     <div class="q" data-q="2">
       <p class="q-text">SLAAC の説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ネットワーク側から届く情報と機械自身の情報を組み合わせて、機械が自分でアドレスを組み立てる仕組み</button></li>
         <li><button type="button" data-correct="false">サーバが機械の代わりにアドレスを選び、機械に送りつける仕組み</button></li>
+        <li><button type="button" data-correct="true">ネットワーク側から届く情報と機械自身の情報を組み合わせて、機械が自分でアドレスを組み立てる仕組み</button></li>
         <li><button type="button" data-correct="false">機械同士が話し合って、重複しないアドレスをじゃんけんで決める仕組み</button></li>
         <li><button type="button" data-correct="false">機械が同じアドレスを固定で使い続ける仕組み</button></li>
       </ol>
@@ -117,9 +117,9 @@ DHCPv6
     <div class="q" data-q="3">
       <p class="q-text">リンクローカルアドレスの説明として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">同じネットワークの中だけで通じる、機械が電源を入れた時点で自分で作るアドレス</button></li>
         <li><button type="button" data-correct="false">世界中で重複しない、ただ 1 つのアドレス</button></li>
         <li><button type="button" data-correct="false">DHCPv6 サーバだけが持つ、特別なアドレス</button></li>
+        <li><button type="button" data-correct="true">同じネットワークの中だけで通じる、機械が電源を入れた時点で自分で作るアドレス</button></li>
         <li><button type="button" data-correct="false">通信の相手が見つかるまでは作られない、一時的なアドレス</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、同じネットワークの中だけで通じる、機械が電源を入れた時点で自分で作るアドレス、です。通信できる相手がいるかどうかに関わらず、機械は必ずこの番号を作ります。"></p>

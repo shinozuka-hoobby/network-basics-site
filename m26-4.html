@@ -109,8 +109,8 @@
     <div class="q" data-q="1">
       <p class="q-text">DoT や DoH で名前解決を暗号化しても、その後の Web サイトとのやり取りの中身まで守られるわけではない。なぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="false">DoT・DoH は暗号化の方式として認められていないから</button></li>
         <li><button type="button" data-correct="true">DoT・DoH が守るのは名前解決の問い合わせと答えの範囲であり、その後のやり取りは別の仕組みで守る必要があるから</button></li>
+        <li><button type="button" data-correct="false">DoT・DoH は暗号化の方式として認められていないから</button></li>
         <li><button type="button" data-correct="false">DoT・DoH を使うと、通信の速度が必ず遅くなるから</button></li>
         <li><button type="button" data-correct="false">DoT・DoH は VPN の一部の機能だから</button></li>
       </ol>
@@ -121,8 +121,8 @@
       <ol class="opts">
         <li><button type="button" data-correct="false">名前解決を含めて、通信のすべての段階を守る</button></li>
         <li><button type="button" data-correct="false">通信を行っているという事実そのものを隠す</button></li>
-        <li><button type="button" data-correct="true">Web サーバとのやり取りの中身を守るが、その手前で行われる名前解決には保護が及ばない</button></li>
         <li><button type="button" data-correct="false">拠点間の通信全体を、まるごと包み直して守る</button></li>
+        <li><button type="button" data-correct="true">Web サーバとのやり取りの中身を守るが、その手前で行われる名前解決には保護が及ばない</button></li>
       </ol>
       <p class="feedback" data-explain="正解は「Web サーバとのやり取りの中身を守るが、その手前で行われる名前解決には保護が及ばない」です。名前解決を含めた全段階の保護や、通信の存在そのものを隠すこと、拠点間の通信全体を包み直すことは、TLS ではなく別の仕組みの話です。"></p>
     </div>

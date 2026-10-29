@@ -149,9 +149,9 @@ ip.addr==A or ip.addr==B
     <div class="q" data-q="1">
       <p class="q-text">ip.addr==A and ip.addr==B という表示フィルタを ip.addr==A or ip.addr==B に書き換えると、何が変わるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">A と B の間の通信だけでなく、A 単独の通信や B 単独の通信も含めて、より広い範囲が表示されるようになる</button></li>
         <li><button type="button" data-correct="false">表示される通信が完全に無くなる</button></li>
         <li><button type="button" data-correct="false">A と B の間の通信だけが、さらに厳しく絞り込まれる</button></li>
+        <li><button type="button" data-correct="true">A と B の間の通信だけでなく、A 単独の通信や B 単独の通信も含めて、より広い範囲が表示されるようになる</button></li>
         <li><button type="button" data-correct="false">表示フィルタ自体が使えなくなる</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、A と B の間の通信だけでなく、A 単独の通信や B 単独の通信も含めて、より広い範囲が表示されるようになる、です。表示が無くなったり、さらに絞られたり、機能が使えなくなったりはしません。"></p>
@@ -159,8 +159,8 @@ ip.addr==A or ip.addr==B
     <div class="q" data-q="2">
       <p class="q-text">ip.addr==A and ip.addr==B と書いたのに、A や B が他の相手とやり取りしている通信が表示されなかったのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ip.addr は送信元でも宛先でも一致する条件で、and でつなぐと、1 つの通信の中に A と B の両方が現れる場合だけに絞られるから</button></li>
         <li><button type="button" data-correct="false">and という書き方自体が表示フィルタでは使えないから</button></li>
+        <li><button type="button" data-correct="true">ip.addr は送信元でも宛先でも一致する条件で、and でつなぐと、1 つの通信の中に A と B の両方が現れる場合だけに絞られるから</button></li>
         <li><button type="button" data-correct="false">A と B のどちらかの入力が間違っていたから</button></li>
         <li><button type="button" data-correct="false">Wireshark のバージョンが古かったから</button></li>
       </ol>
@@ -169,10 +169,10 @@ ip.addr==A or ip.addr==B
     <div class="q" data-q="3">
       <p class="q-text">キャプチャフィルタと表示フィルタの違いとして正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">キャプチャフィルタは記録する時点で絞り込み、表示フィルタは記録済みの内容をあとから何度でも条件を変えて絞り込める</button></li>
         <li><button type="button" data-correct="false">キャプチャフィルタは Wireshark 専用で、表示フィルタは tcpdump 専用である</button></li>
         <li><button type="button" data-correct="false">両者は全く同じ仕組みで、名前が違うだけである</button></li>
         <li><button type="button" data-correct="false">表示フィルタは記録する前にしか使えない</button></li>
+        <li><button type="button" data-correct="true">キャプチャフィルタは記録する時点で絞り込み、表示フィルタは記録済みの内容をあとから何度でも条件を変えて絞り込める</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、キャプチャフィルタは記録する時点で絞り込み、表示フィルタは記録済みの内容をあとから何度でも条件を変えて絞り込める、です。専用ツールの話ではなく、同じ仕組みでもなく、表示フィルタは記録後にこそ使うものです。"></p>
     </div>

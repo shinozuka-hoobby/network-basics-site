@@ -119,9 +119,9 @@
     <div class="q" data-q="1">
       <p class="q-text">別サブネット宛てのパケットで、フレームの宛先 MAC アドレスがデフォルトゲートウェイのものになる一方、パケットの宛先 IP アドレスが最終的な相手のまま変わらないのはなぜか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">宛先 MAC アドレスは次に渡す隣の機器を指す番号、宛先 IP アドレスは最終的な相手を指す番号で、役割が違うから</button></li>
         <li><button type="button" data-correct="false">デフォルトゲートウェイが、宛先 IP アドレスを自分のものに書き換える決まりになっているから</button></li>
         <li><button type="button" data-correct="false">MAC アドレスと IP アドレスは、実際には同じ情報を別の形式で表しているだけだから</button></li>
+        <li><button type="button" data-correct="true">宛先 MAC アドレスは次に渡す隣の機器を指す番号、宛先 IP アドレスは最終的な相手を指す番号で、役割が違うから</button></li>
         <li><button type="button" data-correct="false">ARP が宛先 IP アドレスを MAC アドレスに変換してしまうから</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、宛先 MAC アドレスは次に渡す隣の機器を指す番号、宛先 IP アドレスは最終的な相手を指す番号で、役割が違うから、です。デフォルトゲートウェイ宛てに変わるのは宛先 MAC アドレスだけで、宛先 IP アドレスは最後まで書き換わりません。"></p>
@@ -129,20 +129,20 @@
     <div class="q" data-q="2">
       <p class="q-text">サブネットマスクの設定を間違えて、本当は同じサブネットにいる相手を「別のサブネット」と判定してしまうと、何が起きるか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">ARP で相手の MAC アドレスを直接調べる代わりに、デフォルトゲートウェイの MAC アドレスを調べて渡そうとしてしまう</button></li>
         <li><button type="button" data-correct="false">相手の IP アドレスが自動的に書き換わってしまう</button></li>
         <li><button type="button" data-correct="false">ARP の仕組みそのものが使えなくなる</button></li>
         <li><button type="button" data-correct="false">間違えたサブネットマスクの値が、自動的に正しい値へ修正される</button></li>
+        <li><button type="button" data-correct="true">ARP で相手の MAC アドレスを直接調べる代わりに、デフォルトゲートウェイの MAC アドレスを調べて渡そうとしてしまう</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、ARP で相手の MAC アドレスを直接調べる代わりに、デフォルトゲートウェイの MAC アドレスを調べて渡そうとしてしまう、です。判定に使うのは自分のサブネットマスクなので、これを間違えると判定そのものを誤ります。"></p>
     </div>
     <div class="q" data-q="3">
       <p class="q-text">別のサブネット宛てのパケットが送り出されるまでの手順として正しいものはどれか。</p>
       <ol class="opts">
-        <li><button type="button" data-correct="true">同一サブネット判定 → ARP でデフォルトゲートウェイの MAC アドレスを調べる → 宛先 MAC アドレスをデフォルトゲートウェイにしてフレームを送る</button></li>
         <li><button type="button" data-correct="false">ARP でデフォルトゲートウェイの MAC アドレスを調べる → 同一サブネット判定 → 宛先 IP アドレスを書き換える</button></li>
         <li><button type="button" data-correct="false">宛先 IP アドレスをデフォルトゲートウェイのアドレスに書き換える → ARP で調べる → フレームを送る</button></li>
         <li><button type="button" data-correct="false">デフォルトゲートウェイに ARP で尋ねることはせず、いきなりフレームを送る</button></li>
+        <li><button type="button" data-correct="true">同一サブネット判定 → ARP でデフォルトゲートウェイの MAC アドレスを調べる → 宛先 MAC アドレスをデフォルトゲートウェイにしてフレームを送る</button></li>
       </ol>
       <p class="feedback" data-explain="正解は、同一サブネット判定→ARP でデフォルトゲートウェイの MAC アドレスを調べる→宛先 MAC アドレスをデフォルトゲートウェイにしてフレームを送る、です。宛先 IP アドレスは最後まで書き換わりません。"></p>
     </div>
