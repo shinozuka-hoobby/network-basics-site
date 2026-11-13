@@ -1,6 +1,8 @@
 # ネットワークのしくみ — Web エンジニアのための基礎講座
 
-公開ページ: https://shinozuka-hoobby.github.io/network-basics-site/
+**このサイトは移転しました。** 新しい URL: https://network-basics-site.yatchi.workers.dev/
+
+このリポジトリの GitHub Pages（https://shinozuka-hoobby.github.io/network-basics-site/）は、新しい URL の同じページへ自動で移動する。
 
 ## このサイトについて
 
@@ -16,6 +18,6 @@
 
 ## このリポジトリについて
 
-このリポジトリは、公開用に生成したファイル一式の配置先。本文の執筆・章立ての設計・生成スクリプトは別のリポジトリで管理しており、ここには含まれない。
+このリポジトリは、移転前の公開用ファイル一式に、新しい URL への転送を加えたもの。本文の執筆・章立ての設計・生成スクリプトは別のリポジトリで管理しており、ここには含まれない。
 
-各ページの参考文献（かけあい中の出典表記、ページ末尾の参考文献欄、[参考文献一覧](https://shinozuka-hoobby.github.io/network-basics-site/sources.html)）は、公式サイトや大学・標準化団体などの一次資料を明示したもの。本文はそれらの資料を要約・転載せず、自分の言葉で書き直している。
+各ページの参考文献（かけあい中の出典表記、ページ末尾の参考文献欄、[参考文献一覧](https://network-basics-site.yatchi.workers.dev/sources.html)）は、公式サイトや大学・標準化団体などの一次資料を明示したもの。本文はそれらの資料を要約・転載せず、自分の言葉で書き直している。

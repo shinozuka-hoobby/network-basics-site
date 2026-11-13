@@ -6,9 +6,37 @@
 <title>VPC をつなぐ — ピアリング・ハブ・ハイブリッド — ネットワークのしくみ</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/style.css">
+<script>
+(function () {
+  var NEW = "https://network-basics-site.yatchi.workers.dev/";
+  var file = location.pathname.split("/").pop() || "index.html";
+  var page = file.replace(/\.html$/, "");
+  var moved = false;
+  function go() {
+    if (moved) return;
+    moved = true;
+    location.replace(NEW + file + location.search + location.hash);
+  }
+  // 用語集と参考文献は進捗コードを載せないページなので、すぐ移動する。
+  if (page === "glossary" || page === "sources") { go(); return; }
+  // 見出しへのアンカーが付いていると app.js は進捗コードを書かないので、先に外す。
+  if (location.hash && location.hash.indexOf("#p=") !== 0) {
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  var orig = history.replaceState;
+  history.replaceState = function (state, title, url) {
+    orig.apply(history, arguments);
+    if (typeof url === "string" && url.indexOf("#p=1.") !== -1) go();
+  };
+  // 進捗コードが書かれなかった場合（curriculum.json を読めないなど）も 5 秒で移動する。
+  setTimeout(go, 5000);
+})();
+</script>
 <script src="assets/app.js" defer></script>
 </head>
 <body data-page="m25" data-chapter="m25" data-rev="1">
+<p style="margin:0;padding:12px 16px;background:#fff3cd;color:#3d3200;font-size:15px;line-height:1.6;text-align:center">このサイトは移転しました。自動で移動しない場合は <a href="https://network-basics-site.yatchi.workers.dev/m25.html" style="color:#0b4f9e">新しい URL</a> を開いてください。</p>
+
 <noscript><p class="noscript-warn">目次・進捗保存に JavaScript を使います。JavaScript を有効にしてご覧ください。</p></noscript>
 <main>
   <p class="crumbs"><a href="index.html">ネットワークのしくみ</a> › 第 25 章</p>
